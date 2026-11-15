@@ -228,6 +228,20 @@ def test_guest_dependency_setup_is_reference_specific(tmp_path, monkeypatch, ada
     assert ("--extra chimpstackr" in sync) is requires_extra
 
 
+def test_guest_interpreter_pin_overrides_host_python_version_file(tmp_path, monkeypatch):
+    from stack_conformance.gui_vm import TartGuiVM
+    descriptor = tmp_path / "target.toml"
+    descriptor.write_text('adapter = ""\n')
+    archive = tmp_path / "workspace.tar"
+    archive.write_bytes(b"archive")
+    vm = TartGuiVM({**config(), "python": "3.12.16"}, tmp_path, tmp_path / "run")
+    monkeypatch.setattr(vm, "_source_archive", lambda path: (archive, "target.toml", "app", "a" * 40, "b" * 64))
+    commands = []
+    monkeypatch.setattr(vm, "_ssh", lambda command, **kwargs: commands.append(command) or SimpleNamespace(returncode=0))
+    vm._sync_workspace(descriptor)
+    assert "--python 3.12.16" in next(command for command in commands if "uv sync" in command)
+
+
 def test_vm_lease_rejects_second_owner_and_releases_on_close(tmp_path):
     from stack_conformance.gui_vm import TartGuiVM
     first = TartGuiVM(config(), tmp_path, tmp_path / "first")

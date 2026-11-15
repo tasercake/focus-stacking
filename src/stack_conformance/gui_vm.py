@@ -396,9 +396,11 @@ class TartGuiVM:
         self._adapter = tomllib.loads(Path(target_path).read_text()).get("adapter", "")
         self._bundle_digest = digest
         extra = " --extra chimpstackr" if self._adapter == "chimpstackr-python" else ""
-        self._ssh(f"cd {root} && PATH={shlex.quote(self.guest_path)} uv sync --locked{extra}", timeout=600)
+        interpreter = " --python " + shlex.quote(str(self.config["python"])) if self.config.get("python") else ""
+        self._ssh(f"cd {root} && PATH={shlex.quote(self.guest_path)} uv sync --locked{interpreter}{extra}", timeout=600)
         metadata = {"name": self.name, "guest_root": self.guest_root, "target_commit": pin,
-                    "source_bundle_sha256": digest, "visible": self.visible, "persist": self.persist}
+                    "source_bundle_sha256": digest, "visible": self.visible, "persist": self.persist,
+                    "python": self.config.get("python")}
         (self.output / "vm.json").write_text(json.dumps(metadata, indent=2) + "\n")
         return descriptor, target, pin
 

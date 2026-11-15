@@ -61,6 +61,7 @@ name = "chimpstackr-conformance"
 ssh_user = "admin"
 guest_root = "/Users/admin/stack-conformance"
 ssh_identity = "~/.ssh/chimpstackr-conformance"
+python = "3.12.16"
 ```
 
 Tart's `--no-graphics` flag prevents a host window. Automated runs must not
@@ -100,14 +101,18 @@ Install `uv` and Python 3.12 inside the guest:
 
 ```sh
 /opt/homebrew/bin/brew install uv
-/opt/homebrew/bin/uv python install 3.12
+/opt/homebrew/bin/uv python install 3.12.16
 ```
 
 See the official [uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/)
 and [managed Python guide](https://docs.astral.sh/uv/guides/install-python/).
 The VM transport copies the project
 and initialized ChimpStackr submodule to `/Users/admin/stack-conformance`, then
-runs `uv sync --locked --extra chimpstackr`. GUI jobs run through an `admin`
+runs `uv sync --locked --python 3.12.16 --extra chimpstackr`. The optional
+`gui_vm.python` pin preserves the guest interpreter that received desktop
+permissions even if the host project's `.python-version` changes. It must
+satisfy the project's Python requirement. If you change the guest interpreter,
+grant permissions for that new runtime before testing. GUI jobs run through an `admin`
 LaunchAgent in `gui/<uid>`, not as a root daemon or an SSH background process.
 
 The reference runtime is pinned to the official Qt for Python CI revision

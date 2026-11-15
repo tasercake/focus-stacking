@@ -1,24 +1,26 @@
 [project]
-name = "stack-conformance"
+name = "bokehforge"
 version = "0.1.0"
-description = "External native-app and numerical conformance suite for focus stacking implementations"
+description = "A measurement-first workbench for sharp focus stacks."
 readme = "README.md"
-authors = [
-    { name = "Krishna Penukonda", email = "krishna@penukonda.me" }
-]
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
-    "coverage>=7.17.3",
-    "imagecodecs>=2026.11.11",
-    "numpy>=2.5.4",
-    "openexr>=3.5.4",
-    "pillow>=13.0.0",
-    "pypng>=0.20220715.0",
-    "scipy>=1.18.1",
-    "tifffile>=2026.11.12",
+  "numpy>=2.2,<3",
+  "pillow>=11,<13",
+  "tifffile>=2025.1.10",
+  "imagecodecs>=2025.3.30",
+  "rawpy>=0.24,<0.27",
+  "requests>=2.32,<3",
+  "beautifulsoup4>=4.13,<5",
+  "libarchive-c>=5.1,<6",
+  "coverage>=7.17.3",
+  "openexr>=3.5.4",
+  "pypng>=0.20220715.0",
+  "scipy>=1.18.1"
 ]
 
 [project.scripts]
+bokehforge = "bokehforge.cli:main"
 stack-conformance = "stack_conformance:main"
 
 [project.optional-dependencies]
@@ -34,6 +36,9 @@ chimpstackr = [
 requires = ["uv_build>=0.12.17,<0.13.0"]
 build-backend = "uv_build"
 
+[tool.uv.build-backend]
+module-name = ["bokehforge", "stack_conformance"]
+
 [tool.uv.workspace]
 members = [
     "submodules/ChimpStackr",
@@ -44,16 +49,18 @@ chimpstackr = { workspace = true, editable = true }
 
 [dependency-groups]
 dev = [
-    "pytest>=9.2.0",
+    "pytest>=9.2.0,<10",
     "ruff>=0.17.5",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra"
+addopts = "-ra --import-mode=importlib"
 
 [tool.ruff]
 target-version = "py312"
+# This added lint policy applies to conformance code, not existing data tooling.
+extend-exclude = ["src/bokehforge", "tests/data", "tests/test_cli.py"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "B"]
