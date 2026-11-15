@@ -41,8 +41,12 @@ keyboard navigation, without walking unrelated directory contents.
 Pointer input uses coordinates relative to the identified control. Accessibility
 press actions activate semantic radio choices, native menu commands, and controls
 that are partially clipped by the existing application layout. Both routes use public
-operating-system input APIs. Popup selection opens once, waits for a visible
-option, then waits for the selected value and popup dismissal. Selecting an
+operating-system input APIs. Popup selection opens through an advertised public
+Accessibility action when available, otherwise a pointer click. Readable options
+use native pointer selection. If an expanded popup exposes only unreadable child
+proxies, the driver uses native label typeahead and Return, then requires the
+exact committed value and `AXExpanded=false`. Closed or unknown popup state never
+uses this fallback. Selecting an
 already committed value sends no input. Scenarios never call an application
 operation.
 
@@ -112,6 +116,8 @@ pixel parity, all export formats and depths, native file/folder dialogs,
 duplicate suppression, removal, RAW preview/export, alignment/crop, comparison
 divider, zoom/pan/navigation, panel visibility, preferences/restart isolation,
 unsaved-work prompts, pause/resume/cancel/reuse, and GUI-selected GPU execution.
+VM mode runs this same native transport inside the guest. Its physical-GPU GUI
+case remains explicitly unsupported; host device cases validate the actual GPU.
 
 Updater preferences and readable Lightroom setup state are tested without
 network downloads, installing/updating/removing user applications, or operating
