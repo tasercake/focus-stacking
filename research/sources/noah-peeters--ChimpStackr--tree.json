@@ -1,0 +1,826 @@
+{
+  "provenance": {
+    "repository": "noah-peeters/ChimpStackr",
+    "url": "https://github.com/noah-peeters/ChimpStackr",
+    "retrieved_at": "2026-11-15",
+    "default_branch": "master",
+    "commit": "49490aeff420fc031cec94e7b91e8bc4cc1af0ca",
+    "commit_url": "https://github.com/noah-peeters/ChimpStackr/commit/49490aeff420fc031cec94e7b91e8bc4cc1af0ca",
+    "commit_date": "2026-10-30T08:30:29Z",
+    "license_api_hint": "GPL-3.0",
+    "readme_path": "README.md"
+  },
+  "data": {
+    "sha": "49490aeff420fc031cec94e7b91e8bc4cc1af0ca",
+    "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/49490aeff420fc031cec94e7b91e8bc4cc1af0ca",
+    "tree": [
+      {
+        "path": ".github",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "c52cd2ca1833d1023febb3f51937ad13689a7fc9",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/c52cd2ca1833d1023febb3f51937ad13689a7fc9"
+      },
+      {
+        "path": ".github/dependabot.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "70f53d16f21d14f2e0df4e33e49b1ee8d087a506",
+        "size": 732,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/70f53d16f21d14f2e0df4e33e49b1ee8d087a506"
+      },
+      {
+        "path": ".github/workflows",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "72ffc27ece88e17dea843169afff8f0a95bf3dd7",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/72ffc27ece88e17dea843169afff8f0a95bf3dd7"
+      },
+      {
+        "path": ".github/workflows/build.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0dc465902f53a124e3242e0a6f4974aac03ac347",
+        "size": 10767,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/0dc465902f53a124e3242e0a6f4974aac03ac347"
+      },
+      {
+        "path": ".github/workflows/test.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "453cfb1f7b613fe3719d7d98dd9b87ea71216d84",
+        "size": 2842,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/453cfb1f7b613fe3719d7d98dd9b87ea71216d84"
+      },
+      {
+        "path": ".gitignore",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de37896005f94b1734b11340d597ecb63d95e746",
+        "size": 2336,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/de37896005f94b1734b11340d597ecb63d95e746"
+      },
+      {
+        "path": ".pre-commit-config.yaml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1f898f2d69c605b0ce690cbc2b70264ca64be449",
+        "size": 185,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/1f898f2d69c605b0ce690cbc2b70264ca64be449"
+      },
+      {
+        "path": "CONTRIBUTING.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "46cfe7606e9643c4d304885eb806ad56cfe0dff8",
+        "size": 5761,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/46cfe7606e9643c4d304885eb806ad56cfe0dff8"
+      },
+      {
+        "path": "LICENSE",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+        "size": 35149,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/f288702d2fa16d3cdf0035b15a9fcbc552cd88e7"
+      },
+      {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "228a878033432efcf12e13113837ea075b9c1f09",
+        "size": 8488,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/228a878033432efcf12e13113837ea075b9c1f09"
+      },
+      {
+        "path": "chimpstackr.spec",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4dcae2083cc85a369248fd7234cc1045df54074e",
+        "size": 9034,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/4dcae2083cc85a369248fd7234cc1045df54074e"
+      },
+      {
+        "path": "docs",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "c8faa069d8a8a453757e8d8edb36e01e2c91a8a3",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/c8faa069d8a8a453757e8d8edb36e01e2c91a8a3"
+      },
+      {
+        "path": "docs/_config.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7a83215d751730d23b68fbc5713bc83bc6b1acb6",
+        "size": 138,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/7a83215d751730d23b68fbc5713bc83bc6b1acb6"
+      },
+      {
+        "path": "docs/_includes",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "47c20cc382ab1abc0c1c49aafb73585b899c5ef9",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/47c20cc382ab1abc0c1c49aafb73585b899c5ef9"
+      },
+      {
+        "path": "docs/_includes/head-custom.html",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "974d07617ff36d285768b0de3dc7d46c51759911",
+        "size": 336,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/974d07617ff36d285768b0de3dc7d46c51759911"
+      },
+      {
+        "path": "docs/_layouts",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "14edd1c6fad0d671beb4c26f76a8e09e576df9ad",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/14edd1c6fad0d671beb4c26f76a8e09e576df9ad"
+      },
+      {
+        "path": "docs/_layouts/default.html",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b5269ca8042873490bca74c503e2707a526a6a1d",
+        "size": 1939,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/b5269ca8042873490bca74c503e2707a526a6a1d"
+      },
+      {
+        "path": "docs/algorithms.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "157c12780df18685e25e090e18a100f1af63c525",
+        "size": 15351,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/157c12780df18685e25e090e18a100f1af63c525"
+      },
+      {
+        "path": "docs/assets",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8c4fc7c6f3336621a7ce625df9e8c39c64d8be84",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/8c4fc7c6f3336621a7ce625df9e8c39c64d8be84"
+      },
+      {
+        "path": "docs/assets/favicon.ico",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2f76553b146c841b83d3a56b4650a8b211769c5c",
+        "size": 130333,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/2f76553b146c841b83d3a56b4650a8b211769c5c"
+      },
+      {
+        "path": "docs/assets/logo.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "615a9e588e6cf49ca259e3bfe9ca392d942bf15f",
+        "size": 53741,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/615a9e588e6cf49ca259e3bfe9ca392d942bf15f"
+      },
+      {
+        "path": "docs/index.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "793de4bfbd99175cc4595280490832e35b3e6bb0",
+        "size": 3135,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/793de4bfbd99175cc4595280490832e35b3e6bb0"
+      },
+      {
+        "path": "docs/packaging.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f5e1913c0ddf8203ae90939b391f0ce5233fa259",
+        "size": 5315,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/f5e1913c0ddf8203ae90939b391f0ce5233fa259"
+      },
+      {
+        "path": "docs/screenshots",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ab6ff1bf89fd9abcd61256c0d2f2b6b613d28caa",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/ab6ff1bf89fd9abcd61256c0d2f2b6b613d28caa"
+      },
+      {
+        "path": "docs/screenshots/main.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0c3957e5317a854b68a3228033920e71681d0e3a",
+        "size": 6943300,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/0c3957e5317a854b68a3228033920e71681d0e3a"
+      },
+      {
+        "path": "docs/screenshots/processing.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "43d33b036bb4259890f2dfb5574c0308c929b30d",
+        "size": 6150217,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/43d33b036bb4259890f2dfb5574c0308c929b30d"
+      },
+      {
+        "path": "packaging",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "2d6bce1645519a2a0084c23f2721c35bec75a807",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/2d6bce1645519a2a0084c23f2721c35bec75a807"
+      },
+      {
+        "path": "packaging/chimpstackr.desktop",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3c6cd3477ded08a4bb727ac172f22684cc5e3302",
+        "size": 267,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/3c6cd3477ded08a4bb727ac172f22684cc5e3302"
+      },
+      {
+        "path": "packaging/entitlements.plist",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "883e3f7a69d361fa4584f97fd2da52c4b0ea9655",
+        "size": 571,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/883e3f7a69d361fa4584f97fd2da52c4b0ea9655"
+      },
+      {
+        "path": "packaging/icons",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b1d6b9c11dea15294ce717dbae56ec989e1ab6f9",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/b1d6b9c11dea15294ce717dbae56ec989e1ab6f9"
+      },
+      {
+        "path": "packaging/icons/chimpstackr_icon.icns",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8e67830266057a8db40db66f9a7b6acd31894dd9",
+        "size": 1266994,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/8e67830266057a8db40db66f9a7b6acd31894dd9"
+      },
+      {
+        "path": "packaging/icons/chimpstackr_icon.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f85c0498d15e1b3342bb6235c2f98a21977aff4d",
+        "size": 523310,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/f85c0498d15e1b3342bb6235c2f98a21977aff4d"
+      },
+      {
+        "path": "packaging/icons/chimpstackr_icon_macos.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5282989fd91fb156afc8e5c9fea086dd56f6e236",
+        "size": 662088,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/5282989fd91fb156afc8e5c9fea086dd56f6e236"
+      },
+      {
+        "path": "packaging/icons/icon.ico",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2f76553b146c841b83d3a56b4650a8b211769c5c",
+        "size": 130333,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/2f76553b146c841b83d3a56b4650a8b211769c5c"
+      },
+      {
+        "path": "packaging/icons/icon_128x128.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2bee05033a90cb279cff1a63c81ae1d21e53d930",
+        "size": 32268,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/2bee05033a90cb279cff1a63c81ae1d21e53d930"
+      },
+      {
+        "path": "packaging/icons/icon_256x256.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "615a9e588e6cf49ca259e3bfe9ca392d942bf15f",
+        "size": 53741,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/615a9e588e6cf49ca259e3bfe9ca392d942bf15f"
+      },
+      {
+        "path": "packaging/icons/icon_512x512.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a23bdf4de89a0fe6a23776ed6d24798e80ee2ee",
+        "size": 99560,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/8a23bdf4de89a0fe6a23776ed6d24798e80ee2ee"
+      },
+      {
+        "path": "packaging/icons/icon_gimp.xcf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4cfc77645ba4a139b8b79634175d62c96eaeb380",
+        "size": 132583,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/4cfc77645ba4a139b8b79634175d62c96eaeb380"
+      },
+      {
+        "path": "packaging/icons/make_macos_icon.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "21e053323ca899073a1207728b3e86f3a4e01d4e",
+        "size": 3315,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/21e053323ca899073a1207728b3e86f3a4e01d4e"
+      },
+      {
+        "path": "packaging/installer.iss",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2cb2c9ac10096e358b74ab0ccc2e66558d9efe63",
+        "size": 2139,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/2cb2c9ac10096e358b74ab0ccc2e66558d9efe63"
+      },
+      {
+        "path": "pyproject.toml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6880f5b9dd18b66f7d735a5a32bbda49452670d3",
+        "size": 1579,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/6880f5b9dd18b66f7d735a5a32bbda49452670d3"
+      },
+      {
+        "path": "requirements.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3859cd3b0e49f0496078385768790b89e87ca361",
+        "size": 278,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/3859cd3b0e49f0496078385768790b89e87ca361"
+      },
+      {
+        "path": "scripts",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d99332cd330283ffe2f127aa97713593042c6096",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/d99332cd330283ffe2f127aa97713593042c6096"
+      },
+      {
+        "path": "scripts/build_linux.sh",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "7f8e16ae6ae8161264b9d279d2321733da37bf51",
+        "size": 2670,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/7f8e16ae6ae8161264b9d279d2321733da37bf51"
+      },
+      {
+        "path": "scripts/build_macos.sh",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "f5746a5db65139d5f17f0ef5accbb40397dd3810",
+        "size": 3440,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/f5746a5db65139d5f17f0ef5accbb40397dd3810"
+      },
+      {
+        "path": "scripts/build_windows.ps1",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a4fa2193b49b27d4e9ebceb9ad64f257de3b0259",
+        "size": 1647,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/a4fa2193b49b27d4e9ebceb9ad64f257de3b0259"
+      },
+      {
+        "path": "src",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "3a0afd022cb713e1f78ac00d766c26efbb7f0f1d",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/3a0afd022cb713e1f78ac00d766c26efbb7f0f1d"
+      },
+      {
+        "path": "src/ImageLoadingHandler.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b8559bc8dc6b011625d3bea44e09ee30ee7902a5",
+        "size": 11886,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/b8559bc8dc6b011625d3bea44e09ee30ee7902a5"
+      },
+      {
+        "path": "src/MainWindow",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8f307e457052bad8f4cec18a1e453a411b984ed0",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/8f307e457052bad8f4cec18a1e453a411b984ed0"
+      },
+      {
+        "path": "src/MainWindow/ImageSavingDialog.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "42989d050a44cc1fcd00acd3b1eefc7742415ced",
+        "size": 7598,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/42989d050a44cc1fcd00acd3b1eefc7742415ced"
+      },
+      {
+        "path": "src/MainWindow/MainLayout",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "7eca95da3b18b35835ca4562b85270b2ad0db92f",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/7eca95da3b18b35835ca4562b85270b2ad0db92f"
+      },
+      {
+        "path": "src/MainWindow/MainLayout/ImageViewers",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "391a51a22ab6ff929f3b9a7a149f4bb0c9e4aba3",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/391a51a22ab6ff929f3b9a7a149f4bb0c9e4aba3"
+      },
+      {
+        "path": "src/MainWindow/MainLayout/ImageViewers/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "999578e9b85161be5b5ffa98f7744a8be30d983a",
+        "size": 21138,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/999578e9b85161be5b5ffa98f7744a8be30d983a"
+      },
+      {
+        "path": "src/MainWindow/MainLayout/ImageWidgets.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a0d284363d13e216cc994877b60e65fa5794f518",
+        "size": 13156,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/a0d284363d13e216cc994877b60e65fa5794f518"
+      },
+      {
+        "path": "src/MainWindow/MainLayout/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f7cdd6c6139e7a00c39f3aec016e245247f673ec",
+        "size": 52,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/f7cdd6c6139e7a00c39f3aec016e245247f673ec"
+      },
+      {
+        "path": "src/MainWindow/SettingsWidget.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "05676c2b4aec912c3cc3117368ba7a63e71ce27a",
+        "size": 38964,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/05676c2b4aec912c3cc3117368ba7a63e71ce27a"
+      },
+      {
+        "path": "src/MainWindow/Threading.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cdd8f49544bcff94739b030712c2d94c5785f8fd",
+        "size": 1086,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/cdd8f49544bcff94739b030712c2d94c5785f8fd"
+      },
+      {
+        "path": "src/MainWindow/TimeRemainingHandler.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9ad29daf34a17ca8f1092c297d28eb635cd3153e",
+        "size": 1752,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/9ad29daf34a17ca8f1092c297d28eb635cd3153e"
+      },
+      {
+        "path": "src/MainWindow/UpdateDialog.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "153e99c516746c6549c1287bd9d23dcdb61def63",
+        "size": 10739,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/153e99c516746c6549c1287bd9d23dcdb61def63"
+      },
+      {
+        "path": "src/MainWindow/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0d6ba3c2e2a567b54ac3f3a908bfa3e9e53257d8",
+        "size": 51785,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/0d6ba3c2e2a567b54ac3f3a908bfa3e9e53257d8"
+      },
+      {
+        "path": "src/MainWindow/icons.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c3f0d005d1526d87e3c7220341f6ea163588db7c",
+        "size": 5575,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/c3f0d005d1526d87e3c7220341f6ea163588db7c"
+      },
+      {
+        "path": "src/MainWindow/theme.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c89e9d1a1ce9c074830d04d4197d0fa045baecc3",
+        "size": 19129,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/c89e9d1a1ce9c074830d04d4197d0fa045baecc3"
+      },
+      {
+        "path": "src/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ef2f9dc6cd5bea4e38047b5622339439b8a7022",
+        "size": 63,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/0ef2f9dc6cd5bea4e38047b5622339439b8a7022"
+      },
+      {
+        "path": "src/_version.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2cdb61b24a43c0bb2402ea31743da6d289f30021",
+        "size": 1393,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/2cdb61b24a43c0bb2402ea31743da6d289f30021"
+      },
+      {
+        "path": "src/algorithms",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ed10488a1abd717093c7c4ed0c70032a6755e6e1",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/ed10488a1abd717093c7c4ed0c70032a6755e6e1"
+      },
+      {
+        "path": "src/algorithms/API.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5896dabd33a8f11ccc46d281b618d47bc6a09a89",
+        "size": 46187,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/5896dabd33a8f11ccc46d281b618d47bc6a09a89"
+      },
+      {
+        "path": "src/algorithms/ProgressLoggingHandler.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dfc741d77e8ac18bffd64ec65333c1ab5b04a042",
+        "size": 619,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/dfc741d77e8ac18bffd64ec65333c1ab5b04a042"
+      },
+      {
+        "path": "src/algorithms/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ebebcfa515a1c5fa394cc67984709d9d4a73d90a",
+        "size": 52826,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/ebebcfa515a1c5fa394cc67984709d9d4a73d90a"
+      },
+      {
+        "path": "src/algorithms/dft_imreg.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "08379b4a38c7c94ff1b535b6238f558e939d6a05",
+        "size": 34932,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/08379b4a38c7c94ff1b535b6238f558e939d6a05"
+      },
+      {
+        "path": "src/algorithms/stacking_algorithms",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "5e47d0e55d0f167d71b7c7c2b8747347407ac919",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/5e47d0e55d0f167d71b7c7c2b8747347407ac919"
+      },
+      {
+        "path": "src/algorithms/stacking_algorithms/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "size": 0,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "src/algorithms/stacking_algorithms/cpu.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6bb5be2ddf4a5673e6cf44d7bceb0400c3446ea4",
+        "size": 29894,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/6bb5be2ddf4a5673e6cf44d7bceb0400c3446ea4"
+      },
+      {
+        "path": "src/algorithms/stacking_algorithms/ocl.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "36e3535185985eca76da0e982b7f69420e373bcf",
+        "size": 72469,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/36e3535185985eca76da0e982b7f69420e373bcf"
+      },
+      {
+        "path": "src/cli.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b28ed6f5be9d3481f4e58fc8e4b5d0edf224f3b1",
+        "size": 14585,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/b28ed6f5be9d3481f4e58fc8e4b5d0edf224f3b1"
+      },
+      {
+        "path": "src/compute.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "70405291fd5359d10311c3afef5acc85858454f6",
+        "size": 18284,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/70405291fd5359d10311c3afef5acc85858454f6"
+      },
+      {
+        "path": "src/config.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "39488ff7d06bab5ed5077e39e5278e2fe236cf48",
+        "size": 4105,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/39488ff7d06bab5ed5077e39e5278e2fe236cf48"
+      },
+      {
+        "path": "src/run.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "28d9d8cb3f0831f187cbeae8b9dd7d7b98a64682",
+        "size": 7099,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/28d9d8cb3f0831f187cbeae8b9dd7d7b98a64682"
+      },
+      {
+        "path": "src/settings.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1295b087dc3d3c00b7d40d7d1c0868b5f714c12d",
+        "size": 748,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/1295b087dc3d3c00b7d40d7d1c0868b5f714c12d"
+      },
+      {
+        "path": "src/updater.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9b2c08a8cb9c28bf323b9b29a15952065235f26d",
+        "size": 11621,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/9b2c08a8cb9c28bf323b9b29a15952065235f26d"
+      },
+      {
+        "path": "src/utilities.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d126b5a891b5c7d243240b70140ec7e12bb319d9",
+        "size": 479,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/d126b5a891b5c7d243240b70140ec7e12bb319d9"
+      },
+      {
+        "path": "tests",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "aa91f32ab00bec24b09b7cfea10b06705c730c3b",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/aa91f32ab00bec24b09b7cfea10b06705c730c3b"
+      },
+      {
+        "path": "tests/low_res_images",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "88946ebe8b98644792f04f6ba1030b335b377552",
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/trees/88946ebe8b98644792f04f6ba1030b335b377552"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0356.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3ad656d983ac1d69e92bd716814610b7756a7762",
+        "size": 244024,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/3ad656d983ac1d69e92bd716814610b7756a7762"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0358.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2474c5ff7b14f147d63a69d29945a8df05992ef1",
+        "size": 260332,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/2474c5ff7b14f147d63a69d29945a8df05992ef1"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0359.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6267af40c56295e90ff7ef773214ed0c85964ab4",
+        "size": 260911,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/6267af40c56295e90ff7ef773214ed0c85964ab4"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0360.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "808157ef2fdfe906425ab6965aa13915ea3fd634",
+        "size": 265717,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/808157ef2fdfe906425ab6965aa13915ea3fd634"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0361.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e939675611716a1d99fbb6d39ec782fddfed0cdc",
+        "size": 270196,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/e939675611716a1d99fbb6d39ec782fddfed0cdc"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0362.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "220874772bfc83f264e94220bb8c8bcd312678d6",
+        "size": 270519,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/220874772bfc83f264e94220bb8c8bcd312678d6"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0363.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7d02954e664c213116641e60afd28aed804b21d1",
+        "size": 271001,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/7d02954e664c213116641e60afd28aed804b21d1"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0365.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "57062f43bc61e8cf7bac6a19857ded2d6747eebe",
+        "size": 286156,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/57062f43bc61e8cf7bac6a19857ded2d6747eebe"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0366.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c65475fdca340288aa622a86de026705e7ac1c7c",
+        "size": 287576,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/c65475fdca340288aa622a86de026705e7ac1c7c"
+      },
+      {
+        "path": "tests/low_res_images/DSC_0367.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "04e29259f03ce1970361788fb6641a56241b486a",
+        "size": 289949,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/04e29259f03ce1970361788fb6641a56241b486a"
+      },
+      {
+        "path": "tests/ref_img.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cd818a96345367430f4793bf1a05c22a3ee56567",
+        "size": 5893767,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/cd818a96345367430f4793bf1a05c22a3ee56567"
+      },
+      {
+        "path": "tests/ref_img.nef",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f909820a1cd3d285650b1dc76a4226644d59faa2",
+        "size": 17265464,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/f909820a1cd3d285650b1dc76a4226644d59faa2"
+      },
+      {
+        "path": "tests/test_ImageLoadingHandler.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b0f6a64956782d8516821e55a70515859121e822",
+        "size": 5221,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/b0f6a64956782d8516821e55a70515859121e822"
+      },
+      {
+        "path": "tests/test_algorithm_API.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a00774c1836ebd623cdfb69ca8cf052f46fdfcee",
+        "size": 34287,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/a00774c1836ebd623cdfb69ca8cf052f46fdfcee"
+      },
+      {
+        "path": "tests/test_breathing.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8203295e6ad37566fa874b1d1b51e860be7def59",
+        "size": 24094,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/8203295e6ad37566fa874b1d1b51e860be7def59"
+      },
+      {
+        "path": "tests/test_cli.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cf0440932de6d04fe14bbe0503c91f75e664b8c2",
+        "size": 9211,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/cf0440932de6d04fe14bbe0503c91f75e664b8c2"
+      },
+      {
+        "path": "tests/test_compute.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4e011f79cdf669ef2648647f38757b67618199bc",
+        "size": 12381,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/4e011f79cdf669ef2648647f38757b67618199bc"
+      },
+      {
+        "path": "tests/test_gpu.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3a67da9e637d0984b2f86c9a89b8ba33c5bcdd62",
+        "size": 13583,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/3a67da9e637d0984b2f86c9a89b8ba33c5bcdd62"
+      },
+      {
+        "path": "tests/test_gui.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e7299d9c0476bb06849ee5a0a237d1bf8f67cd63",
+        "size": 10518,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/e7299d9c0476bb06849ee5a0a237d1bf8f67cd63"
+      },
+      {
+        "path": "tests/test_hybrid.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c63b20ca830c0e83795a12be4f1321eac1a03bcf",
+        "size": 12506,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/c63b20ca830c0e83795a12be4f1321eac1a03bcf"
+      },
+      {
+        "path": "tests/test_updater.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7d9b41fb55e96bae77b0c13f0f7defa0ad3df4f2",
+        "size": 6099,
+        "url": "https://api.github.com/repos/noah-peeters/ChimpStackr/git/blobs/7d9b41fb55e96bae77b0c13f0f7defa0ad3df4f2"
+      }
+    ],
+    "truncated": false
+  }
+}

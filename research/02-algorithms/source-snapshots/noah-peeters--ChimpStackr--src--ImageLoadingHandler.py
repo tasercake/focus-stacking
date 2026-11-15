@@ -1,0 +1,303 @@
+"""
+    Class that handles loading/saving of RAW/other formats.
+    If images are of a regular filetype (jpg, png, ...); they are opened using opencv.
+    Else use rawpy to load RAW image.
+"""
+import os
+import logging
+from io import BytesIO
+import rawpy
+import cv2
+import imageio.v2 as imageio
+import numpy as np
+
+from src.config import SUPPORTED_IMAGE_READ_FORMATS, SUPPORTED_RAW_FORMATS
+
+logger = logging.getLogger(__name__)
+
+# EXIF orientation tag values → rotation operations
+# See: https://sirv.com/help/articles/rotate-photos-to-be-upright/
+_EXIF_ORIENTATION_OPS = {
+    1: None,                          # Normal
+    2: (1, None),                     # Flipped horizontally
+    3: (None, cv2.ROTATE_180),        # Rotated 180
+    4: (0, None),                     # Flipped vertically
+    5: (1, cv2.ROTATE_90_CLOCKWISE),  # Transposed
+    6: (None, cv2.ROTATE_90_CLOCKWISE),       # Rotated 90 CW
+    7: (1, cv2.ROTATE_90_COUNTERCLOCKWISE),   # Transverse
+    8: (None, cv2.ROTATE_90_COUNTERCLOCKWISE), # Rotated 90 CCW
+}
+
+
+def _read_exif_orientation(path):
+    """Read EXIF orientation tag from an image file.
+
+    Uses PIL (available via Pillow/PySide6) to read just the EXIF data
+    without loading the full image. Returns orientation int (1-8) or None.
+    """
+    try:
+        from PIL import Image
+        from PIL.ExifTags import Base as ExifBase
+        with Image.open(path) as pil_img:
+            exif = pil_img.getexif()
+            if exif:
+                return exif.get(ExifBase.Orientation, None)
+    except Exception:
+        pass
+    return None
+
+
+def _apply_exif_orientation(img, orientation):
+    """Apply EXIF orientation transform to a numpy BGR image.
+
+    Handles all 8 EXIF orientation values including rotations and flips.
+    """
+    if orientation is None or orientation not in _EXIF_ORIENTATION_OPS:
+        return img
+    ops = _EXIF_ORIENTATION_OPS[orientation]
+    if ops is None:
+        return img
+
+    flip_code, rotate_code = ops
+    if flip_code is not None:
+        img = cv2.flip(img, flip_code)
+    if rotate_code is not None:
+        img = cv2.rotate(img, rotate_code)
+    return img
+
+
+class ImageLoadingHandler:
+    def __init__(self, supported_formats=None, supported_raw=None):
+        self.supported_formats = SUPPORTED_IMAGE_READ_FORMATS if supported_formats is None else supported_formats
+        self.supported_raw = SUPPORTED_RAW_FORMATS if supported_raw is None else supported_raw
+
+    def is_supported(self, path):
+        """Check if a file path has a supported image extension."""
+        _, ext = os.path.splitext(path)
+        ext = ext.lstrip(".")
+        return (ext.lower() in self.supported_formats
+                or ext.upper() in self.supported_raw)
+
+    def read_image_from_path(self, path):
+        """
+        Load src image from path to BGR 2D numpy array.
+        Applies EXIF orientation automatically.
+        Returns None if loading fails.
+        """
+        if not os.path.isfile(path):
+            logger.error("File not found: %s", path)
+            return None
+
+        _, extension = os.path.splitext(path)
+        extension = extension[1:]
+
+        if extension.lower() in self.supported_formats:
+            try:
+                # Read EXIF orientation before OpenCV load (cv2 ignores EXIF)
+                orientation = _read_exif_orientation(path)
+                img = cv2.imread(path, -1)
+                if img is None:
+                    logger.error("cv2.imread returned None for: %s", path)
+                    return None
+                return _apply_exif_orientation(img, orientation)
+            except Exception as e:
+                logger.error("Failed to load image %s: %s", path, e)
+                return None
+        elif extension.upper() in self.supported_raw:
+            return self._load_raw(path)
+        elif extension.lower() == "npy":
+            try:
+                return np.load(path, allow_pickle=False)
+            except Exception as e:
+                logger.error("Failed to load npy %s: %s", path, e)
+                return None
+        else:
+            logger.warning("Unsupported format: %s", extension)
+            return None
+
+    def _load_raw(self, path):
+        """Load a RAW image file."""
+        try:
+            with rawpy.imread(path) as raw:
+                processed = None
+                try:
+                    thumb = raw.extract_thumb()
+                except (rawpy.LibRawError, rawpy.LibRawNonFatalError):
+                    processed = raw.postprocess(use_camera_wb=True)
+                else:
+                    if thumb.format == rawpy.ThumbFormat.JPEG:
+                        processed = imageio.imread(BytesIO(thumb.data))
+                    elif thumb.format == rawpy.ThumbFormat.BITMAP:
+                        processed = thumb.data
+
+                if processed is None:
+                    logger.error("Failed to extract image data from RAW: %s", path)
+                    return None
+
+                processed = cv2.cvtColor(processed, cv2.COLOR_RGB2BGR)
+                return processed
+        except Exception as e:
+            logger.error("Failed to load RAW image %s: %s", path, e)
+            return None
+
+    def read_image_as_float32(self, path):
+        """
+        Load image and convert to float32 BGR.
+        Applies EXIF orientation automatically.
+        For 8-bit images: values 0-255
+        For 16-bit images: values scaled to 0-255 range
+        For RAW: full postprocessed output as float32
+        """
+        if not os.path.isfile(path):
+            logger.error("File not found: %s", path)
+            return None
+
+        _, extension = os.path.splitext(path)
+        ext_lower = extension[1:].lower()
+
+        if ext_lower in self.supported_formats:
+            try:
+                # Read EXIF orientation before OpenCV load
+                orientation = _read_exif_orientation(path)
+                # IMREAD_UNCHANGED preserves 16-bit depth
+                img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+                if img is None:
+                    logger.error("cv2.imread returned None for: %s", path)
+                    return None
+                img = _apply_exif_orientation(img, orientation)
+                return self._to_float32_bgr(img)
+            except Exception as e:
+                logger.error("Failed to load image %s: %s", path, e)
+                return None
+        elif extension[1:].upper() in self.supported_raw:
+            return self._load_raw_float32(path)
+        elif ext_lower == "npy":
+            try:
+                arr = np.load(path, allow_pickle=False)
+                return arr.astype(np.float32)
+            except Exception as e:
+                logger.error("Failed to load npy %s: %s", path, e)
+                return None
+        else:
+            logger.warning("Unsupported format: %s", extension)
+            return None
+
+    def read_image_native(self, path):
+        """
+        8-bit sources as uint8 BGR (4x less data to move, e.g. to the GPU);
+        everything else as float32 BGR, exactly like read_image_as_float32.
+        Applies EXIF orientation.
+        """
+        _, extension = os.path.splitext(path)
+        if extension[1:].lower() in self.supported_formats:
+            try:
+                orientation = _read_exif_orientation(path)
+                img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+                if img is not None and img.dtype == np.uint8:
+                    if img.ndim == 2:
+                        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+                    elif img.shape[2] == 4:
+                        img = np.ascontiguousarray(img[:, :, :3])
+                    return _apply_exif_orientation(img, orientation)
+            except Exception as e:
+                logger.error("Failed to load image %s: %s", path, e)
+        return self.read_image_as_float32(path)
+
+    def read_image_as_gray_u8(self, path):
+        """
+        Load image as 8-bit grayscale (for alignment estimation).
+        Much faster and ~12x smaller than read_image_as_float32 for JPEGs
+        (decoded straight to luma). Applies EXIF orientation.
+        """
+        _, extension = os.path.splitext(path)
+        if extension[1:].lower() in self.supported_formats:
+            try:
+                orientation = _read_exif_orientation(path)
+                img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+                if img is not None:
+                    return _apply_exif_orientation(img, orientation)
+            except Exception as e:
+                logger.error("Failed to load image %s: %s", path, e)
+        # RAW, .npy and anything cv2 can't decode directly
+        img = self.read_image_as_float32(path)
+        if img is None:
+            return None
+        if img.ndim == 3:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        return np.clip(img, 0, 255).astype(np.uint8)
+
+    def _to_float32_bgr(self, img):
+        """Convert any loaded image to float32 BGR in 0-255 range."""
+        if img.dtype == np.uint16:
+            # 16-bit: scale to 0-255 range as float32
+            img = img.astype(np.float32) * (255.0 / 65535.0)
+        elif img.dtype == np.float32 or img.dtype == np.float64:
+            # HDR/float: check a small sample to detect 0-1 range
+            # (avoids expensive full-array img.max() scan on 24MP images)
+            sample_max = img.flat[:1000].max() if img.size > 1000 else img.max()
+            if sample_max <= 1.0:
+                img = img.astype(np.float32) * 255.0
+            else:
+                img = img.astype(np.float32)
+        else:
+            img = img.astype(np.float32)
+
+        # Handle grayscale
+        if img.ndim == 2:
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        elif img.shape[2] == 4:
+            # BGRA -> BGR
+            img = img[:, :, :3]
+
+        return img
+
+    def _load_raw_float32(self, path):
+        """Load RAW file using rawpy with 16-bit output, return float32 BGR."""
+        try:
+            with rawpy.imread(path) as raw:
+                # Use full postprocessing for maximum quality
+                rgb16 = raw.postprocess(
+                    use_camera_wb=True,
+                    output_bps=16,
+                    no_auto_bright=True,
+                )
+                # Convert RGB16 -> float32 (0-255 range) -> BGR
+                img_f32 = rgb16.astype(np.float32) * (255.0 / 65535.0)
+                bgr = cv2.cvtColor(img_f32, cv2.COLOR_RGB2BGR)
+                return bgr
+        except Exception as e:
+            logger.error("Failed to load RAW image %s: %s", path, e)
+            # Fall back to old method
+            return self._load_raw_fallback_float32(path)
+
+    def _load_raw_fallback_float32(self, path):
+        """Fallback RAW loading using thumbnail extraction."""
+        try:
+            with rawpy.imread(path) as raw:
+                processed = None
+                try:
+                    thumb = raw.extract_thumb()
+                except (rawpy.LibRawError, rawpy.LibRawNonFatalError):
+                    processed = raw.postprocess(use_camera_wb=True)
+                else:
+                    if thumb.format == rawpy.ThumbFormat.JPEG:
+                        processed = imageio.imread(BytesIO(thumb.data))
+                    elif thumb.format == rawpy.ThumbFormat.BITMAP:
+                        processed = thumb.data
+
+                if processed is None:
+                    return None
+
+                bgr = cv2.cvtColor(processed, cv2.COLOR_RGB2BGR)
+                return bgr.astype(np.float32)
+        except Exception:
+            return None
+
+    @staticmethod
+    def compute_sharpness(image):
+        """Compute Laplacian variance as a sharpness metric (higher = sharper)."""
+        if image is None:
+            return 0.0
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        return cv2.Laplacian(gray, cv2.CV_64F).var()
+
