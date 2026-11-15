@@ -193,9 +193,13 @@ def test_prepare_rejects_missing_aqua_before_dispatch(tmp_path, monkeypatch):
         calls.append(command)
         return SimpleNamespace(returncode=0 if "id -u" in command else 1, stdout="501\n", stderr="no GUI domain")
     monkeypatch.setattr(vm, "_ssh", ssh)
-    with pytest.raises(RuntimeError, match="Aqua"):
+    clock = [0.0]
+    monkeypatch.setattr("stack_conformance.gui_vm.time.monotonic", lambda: clock[0])
+    monkeypatch.setattr("stack_conformance.gui_vm.time.sleep", lambda seconds: clock.__setitem__(0, clock[0] + seconds))
+    with pytest.raises(RuntimeError, match="Aqua.*120s"):
         vm._preflight()
     assert not any("uv sync" in command for command in calls)
+    assert clock[0] == 120
 
 
 def test_effective_command_overrides_are_forwarded_with_guest_paths(tmp_path):
@@ -321,3 +325,23 @@ def test_preflight_records_guest_versions_and_sip_without_adding_a_security_gate
     assert metadata["guest"]["swift_version"] == "Apple Swift version 6.3.3"
     assert "disabled" in metadata["guest"]["sip_status"]
     assert metadata["checks"]["aqua"] is True
+
+
+def test_preflight_waits_for_aqua_after_ssh_is_already_available(tmp_path, monkeypatch):
+    from stack_conformance.gui_vm import TartGuiVM
+    vm = TartGuiVM(config(), tmp_path, tmp_path / "run")
+    attempts = []
+    sleeps = []
+    def ssh(command, **kwargs):
+        if "launchctl print gui/" in command:
+            attempts.append(command)
+            return SimpleNamespace(returncode=0 if len(attempts) == 3 else 1, stdout="", stderr="not ready")
+        output = "501" if "id -u" in command else "Darwin arm64" if "uname" in command else "available"
+        return SimpleNamespace(returncode=0, stdout=output, stderr="")
+    monkeypatch.setattr(vm, "_ssh", ssh)
+    monkeypatch.setattr("stack_conformance.gui_vm.time.sleep", lambda seconds: sleeps.append(seconds))
+    vm._preflight()
+    metadata = json.loads((vm.output / "vm-preflight.json").read_text())
+    assert metadata["checks"]["aqua"] is True
+    assert metadata["guest"]["aqua_attempts"] == 3
+    assert sleeps == [1, 1]

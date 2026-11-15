@@ -221,6 +221,19 @@ class TartGuiVM:
             time.sleep(1)
         raise RuntimeError(f"GUI VM SSH did not become ready within 180s: {error}")
 
+    def _wait_for_aqua(self, uid, timeout=120):
+        deadline = time.monotonic() + timeout
+        self._aqua_attempts = 0
+        while time.monotonic() < deadline:
+            self._aqua_attempts += 1
+            ready = self._ssh("/bin/launchctl print gui/" + uid, timeout=10, check=False)
+            if ready.returncode == 0:
+                return self._aqua_attempts
+            if self._aqua_attempts == 1:
+                print("GUI VM: SSH ready; waiting for guest Aqua login", flush=True)
+            time.sleep(min(1, max(0, deadline - time.monotonic())))
+        raise RuntimeError(f"GUI VM Aqua session did not become ready within {timeout}s; sign in as {self.user} in the guest desktop and check automatic login")
+
     def _preflight(self):
         metadata = {"vm": self.name, "host": {"os": platform.system(), "architecture": platform.machine()},
                     "guest": {"ssh_user": self.user}, "checks": {}}
@@ -230,9 +243,9 @@ class TartGuiVM:
                 raise RuntimeError("GUI VM SSH user must be a non-root logged-in desktop user")
             self._uid = uid
             metadata["guest"]["aqua_uid"] = int(uid)
-            metadata["checks"]["aqua"] = self._ssh("/bin/launchctl print gui/" + uid, timeout=20, check=False).returncode == 0
-            if not metadata["checks"]["aqua"]:
-                raise RuntimeError("GUI VM has no logged-in Aqua session; provision guest login before testing")
+            metadata["checks"]["aqua"] = False
+            metadata["guest"]["aqua_attempts"] = self._wait_for_aqua(uid)
+            metadata["checks"]["aqua"] = True
             architecture = self._ssh("/usr/bin/uname -s -m", timeout=20).stdout.split()
             metadata["checks"]["native_arm64"] = architecture == ["Darwin", "arm64"]
             if not metadata["checks"]["native_arm64"]:
@@ -252,6 +265,7 @@ class TartGuiVM:
                 result = self._ssh(command, timeout=30, check=False)
                 metadata["guest"][key] = result.stdout.strip() if result.returncode == 0 else "unavailable: " + result.stderr.strip()
         finally:
+            metadata["guest"]["aqua_attempts"] = getattr(self, "_aqua_attempts", 0)
             (self.output / "vm-preflight.json").write_text(json.dumps(metadata, indent=2) + "\n")
 
     def _acquire_lease(self):
