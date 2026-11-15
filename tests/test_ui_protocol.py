@@ -190,3 +190,98 @@ def test_select_uses_advertised_show_menu_action_for_new_dialog(tmp_path):
     assert not driver.popup
     assert [(command, values.get('action')) for command, values in driver.actions
             if command == 'action'] == [('action', 'AXShowMenu')]
+
+
+def test_select_uses_native_typeahead_when_open_popup_has_unreadable_children(tmp_path):
+    from types import SimpleNamespace
+    from stack_conformance.macos_ui import MacOSUISession
+
+    class UnreadablePopupDriver(MacOSUISession):
+        def __init__(self):
+            self.directory = tmp_path
+            self.process = SimpleNamespace(poll=lambda: None)
+            self.expanded = False
+            self.value = 'Standard'
+            self.input = []
+            self.close_snapshots = 0
+            self.return_sent = False
+            self.expanded_observations = []
+
+        def _request(self, command, **values):
+            if command == 'snapshot':
+                if self.return_sent:
+                    self.close_snapshots += 1
+                    if self.close_snapshots == 2:
+                        self.expanded = False
+                nodes = [{'id': 'alignment', 'role': 'AXMenuButton', 'title': self.value,
+                          'path': [1, 0], 'size': [282, 30]}]
+                if self.expanded:
+                    nodes += [{'path': [0], 'role': 'AXWindow', 'subrole': 'AXDialog',
+                               'position': [1036, 507], 'size': [282, 202]}, {'path': [0, 0]}]
+                return {'nodes': nodes}
+            if command == 'attributes':
+                self.expanded_observations.append(self.expanded)
+                return {'_AXActions': ['AXShowMenu'], 'AXExpanded': self.expanded}
+            if command == 'action':
+                self.expanded = True
+                return {'performed': 'AXShowMenu'}
+            if command == 'text':
+                assert self.expanded
+                self.input.append(('text', values['text']))
+                self.value = values['text']
+                return {'sent': True}
+            if command == 'key':
+                assert values['key'] == 'return'
+                self.input.append(('key', values['key']))
+                self.return_sent = True
+                return {'sent': True}
+            assert command == 'screenshot', f'Unexpected input route: {command}'
+            return {'path': values['path']}
+
+    driver = UnreadablePopupDriver()
+    driver.select('alignment', 'Focus breathing', timeout=0.5)
+    assert driver.input == [('text', 'Focus breathing'), ('key', 'return')]
+    assert driver.value == 'Focus breathing'
+    assert driver.expanded is False
+    assert driver.close_snapshots == 2
+    assert driver.expanded_observations[-2:] == [True, False]
+
+
+def test_select_never_types_without_proof_of_open_unreadable_popup(tmp_path):
+    import pytest
+    from types import SimpleNamespace
+    from stack_conformance.macos_ui import MacOSUISession
+
+    class UnprovenPopupDriver(MacOSUISession):
+        def __init__(self, expanded, popup, known_target=True):
+            self.directory = tmp_path
+            self.process = SimpleNamespace(poll=lambda: None)
+            self.expanded, self.popup, self.known_target = expanded, popup, known_target
+            self.input = []
+
+        def _request(self, command, **values):
+            if command == 'snapshot':
+                nodes = ([{'id': 'alignment', 'role': 'AXMenuButton', 'title': 'Standard',
+                           'path': [1, 0], 'size': [282, 30]}] if self.known_target else [])
+                if self.popup:
+                    nodes += [{'path': [0], 'role': 'AXWindow', 'subrole': 'AXDialog',
+                               'size': [282, 202]}, {'path': [0, 0]}]
+                return {'nodes': nodes}
+            if command == 'attributes':
+                return {'_AXActions': ['AXShowMenu'], 'AXExpanded': self.expanded}
+            if command == 'action':
+                return {'performed': 'AXShowMenu'}
+            if command == 'screenshot':
+                return {'path': values['path']}
+            self.input.append(command)
+            raise AssertionError(f'Unproven popup received input: {command}')
+
+    for expanded, popup in ((False, True), (None, True), (True, False)):
+        driver = UnprovenPopupDriver(expanded, popup)
+        with pytest.raises(TimeoutError, match='visible popup option'):
+            driver.select('alignment', 'Focus breathing', timeout=0.01)
+        assert driver.input == []
+    driver = UnprovenPopupDriver(True, True, known_target=False)
+    with pytest.raises(AssertionError, match='Expected one UI element'):
+        driver.select('alignment', 'Focus breathing', timeout=0.01)
+    assert driver.input == []

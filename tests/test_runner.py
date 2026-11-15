@@ -106,3 +106,15 @@ def test_runner_persists_portable_output_names(tmp_path):
         ctx.record_output(path, "image")
     results = run_cases([Case("output", "unit", output)], target=None, output=tmp_path)
     assert results[0].outputs == {"image": "nested/result.png"}
+
+
+def test_junit_nodes_follow_case_status(tmp_path):
+    from xml.etree import ElementTree as ET
+    from stack_conformance.model import CaseResult
+    from stack_conformance.runner import write_reports
+    write_reports([CaseResult("failed", "unit", "failed", 0),
+                   CaseResult("unsupported", "unit", "unsupported", 0, error="No guest GPU", reason="No guest GPU")], tmp_path)
+    suite = ET.parse(tmp_path / "junit.xml").getroot()
+    assert suite.find("testcase[@name='failed']/failure") is not None
+    assert suite.find("testcase[@name='unsupported']/failure") is None
+    assert suite.find("testcase[@name='unsupported']/skipped").get("message") == "No guest GPU"

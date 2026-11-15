@@ -146,3 +146,14 @@ def test_pending_requires_nonempty_explicit_host_parity_request_list(requests):
         notes['host_parity_requests'] = requests
     with pytest.raises(ValueError, match='host_parity_requests'):
         merge_case_results([], [record('pending', status='pending', notes=notes)], ['pending'])
+
+
+@pytest.mark.parametrize('status', ['passed', 'pending'])
+def test_success_or_pending_verdict_rejects_nonempty_error(status):
+    from stack_conformance.vm_results import merge_case_results
+
+    notes = ({'host_verification_pending': True,
+              'host_parity_requests': [{'method': 'hybrid'}]} if status == 'pending' else {})
+    with pytest.raises(ValueError, match='(?i)error|contradict'):
+        merge_case_results([], [record('inconsistent', status=status,
+                                      error='AssertionError: wrong pixels', notes=notes)], ['inconsistent'])

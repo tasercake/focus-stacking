@@ -34,12 +34,25 @@ def result_row(snapshot, method_label):
     return matches[0]
 
 
-def _select_result(ui, method_label):
-    row = result_row(ui.snapshot(), method_label)
-    ui.click({'path': row['path']})
+def _wait_for_result(ui, method_label):
     ui.wait(lambda snap: f'{method_label} result' in str(_node(snap, 'status').get('value', ''))
             and _node(snap, 'export.start').get('enabled'),
             description=f'retained {method_label} result selected')
+
+
+def _select_result(ui, method_label):
+    row = result_row(ui.snapshot(), method_label)
+    ui.click({'path': row['path']})
+    _wait_for_result(ui, method_label)
+
+
+def _select_older_result(ui, current_label, older_label):
+    # An Accessibility provider can retain an unreadable proxy after row insertion.
+    # Focus the readable current row and use normal list keyboard navigation;
+    # the selected method and exact exported pixels remain the postconditions.
+    _select_result(ui, current_label)
+    ui.key('down')
+    _wait_for_result(ui, older_label)
 
 
 def validate_retained_exports(first, second, restored, expected_shape):
@@ -67,11 +80,11 @@ def _retained_results(ctx):
         ctx.record_output(first, 'retained-before')
         _prepare(ui, 'hybrid', 'Off')
         _stack(ui)
-        ui.wait(lambda snap: len(result_rows(snap)) == 2, description='second independent result retained')
+        _wait_for_result(ui, 'Hybrid')
         _select_result(ui, 'Hybrid')
         second = _export(ui, ctx.directory / 'replacement.tif')
         ctx.record_output(second, 'replacement')
-        _select_result(ui, 'Weighted Average')
+        _select_older_result(ui, 'Hybrid', 'Weighted Average')
         restored = _export(ui, ctx.directory / 'retained-after.tif')
         ctx.record_output(restored, 'retained-after')
         ctx.note('retained_results', validate_retained_exports(first, second, restored, fixture.shape))

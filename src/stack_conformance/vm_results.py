@@ -81,6 +81,8 @@ def merge_case_results(host_results, guest_results, ordered_selected_ids, *,
                 raise ValueError(f'Invalid evidence for case {identifier}')
             reason = str(data.get('reason') or '')
             error = str(data.get('error') or '')
+            if status in ('passed', 'pending') and error:
+                raise ValueError(f'{status} case contradicts its nonempty error: {identifier}')
             if status == 'passed' and notes.get('host_verification_pending'):
                 raise ValueError(f'passed case cannot retain host_verification_pending: {identifier}')
             if status == 'pending':

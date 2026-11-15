@@ -246,8 +246,9 @@ def write_reports(results, output, *, target=None, complete=True, selected_count
     for result in results:
         node = ET.SubElement(root, "testcase", name=result.id, classname=result.suite,
                              time=f"{result.duration:.4f}")
-        if result.error:
-            ET.SubElement(node, "failure", message=result.error.splitlines()[-1]).text = result.error
+        if result.status == "failed":
+            error = result.error or "Conformance case failed"
+            ET.SubElement(node, "failure", message=error.splitlines()[-1]).text = error
         if result.status == "unsupported":
             ET.SubElement(node, "skipped", message=result.reason or "Guest capability unavailable")
         elif result.status == "pending":

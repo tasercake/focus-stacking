@@ -144,10 +144,41 @@ class MacOSUISession:
             self._request("action", selector=control_selector, action="AXShowMenu")
         else:
             self.click(control_selector)
-        item = self.wait(option, timeout=timeout, description=f"visible popup option {value}")
-        self.click({"path": item["path"]})
-        self.wait(lambda snapshot: selected(find_node(snapshot, control_selector)) and option(snapshot) is None,
-                  timeout=timeout, description=f"committed popup selection {value}")
+        def choice(snapshot):
+            item = option(snapshot)
+            if item is not None:
+                return {"item": item}
+            current = find_node(snapshot, control_selector)
+            control_path = current["path"]
+            for popup in snapshot["nodes"]:
+                path = popup.get("path", [])
+                if not path or control_path[:len(path)] == path:
+                    continue
+                if not (popup.get("role") == "AXMenu" or
+                        popup.get("role") == "AXWindow" and popup.get("subrole") == "AXDialog"):
+                    continue
+                if len(popup.get("size", [])) != 2 or not all(size > 0 for size in popup["size"]):
+                    continue
+                children = [node for node in snapshot["nodes"]
+                            if len(node.get("path", [])) == len(path) + 1 and node["path"][:-1] == path]
+                if children and all(not node.get("role") for node in children):
+                    if self._request("attributes", selector=control_selector).get("AXExpanded") is True:
+                        return {"keyboard": True}
+            return None
+
+        route = self.wait(choice, timeout=timeout, description=f"visible popup option {value}")
+        if route.get("keyboard"):
+            self.text(value)
+            self.key("return")
+        else:
+            self.click({"path": route["item"]["path"]})
+
+        def committed(snapshot):
+            if not selected(find_node(snapshot, control_selector)) or option(snapshot) is not None:
+                return False
+            return not route.get("keyboard") or self._request("attributes", selector=control_selector).get("AXExpanded") is False
+
+        self.wait(committed, timeout=timeout, description=f"committed popup selection {value}")
 
     def focus(self, selector: str | dict[str, Any]) -> None:
         self._request("focus", selector=self._selector(selector))

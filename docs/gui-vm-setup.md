@@ -14,6 +14,14 @@ macOS image and its test environment, and a logged-in user. Install Tart with:
 brew install openai/tools/tart
 ```
 
+If Homebrew 7 rejects Tart's untrusted `softnet` dependency, trust that formula
+and repeat the installation:
+
+```sh
+brew trust --formula openai/tools/softnet
+brew install openai/tools/tart
+```
+
 The supported image is `ghcr.io/cirruslabs/macos-tahoe-base:latest`. Its download
 is approximately 27 GB compressed at the time of setup. Tart's
 [quick start](https://tart.run/quick-start/) documents image cloning and the

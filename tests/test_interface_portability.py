@@ -63,3 +63,44 @@ def test_unicode_save_name_exercises_cjk_accent_space_and_non_bmp():
     assert ' ' in UNICODE_EXPORT_NAME and 'é' in UNICODE_EXPORT_NAME
     assert any('\u4e00' <= char <= '\u9fff' for char in UNICODE_EXPORT_NAME)
     assert any(ord(char) > 0xffff for char in UNICODE_EXPORT_NAME)
+
+
+def test_old_result_remains_testable_when_native_ax_row_loses_attributes():
+    from types import SimpleNamespace
+    from stack_conformance.cases.interface_portability import _select_older_result
+
+    snapshot = {'nodes': [
+        {'id': 'results', 'role': 'AXList', 'path': [1]},
+        {'role': 'AXRow', 'path': [1, 0]},
+        {'role': 'AXStaticText', 'title': 'Hybrid\n4 frames', 'path': [1, 0, 0]},
+        {'path': [1, 1]},  # Observed old Qt AX row: visible, but attrs unavailable.
+        {'id': 'status', 'value': 'Hybrid result · 321 × 257'},
+        {'id': 'export.start', 'enabled': True},
+    ]}
+    actions = []
+    def key(name):
+        actions.append(('key', name))
+        assert name == 'down'
+        snapshot['nodes'][-2]['value'] = 'Weighted Average result · 311 × 251'
+    def wait(condition, **kwargs):
+        assert condition(snapshot), kwargs.get('description')
+    ui = SimpleNamespace(snapshot=lambda: snapshot,
+                         click=lambda selector: actions.append(('click', selector)),
+                         key=key, wait=wait)
+    _select_older_result(ui, 'Hybrid', 'Weighted Average')
+    assert actions == [('click', {'path': [1, 0]}), ('key', 'down')]
+
+
+def test_new_result_wait_rejects_old_export_enabled_before_new_job_finishes():
+    from types import SimpleNamespace
+    from stack_conformance.cases.interface_portability import _wait_for_result
+
+    snapshot = {'nodes': [{'id': 'status', 'value': 'Weighted Average result'},
+                          {'id': 'export.start', 'enabled': True}]}
+    observed = []
+    ui = SimpleNamespace(wait=lambda condition, **kwargs: observed.append(condition(snapshot)))
+    _wait_for_result(ui, 'Hybrid')
+    assert observed == [False]
+    snapshot['nodes'][0]['value'] = 'Hybrid result'
+    _wait_for_result(ui, 'Hybrid')
+    assert observed == [False, True]
