@@ -1,6 +1,6 @@
 [submodule "ChimpStackr"]
 	path = submodules/ChimpStackr
-	url = https://github.com/noah-peeters/ChimpStackr.git
+	url = https://github.com/tasercake/ChimpStackr.git
 [submodule "focus-stack"]
 	path = submodules/focus-stack
 	url = https://github.com/PetteriAimonen/focus-stack.git
