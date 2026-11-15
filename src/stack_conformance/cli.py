@@ -59,7 +59,7 @@ def _provenance(target, cases):
     suite_hash = hashlib.sha256()
     for path in sources:
         suite_hash.update(str(path.relative_to(project)).encode() + b"\0" + path.read_bytes())
-    return {"target": target.name, "target_root": str(target.root),
+    record = {"target": target.name, "target_root": str(target.root),
             "target_commit": git(["rev-parse", "HEAD"], target.root),
             "target_dirty": git(["status", "--porcelain"], target.root),
             "suite_commit": git(["rev-parse", "HEAD"], project),
@@ -70,6 +70,10 @@ def _provenance(target, cases):
             "python": sys.version, "platform": platform.platform(),
             "uv_lock_sha256": hashlib.sha256(lock.read_bytes()).hexdigest() if lock.exists() else None,
             "cases": [c.id for c in cases]}
+    if target.adapter == "chimpstackr-python":
+        from .adapters.chimpstackr import runtime_info
+        record["reference_runtime"] = runtime_info()
+    return record
 
 
 def main(argv=None):

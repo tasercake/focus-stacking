@@ -1,6 +1,7 @@
 """Native macOS UI driver. No target or UI framework dependencies."""
 from __future__ import annotations
 
+from contextlib import ExitStack
 import hashlib
 import json
 import os
@@ -278,12 +279,16 @@ class MacOSUISession:
 
     @staticmethod
     def _reap(process, timeout=5):
+        forced = False
+        if process is None:
+            return forced
         if process.poll() is None:
             try:
                 if os.getpgid(process.pid) == process.pid:
                     os.killpg(process.pid, signal.SIGTERM)
                 else:
                     process.terminate()
+                forced = True
                 process.wait(timeout=timeout)
             except subprocess.TimeoutExpired:
                 if os.getpgid(process.pid) == process.pid:
@@ -293,6 +298,7 @@ class MacOSUISession:
                 process.wait(timeout=5)
             except ProcessLookupError:
                 process.wait(timeout=5)
+        return forced
 
     def close(self) -> None:
         if getattr(self, "_closed", False):
@@ -306,35 +312,51 @@ class MacOSUISession:
                 lease.release()
 
     def _close_processes(self) -> None:
-        try:
-            if self.process.poll() is None and self._helper.poll() is None:
+        forced = False
+        with ExitStack() as cleanup:
+            for stream in (self._trace, self._stderr, *getattr(self, "_target_logs", ()),
+                           getattr(self._helper, "stdin", None), getattr(self._helper, "stdout", None)):
+                if stream is not None:
+                    cleanup.callback(stream.close)
+            cleanup.callback(self._reap, self._helper)
+            try:
+                if self.process.poll() is None and self._helper.poll() is None:
+                    try:
+                        self.key("w", ("command",))
+                        time.sleep(0.1)
+                        if self.process.poll() is None:
+                            snap = self.snapshot()
+                            for title in ("Quit Anyway", "Discard"):
+                                nodes = [node for node in snap["nodes"] if node.get("title") == title and node.get("role") == "AXButton"]
+                                if nodes:
+                                    self.click({"path": nodes[0]["path"]})
+                                    break
+                        self.process.wait(timeout=5)
+                    except (RuntimeError, TimeoutError, OSError, subprocess.TimeoutExpired):
+                        pass
+            finally:
                 try:
-                    self.key("w", ("command",))
-                    time.sleep(0.1)
-                    if self.process.poll() is None:
-                        snap = self.snapshot()
-                        for title in ("Quit Anyway", "Discard"):
-                            nodes = [node for node in snap["nodes"] if node.get("title") == title and node.get("role") == "AXButton"]
-                            if nodes:
-                                self.click({"path": nodes[0]["path"]})
-                                break
-                    self.process.wait(timeout=5)
-                except (RuntimeError, TimeoutError, OSError, subprocess.TimeoutExpired):
-                    pass
-        finally:
-            self._reap(self.process)
-            self._reap(self._helper)
-            self._trace.close()
-            self._stderr.close()
-            for stream in getattr(self, "_target_logs", ()):
-                stream.close()
+                    forced = self._reap(self.process)
+                finally:
+                    returncode = self.process.poll()
+                    expected_termination = forced and returncode in (-signal.SIGTERM, -signal.SIGKILL)
+                    status = "clean" if returncode == 0 else "forced" if expected_termination else "failed"
+                    (self.directory / "shutdown.json").write_text(json.dumps({
+                        "pid": self.pid if hasattr(self, "pid") else self.process.pid,
+                        "returncode": returncode, "forced": bool(forced), "status": status,
+                    }, indent=2) + "\n")
+        if returncode != 0 and not expected_termination:
+            raise RuntimeError(f"Native GUI target exited with status {returncode}; inspect {self.directory / 'shutdown.json'}")
 
     def __enter__(self) -> "MacOSUISession":
         try:
             self.wait(lambda snap: any(node.get("role") == "AXWindow" for node in snap["nodes"]), timeout=90, description="main window")
             self._request("raise")
-        except BaseException:
-            self.close()
+        except BaseException as error:
+            try:
+                self.close()
+            except Exception as cleanup_error:
+                error.add_note(f"UI shutdown also failed: {cleanup_error}")
             raise
         return self
 
@@ -343,9 +365,14 @@ class MacOSUISession:
             try:
                 (self.directory / "failure-tree.json").write_text(json.dumps(self.snapshot(), indent=2))
                 self.screenshot(self.directory / "failure.png")
-            except (RuntimeError, TimeoutError):
-                pass
-        self.close()
+            except Exception as diagnostics_error:
+                exc.add_note(f"UI failure diagnostics also failed: {diagnostics_error}")
+        try:
+            self.close()
+        except Exception as cleanup_error:
+            if exc is None:
+                raise
+            exc.add_note(f"UI shutdown also failed: {cleanup_error}")
 
 
 def open_session(command, *, cwd, env, directory, paths=(), settings_id="default"):

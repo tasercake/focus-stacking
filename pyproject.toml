@@ -24,9 +24,10 @@ stack-conformance = "stack_conformance:main"
 [project.optional-dependencies]
 chimpstackr = [
     "chimpstackr",
-    # Qt 6.9.1 through 6.12.0 have a native macOS AX regression (QTBUG-149612).
-    # Keep the reference runtime within ChimpStackr's supported dependency range.
-    "pyside6-essentials==6.9.0",
+    # This official immutable snapshot bundles Qt 6.12.1's native AX ownership fix.
+    # ChimpStackr's source and declared dependency range stay unchanged.
+    "pyside6-essentials @ https://download.qt.io/snapshots/ci/pyside/6.12/b920c23932946fddc7bb8969f221dd7cf1d7a8d4/pyside6/pyside6_essentials-6.12.0a1.dev1794566397-cp310-abi3-macosx_14_0_universal2.whl ; sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "shiboken6 @ https://download.qt.io/snapshots/ci/pyside/6.12/b920c23932946fddc7bb8969f221dd7cf1d7a8d4/pyside6/shiboken6-6.12.0a1.dev1794566397-cp310-abi3-macosx_14_0_universal2.whl ; sys_platform == 'darwin' and platform_machine == 'arm64'",
 ]
 
 [build-system]

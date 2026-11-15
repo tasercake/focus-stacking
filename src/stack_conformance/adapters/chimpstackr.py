@@ -20,6 +20,17 @@ _VALUE_OPTIONS = (
 _FLAG_OPTIONS = ('align', 'max_precision', 'quality_report', 'auto', 'auto_crop', 'measure', 'rotation_scale')
 
 
+def runtime_info():
+    """Report loaded reference libraries without creating a GUI application."""
+    try:
+        import PySide6
+        from PySide6 import QtCore
+    except ImportError as exc:
+        raise RuntimeError('Reference dependencies missing; run uv sync --extra chimpstackr --locked') from exc
+    return {'pyside': PySide6.__version__, 'qt': QtCore.qVersion(),
+            'qt_build': QtCore.QLibraryInfo.build()}
+
+
 class ChimpStackrAdapter:
     def __init__(self, target_root: str | Path, python_executable: str | Path = sys.executable):
         self.target_root = Path(target_root).resolve()

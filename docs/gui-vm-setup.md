@@ -106,6 +106,22 @@ and initialized ChimpStackr submodule to `/Users/admin/stack-conformance`, then
 runs `uv sync --locked --extra chimpstackr`. GUI jobs run through an `admin`
 LaunchAgent in `gui/<uid>`, not as a root daemon or an SSH background process.
 
+The reference runtime is pinned to the official Qt for Python CI revision
+`b920c23932946fddc7bb8969f221dd7cf1d7a8d4`. Its PySide package version is
+`6.12.0a1.dev1794566397`, but its loaded Qt version is **6.12.1**. This build
+contains the [upstream native Accessibility ownership fix](https://github.com/qt/qtbase/commit/b74d6cb3c5e8418602494ae549b60839d88ef858).
+Released Qt 6.12.0 invalidates table interfaces; older Qt 6.9.0 also has native
+Accessibility lifetime faults. Neither is a valid substitute for the locked
+runtime. The two official wheel URLs and SHA256 hashes are in `uv.lock`.
+Archive those runtime wheels with the lockfile and frozen baseline when making
+a long-term reference. An unavailable artifact is an environment error; do not
+silently select another runtime. This constraint belongs to the ChimpStackr
+reference adapter, not to portable conformance cases or future target apps.
+
+Run provenance records both PySide and actual Qt versions. Each GUI call also
+retains `shutdown.json`; an unexpected process failure, including a crash during
+finalization, fails the case even when its earlier pixel checks succeeded.
+
 ## Guest permissions
 
 The native helper needs Accessibility and permission to post input events.

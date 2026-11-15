@@ -286,3 +286,21 @@ assert not failures, failures
     assert worker['summary']['covered_branches'] == worker['summary']['num_branches'] == 2
     completed = [json.loads(line) for line in events.read_text().splitlines() if json.loads(line)['event'] == 'stack_complete']
     assert len(completed) == 1 and completed[0]['actual_backend'] == 'cpu'
+def test_reference_runtime_records_actual_qt_version_without_a_gui():
+    import PySide6
+    from PySide6 import QtCore
+    from stack_conformance.adapters.chimpstackr import runtime_info
+    details = runtime_info()
+    assert details["pyside"] == PySide6.__version__
+    assert details["qt"] == QtCore.qVersion()
+    assert details["qt_build"] == QtCore.QLibraryInfo.build()
+    assert QtCore.QCoreApplication.instance() is None
+
+
+def test_reference_runtime_missing_dependencies_has_setup_action(monkeypatch):
+    import sys
+    import pytest
+    from stack_conformance.adapters.chimpstackr import runtime_info
+    monkeypatch.setitem(sys.modules, "PySide6", None)
+    with pytest.raises(RuntimeError, match="uv sync --extra chimpstackr"):
+        runtime_info()

@@ -346,3 +346,133 @@ def test_lifecycle_uses_public_menu_state_when_progress_children_are_unreadable(
     assert [action['title'] for action in ui.actions if isinstance(action, dict)] == ['Pause', 'Resume', 'Stop']
     assert ui.starts == 2
     assert ui.state == 'done'
+
+
+def _shutdown_session(tmp_path, process):
+    import io
+    from types import SimpleNamespace
+    from stack_conformance.macos_ui import MacOSUISession
+
+    class Session(MacOSUISession):
+        def __enter__(self):
+            return self
+
+        def snapshot(self):
+            raise RuntimeError('Target has already exited')
+
+    session = Session.__new__(Session)
+    session.directory = tmp_path
+    session.process = process
+    session._helper = SimpleNamespace(pid=0, poll=lambda: 0, wait=lambda **_: 0,
+                                      stdin=io.StringIO(), stdout=io.StringIO())
+    session._trace, session._stderr = io.StringIO(), io.StringIO()
+    session._target_logs = (io.StringIO(), io.StringIO())
+    released = []
+    session._desktop_lease = SimpleNamespace(release=lambda: released.append(True))
+    return session, released
+
+
+def test_close_rejects_real_natural_nonzero_exit_and_records_shutdown(tmp_path):
+    import sys
+    import pytest
+
+    process = subprocess.Popen([sys.executable, '-c', 'raise SystemExit(7)'])
+    process.wait(timeout=5)
+    session, released = _shutdown_session(tmp_path, process)
+    with pytest.raises(RuntimeError, match='Native GUI target exited with status 7'):
+        session.close()
+    status = json.loads((tmp_path / 'shutdown.json').read_text())
+    assert status['returncode'] == 7
+    assert status['forced'] is False
+    assert status['status'] == 'failed'
+    assert released == [True]
+    assert all(stream.closed for stream in (session._trace, session._stderr, *session._target_logs,
+                                           session._helper.stdin, session._helper.stdout))
+
+
+def test_close_rejects_sigsegv_and_preserves_body_failure(tmp_path):
+    import signal
+    import pytest
+    from types import SimpleNamespace
+
+    process = SimpleNamespace(pid=12345, returncode=-signal.SIGSEGV,
+                              poll=lambda: -signal.SIGSEGV, wait=lambda **_: -signal.SIGSEGV)
+    session, released = _shutdown_session(tmp_path, process)
+    with pytest.raises(AssertionError, match='Original body failure') as raised:
+        with session:
+            raise AssertionError('Original body failure')
+    assert any('status -11' in note for note in raised.value.__notes__)
+    status = json.loads((tmp_path / 'shutdown.json').read_text())
+    assert status['returncode'] == -signal.SIGSEGV
+    assert status['forced'] is False
+    assert status['status'] == 'failed'
+    assert released == [True]
+    assert all(stream.closed for stream in (session._trace, session._stderr, *session._target_logs,
+                                           session._helper.stdin, session._helper.stdout))
+
+
+def test_close_records_intentional_harness_termination_separately(tmp_path):
+    import sys
+    import signal
+
+    process = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'], start_new_session=True)
+    try:
+        session, released = _shutdown_session(tmp_path, process)
+        session.close()
+        status = json.loads((tmp_path / 'shutdown.json').read_text())
+        assert status['returncode'] == -signal.SIGTERM
+        assert status['forced'] is True
+        assert status['status'] == 'forced'
+        assert released == [True]
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.wait(timeout=5)
+
+
+def test_close_releases_all_streams_and_lease_when_helper_cleanup_fails(tmp_path):
+    import pytest
+    from types import SimpleNamespace
+
+    process = SimpleNamespace(pid=12345, returncode=0, poll=lambda: 0, wait=lambda **_: 0)
+    session, released = _shutdown_session(tmp_path, process)
+
+    def reap(candidate, timeout=5):
+        if candidate is session._helper:
+            raise RuntimeError('Helper cleanup failed')
+        return False
+
+    session._reap = reap
+    with pytest.raises(RuntimeError, match='Helper cleanup failed'):
+        session.close()
+    assert released == [True]
+    assert all(stream.closed for stream in (session._trace, session._stderr, *session._target_logs,
+                                           session._helper.stdin, session._helper.stdout))
+
+
+def test_close_records_clean_zero_exit(tmp_path):
+    from types import SimpleNamespace
+
+    process = SimpleNamespace(pid=12345, returncode=0, poll=lambda: 0, wait=lambda **_: 0)
+    session, released = _shutdown_session(tmp_path, process)
+    session.close()
+    assert json.loads((tmp_path / 'shutdown.json').read_text()) == {
+        'pid': 12345, 'returncode': 0, 'forced': False, 'status': 'clean',
+    }
+    assert released == [True]
+
+
+def test_forced_cleanup_never_excuses_a_concurrent_sigsegv(tmp_path):
+    import signal
+    import pytest
+    from types import SimpleNamespace
+
+    process = SimpleNamespace(pid=12345, returncode=-signal.SIGSEGV,
+                              poll=lambda: -signal.SIGSEGV, wait=lambda **_: -signal.SIGSEGV)
+    session, _ = _shutdown_session(tmp_path, process)
+    session._reap = lambda *args, **kwargs: True
+    with pytest.raises(RuntimeError, match='status -11'):
+        session.close()
+    status = json.loads((tmp_path / 'shutdown.json').read_text())
+    assert status['forced'] is True
+    assert status['status'] == 'failed'
