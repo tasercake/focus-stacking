@@ -59,6 +59,8 @@ class Baseline:
                 record[name] = {"file": filename, "sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),
                                 "shape": list(pixels.shape), "dtype": str(pixels.dtype),
                                 "mean_limit": mean_limit, "peak_limit": peak_limit}
+                if Path(path).suffix.lower() == ".npy":
+                    record[name]["numeric"] = True
             self.manifest["cases"][case_id] = record
             self.manifest["case_suites"][case_id] = suite or case_id.split(".")[0]
             self.manifest["contracts"][case_id] = contract
@@ -78,6 +80,12 @@ class Baseline:
             assert actual.shape == reference.shape, f"output shape changed: {actual.shape} != {reference.shape}"
             assert actual.dtype == reference.dtype, f"output dtype changed: {actual.dtype} != {reference.dtype}"
             assert np.isfinite(actual).all(), "output contains nonfinite pixels"
+            if item.get("numeric"):
+                if actual.dtype.kind in "biu":
+                    assert np.array_equal(actual, reference), "numeric integer output changed"
+                else:
+                    assert np.allclose(actual, reference, rtol=1e-5, atol=1e-5), "numeric output changed"
+                continue
             scale = np.iinfo(actual.dtype).max if np.issubdtype(actual.dtype, np.integer) else 1.0
             error = np.abs(actual.astype(np.float64) - reference.astype(np.float64)) / scale
             assert error.mean() <= item["mean_limit"], f"mean pixel error {error.mean():.7f} exceeds {item['mean_limit']:.7f}"

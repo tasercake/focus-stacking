@@ -476,3 +476,115 @@ def test_forced_cleanup_never_excuses_a_concurrent_sigsegv(tmp_path):
     status = json.loads((tmp_path / 'shutdown.json').read_text())
     assert status['forced'] is True
     assert status['status'] == 'failed'
+
+
+def _live_shutdown_session(tmp_path):
+    from types import SimpleNamespace
+    import signal
+
+    process = SimpleNamespace(pid=12345, returncode=None)
+    process.poll = lambda: process.returncode
+
+    def wait(timeout=None):
+        if process.returncode is None:
+            raise subprocess.TimeoutExpired('native target', timeout)
+        return process.returncode
+
+    process.wait = wait
+    session, released = _shutdown_session(tmp_path, process)
+    session._helper.poll = lambda: None
+
+    def reap(candidate, timeout=5):
+        if candidate is process and process.returncode is None:
+            process.returncode = -signal.SIGTERM
+            return True
+        return False
+
+    session._reap = reap
+    return session, released
+
+
+def test_close_waits_for_published_enabled_confirmation_then_presses_once(tmp_path):
+    session, released = _live_shutdown_session(tmp_path)
+    keys, presses, snapshots = [], [], []
+    session.key = lambda key, modifiers: keys.append((key, modifiers))
+
+    def snapshot():
+        snapshots.append(True)
+        nodes = ([{'path': [0, 0]}] if len(snapshots) == 1 else
+                 [{'path': [0, 2], 'role': 'AXButton', 'title': 'Quit Anyway',
+                   'enabled': len(snapshots) >= 3}])
+        return {'nodes': nodes}
+
+    def click(selector, *, physical=True):
+        assert len(snapshots) == 3, 'Confirmation must be published and enabled before input'
+        assert physical is False, 'Close confirmation uses its native AX press action'
+        presses.append(selector)
+        session.process.returncode = 0
+
+    session.snapshot, session.click = snapshot, click
+    session.close()
+    assert keys == [('w', ('command',))]
+    assert len(presses) == 1
+    assert released == [True]
+    assert json.loads((tmp_path / 'shutdown.json').read_text())['status'] == 'clean'
+
+
+def test_close_skips_dialog_lookup_after_normal_exit(tmp_path):
+    session, released = _live_shutdown_session(tmp_path)
+    keys = []
+
+    def key(value, modifiers):
+        keys.append(value)
+        session.process.returncode = 0
+
+    def snapshot():
+        raise AssertionError('Exited application must not receive a dialog query')
+
+    session.key, session.snapshot = key, snapshot
+    session.close()
+    assert keys == ['w']
+    assert released == [True]
+    assert json.loads((tmp_path / 'shutdown.json').read_text())['status'] == 'clean'
+
+
+def test_close_records_native_input_failure_without_retrying(tmp_path):
+    session, released = _live_shutdown_session(tmp_path)
+    keys = []
+
+    def key(value, modifiers):
+        keys.append(value)
+        raise RuntimeError('Native close input failed')
+
+    session.key = key
+    session.close()
+    assert keys == ['w']
+    assert released == [True]
+    status = json.loads((tmp_path / 'shutdown.json').read_text())
+    assert status['status'] == 'forced'
+    assert status['close_error'] == 'Native close input failed'
+
+
+def test_scroll_event_targets_requested_viewport_before_native_post(tmp_path):
+    """Compile the real Swift event construction; never post host input."""
+    from pathlib import Path
+    from stack_conformance import macos_ui
+
+    source = Path(macos_ui.__file__).with_name('native_macos.swift').read_text()
+    operation = source.split('    if command == "scroll" {', 1)[1].split('        return ["scrolled":true]', 1)[0]
+    construction = '\n'.join(line for line in operation.splitlines()
+                             if 'let p =' not in line and 'let dy =' not in line)
+    # Only event construction is executed. Pointer movement and native posting
+    # stay outside this read-only SDK regression test.
+    construction = construction.replace('event?.post(tap:.cghidEventTap)', '')
+    assert 'pointer(' not in construction and '.post(' not in construction
+    script = tmp_path / 'scroll-construction.swift'
+    script.write_text('import CoreGraphics\n'
+                      'let inputSource = CGEventSource(stateID: .privateState)\n'
+                      'let dy = 120\n'
+                      'for p in [CGPoint(x:321,y:654), CGPoint(x:789,y:123)] {\n'
+                      + construction + '\n'
+                      'print("\\(event!.location.x),\\(event!.location.y),\\(event!.getIntegerValueField(.scrollWheelEventIsContinuous))")\n'
+                      '}\n')
+    result = subprocess.run(['swift', str(script)], capture_output=True, text=True, check=True)
+    assert result.stdout.splitlines() == ['321.0,654.0,1', '789.0,123.0,1'], 'Native scroll inherited stale pointer coordinates'

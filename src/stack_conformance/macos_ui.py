@@ -313,6 +313,7 @@ class MacOSUISession:
 
     def _close_processes(self) -> None:
         forced = False
+        close_error = None
         with ExitStack() as cleanup:
             for stream in (self._trace, self._stderr, *getattr(self, "_target_logs", ()),
                            getattr(self._helper, "stdin", None), getattr(self._helper, "stdout", None)):
@@ -323,17 +324,19 @@ class MacOSUISession:
                 if self.process.poll() is None and self._helper.poll() is None:
                     try:
                         self.key("w", ("command",))
-                        time.sleep(0.1)
-                        if self.process.poll() is None:
+                        deadline = time.monotonic() + 5
+                        while self.process.poll() is None and time.monotonic() < deadline:
                             snap = self.snapshot()
-                            for title in ("Quit Anyway", "Discard"):
-                                nodes = [node for node in snap["nodes"] if node.get("title") == title and node.get("role") == "AXButton"]
-                                if nodes:
-                                    self.click({"path": nodes[0]["path"]})
-                                    break
-                        self.process.wait(timeout=5)
-                    except (RuntimeError, TimeoutError, OSError, subprocess.TimeoutExpired):
-                        pass
+                            button = next((node for node in snap["nodes"]
+                                           if node.get("title") in ("Quit Anyway", "Discard")
+                                           and node.get("role") == "AXButton" and node.get("enabled") is True), None)
+                            if button is not None:
+                                self.click({"path": button["path"]}, physical=False)
+                                break
+                            time.sleep(min(0.05, max(0, deadline - time.monotonic())))
+                        self.process.wait(timeout=max(0, deadline - time.monotonic()))
+                    except (RuntimeError, TimeoutError, OSError, subprocess.TimeoutExpired) as error:
+                        close_error = str(error)
             finally:
                 try:
                     forced = self._reap(self.process)
@@ -341,10 +344,11 @@ class MacOSUISession:
                     returncode = self.process.poll()
                     expected_termination = forced and returncode in (-signal.SIGTERM, -signal.SIGKILL)
                     status = "clean" if returncode == 0 else "forced" if expected_termination else "failed"
-                    (self.directory / "shutdown.json").write_text(json.dumps({
-                        "pid": self.pid if hasattr(self, "pid") else self.process.pid,
-                        "returncode": returncode, "forced": bool(forced), "status": status,
-                    }, indent=2) + "\n")
+                    outcome = {"pid": self.pid if hasattr(self, "pid") else self.process.pid,
+                               "returncode": returncode, "forced": bool(forced), "status": status}
+                    if close_error is not None:
+                        outcome["close_error"] = close_error
+                    (self.directory / "shutdown.json").write_text(json.dumps(outcome, indent=2) + "\n")
         if returncode != 0 and not expected_termination:
             raise RuntimeError(f"Native GUI target exited with status {returncode}; inspect {self.directory / 'shutdown.json'}")
 

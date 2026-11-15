@@ -53,6 +53,19 @@ def test_coverage_gate_failure_is_visible_in_json_and_junit(tmp_path):
     assert root.find("testcase[@name='coverage.thresholds']/failure") is not None
 
 
+def test_scoped_gate_retains_raw_totals_and_names_its_basis(tmp_path):
+    import json
+    from stack_conformance.runner import write_reports, record_coverage
+    from stack_conformance.target import TargetSpec
+    write_reports([], tmp_path, target=TargetSpec("external", tmp_path, ("unused",)))
+    raw = {"line_percent": 60, "branch_percent": 40,
+           "scope": {"name": "macos-source", "line_percent": 100, "branch_percent": 100}}
+    assert record_coverage(tmp_path, raw, line_minimum=100, branch_minimum=100)
+    report = json.loads((tmp_path / "report.json").read_text())
+    assert report["coverage"]["line_percent"] == 60
+    assert report["coverage_gate"]["basis"] == "macos-source"
+
+
 def test_fail_fast_marks_unexecuted_cases_incomplete(tmp_path):
     from stack_conformance.model import Case
     from stack_conformance.runner import run_cases

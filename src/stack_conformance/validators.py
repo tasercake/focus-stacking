@@ -11,6 +11,8 @@ import tifffile
 def read_image(path: str | Path) -> np.ndarray:
     path = Path(path)
     assert path.is_file() and path.stat().st_size > 0, f"Missing or empty image: {path}"
+    if path.suffix.lower() == ".npy":
+        return np.load(path, allow_pickle=False)
     if path.suffix.lower() in (".tif", ".tiff"):
         return tifffile.imread(path)
     if path.suffix.lower() == ".png":

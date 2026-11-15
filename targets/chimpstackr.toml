@@ -2,8 +2,10 @@ schema_version = 1
 name = "chimpstackr-python-reference"
 root = "../submodules/ChimpStackr"
 adapter = "chimpstackr-python"
+coverage_scope = "chimpstackr-coverage.json"
 cli = ["{python}", "-m", "src.cli"]
 gui = ["{python}", "-m", "stack_conformance.adapters.chimpstackr_ui"]
+probe = ["{python}", "-m", "stack_conformance.adapters.chimpstackr_probe"]
 capabilities = ["cli", "gui", "cpu", "opencl", "png", "jpeg", "tiff", "exr"]
 
 [gui_vm]
@@ -11,6 +13,12 @@ name = "chimpstackr-conformance"
 ssh_user = "admin"
 guest_root = "/Users/admin/stack-conformance"
 ssh_identity = "~/.ssh/chimpstackr-conformance"
+
+[state]
+compute_cache = "{home}/device-cache"
+
+[services]
+updates = "CF_UI_UPDATE_FEED"
 
 [env]
 NUMBA_NUM_THREADS = "2"

@@ -63,6 +63,10 @@ the unchanged `src.run.main()` entry point. Its hooks are limited to:
 4. Installing the optional coverage/diagnostics observer on Qt-created worker
    thread entry boundaries. The original worker method runs unchanged, with its
    return value, exceptions, and prior profiling/tracing callbacks preserved.
+5. Accepting an optional update-feed URL through a declared endpoint hook. The
+   original network client and update UI run unchanged against a generated local
+   service. Rendered release-note text is exposed as read-only accessibility
+   description when the native text browser omits its value.
 
 The fourth hook is needed because Qt creates native threads outside Python's
 `threading.Thread` bootstrap. The reference observer supplies the same external
@@ -74,6 +78,12 @@ The reference submodule contains no source edits for these hooks. The adapter
 contains all framework-specific knowledge. A port supplies another launch
 adapter or implements the same identifiers directly in its native toolkit.
 
+Unreadable-image preview messages do not currently have stable native AX
+publication: hover status tips can replace the normal status text, and the
+empty-result CPU path reports cancellation rather than a worker-error dialog.
+This UI recovery sequence is a coverage gap, not a passing case. Real corrupt,
+partial and oversized input rejection remains covered through CLI tests.
+
 ## Semantic identifiers
 
 | Group | Examples |
@@ -83,6 +93,7 @@ adapter or implements the same identifiers directly in its native toolkit.
 | Viewer | `viewer`, `zoom`, `mode.view`, `mode.compare` |
 | Export | `export.start`, `export.format`, `export.depth`, `export.quality`, `export.compression`, `export.confirm` |
 | Preferences | `settings.theme`, `settings.device_mode`, `settings.gpu`, `settings.auto_updates`, `settings.prereleases`, `settings.lightroom.status` |
+| Updates | `updates.notes`, `updates.auto`, `updates.skip`, `updates.later`, `updates.download` |
 
 The complete reference mapping is `IDENTIFIER_CONTRACT` in the adapter. macOS
 native window wrappers may not expose a widget's identifier; readiness checks

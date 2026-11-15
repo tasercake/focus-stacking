@@ -253,6 +253,7 @@ func execute(_ request: [String: Any]) throws -> Any {
         let p = try center(element); pointer(p,.mouseMoved)
         let dy = request["dy"] as? Int ?? 0
         let event = CGEvent(scrollWheelEvent2Source:inputSource,units:.pixel,wheelCount:1,wheel1:Int32(dy),wheel2:0,wheel3:0)
+        event?.location = p
         event?.flags = []; event?.post(tap:.cghidEventTap)
         return ["scrolled":true]
     }

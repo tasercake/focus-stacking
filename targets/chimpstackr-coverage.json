@@ -1,0 +1,1061 @@
+{
+  "schema_version": 1,
+  "name": "macos-source-application",
+  "source_sha256": "c4bdcc78e95ccd3c62ec7c3375155a936ec026b42a9f8eeafe7ee48e88aba04a",
+  "target_commit": "046266223945cc1cbf8eacd295c00ee08d42d095",
+  "assumptions": [
+    "Darwin arm64",
+    "source launch, sys.frozen false",
+    "stock macOS without Linux procfs",
+    "CLI and GUI entrypoints; upstream Python API compatibility outside scope"
+  ],
+  "exclusions": [
+    {
+      "file": "config.py",
+      "ranges": [
+        [
+          102,
+          107
+        ]
+      ],
+      "category": "unused",
+      "reason": "AppConfig has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "ImageLoadingHandler.py",
+      "ranges": [
+        [
+          74,
+          79
+        ]
+      ],
+      "category": "unused",
+      "reason": "ImageLoadingHandler.is_supported has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "settings.py",
+      "ranges": [
+        [
+          21,
+          23
+        ]
+      ],
+      "category": "unused",
+      "reason": "get has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/ProgressLoggingHandler.py",
+      "ranges": [
+        [
+          7,
+          20
+        ]
+      ],
+      "category": "unused",
+      "reason": "Logger has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/API.py",
+      "ranges": [
+        [
+          94,
+          97
+        ]
+      ],
+      "category": "unused",
+      "reason": "LaplacianPyramid.configure has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/__init__.py",
+      "ranges": [
+        [
+          96,
+          98
+        ]
+      ],
+      "category": "unused",
+      "reason": "Algorithm.is_paused has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/__init__.py",
+      "ranges": [
+        [
+          249,
+          282
+        ]
+      ],
+      "category": "unused",
+      "reason": "Algorithm.align_image_pair has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "ranges": [
+        [
+          523,
+          543
+        ]
+      ],
+      "category": "unused",
+      "reason": "weighted_average_fuse_pair has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "ranges": [
+        [
+          546,
+          572
+        ]
+      ],
+      "category": "unused",
+      "reason": "weighted_average_fuse_multi has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "ranges": [
+        [
+          579,
+          613
+        ]
+      ],
+      "category": "unused",
+      "reason": "compute_depthmap_index has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "ranges": [
+        [
+          616,
+          641
+        ]
+      ],
+      "category": "unused",
+      "reason": "depthmap_fuse_multi has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          16,
+          27
+        ]
+      ],
+      "category": "unused",
+      "reason": "get_borderval has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          30,
+          39
+        ]
+      ],
+      "category": "unused",
+      "reason": "wrap_angle has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          63,
+          93
+        ]
+      ],
+      "category": "unused",
+      "reason": "_apodize has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          96,
+          110
+        ]
+      ],
+      "category": "unused",
+      "reason": "_logpolar_filter has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          113,
+          114
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_pcorr_shape has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          118,
+          126
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_angles has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          130,
+          142
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_lograd has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          145,
+          195
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_constraint_mask has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          315,
+          330
+        ]
+      ],
+      "category": "unused",
+      "reason": "argmax_angscale has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          333,
+          360
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_log_base has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          363,
+          400
+        ]
+      ],
+      "category": "unused",
+      "reason": "_logpolar has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          442,
+          494
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_ang_scale has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          497,
+          520
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_emslices has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          523,
+          539
+        ]
+      ],
+      "category": "unused",
+      "reason": "embed_to has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          543,
+          606
+        ]
+      ],
+      "category": "unused",
+      "reason": "transform_img has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          609,
+          642
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_odds has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          742,
+          759
+        ]
+      ],
+      "category": "unused",
+      "reason": "_get_precision has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          763,
+          842
+        ]
+      ],
+      "category": "unused",
+      "reason": "compute_similarity has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          845,
+          870
+        ]
+      ],
+      "category": "unused",
+      "reason": "transform_img_dict has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          874,
+          919
+        ]
+      ],
+      "category": "unused",
+      "reason": "frame_img has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          979,
+          996
+        ]
+      ],
+      "category": "unused",
+      "reason": "im_reg.register_image_translation has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          1000,
+          1047
+        ]
+      ],
+      "category": "unused",
+      "reason": "im_reg.register_image_RST has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          100,
+          101
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_open has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          104,
+          105
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_save has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          108,
+          109
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_play has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          112,
+          113
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_pause has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          116,
+          117
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_stop has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          120,
+          121
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_settings has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          124,
+          125
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_zoom_in has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          128,
+          129
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_zoom_out has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          132,
+          133
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_fit has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/icons.py",
+      "ranges": [
+        [
+          136,
+          137
+        ]
+      ],
+      "category": "unused",
+      "reason": "icon_stack has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/__init__.py",
+      "ranges": [
+        [
+          764,
+          765
+        ]
+      ],
+      "category": "unused",
+      "reason": "Window.set_new_loaded_image_files has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/__init__.py",
+      "ranges": [
+        [
+          814,
+          816
+        ]
+      ],
+      "category": "unused",
+      "reason": "Window.clear_all_images has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/__init__.py",
+      "ranges": [
+        [
+          1140,
+          1141
+        ]
+      ],
+      "category": "unused",
+      "reason": "Window.export_output_image has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/__init__.py",
+      "ranges": [
+        [
+          1183,
+          1184
+        ]
+      ],
+      "category": "unused",
+      "reason": "Window.export_comparison has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/__init__.py",
+      "ranges": [
+        [
+          1196,
+          1197
+        ]
+      ],
+      "category": "unused",
+      "reason": "Window.toggle_settings_panel has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "MainWindow/SettingsWidget.py",
+      "ranges": [
+        [
+          201,
+          203
+        ]
+      ],
+      "category": "unused",
+      "reason": "OptionGroup.set_current has no caller from application entrypoints",
+      "evidence": "docs/coverage-scope-audit.md: static references, Qt callback and dynamic dispatch review; upstream Python API is outside this application scope"
+    },
+    {
+      "file": "run.py",
+      "ranges": [
+        [
+          48,
+          53
+        ],
+        [
+          58,
+          58
+        ],
+        [
+          79,
+          81
+        ],
+        [
+          114,
+          131
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "non_darwin_platform",
+      "evidence": "sys.platform == darwin; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "run.py",
+      "ranges": [
+        [
+          109,
+          109
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "packaged_only",
+      "evidence": "source launch; sys.frozen is false; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "algorithms/__init__.py",
+      "ranges": [
+        [
+          32,
+          33
+        ],
+        [
+          35,
+          46
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "windows_only",
+      "evidence": "sys.platform == darwin; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "algorithms/__init__.py",
+      "ranges": [
+        [
+          48,
+          51
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "linux_procfs",
+      "evidence": "stock Darwin without /proc/meminfo; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "compute.py",
+      "ranges": [
+        [
+          71,
+          71
+        ],
+        [
+          144,
+          147
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "non_darwin_platform",
+      "evidence": "sys.platform == darwin; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          30,
+          31
+        ],
+        [
+          53,
+          55
+        ],
+        [
+          60,
+          61
+        ],
+        [
+          74,
+          88
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "non_darwin_platform",
+      "evidence": "actual application supplies only native sys.platform; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          37,
+          40
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "packaged_only",
+      "evidence": "source launch; sys.frozen is false; no constructor platform override; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "updater.py",
+      "ranges": [
+        [
+          146,
+          146
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "linux_only",
+      "evidence": "sys.platform == darwin; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "updater.py",
+      "ranges": [
+        [
+          150,
+          159
+        ],
+        [
+          199,
+          217
+        ],
+        [
+          219,
+          228
+        ],
+        [
+          230,
+          233
+        ],
+        [
+          242,
+          245
+        ],
+        [
+          249,
+          295
+        ],
+        [
+          297,
+          303
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "packaged_only",
+      "evidence": "source launch; sys.frozen is false; source GUI can_install false; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "MainWindow/MainLayout/ImageWidgets.py",
+      "ranges": [
+        [
+          32,
+          34
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "non_darwin_platform",
+      "evidence": "sys.platform == darwin; docs/coverage-scope-audit.md platform and packaging review"
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          49,
+          64
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "lightroom_running is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          68,
+          89
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "open_lightroom is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          127,
+          135
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "PluginInstaller._check_destination is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          169,
+          170
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "PluginInstaller._check_closed is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          173,
+          210
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "PluginInstaller.install is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          213,
+          217
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "PluginInstaller.remove is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/LightroomSetup.py",
+      "ranges": [
+        [
+          70,
+          78
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "LightroomCard._activate is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/LightroomSetup.py",
+      "ranges": [
+        [
+          81,
+          99
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "LightroomCard._change is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/LightroomSetup.py",
+      "ranges": [
+        [
+          102,
+          108
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "LightroomCard._confirm_remove is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          225,
+          246
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "UpdateDialog._download is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          249,
+          250
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "UpdateDialog._cancel_download is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          253,
+          258
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "UpdateDialog._on_progress is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          261,
+          262
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "UpdateDialog._restore_later_button is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          265,
+          274
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "UpdateDialog._on_ready is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          277,
+          284
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "UpdateDialog._on_failed is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          287,
+          289
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "UpdateDialog._install_on_quit is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          292,
+          294
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "UpdateDialog._install_and_relaunch is gated by packaged application capability",
+      "evidence": "Source launch returns no application_path; LightroomCard.refresh disables install and hides Manage. UpdateDialog.can_install is false; download/install callbacks have no other application caller. See docs/coverage-scope-audit.md."
+    },
+    {
+      "file": "lightroom.py",
+      "ranges": [
+        [
+          148,
+          148
+        ],
+        [
+          152,
+          164
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "Non-Darwin status and packaged plugin states",
+      "evidence": "Native Darwin status reaches _check_application, which raises for source launch before destination inspection."
+    },
+    {
+      "file": "MainWindow/UpdateDialog.py",
+      "ranges": [
+        [
+          217,
+          217
+        ],
+        [
+          219,
+          219
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "Packaged installation actions",
+      "evidence": "Source updater.can_install returns false and no source workflow sets helper; native source action remains the release page."
+    }
+  ],
+  "measurement_limits": [
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "symbol": "pad_array",
+      "lines": [
+        26,
+        34
+      ],
+      "category": "native_runtime_unobservable"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "symbol": "get_deviation",
+      "lines": [
+        42,
+        48
+      ],
+      "category": "native_runtime_unobservable"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "symbol": "compute_focusmap",
+      "lines": [
+        70,
+        86
+      ],
+      "category": "native_runtime_unobservable"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "symbol": "compute_focusmap_thresholded",
+      "lines": [
+        94,
+        118
+      ],
+      "category": "native_runtime_unobservable"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "symbol": "fuse_pyramid_levels_using_focusmap",
+      "lines": [
+        179,
+        184
+      ],
+      "category": "native_runtime_unobservable"
+    }
+  ]
+}

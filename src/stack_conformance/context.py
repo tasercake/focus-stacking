@@ -21,6 +21,19 @@ class CaseContext:
     def note(self, key, value):
         self.notes[key] = value
 
+    def state_directory(self, name):
+        """Resolve declared mutable state inside this case, without creating it."""
+        if name not in self.target.state:
+            raise ValueError(f"target has no configured state directory: {name}")
+        value = str(self.target.state[name])
+        for key, replacement in {"case": self.directory, "home": self.directory / "home"}.items():
+            value = value.replace("{" + key + "}", str(replacement.resolve()))
+        path = Path(value)
+        path = (self.directory / path).resolve() if not path.is_absolute() else path.resolve()
+        if not path.is_relative_to(self.directory.resolve()):
+            raise ValueError("configured state must stay inside the case directory")
+        return path
+
     def record_output(self, path, name=None):
         path = Path(path)
         assert path.is_file(), f"export missing: {path}"
@@ -79,6 +92,39 @@ class CaseContext:
             result.diagnostics = {"events": [json.loads(line) for line in events.read_text().splitlines() if line.strip()]}
         return result
 
+    def probe(self, operation, *, arrays=None, options=None, timeout=120):
+        """Run a language-neutral component hook as a separate host process."""
+        import re
+        import numpy as np
+        from .probes import encode_array, portable_options, ProbeResult
+        if self._environment.get("CF_VM_GUEST") == "1":
+            raise RuntimeError("component execution belongs on the host")
+        directory = self._call_dir()
+        wire = {name: encode_array(value) for name, value in (arrays or {}).items()}
+        request = {"schema_version": 1, "operation": operation, "arrays": wire, "options": options or {}}
+        request_path, response_path = directory / "request.json", directory / "response.json"
+        request_path.write_text(json.dumps(request, allow_nan=False))
+        self.notes.setdefault("requests", []).append({
+            "operation": operation, "options": portable_options(options or {}, self.directory), "arrays": {
+                name: {"dtype": value["dtype"], "shape": value["shape"],
+                       "sha256": hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()}
+                for name, value in wire.items()}})
+        process = ProcessRunner().run(self.target.command("probe") + ["--request", str(request_path),
+                                      "--response", str(response_path)], cwd=self.target.root,
+                                      env=self.environment(directory), directory=directory, timeout=timeout)
+        assert not process.timed_out, f"component timed out after {timeout}s"
+        assert process.returncode == 0, f"component exited {process.returncode}: {process.stderr}"
+        assert response_path.is_file(), "component response missing"
+        result = ProbeResult.decode(json.loads(response_path.read_text()))
+        for name, array in result.arrays.items():
+            assert re.fullmatch(r"[a-zA-Z0-9_.-]+", name), "unsafe component array name"
+            output = directory / f"{name}.npy"
+            np.save(output, array, allow_pickle=False)
+            self.record_output(output, f"probe-{self._calls:02d}-{name}")
+        self.notes.setdefault("probe_results", []).append({"operation": operation, "ok": result.ok,
+                                                          "values": result.values, "error": result.error})
+        return result
+
     def assert_cli_parity(self, output, fixture_or_paths, *, mean_limit, max_limit,
                           note="surface_parity", **options):
         """Compare exported pixels to CLI output, with CLI work kept on the host."""
@@ -122,9 +168,13 @@ class CaseContext:
             self.record_output(output)
         return result
 
-    def open_ui(self, paths=(), settings_id="default"):
+    def open_ui(self, paths=(), settings_id="default", service_endpoints=None):
         from .macos_ui import open_session
         directory = self._call_dir()
         env = self.environment(directory)
+        for name, endpoint in (service_endpoints or {}).items():
+            if name not in self.target.services:
+                raise ValueError(f"target has no configured service endpoint: {name}")
+            env[self.target.services[name]] = str(endpoint)
         return open_session(self.target.command("gui"), cwd=self.target.root, env=env,
                             directory=directory, paths=paths, settings_id=settings_id)

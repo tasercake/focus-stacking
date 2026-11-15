@@ -22,6 +22,7 @@ IDENTIFIER_CONTRACT = (
     "settings.window", "settings.theme", "settings.device_mode", "settings.gpu", "settings.remeasure",
     "settings.auto_updates", "settings.prereleases", "settings.lightroom.status", "settings.lightroom.action", "settings.lightroom.manage",
     "export.window", "export.format", "export.depth", "export.quality", "export.compression", "export.confirm",
+    "updates.window", "updates.notes", "updates.auto", "updates.skip", "updates.later", "updates.download",
 )
 
 
@@ -115,6 +116,14 @@ def install_identifiers(application):
                                  ("quality", "export.quality"), ("compression", "export.compression"), ("ok", "export.confirm")):
             identify(getattr(dialog, attr), identifier)
 
+    def update_dialog(dialog):
+        identify(dialog, "updates.window")
+        for attr, identifier in (("notes", "updates.notes"), ("auto", "updates.auto"),
+                                 ("skip_btn", "updates.skip"), ("later_btn", "updates.later"),
+                                 ("main_btn", "updates.download")):
+            identify(getattr(dialog, attr), identifier)
+        dialog.notes.setAccessibleDescription(dialog.notes.toPlainText())
+
     class IdentifierFilter(qtc.QObject):
         def eventFilter(self, watched, event):
             if event.type() == qtc.QEvent.Show and isinstance(watched, qtw.QWidget):
@@ -125,6 +134,8 @@ def install_identifiers(application):
                     settings_dialog(watched)
                 elif cls == "ExportDialog":
                     export_dialog(watched)
+                elif cls == "UpdateDialog":
+                    update_dialog(watched)
             return False
 
     observer = IdentifierFilter(application)
@@ -181,6 +192,11 @@ def main(argv=None):
     preferences.sync()
 
     from src import run
+    # Configure only the service endpoint. All requests, parsing, preferences,
+    # worker signals and dialogs continue through the original implementation.
+    if endpoint := os.environ.get("CF_UI_UPDATE_FEED"):
+        from src import updater
+        updater.API = endpoint
     install_worker_observers()
     original = run._App.__init__
 

@@ -82,6 +82,7 @@ cannot produce a successful frozen baseline or a passed overall report.
 | Layer | Contract | Implementation coupling |
 | --- | --- | --- |
 | Algorithm cases | Explicit settings, generated inputs, exported pixels | None |
+| Service cases | Versioned JSON requests, local HTTP fixtures, checksums and errors | Neutral process hook; reference adapter maps original functions |
 | CLI cases | Arguments, errors, exit codes, progress, files | Public command-line interface only |
 | Device cases | Completed backend evidence and CPU/GPU image equivalence | Versioned JSON diagnostics, not target functions |
 | Interface cases | Semantic accessibility IDs, native input, visible state, exports | OS accessibility contract only |
@@ -91,7 +92,11 @@ cannot produce a successful frozen baseline or a passed overall report.
 The large numerical matrix runs through the CLI. Native GUI cases cover complete
 workflows and selected numerical/export equivalence checks. They do not repeat
 the whole numerical matrix through clicks. No case calls an application stack,
-alignment, export, or GUI business method directly.
+alignment, export, or GUI business method directly. Reachable update-service
+logic also has a language-neutral JSON hook, so network policy, cancellation and
+checksum failures do not require repeated native interactions. The reference
+adapter calls the original service implementation. Unused math helpers are
+outside the application coverage goal; the suite does not add callers for them.
 
 The ChimpStackr GUI bootstrap starts the original `src.run.main`, selects normal
 user preferences in an isolated INI profile, and attaches semantic accessibility
@@ -105,14 +110,14 @@ unchanged machine code for every subprocess. Initial source-target preferences
 select CPU processing and disable automatic update checks. Tests do not install
 updates, change the installed app, or modify the user's Lightroom plugin.
 
-Current catalog contains 231 cases:
+Current catalog contains 295 cases:
 
 | Suite | Cases | Execution with `--gui-vm` |
 | --- | ---: | --- |
-| CLI | 30 | Host subprocesses |
-| Algorithms | 140 | Host subprocesses |
+| CLI and services | 56 | Host subprocesses |
+| Algorithms | 171 | Host subprocesses |
 | Physical devices | 38 | Host CPU and actual GPU |
-| Interface | 23 | 22 guest cases; one physical GPU case unsupported |
+| Interface | 30 | 29 guest cases; one physical GPU case unsupported |
 
 ## Generated fixtures and numerical checks
 
@@ -174,14 +179,18 @@ error 0.5/255 and peak error 3/255. Exposure fusion retains its documented 8-bit
 precision and one-level repeat variation. Each frozen output stores its actual
 limits; changing them requires an explicit baseline review.
 
-Copy `targets/chimpstackr.toml` for another implementation. Set `root`, `cli`
-and `gui` to its executables, remove `adapter = "chimpstackr-python"`, update
+Copy `targets/chimpstackr.toml` for another implementation. Set `root`, `cli`,
+`gui` and `probe` to its executables, remove `adapter = "chimpstackr-python"`
+and the reference-only `coverage_scope`, update
 the declarative argument mapping and target-specific environment. Shells are
 never used to execute commands. A compiled replacement needs no Python target
 dependency; install the harness with `uv sync` and run it without the
 `chimpstackr` extra. Preserve the public CLI and semantic UI contracts, or put
 small translations at the target boundary. See
 [UI protocol](docs/ui-protocol.md) for IDs and native operations.
+The `state` table names case-owned mutable paths; `services` maps canonical
+service names to target endpoint environment hooks. Neither belongs inside
+portable cases. See [component protocol](docs/component-protocol.md).
 
 Strict device tests require completed backend diagnostics written as JSON lines
 to `CONFORMANCE_EVENTS_PATH`. Another target can emit that contract from a
@@ -201,19 +210,22 @@ host parity logs, transport metadata, and the final merged report separately.
 Reference coverage is enabled by default. `--no-coverage` disables it.
 `--coverage` requires a compatible target-specific collector. Python coverage
 reports include **all 31 application source files**, with line and branch
-coverage reported separately. Never-imported files remain in the denominator;
-the application's own coverage omissions are not used.
+coverage reported separately. Never-imported files remain in the raw denominator;
+the application's own coverage omissions are not used. A separate, source-pinned
+scope excludes reviewed dead, unused and unreachable regions. Every exclusion
+has exact ranges and evidence. Raw and scoped results remain visible together.
+Coverage thresholds use the configured scope; `--raw-coverage` selects raw totals.
 
 ```sh
 uv run --extra chimpstackr stack-conformance run \
   --gui-vm --min-line-coverage 100 --min-branch-coverage 100
 ```
 
-That command enforces the stated target and currently fails: raw 100% is not
-achievable in a macOS source run while Windows/Linux, frozen-app installers,
-hardware/IO failures and unused internal paths remain present. The suite does
-not alter platform identity, execute private unit tests, exclude source files,
-or fabricate execution to claim 100%. Python tracing also does not measure
+That command enforces 100% of the reviewed macOS application scope. It still
+fails while retained recovery paths and native tracing gaps remain uncovered.
+Confirmed unused helpers and foreign-platform/packaged-only bodies are excluded
+from that goal, per the [revised scope](docs/goal.md). The suite does not alter
+platform identity or fabricate execution. Python tracing also does not measure
 embedded OpenCL C, Lightroom Lua or compiled dependencies. Full missing-line
 and branch inventories remain available. See [coverage scope](docs/coverage.md).
 

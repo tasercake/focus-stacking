@@ -264,11 +264,12 @@ def write_reports(results, output, *, target=None, complete=True, selected_count
 def record_coverage(output, summary, *, line_minimum=0, branch_minimum=0):
     """Make coverage gate results visible to both CLI and report consumers."""
     output = Path(output)
-    passed = summary["line_percent"] >= line_minimum and summary["branch_percent"] >= branch_minimum
+    basis = summary.get("scope", summary)
+    passed = basis["line_percent"] >= line_minimum and basis["branch_percent"] >= branch_minimum
     report = json.loads((output / "report.json").read_text())
     report["coverage"] = {key: value for key, value in summary.items() if key != "missing"}
     report["coverage_gate"] = {"line_minimum": line_minimum, "branch_minimum": branch_minimum,
-                               "passed": passed}
+                               "passed": passed, "basis": basis.get("name", "raw")}
     report["status"] = ("failed" if report["counts"]["failed"] or not passed else
                         "incomplete" if not report.get("complete", True) else
                         "pending-host-verification" if report["counts"].get("pending") else
@@ -282,7 +283,7 @@ def record_coverage(output, summary, *, line_minimum=0, branch_minimum=0):
         if not passed:
             root.set("failures", str(int(root.get("failures", 0)) + 1))
             ET.SubElement(node, "failure", message="Coverage threshold failed").text = (
-                f"Line coverage {summary['line_percent']:.2f}% requires {line_minimum:.2f}%; "
-                f"branch coverage {summary['branch_percent']:.2f}% requires {branch_minimum:.2f}%")
+                f"Line coverage {basis['line_percent']:.2f}% requires {line_minimum:.2f}%; "
+                f"branch coverage {basis['branch_percent']:.2f}% requires {branch_minimum:.2f}%")
         tree.write(output / "junit.xml", encoding="unicode", xml_declaration=True)
     return passed

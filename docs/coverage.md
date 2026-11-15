@@ -34,11 +34,37 @@ Python denominator is **31 files, 7,256 executable lines and 1,812 branch exits*
 These values are observations from coverage.py on CPython 3.12, not a selected
 "testable" subset. A later source/interpreter change can change the denominator.
 
-## Why raw 100% is not achievable in this macOS-only black-box run
+## Reviewed application scope
 
-The requested 100% remains a coverage goal. The suite does not report it as
-achieved, replace platform checks, run source unit tests, mark unreachable code
-as covered, or remove missing files from its denominator. Current source has
+The revised coverage goal is 100% of used, reachable code for this macOS source
+target. Raw measurements remain unchanged. `targets/chimpstackr-coverage.json`
+defines the separate `macos-source-application` scope, pinned to the complete
+source SHA256. Every exclusion names exact ranges, category, reason and evidence.
+See [scope audit](coverage-scope-audit.md) and [goal](goal.md).
+
+`coverage/scoped.json` retains the applied exclusion ledger, counts and remaining
+missing statements/branch exits. `coverage/scope-profile.json` freezes the exact
+input manifest before execution. Excluded code is never marked as executed.
+Covered unused definitions may leave the scoped denominator because importing
+a function does not make its body used. Excluding an executed function body or
+an executed branch exit is rejected. Source drift also fails the scope check.
+
+Thresholds use this configured scope. `--raw-coverage` uses raw totals instead.
+Host and guest **raw arcs are united first**; one common scope is applied after
+path normalization. Percentages are never added or averaged. A later target
+must remove or replace this reference-specific manifest.
+
+Unused application helpers and impossible foreign-platform/source-packaging
+paths are outside the goal. Their exclusion does not imply they can safely be
+deleted from a public Python library or a future packaged/Windows/Linux build.
+Recoverable errors, device fallback and missing tests remain inside the goal.
+Native JIT bodies remain measured gaps, separately listed as tracing limits;
+they are not classified as dead code.
+
+## Raw coverage limits
+
+The suite does not replace platform checks, run source unit tests or mark
+unreachable code as covered. Current source has
 mutually exclusive platform and packaging paths that cannot all execute in a
 normal source-launched macOS app:
 
@@ -54,6 +80,14 @@ Triggering real self-update replacement is also a separate packaged integration
 scenario, not a reason to modify the user's installed app during this run.
 Missing line and branch lists remain visible in reports. Adding Windows/Linux
 and isolated packaged-app/fault environments can close parts of the gap.
+
+The source-profile manifest also excludes Lightroom install/repair/remove and
+update installation UI callbacks. `application_path()` returns `None` for a
+source launch; `_check_application()` raises before plugin destination checks,
+and the Lightroom card disables its action/hides Manage. `UpdateDialog` cannot
+download or install because source `can_install()` is false. Their available
+status and release-page paths remain in scope. Packaged testing must restore
+these callbacks and underlying functions.
 
 The denominator covers **Python executable code**. Embedded OpenCL C kernels,
 compiled dependencies and Lightroom Lua plugin execution need their own

@@ -55,3 +55,11 @@ def test_command_preserves_literal_json_arguments(tmp_path):
     from stack_conformance.target import TargetSpec
     target = TargetSpec("other", tmp_path, ("other", "--config", '{"mode":"cpu"}', "{target}"))
     assert target.command("cli") == ["other", "--config", '{"mode":"cpu"}', str(tmp_path)]
+
+
+def test_coverage_scope_path_is_relative_to_descriptor(tmp_path):
+    from stack_conformance.target import TargetSpec
+    path = descriptor(tmp_path)
+    path.write_text(path.read_text().replace('name = "example"', 'name = "example"\ncoverage_scope = "scope.json"'))
+    (tmp_path / "scope.json").write_text('{}')
+    assert TargetSpec.load(path).coverage_scope == tmp_path / "scope.json"

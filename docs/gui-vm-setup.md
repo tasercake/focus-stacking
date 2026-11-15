@@ -14,6 +14,10 @@ macOS image and its test environment, and a logged-in user. Install Tart with:
 brew install openai/tools/tart
 ```
 
+This backend is the OpenAI Tart distribution. Its
+[license](https://github.com/openai/tart/blob/main/LICENSE) permits internal use
+without a paid VM subscription. No second VM backend is included.
+
 If Homebrew 7 rejects Tart's untrusted `softnet` dependency, trust that formula
 and repeat the installation:
 

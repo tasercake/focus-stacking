@@ -18,7 +18,13 @@ def catalog():
     from .cases.interface import interface_cases
     from .cases.interface_settings import settings_cases
     from .cases.interface_portability import portability_cases
-    return [*cli_cases(), *algorithm_cases(), *device_cases(), *interface_cases(), *settings_cases(), *portability_cases()]
+    from .cases.coverage_algorithms import coverage_algorithm_cases
+    from .cases.coverage_cli import coverage_cli_cases
+    from .cases.coverage_interface import coverage_interface_cases
+    from .cases.interface_updates import update_cases
+    from .cases.services import service_cases
+    return [*cli_cases(), *coverage_cli_cases(), *service_cases(), *algorithm_cases(), *coverage_algorithm_cases(), *device_cases(),
+            *interface_cases(), *settings_cases(), *portability_cases(), *coverage_interface_cases(), *update_cases()]
 
 
 def _parser():
@@ -39,6 +45,7 @@ def _parser():
             command.add_argument("--gui-vm-visible", action="store_true", help="Show window when starting VM (default: headless)")
             command.add_argument("--gui-vm-persist", action="store_true", help="Leave dedicated VM running after tests (default: stop)")
             command.add_argument("--coverage", action=argparse.BooleanOptionalAction, default=None)
+            command.add_argument("--raw-coverage", action="store_true", help="Use raw coverage denominator instead of configured reviewed scope")
             command.add_argument("--min-line-coverage", type=float, default=0)
             command.add_argument("--min-branch-coverage", type=float, default=0)
             command.add_argument("--cli-command", help="JSON argv override, never executed through shell")
@@ -66,6 +73,7 @@ def _provenance(target, cases):
             "suite_dirty": git(["status", "--porcelain"], project),
             "suite_source_sha256": suite_hash.hexdigest(),
             "target_descriptor_sha256": hashlib.sha256(target.descriptor.read_bytes()).hexdigest() if target.descriptor else None,
+            "coverage_scope_sha256": hashlib.sha256(target.coverage_scope.read_bytes()).hexdigest() if target.coverage_scope else None,
             "cli_command": target.command("cli"), "gui_command": target.command("gui") if target.gui else None,
             "python": sys.version, "platform": platform.platform(),
             "uv_lock_sha256": hashlib.sha256(lock.read_bytes()).hexdigest() if lock.exists() else None,
@@ -129,12 +137,19 @@ def main(argv=None):
             baseline.validate_selection(cases, suites=args.suite, patterns=args.case)
         environment = dict(os.environ)
         coverage = None
+        scope_profile = None
         if args.coverage is True or (args.coverage is None and target.adapter == "chimpstackr-python"):
             if target.adapter != "chimpstackr-python":
                 raise ValueError("coverage requires a target-specific coverage adapter")
             from .coverage import CoverageSession
             coverage = CoverageSession(target.root / "src", output / "coverage")
             environment = coverage.environment(environment)
+            if target.coverage_scope and not args.raw_coverage:
+                content = target.coverage_scope.read_bytes()
+                scope_profile = json.loads(content)
+                if scope_profile.get("source_sha256") != coverage.provenance["source_sha256"]:
+                    raise ValueError("coverage scope source fingerprint changed; review exclusions")
+                (output / "coverage/scope-profile.json").write_bytes(content)
         provenance = _provenance(target, cases)
         (output / "provenance.json").write_text(json.dumps(provenance, indent=2))
         print(f"Target: {target.name} | {len(cases)} cases | {output}", flush=True)
@@ -154,8 +169,19 @@ def main(argv=None):
         failed = sum(r.status == "failed" for r in results)
         if coverage:
             summary = coverage.finalize(allow_empty=bool(results) and all(result.status == "unsupported" for result in results))
+            if scope_profile is not None:
+                from .coverage_scope import scoped_summary
+                summary["scope"] = scoped_summary(json.loads((output / "coverage/coverage.json").read_text()),
+                                                   target.root / "src", scope_profile)
+                (output / "coverage/scoped.json").write_text(json.dumps(summary["scope"], indent=2) + "\n")
+                (output / "coverage/summary.json").write_text(json.dumps(summary, indent=2) + "\n")
             print(f"Coverage: lines {summary['line_percent']:.2f}% ({summary['line_covered']}/{summary['line_total']}), "
                   f"branches {summary['branch_percent']:.2f}% ({summary['branch_covered']}/{summary['branch_total']})")
+            if scope := summary.get("scope"):
+                print(f"Scoped coverage ({scope['name']}): lines {scope['line_percent']:.2f}% "
+                      f"({scope['line_covered']}/{scope['line_total']}), branches {scope['branch_percent']:.2f}% "
+                      f"({scope['branch_covered']}/{scope['branch_total']}); "
+                      f"excluded {scope['excluded_lines']} lines, {scope['excluded_branches']} branch exits")
             if not record_coverage(output, summary, line_minimum=args.min_line_coverage,
                                    branch_minimum=args.min_branch_coverage):
                 print("Coverage threshold failed", file=sys.stderr)

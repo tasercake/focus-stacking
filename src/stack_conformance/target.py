@@ -17,6 +17,10 @@ class TargetSpec:
     capabilities: tuple[str, ...] = ()
     descriptor: Path | None = None
     gui_vm: dict = field(default_factory=dict)
+    state: dict = field(default_factory=dict)
+    probe: tuple[str, ...] = ()
+    services: dict = field(default_factory=dict)
+    coverage_scope: Path | None = None
 
     @classmethod
     def load(cls, path):
@@ -30,13 +34,15 @@ class TargetSpec:
         root = (path.parent / data["root"]).resolve()
         if not root.is_dir():
             raise ValueError(f"target root does not exist: {root}")
-        for kind in ("cli", "gui"):
+        for kind in ("cli", "gui", "probe"):
             command = data.get(kind, [])
             if not isinstance(command, list) or not all(isinstance(x, str) for x in command):
                 raise ValueError(f"{kind} must be an argument array")
         return cls(data["name"], root, tuple(data["cli"]), tuple(data.get("gui", [])),
                    data.get("adapter", ""), data.get("env", {}), data.get("stack", {}),
-                   tuple(data.get("capabilities", [])), path, data.get("gui_vm", {}))
+                   tuple(data.get("capabilities", [])), path, data.get("gui_vm", {}),
+                   data.get("state", {}), tuple(data.get("probe", [])), data.get("services", {}),
+                   (path.parent / data["coverage_scope"]).resolve() if data.get("coverage_scope") else None)
 
     def with_commands(self, *, cli=None, gui=None):
         for command in (cli, gui):
@@ -47,7 +53,7 @@ class TargetSpec:
 
     def command(self, kind, **variables):
         values = {"python": sys.executable, "target": str(self.root), **variables}
-        tokens = self.cli if kind == "cli" else self.gui
+        tokens = {"cli": self.cli, "gui": self.gui, "probe": self.probe}[kind]
         if not tokens:
             raise ValueError(f"target has no {kind} command")
         result = []
