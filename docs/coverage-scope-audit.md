@@ -79,6 +79,26 @@ release page for source launch. Do not delete these components. Do not add them
 to unconditional unused-code exclusions. Any larger source-profile exclusion
 must state these UI guards and keep reachable unavailable/error paths.
 
+## Active caller invariants
+
+These additional exclusions apply only to the pinned CLI/GUI application call
+graph. They do not imply that the helpers' standalone Python API accepts no
+other arguments. Every excluded body is rejected if a later run executes it.
+
+| File and ranges | Proof |
+| --- | --- |
+| `algorithms/__init__.py:366–371` | `coarse_fine` defaults to `False`. The two `API.py` pair-estimation calls and sequential `_estimate_pair_step` omit it; translation fallbacks omit it. The only forwarding compatibility method, `align_image_pair`, has no application caller. Therefore the preliminary quarter-size translation branch is unreachable, even with large input images. |
+| `algorithms/__init__.py:892–895`, `algorithms/API.py:575–577` | On stock Darwin, `SC_AVPHYS_PAGES` is absent from `os.sysconf_names`; calling it raises `ValueError: unrecognized configuration name`. With Windows and procfs branches already excluded, `_available_memory_bytes` always returns `None`. These memory-known worker caps cannot run. Keep the probe, exception handler and CPU-count worker selection. A future memory-probe fix must restore these ranges. |
+| `algorithms/API.py:66` | All three constructors—CLI, GUI and compute calibration—pass `config=AlgorithmConfig(...)` or an existing configuration object. No application caller uses the optional constructor default. |
+| `algorithms/dft_imreg.py:419,653,661–674,954` | Active DFT translation is called only from `_estimate_translation`, which supplies cached `ref_gray`. The disabled coarse/fine branch and unused registration wrappers are the only callers that omit it. `estimate_translation_matrix` calls `translation` without options: `filter_pcorr=0`, `constraints=None`; `translation` always supplies `argmax_translation` as callback. Consequently default-callback, minimum-filter, non-default constraint bodies and reference-gray fallback are unreachable. Confidence and 180-degree fallback remain reachable and measured. |
+| `algorithms/stacking_algorithms/cpu.py:140,142` | The sole active `compute_focusmap_fast` caller consumes Laplacian levels from loaded float32 frames. Gaussian/Laplacian operations and grayscale conversion preserve float32. Keep the 2D grayscale branch: NPY input can reach it. |
+| `algorithms/stacking_algorithms/cpu.py:152` | The sole active `feather_focusmap` caller is inside `if use_soft`, where `use_soft = feather_radius > 0`, and passes that same radius. |
+| `algorithms/stacking_algorithms/cpu.py:225` | All four active `local_tone_map` calls in `API.py` pass literal `strength=0.3`; no application parameter changes it. |
+| `ImageLoadingHandler.py:300` | The only callers are CLI input/output quality reports. Input sharpness is guarded by `img is not None`; output sharpness follows successful output validation. |
+
+The Windows `MEMORYSTATUSEX` class definition at line 34 is also inside the
+impossible Windows body; retain the full 32–46 range in that conditional rule.
+
 ## Missing behavior that stays in scope
 
 Retain recoverable IO errors, corrupt cache handling, invalid image/parameter

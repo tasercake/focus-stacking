@@ -7,7 +7,8 @@
     "Darwin arm64",
     "source launch, sys.frozen false",
     "stock macOS without Linux procfs",
-    "CLI and GUI entrypoints; upstream Python API compatibility outside scope"
+    "CLI and GUI entrypoints; upstream Python API compatibility outside scope",
+    "stock Darwin sysconf_names excludes SC_AVPHYS_PAGES"
   ],
   "exclusions": [
     {
@@ -639,10 +640,6 @@
       "ranges": [
         [
           32,
-          33
-        ],
-        [
-          35,
           46
         ]
       ],
@@ -1009,6 +1006,130 @@
       "category": "unreachable",
       "reason": "Packaged installation actions",
       "evidence": "Source updater.can_install returns false and no source workflow sets helper; native source action remains the release page."
+    },
+    {
+      "file": "algorithms/__init__.py",
+      "ranges": [
+        [
+          366,
+          371
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "coarse_fine defaults false and no active application caller supplies it",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
+    },
+    {
+      "file": "algorithms/__init__.py",
+      "ranges": [
+        [
+          892,
+          895
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "Stock Darwin lacks SC_AVPHYS_PAGES; available-memory probe always returns None",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
+    },
+    {
+      "file": "algorithms/API.py",
+      "ranges": [
+        [
+          575,
+          577
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "Stock Darwin lacks SC_AVPHYS_PAGES; available-memory probe always returns None",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
+    },
+    {
+      "file": "algorithms/API.py",
+      "ranges": [
+        [
+          66,
+          66
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "All three application constructors supply an AlgorithmConfig",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
+    },
+    {
+      "file": "algorithms/dft_imreg.py",
+      "ranges": [
+        [
+          419,
+          419
+        ],
+        [
+          653,
+          653
+        ],
+        [
+          661,
+          674
+        ],
+        [
+          954,
+          954
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "Active translation caller always supplies ref_gray; filter is 0, constraints None, callback argmax_translation",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "ranges": [
+        [
+          140,
+          140
+        ],
+        [
+          142,
+          142
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "Only active caller supplies float32 Laplacian levels; grayscale conversion preserves dtype",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "ranges": [
+        [
+          152,
+          152
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "Only active caller is guarded by feather_radius > 0",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
+    },
+    {
+      "file": "algorithms/stacking_algorithms/cpu.py",
+      "ranges": [
+        [
+          225,
+          225
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "All four active local_tone_map callers pass literal strength 0.3",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
+    },
+    {
+      "file": "ImageLoadingHandler.py",
+      "ranges": [
+        [
+          300,
+          300
+        ]
+      ],
+      "category": "unreachable",
+      "reason": "Both compute_sharpness callers guard successfully decoded/non-None images",
+      "evidence": "docs/coverage-scope-audit.md: Active caller invariants (pinned CLI/GUI call graph and stock Darwin sysconf)"
     }
   ],
   "measurement_limits": [

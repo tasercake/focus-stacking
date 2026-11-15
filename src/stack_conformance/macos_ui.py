@@ -125,9 +125,16 @@ class MacOSUISession:
             found = self.wait(matches, timeout=timeout, description=f"UI element {wanted}")
         return find_node({"nodes": found}, wanted)
 
-    def click(self, selector: str | dict[str, Any], *, physical: bool = True, position: tuple[float, float] | None = None) -> None:
+    def click(self, selector: str | dict[str, Any], *, physical: bool = True, position: tuple[float, float] | None = None,
+              count: int = 1, button: str = "left") -> None:
+        if count not in (1, 2) or button not in ("left", "right"):
+            raise ValueError("Native click supports one/two clicks and left/right buttons")
+        if not physical and (count != 1 or button != "left"):
+            raise ValueError("Pointer variants require physical input")
         command = "click" if physical or position is not None else "press"
-        self._request(command, selector=self._selector(selector), **({"position": position} if position is not None else {}))
+        variants = {"count": count, "button": button} if count != 1 or button != "left" else {}
+        self._request(command, selector=self._selector(selector), **variants,
+                      **({"position": position} if position is not None else {}))
 
     def select(self, selector: str | dict[str, Any], value: str, *, timeout: float = 5) -> None:
         """Open once, wait for a visible option, and return after selection commits."""
@@ -174,8 +181,11 @@ class MacOSUISession:
     def drag(self, selector: str | dict[str, Any], start: tuple[float, float], end: tuple[float, float]) -> None:
         self._request("drag", selector=self._selector(selector), start=start, end=end)
 
-    def scroll(self, selector: str | dict[str, Any], dy: int) -> None:
-        self._request("scroll", selector=self._selector(selector), dy=dy)
+    def scroll(self, selector: str | dict[str, Any], dy: int, *, modifiers=(), units="pixel") -> None:
+        if units not in ("pixel", "line"):
+            raise ValueError("Native scroll units must be pixel or line")
+        variants = {"modifiers": modifiers, "units": units} if modifiers or units != "pixel" else {}
+        self._request("scroll", selector=self._selector(selector), dy=dy, **variants)
 
     def edit(self, selector, value) -> None:
         """Type into a native field or incrementor and commit with Tab."""

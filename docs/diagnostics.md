@@ -12,6 +12,13 @@ The ChimpStackr adapter maps that portable setting to its opt-in
 `schema_version: 1`, `event`, `pid` and `time_ns`. Times and process IDs are
 observations, not stable golden values.
 
+Optional diagnostic metrics can be non-finite for degenerate inputs, such as
+phase-correlation confidence on all-zero images. The reference observer encodes
+these as explicit strings `"NaN"`, `"Infinity"` and `"-Infinity"`, including nested
+arrays. It preserves the application's original values and image output. These
+strings are not numerical success evidence; required completion and backend
+fields retain their ordinary types.
+
 | Event | Required evidence |
 | --- | --- |
 | `stack_start` | `algorithm`, `requested_backend`, `effective_parameters`, `input_order` |

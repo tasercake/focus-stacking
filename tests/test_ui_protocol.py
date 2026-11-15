@@ -581,6 +581,7 @@ def test_scroll_event_targets_requested_viewport_before_native_post(tmp_path):
     script = tmp_path / 'scroll-construction.swift'
     script.write_text('import CoreGraphics\n'
                       'let inputSource = CGEventSource(stateID: .privateState)\n'
+                      'let request: [String: Any] = [:]\n'
                       'let dy = 120\n'
                       'for p in [CGPoint(x:321,y:654), CGPoint(x:789,y:123)] {\n'
                       + construction + '\n'

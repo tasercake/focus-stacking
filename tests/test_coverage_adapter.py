@@ -8,6 +8,20 @@ import sys
 import pytest
 
 
+def test_observer_serializes_nonfinite_metrics_without_changing_source_values(tmp_path, monkeypatch):
+    import math
+    import numpy as np
+    from stack_conformance.adapters.coverage_startup import chimpstackr_observer as observer
+
+    events = tmp_path / 'events.jsonl'
+    monkeypatch.setattr(observer, '_events_path', str(events), raising=False)
+    metrics = {'success': float('nan'), 'values': np.array([float('inf'), -float('inf'), 2.5])}
+    observer._write('metric_fixture', metrics=metrics)
+    record = json.loads(events.read_text(), parse_constant=lambda value: pytest.fail(value))
+    assert record['metrics'] == {'success': 'NaN', 'values': ['Infinity', '-Infinity', 2.5]}
+    assert math.isnan(metrics['success']) and np.isposinf(metrics['values'][0])
+
+
 def test_session_covers_branches_and_never_imported_files(tmp_path):
     from stack_conformance.coverage import CoverageSession
 

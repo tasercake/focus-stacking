@@ -5,6 +5,7 @@ Coverage uses tracing and remains independent from this profiling callback.
 """
 from contextlib import contextmanager
 import json
+import math
 import os
 import sys
 import threading
@@ -18,6 +19,9 @@ _installed = False
 
 
 def _plain(value):
+    if isinstance(value, float) and not math.isfinite(value):
+        # Diagnostic values remain explicit without emitting invalid JSON tokens.
+        return 'NaN' if math.isnan(value) else ('Infinity' if value > 0 else '-Infinity')
     if value is None or isinstance(value, (str, bool, int, float)):
         return value
     if isinstance(value, dict):
@@ -25,7 +29,7 @@ def _plain(value):
     if isinstance(value, (tuple, list)):
         return [_plain(item) for item in value]
     if type(value).__module__.startswith('numpy') and hasattr(value, 'tolist'):
-        return value.tolist()
+        return _plain(value.tolist())
     return str(value)
 
 

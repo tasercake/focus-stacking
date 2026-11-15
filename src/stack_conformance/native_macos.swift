@@ -162,15 +162,22 @@ func typeText(_ text: String) throws {
         }
     }
 }
-func pointer(_ point: CGPoint, _ type: CGEventType) {
-    let source = inputSource
-    let event = CGEvent(mouseEventSource: source, mouseType: type, mouseCursorPosition: point, mouseButton: .left)
+func pointerEvent(_ point: CGPoint, _ type: CGEventType, button: CGMouseButton = .left, count: Int = 1) -> CGEvent? {
+    let event = CGEvent(mouseEventSource: inputSource, mouseType: type, mouseCursorPosition: point, mouseButton: button)
     event?.flags = []
-    event?.post(tap: .cghidEventTap)
+    event?.setIntegerValueField(.mouseEventClickState, value: Int64(count))
+    return event
+}
+func pointer(_ point: CGPoint, _ type: CGEventType, button: CGMouseButton = .left, count: Int = 1) {
+    pointerEvent(point, type, button:button, count:count)?.post(tap: .cghidEventTap)
 }
 func center(_ element: AXUIElement, _ relative: [Double] = [0.5,0.5]) throws -> CGPoint {
     guard let p = point(element), let s = size(element) else { throw UIError("Element has no screen rectangle") }
     return CGPoint(x: p.x+s.width*relative[0], y: p.y+s.height*relative[1])
+}
+func targetIsFrontmost(_ element: AXUIElement) -> Bool {
+    // NSWorkspace notifications can remain cached in this blocking RPC loop.
+    return (attribute(element, "AXFrontmost") as? Bool) ?? false
 }
 func execute(_ request: [String: Any]) throws -> Any {
     let command = request["command"] as? String ?? ""
@@ -180,8 +187,8 @@ func execute(_ request: [String: Any]) throws -> Any {
     guard let pid = request["pid"] as? Int, pid > 0, kill(pid_t(pid),0) == 0 else { throw UIError("Target application is not running") }
     let app = NSRunningApplication(processIdentifier:pid_t(pid))
     let root = AXUIElementCreateApplication(pid_t(pid))
-    if command == "snapshot" { return ["pid":pid, "nodes":flatten(root).map{$0.1}] }
-    if !["set", "focus", "screenshot", "attributes", "action", "press"].contains(command) && NSWorkspace.shared.frontmostApplication?.processIdentifier != pid_t(pid) {
+    if command == "snapshot" { return ["pid":pid, "frontmost":targetIsFrontmost(root), "nodes":flatten(root).map{$0.1}] }
+    if !["set", "focus", "screenshot", "attributes", "action", "press"].contains(command) && !targetIsFrontmost(root) {
         if command == "key" || command == "text" { throw UIError("Target application is not frontmost; keyboard input was not sent") }
         _ = app?.activate(options: [.activateIgnoringOtherApps])
         // Command-line GUI executables can decline NSRunningApplication activation.
@@ -192,10 +199,10 @@ func execute(_ request: [String: Any]) throws -> Any {
             pointer(titlePoint,.mouseMoved); pointer(titlePoint,.leftMouseDown); pointer(titlePoint,.leftMouseUp)
         }
         let activationDeadline = Date(timeIntervalSinceNow: 3)
-        while NSWorkspace.shared.frontmostApplication?.processIdentifier != pid_t(pid) && Date() < activationDeadline {
+        while !targetIsFrontmost(root) && Date() < activationDeadline {
             RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02))
         }
-        guard NSWorkspace.shared.frontmostApplication?.processIdentifier == pid_t(pid) else { throw UIError("Target application did not become frontmost; input was not sent") }
+        guard targetIsFrontmost(root) else { throw UIError("Target application did not become frontmost; input was not sent") }
     }
     if command == "raise" { return ["raised":true] }
     if command == "key" { try key(request["key"] as? String ?? "", request["modifiers"] as? [String] ?? []); return ["sent":true] }
@@ -252,9 +259,17 @@ func execute(_ request: [String: Any]) throws -> Any {
     if command == "scroll" {
         let p = try center(element); pointer(p,.mouseMoved)
         let dy = request["dy"] as? Int ?? 0
-        let event = CGEvent(scrollWheelEvent2Source:inputSource,units:.pixel,wheelCount:1,wheel1:Int32(dy),wheel2:0,wheel3:0)
+        let units: CGScrollEventUnit = request["units"] as? String == "line" ? .line : .pixel
+        let event = CGEvent(scrollWheelEvent2Source:inputSource,units:units,wheelCount:1,wheel1:Int32(dy),wheel2:0,wheel3:0)
         event?.location = p
-        event?.flags = []; event?.post(tap:.cghidEventTap)
+        var flags: CGEventFlags = []
+        for modifier in request["modifiers"] as? [String] ?? [] {
+            if modifier == "command" { flags.insert(.maskCommand) }
+            if modifier == "control" { flags.insert(.maskControl) }
+            if modifier == "shift" { flags.insert(.maskShift) }
+            if modifier == "option" { flags.insert(.maskAlternate) }
+        }
+        event?.flags = flags; event?.post(tap:.cghidEventTap)
         return ["scrolled":true]
     }
     if command == "press" {
@@ -262,7 +277,16 @@ func execute(_ request: [String: Any]) throws -> Any {
         guard status == .success else { throw UIError("Press failed: \(status.rawValue)") }
     } else {
         let p = try center(element,request["position"] as? [Double] ?? [0.5,0.5])
-        pointer(p,.mouseMoved); pointer(p,.leftMouseDown); Thread.sleep(forTimeInterval:0.03); pointer(p,.leftMouseUp)
+        let count = request["count"] as? Int ?? 1
+        let right = request["button"] as? String == "right"
+        guard (1...2).contains(count) else { throw UIError("Invalid click count") }
+        pointer(p,.mouseMoved)
+        for index in 1...count {
+            pointer(p,right ? .rightMouseDown : .leftMouseDown,button:right ? .right : .left,count:index)
+            Thread.sleep(forTimeInterval:0.03)
+            pointer(p,right ? .rightMouseUp : .leftMouseUp,button:right ? .right : .left,count:index)
+            if index < count { Thread.sleep(forTimeInterval:0.07) }
+        }
     }
     return ["clicked":true]
 }
