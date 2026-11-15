@@ -4,9 +4,13 @@ Target: ChimpStackr `046266223945cc1cbf8eacd295c00ee08d42d095`. No application
 code changed. Recommendations predict conformance impact; deletion was not
 experimentally tested.
 
-Evidence: initial full run `artifacts/conformance-vm-record-final/report.json`
-(230 passed, one guest-GPU case unsupported). **Final expanded full-run refresh
-pending.** Exact symbols, ranges and call-graph evidence:
+Evidence: final frozen-baseline replay
+`artifacts/conformance-vm-release-replay/report.json` — **294 passed, zero failed,
+one explicit guest-GPU unsupported case; all 295 cases completed**. Raw coverage:
+`artifacts/conformance-vm-release-replay/coverage/coverage.json`. Fresh checks
+confirm all 22 unused DFT routine bodies (256 missing executable lines) and four
+old CPU batch helpers (58 missing lines) remain unexecuted. Target submodule is
+clean at the pinned commit. Exact symbols, ranges and call-graph evidence:
 [coverage scope audit](coverage-scope-audit.md).
 
 | Code | Take | Evidence / conformance risk |

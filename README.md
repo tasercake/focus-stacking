@@ -69,3 +69,6 @@ so pass `--gui-vm --gui-vm-persist` while using the host desktop.
 
 See the [conformance guide](docs/conformance.md) for target descriptors, immutable
 references, case selection, artifacts and raw/scoped coverage.
+
+The [verification record](docs/verification.md) reports the full passing replay,
+coverage totals, runtime pins and remaining gaps.
