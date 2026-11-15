@@ -282,13 +282,17 @@ def _lifecycle(ctx):
     with ctx.open_ui(paths=fixture.paths) as ui:
         _prepare(ui, "laplacian", "Focus breathing")
         ui.click("stack.start", position=(0.3, 0.5))
-        ui.wait(lambda snap: _has(snap, "stack.pause"), description="running stack")
-        ui.click("stack.pause")
-        ui.wait(lambda snap: _node(snap, "stack.pause").get("title") == "Resume", description="paused stack")
-        ui.click("stack.pause")
-        ui.wait(lambda snap: _node(snap, "stack.pause").get("title") == "Pause", description="resumed stack")
-        ui.click("stack.stop")
-        ui.wait(lambda snap: not _has(snap, "stack.pause") and _node(snap, "stack.start")["enabled"], timeout=120, description="cancelled stack settled")
+        def menu_enabled(snapshot, title):
+            return bool(find_node(snapshot, {"role": "AXMenuItem", "title": title}).get("enabled"))
+
+        ui.wait(lambda snap: menu_enabled(snap, "Pause") and menu_enabled(snap, "Stop"), description="running stack")
+        _menu(ui, "Pause")
+        ui.wait(lambda snap: menu_enabled(snap, "Resume"), description="paused stack")
+        _menu(ui, "Resume")
+        ui.wait(lambda snap: menu_enabled(snap, "Pause"), description="resumed stack")
+        _menu(ui, "Stop")
+        ui.wait(lambda snap: not menu_enabled(snap, "Pause") and not menu_enabled(snap, "Stop")
+                and _node(snap, "stack.start")["enabled"], timeout=120, description="cancelled stack settled")
         assert not ui.node("export.start")["enabled"]
         _stack(ui)
         assert ui.node("export.start")["enabled"]

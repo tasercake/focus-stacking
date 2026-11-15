@@ -42,11 +42,10 @@ Pointer input uses coordinates relative to the identified control. Accessibility
 press actions activate semantic radio choices, native menu commands, and controls
 that are partially clipped by the existing application layout. Both routes use public
 operating-system input APIs. Popup selection opens through an advertised public
-Accessibility action when available, otherwise a pointer click. Readable options
-use native pointer selection. If an expanded popup exposes only unreadable child
-proxies, the driver uses native label typeahead and Return, then requires the
-exact committed value and `AXExpanded=false`. Closed or unknown popup state never
-uses this fallback. Selecting an
+Accessibility action when available, otherwise a pointer click. Options must be
+readable before native pointer selection; selection then requires the exact
+committed value and popup dismissal. An invalid native accessibility tree fails
+instead of inferring an invisible choice. Selecting an
 already committed value sends no input. Scenarios never call an application
 operation.
 

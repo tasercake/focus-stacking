@@ -112,8 +112,17 @@ class MacOSUISession:
     def snapshot(self) -> dict[str, Any]:
         return self._request("snapshot")
 
-    def node(self, selector: str | dict[str, Any]) -> dict[str, Any]:
-        return find_node(self.snapshot(), selector)
+    def node(self, selector: str | dict[str, Any], *, timeout: float = 5) -> dict[str, Any]:
+        """Wait for native publication; reject ambiguous selectors immediately."""
+        wanted = self._selector(selector)
+
+        def matches(snapshot):
+            return [node for node in snapshot["nodes"] if all(node.get(key) == value for key, value in wanted.items())]
+
+        found = matches(self.snapshot())
+        if not found:
+            found = self.wait(matches, timeout=timeout, description=f"UI element {wanted}")
+        return find_node({"nodes": found}, wanted)
 
     def click(self, selector: str | dict[str, Any], *, physical: bool = True, position: tuple[float, float] | None = None) -> None:
         command = "click" if physical or position is not None else "press"
@@ -121,7 +130,7 @@ class MacOSUISession:
 
     def select(self, selector: str | dict[str, Any], value: str, *, timeout: float = 5) -> None:
         """Open once, wait for a visible option, and return after selection commits."""
-        control = self.node(selector)
+        control = self.node(selector, timeout=timeout)
 
         def selected(node):
             return node.get("title") == value or node.get("value") == value
@@ -144,41 +153,10 @@ class MacOSUISession:
             self._request("action", selector=control_selector, action="AXShowMenu")
         else:
             self.click(control_selector)
-        def choice(snapshot):
-            item = option(snapshot)
-            if item is not None:
-                return {"item": item}
-            current = find_node(snapshot, control_selector)
-            control_path = current["path"]
-            for popup in snapshot["nodes"]:
-                path = popup.get("path", [])
-                if not path or control_path[:len(path)] == path:
-                    continue
-                if not (popup.get("role") == "AXMenu" or
-                        popup.get("role") == "AXWindow" and popup.get("subrole") == "AXDialog"):
-                    continue
-                if len(popup.get("size", [])) != 2 or not all(size > 0 for size in popup["size"]):
-                    continue
-                children = [node for node in snapshot["nodes"]
-                            if len(node.get("path", [])) == len(path) + 1 and node["path"][:-1] == path]
-                if children and all(not node.get("role") for node in children):
-                    if self._request("attributes", selector=control_selector).get("AXExpanded") is True:
-                        return {"keyboard": True}
-            return None
-
-        route = self.wait(choice, timeout=timeout, description=f"visible popup option {value}")
-        if route.get("keyboard"):
-            self.text(value)
-            self.key("return")
-        else:
-            self.click({"path": route["item"]["path"]})
-
-        def committed(snapshot):
-            if not selected(find_node(snapshot, control_selector)) or option(snapshot) is not None:
-                return False
-            return not route.get("keyboard") or self._request("attributes", selector=control_selector).get("AXExpanded") is False
-
-        self.wait(committed, timeout=timeout, description=f"committed popup selection {value}")
+        item = self.wait(option, timeout=timeout, description=f"visible popup option {value}")
+        self.click({"path": item["path"]})
+        self.wait(lambda snapshot: selected(find_node(snapshot, control_selector)) and option(snapshot) is None,
+                  timeout=timeout, description=f"committed popup selection {value}")
 
     def focus(self, selector: str | dict[str, Any]) -> None:
         self._request("focus", selector=self._selector(selector))

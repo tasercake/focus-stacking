@@ -11,6 +11,14 @@ processes. Interface tests use macOS Accessibility and physical keyboard/pointer
 input against real Cocoa windows and native file dialogs. Required hardware or
 permissions missing from the host cause failures, not silently skipped tests.
 
+The reference extra pins supported PySide6 Essentials 6.9.0. Later releases
+through 6.12.0 contain a macOS Accessibility ownership regression
+([QTBUG-149612](https://qt-project.atlassian.net/browse/QTBUG-149612)). This is a
+harness runtime constraint within ChimpStackr's declared dependency range;
+application source and numerical behavior remain unchanged. Native controls
+must expose valid accessibility data; the runner does not hide invalid trees
+with guessed selections.
+
 ## Run
 
 From this repository root:
