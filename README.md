@@ -41,6 +41,10 @@ uv run --extra chimpstackr stack-conformance list --json
 
 `--suite` and `--case` can be repeated. `--case` accepts shell-style patterns;
 quote them so the shell does not expand them. An empty selection is an error.
+Explicit suites execute in the supplied order. To reserve a short uninterrupted
+desktop window, put `--suite interface` first, followed by `--suite cli --suite
+algorithms --suite devices`; the remaining headless work can continue after the
+desktop is released. Unknown suite names fail instead of silently dropping tests.
 Every selected case runs, including after another case fails. Exit codes are
 0 for success, 1 for conformance/coverage failure, and 2 for configuration or
 environment errors. Run output directories must be new or empty.

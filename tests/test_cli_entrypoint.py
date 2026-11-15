@@ -34,3 +34,15 @@ def test_optimized_execution_cannot_disable_conformance_checks():
 def test_coverage_threshold_validation_precedes_target_execution(capsys):
     assert main(["run", "--min-line-coverage", "101", "--target", "/missing-target.toml"]) == 2
     assert "coverage thresholds" in capsys.readouterr().err
+
+
+def test_explicit_suite_order_can_put_desktop_work_first(capsys):
+    assert main(["list", "--suite", "interface", "--suite", "cli", "--json"]) == 0
+    records = json.loads(capsys.readouterr().out)
+    suites = [record["suite"] for record in records]
+    assert suites == sorted(suites, key={"interface": 0, "cli": 1}.get)
+
+
+def test_typo_in_one_requested_suite_cannot_silently_drop_it(capsys):
+    assert main(["list", "--suite", "cli", "--suite", "algorihms", "--json"]) == 2
+    assert "unknown suite" in capsys.readouterr().err

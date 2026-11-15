@@ -25,7 +25,7 @@ def _parser():
     commands = parser.add_subparsers(dest="command", required=True)
     for name in ("list", "run"):
         command = commands.add_parser(name)
-        command.add_argument("--suite", action="append", help="Select suite; repeat to include several")
+        command.add_argument("--suite", action="append", help="Select suites in execution order; repeat to include several")
         command.add_argument("--case", action="append", help="Select case ID glob; repeat to include several")
         if name == "list":
             command.add_argument("--json", action="store_true")
@@ -77,9 +77,16 @@ def main(argv=None):
                 raise ValueError("coverage thresholds must be between 0 and 100")
             if args.coverage is False and (args.min_line_coverage or args.min_branch_coverage):
                 raise ValueError("coverage thresholds require coverage collection")
-        cases = [c for c in catalog()
+        all_cases = catalog()
+        unknown_suites = set(args.suite or ()) - {case.suite for case in all_cases}
+        if unknown_suites:
+            raise ValueError(f"unknown suite: {', '.join(sorted(unknown_suites))}")
+        cases = [c for c in all_cases
                  if (not args.suite or c.suite in args.suite)
                  and (not args.case or any(fnmatch.fnmatchcase(c.id, p) for p in args.case))]
+        if args.suite:
+            order = {name: index for index, name in enumerate(dict.fromkeys(args.suite))}
+            cases.sort(key=lambda case: order[case.suite])
         if not cases:
             raise ValueError("no cases match selection")
         if args.command == "list":
@@ -120,6 +127,8 @@ def main(argv=None):
         print(f"Target: {target.name} | {len(cases)} cases | {output}", flush=True)
         def progress(index, total, result):
             print(f"[{index}/{total}] {result.status.upper():6} {result.id} ({result.duration:.2f}s)", flush=True)
+            if result.suite == "interface" and not any(case.suite == "interface" for case in cases[index:]):
+                print("Desktop phase finished; keyboard and pointer are free.", flush=True)
         results = run_cases(cases, target=target, output=output, environment=environment,
                             progress=progress, baseline=baseline)
         failed = sum(r.status == "failed" for r in results)

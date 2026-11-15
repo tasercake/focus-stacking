@@ -174,14 +174,14 @@ func center(_ element: AXUIElement, _ relative: [Double] = [0.5,0.5]) throws -> 
 }
 func execute(_ request: [String: Any]) throws -> Any {
     let command = request["command"] as? String ?? ""
-    if command == "trust" { return ["trusted": AXIsProcessTrusted()] }
-    if !["snapshot","press","click","focus","set","key","text","drag","scroll","screenshot","raise","attributes"].contains(command) { throw UIError("Unknown command: \(command)") }
+    if command == "trust" { return ["trusted": AXIsProcessTrusted(), "post_event_access": CGPreflightPostEventAccess()] }
+    if !["snapshot","press","click","focus","set","key","text","drag","scroll","screenshot","raise","attributes","action"].contains(command) { throw UIError("Unknown command: \(command)") }
     guard AXIsProcessTrusted() else { throw UIError("Accessibility permission is required for native UI tests") }
     guard let pid = request["pid"] as? Int, pid > 0, kill(pid_t(pid),0) == 0 else { throw UIError("Target application is not running") }
     let app = NSRunningApplication(processIdentifier:pid_t(pid))
     let root = AXUIElementCreateApplication(pid_t(pid))
     if command == "snapshot" { return ["pid":pid, "nodes":flatten(root).map{$0.1}] }
-    if !["set", "focus", "screenshot", "attributes"].contains(command) && NSWorkspace.shared.frontmostApplication?.processIdentifier != pid_t(pid) {
+    if !["set", "focus", "screenshot", "attributes", "action", "press"].contains(command) && NSWorkspace.shared.frontmostApplication?.processIdentifier != pid_t(pid) {
         if command == "key" || command == "text" { throw UIError("Target application is not frontmost; keyboard input was not sent") }
         _ = app?.activate(options: [.activateIgnoringOtherApps])
         // Command-line GUI executables can decline NSRunningApplication activation.
@@ -216,12 +216,24 @@ func execute(_ request: [String: Any]) throws -> Any {
         var names: CFArray?
         guard AXUIElementCopyAttributeNames(element,&names) == .success else { throw UIError("Cannot read accessibility attributes") }
         var result: [String:Any] = [:]
+        var actions: CFArray?
+        AXUIElementCopyActionNames(element,&actions)
+        result["_AXActions"] = (actions as? [String]) ?? []
         for name in (names as? [String]) ?? [] {
             let value = attribute(element,name)
             if let scalar = numeric(value) { result[name] = scalar }
             else { let text = string(value); if !text.isEmpty { result[name] = text } }
         }
         return result
+    }
+    if command == "action" {
+        guard let action = request["action"] as? String else { throw UIError("Native action name is required") }
+        var names: CFArray?
+        AXUIElementCopyActionNames(element,&names)
+        guard ((names as? [String]) ?? []).contains(action) else { throw UIError("Native action is not supported: " + action) }
+        let status = AXUIElementPerformAction(element,action as CFString)
+        guard status == .success else { throw UIError("Native action failed: \(status.rawValue)") }
+        return ["performed":action]
     }
     if command == "focus" { let status = AXUIElementSetAttributeValue(element,"AXFocused" as CFString,kCFBooleanTrue); guard status == .success else { throw UIError("Focus failed: \(status.rawValue)") }; return ["focused":true] }
     if command == "set" {
