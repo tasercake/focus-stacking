@@ -14,7 +14,7 @@ class Baseline:
         self.record = record
         self.mean_limit = mean_limit
         self.peak_limit = peak_limit
-        self.manifest = {"schema_version": 1, "cases": {}, "case_suites": {}, "contracts": {}}
+        self.manifest = {"schema_version": 1, "cases": {}, "case_suites": {}, "contracts": {}, "unsupported": {}}
         if record:
             if self.directory.exists() and any(self.directory.iterdir()):
                 raise ValueError(f"baseline already exists: {self.directory}")
@@ -27,12 +27,19 @@ class Baseline:
     def validate_selection(self, cases, *, suites=None, patterns=None):
         if self.record:
             return
-        expected = {ident for ident in self.manifest["cases"]
+        inventory = self.manifest["cases"].keys() | self.manifest.get("unsupported", {}).keys()
+        expected = {ident for ident in inventory
                     if (not suites or self.manifest.get("case_suites", {}).get(ident, ident.split(".")[0]) in suites)
                     and (not patterns or any(fnmatch.fnmatchcase(ident, pattern) for pattern in patterns))}
         actual = {case.id for case in cases}
         if actual != expected:
             raise ValueError(f"baseline case inventory changed: missing={sorted(expected - actual)}, added={sorted(actual - expected)}")
+
+    def note_unsupported(self, case_id, reason, *, suite=None):
+        """Retain an explicit disposition without creating a passing reference."""
+        if self.record:
+            self.manifest["unsupported"][case_id] = reason
+            self.manifest["case_suites"][case_id] = suite or case_id.split(".")[0]
 
     def check(self, case_id, outputs, *, suite=None, contract=None):
         contract = json.loads(json.dumps(contract or {}, default=str))

@@ -67,6 +67,8 @@ class CaseContext:
         return directory
 
     def command(self, arguments, timeout=120):
+        if self._environment.get("CF_VM_GUEST") == "1":
+            raise RuntimeError("CLI execution belongs on the host; use assert_cli_parity for guest GUI comparisons")
         directory = self._call_dir()
         result = ProcessRunner().run(self.target.command("cli") + list(map(str, arguments)),
                                      cwd=self.target.root, env=self.environment(directory),
@@ -76,6 +78,27 @@ class CaseContext:
         if events.exists():
             result.diagnostics = {"events": [json.loads(line) for line in events.read_text().splitlines() if line.strip()]}
         return result
+
+    def assert_cli_parity(self, output, fixture_or_paths, *, mean_limit, max_limit,
+                          note="surface_parity", **options):
+        """Compare exported pixels to CLI output, with CLI work kept on the host."""
+        from .validators import assert_pixels_close
+        if self._environment.get("CF_VM_GUEST") != "1":
+            result = self.stack(fixture_or_paths, **options)
+            assert result.returncode == 0, result.stderr
+            self.note(note, assert_pixels_close(output, result.output, mean_limit=mean_limit, max_limit=max_limit))
+            return
+        paths = fixture_or_paths.paths if hasattr(fixture_or_paths, "paths") else fixture_or_paths
+        def relative(path):
+            return Path(path).resolve().relative_to(self.directory.resolve()).as_posix()
+        output = Path(output)
+        request = {"gui_output": relative(output), "gui_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
+                   "inputs": [{"path": relative(path), "sha256": hashlib.sha256(Path(path).read_bytes()).hexdigest()} for path in paths],
+                   "options": options, "mean_limit": mean_limit, "max_limit": max_limit, "note": note,
+                   "cli_output_name": f"output-{self._calls + 1:02d}.{options.get('output_format', 'png')}"}
+        self._calls += 1
+        self.notes.setdefault("host_parity_requests", []).append(request)
+        self.notes["host_verification_pending"] = True
 
     def stack(self, fixture_or_paths, **options):
         paths = fixture_or_paths.paths if hasattr(fixture_or_paths, "paths") else fixture_or_paths

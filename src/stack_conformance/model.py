@@ -10,6 +10,7 @@ class Case:
     suite: str
     run: Callable
     description: str = ""
+    required_capabilities: tuple[str, ...] = ()
 
 
 @dataclass
@@ -35,3 +36,6 @@ class CaseResult:
     duration: float
     error: str = ""
     notes: dict = field(default_factory=dict)
+    outputs: dict[str, str] = field(default_factory=dict)
+    execution_environment: str = "host"
+    reason: str = ""

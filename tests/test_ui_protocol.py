@@ -108,6 +108,8 @@ def test_select_waits_for_visible_option_and_committed_value(tmp_path):
                 state = next(states)
                 observed.append(state['nodes'][0]['title'])
                 return state
+            if command == 'attributes':
+                return {'_AXActions': []}
             assert command == 'click', f'Unexpected one-shot native operation: {command}'
             actions.append(values['selector'])
             return {'clicked': True}
@@ -146,3 +148,45 @@ def test_native_path_readiness_waits_for_resolved_selected_suggestion():
                          {'path': [0, 1, 0, 0], 'role': 'AXList', 'id': str(target), 'description': 'path'}]}
     assert native_path_ready(resolved, target)
     assert not native_path_ready(resolved, Path('/private/tmp/other-run/case'))
+
+
+def test_select_uses_advertised_show_menu_action_for_new_dialog(tmp_path):
+    """A first pointer click can focus a new dialog without opening its popup."""
+    from stack_conformance.macos_ui import MacOSUISession
+
+    class NewDialogDriver(MacOSUISession):
+        def __init__(self):
+            from types import SimpleNamespace
+            self.process = SimpleNamespace(poll=lambda: None)
+            self.directory = tmp_path
+            self.value = '8-bit'
+            self.popup = False
+            self.actions = []
+
+        def _request(self, command, **values):
+            self.actions.append((command, values))
+            if command == 'snapshot':
+                nodes = [{'id': 'export.depth', 'role': 'AXMenuButton', 'title': self.value,
+                          'path': [0], 'size': [291, 30]}]
+                if self.popup:
+                    nodes.append({'role': 'AXStaticText', 'title': '16-bit',
+                                  'path': [1, 0], 'size': [180, 25]})
+                return {'nodes': nodes}
+            if command == 'attributes':
+                return {'_AXActions': ['AXPress', 'AXShowMenu']}
+            if command == 'action':
+                assert values['action'] == 'AXShowMenu'
+                self.popup = True
+                return {'performed': True}
+            assert command == 'click' and values['selector'] == {'path': [1, 0]}, (
+                'A new dialog popup must open through its advertised AXShowMenu action')
+            self.value = '16-bit'
+            self.popup = False
+            return {'clicked': True}
+
+    driver = NewDialogDriver()
+    driver.select('export.depth', '16-bit')
+    assert driver.value == '16-bit'
+    assert not driver.popup
+    assert [(command, values.get('action')) for command, values in driver.actions
+            if command == 'action'] == [('action', 'AXShowMenu')]

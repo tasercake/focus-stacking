@@ -19,9 +19,25 @@ From this repository root:
 git submodule update --init submodules/ChimpStackr
 uv sync --extra chimpstackr
 uv run --extra chimpstackr stack-conformance list
-uv run --extra chimpstackr stack-conformance run --target targets/chimpstackr.toml
+uv run --extra chimpstackr stack-conformance run --target targets/chimpstackr.toml --gui-vm
 ```
 
+Configure the dedicated Tart macOS VM once using [guest setup](docs/gui-vm-setup.md).
+`--gui-vm` runs interface cases inside that guest. CLI, algorithm, and physical
+device cases stay on the host. The VM has no host window, clipboard, or audio
+by default; its input events do not use the host desktop. Missing VM, SSH,
+guest desktop, permissions, or runtime fail clearly without host GUI fallback.
+`--gui-vm-visible` opts into a window when starting the VM; it does not change
+an already-running VM's display mode. `--gui-vm-persist` leaves the dedicated
+VM running for later tests. Both require `--gui-vm` and default off.
+An already-running configured VM is reused; the default stops it after tests.
+
+GUI exports are fetched before CLI parity checks run on the host. Guest input
+and export hashes are checked first. Those cases remain pending until the host
+comparison succeeds; a guest native phase alone cannot produce a passing final
+verdict. Direct target CLI execution is rejected inside the guest.
+
+Without `--gui-vm`, interface tests retain direct host desktop behavior.
 Native UI tests require Apple's Swift compiler (`xcrun swiftc`), an unlocked
 desktop session, Accessibility permission inherited by the launching terminal
 or app, Automation access to System Events for native keyboard shortcuts, and
@@ -33,9 +49,9 @@ cache. No Appium server, browser, or third-party automation service is required.
 Use the same single entry point for selection, reports, and reference capture:
 
 ```sh
-uv run --extra chimpstackr stack-conformance run --suite algorithms --suite devices
-uv run --extra chimpstackr stack-conformance run --suite interface
-uv run --extra chimpstackr stack-conformance run --case 'algorithms.precision16.*'
+uv run --extra chimpstackr stack-conformance run --suite algorithms --suite devices --gui-vm
+uv run --extra chimpstackr stack-conformance run --suite interface --gui-vm --gui-vm-persist
+uv run --extra chimpstackr stack-conformance run --case 'algorithms.precision16.*' --gui-vm
 uv run --extra chimpstackr stack-conformance list --json
 ```
 
@@ -48,6 +64,9 @@ desktop is released. Unknown suite names fail instead of silently dropping tests
 Every selected case runs, including after another case fails. Exit codes are
 0 for success, 1 for conformance/coverage failure, and 2 for configuration or
 environment errors. Run output directories must be new or empty.
+`--fail-fast` stops after the first failure. Interrupted and fail-fast runs report
+selected/completed counts and an explicit incomplete state; partial execution
+cannot produce a successful frozen baseline or a passed overall report.
 
 ## Separation of concerns
 
@@ -76,6 +95,15 @@ outputs. A run shares only the Numba compiler cache; this avoids recompiling
 unchanged machine code for every subprocess. Initial source-target preferences
 select CPU processing and disable automatic update checks. Tests do not install
 updates, change the installed app, or modify the user's Lightroom plugin.
+
+Current catalog contains 231 cases:
+
+| Suite | Cases | Execution with `--gui-vm` |
+| --- | ---: | --- |
+| CLI | 30 | Host subprocesses |
+| Algorithms | 140 | Host subprocesses |
+| Physical devices | 38 | Host CPU and actual GPU |
+| Interface | 23 | 22 guest cases; one physical GPU case unsupported |
 
 ## Generated fixtures and numerical checks
 
@@ -107,11 +135,11 @@ do not certify them as correct image processing. See
 
 ```sh
 uv run --extra chimpstackr stack-conformance run \
-  --target targets/chimpstackr.toml \
+  --target targets/chimpstackr.toml --gui-vm \
   --record-baseline artifacts/reference-0462662
 
 uv run --extra chimpstackr stack-conformance run \
-  --target targets/replacement.toml \
+  --target targets/replacement.toml --gui-vm \
   --baseline artifacts/reference-0462662
 ```
 
@@ -122,6 +150,13 @@ output inventory for every selected case. Copy the entire baseline directory
 when archiving a reference. Freeze the suite commit, `uv.lock`, target commit,
 target descriptor and baseline together. Review compatibility exceptions before
 accepting intentional improvements in a port.
+
+VM capability limits remain explicit. The physical GPU GUI case is reported as
+`unsupported`, with a reason and a JUnit skipped entry; it is never counted as
+passed or executed for coverage. A run with all supported cases passing and
+unsupported cases has status `partial` and exit code 0. A recorded baseline
+stores unsupported IDs separately from successful references. If a later target
+can execute those cases, new references are required before comparison can pass.
 
 Default baseline limits for genuine 16-bit outputs are mean error 8 and peak
 error 128 in 16-bit code values, so reducing data to 8 bits fails comparison.
@@ -150,6 +185,9 @@ Every run writes `report.json`, `junit.xml` and `provenance.json`. Per-case
 directories retain commands, stdout/stderr, input hashes, output images,
 observed execution metadata and native UI action traces. GUI failures retain
 accessibility trees and screenshots when capture permission is available.
+Each case's `notes.artifact_directory` locates its files; registered output paths
+are relative to that directory. VM runs retain raw guest reports and coverage,
+host parity logs, transport metadata, and the final merged report separately.
 
 Reference coverage is enabled by default. `--no-coverage` disables it.
 `--coverage` requires a compatible target-specific collector. Python coverage
@@ -159,7 +197,7 @@ the application's own coverage omissions are not used.
 
 ```sh
 uv run --extra chimpstackr stack-conformance run \
-  --min-line-coverage 100 --min-branch-coverage 100
+  --gui-vm --min-line-coverage 100 --min-branch-coverage 100
 ```
 
 That command enforces the stated target and currently fails: raw 100% is not
@@ -173,7 +211,7 @@ and branch inventories remain available. See [coverage scope](docs/coverage.md).
 ## Verify the harness
 
 ```sh
-uv run --extra chimpstackr pytest
+uv run --extra chimpstackr pytest --gui-vm --gui-vm-persist
 uv run --extra chimpstackr ruff check src/stack_conformance tests
 ```
 

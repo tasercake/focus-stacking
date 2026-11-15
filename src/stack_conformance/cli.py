@@ -17,7 +17,8 @@ def catalog():
     from .cases.devices import device_cases
     from .cases.interface import interface_cases
     from .cases.interface_settings import settings_cases
-    return [*cli_cases(), *algorithm_cases(), *device_cases(), *interface_cases(), *settings_cases()]
+    from .cases.interface_portability import portability_cases
+    return [*cli_cases(), *algorithm_cases(), *device_cases(), *interface_cases(), *settings_cases(), *portability_cases()]
 
 
 def _parser():
@@ -32,6 +33,11 @@ def _parser():
         else:
             command.add_argument("--target", type=Path, default=Path(__file__).resolve().parents[2] / "targets/chimpstackr.toml")
             command.add_argument("--output", type=Path)
+            command.add_argument("--fail-fast", action="store_true", help="Stop after first failed case; reports remain explicitly incomplete")
+            command.add_argument("--gui-vm", action=argparse.BooleanOptionalAction, default=False,
+                                 help="Run interface cases in configured Tart macOS VM; no host GUI fallback")
+            command.add_argument("--gui-vm-visible", action="store_true", help="Show window when starting VM (default: headless)")
+            command.add_argument("--gui-vm-persist", action="store_true", help="Leave dedicated VM running after tests (default: stop)")
             command.add_argument("--coverage", action=argparse.BooleanOptionalAction, default=None)
             command.add_argument("--min-line-coverage", type=float, default=0)
             command.add_argument("--min-branch-coverage", type=float, default=0)
@@ -73,6 +79,8 @@ def main(argv=None):
     args = _parser().parse_args(argv)
     try:
         if args.command == "run":
+            if (args.gui_vm_visible or args.gui_vm_persist) and not args.gui_vm:
+                raise ValueError("--gui-vm-visible and --gui-vm-persist require --gui-vm")
             if not all(0 <= value <= 100 for value in (args.min_line_coverage, args.min_branch_coverage)):
                 raise ValueError("coverage thresholds must be between 0 and 100")
             if args.coverage is False and (args.min_line_coverage or args.min_branch_coverage):
@@ -99,9 +107,10 @@ def main(argv=None):
                 print(f"{len(records)} cases")
             return 0
         from .baseline import Baseline
-        from .runner import run_cases, record_coverage
+        from .runner import run_cases, run_vm_cases, record_coverage
         from .target import TargetSpec
         target = TargetSpec.load(args.target)
+        overrides = {}
         if args.cli_command or args.gui_command:
             overrides = {k: json.loads(v) for k, v in (("cli", args.cli_command), ("gui", args.gui_command)) if v}
             if not all(isinstance(v, list) and v and all(isinstance(x, str) for x in v) for v in overrides.values()):
@@ -127,13 +136,20 @@ def main(argv=None):
         print(f"Target: {target.name} | {len(cases)} cases | {output}", flush=True)
         def progress(index, total, result):
             print(f"[{index}/{total}] {result.status.upper():6} {result.id} ({result.duration:.2f}s)", flush=True)
-            if result.suite == "interface" and not any(case.suite == "interface" for case in cases[index:]):
+            if not args.gui_vm and result.suite == "interface" and not any(case.suite == "interface" for case in cases[index:]):
                 print("Desktop phase finished; keyboard and pointer are free.", flush=True)
-        results = run_cases(cases, target=target, output=output, environment=environment,
-                            progress=progress, baseline=baseline)
+        common = dict(target=target, output=output, environment=environment, progress=progress,
+                      baseline=baseline, fail_fast=args.fail_fast)
+        if args.gui_vm:
+            results = run_vm_cases(cases, **common, workspace=Path(__file__).resolve().parents[2],
+                                   visible=args.gui_vm_visible, persist=args.gui_vm_persist,
+                                   coverage=coverage, provenance=provenance,
+                                   cli_command=overrides.get("cli"), gui_command=overrides.get("gui"))
+        else:
+            results = run_cases(cases, **common)
         failed = sum(r.status == "failed" for r in results)
         if coverage:
-            summary = coverage.finalize()
+            summary = coverage.finalize(allow_empty=bool(results) and all(result.status == "unsupported" for result in results))
             print(f"Coverage: lines {summary['line_percent']:.2f}% ({summary['line_covered']}/{summary['line_total']}), "
                   f"branches {summary['branch_percent']:.2f}% ({summary['branch_covered']}/{summary['branch_total']})")
             if not record_coverage(output, summary, line_minimum=args.min_line_coverage,
@@ -142,9 +158,18 @@ def main(argv=None):
                 failed += 1
         elif args.min_line_coverage or args.min_branch_coverage:
             raise ValueError("coverage thresholds require coverage collection")
-        if baseline and baseline.record and not failed:
+        pending = sum(result.status == "pending" for result in results)
+        if baseline and baseline.record and not failed and not pending:
             baseline.save(provenance)
-        print(f"Passed: {len(results) - sum(r.status == 'failed' for r in results)}; failed: {failed}")
+        unsupported = [r for r in results if r.status == "unsupported"]
+        for result in unsupported:
+            print(f"Unsupported: {result.id}: {result.reason}")
+        print(f"Passed: {sum(r.status == 'passed' for r in results)}; failed: {failed}; unsupported: {len(unsupported)}")
+        if pending:
+            print(f"Pending host CLI verification: {pending}")
+            if os.environ.get("CF_VM_GUEST") != "1":
+                print("stack-conformance: host CLI verification did not complete", file=sys.stderr)
+                return 2
         return 1 if failed else 0
     except (ValueError, OSError, RuntimeError) as exc:
         print(f"stack-conformance: {exc}", file=sys.stderr)

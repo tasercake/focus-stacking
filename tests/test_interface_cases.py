@@ -1,5 +1,4 @@
 """Native interface conformance cases are external and toolkit independent."""
-from pathlib import Path
 
 
 def test_interface_cases_have_unique_identifiers():
@@ -11,24 +10,12 @@ def test_interface_cases_have_unique_identifiers():
     assert all(case.suite == "interface" for case in cases)
 
 
-def test_native_method_and_alignment_controls(tmp_path):
-    from stack_conformance.context import CaseContext
-    from stack_conformance.target import TargetSpec
-    from stack_conformance.cases.interface import interface_cases
-
-    target = TargetSpec.load(Path(__file__).parents[1] / "targets/chimpstackr.toml")
-    case = next(case for case in interface_cases() if case.id == "interface.controls.method-alignment")
-    case.run(CaseContext(target, tmp_path))
+def test_native_method_and_alignment_controls(native_case_runner):
+    native_case_runner("interface.controls.method-alignment")
 
 
-def test_native_export_round_trip(tmp_path):
-    from stack_conformance.context import CaseContext
-    from stack_conformance.target import TargetSpec
-    from stack_conformance.cases.interface import interface_cases
-
-    target = TargetSpec.load(Path(__file__).parents[1] / "targets/chimpstackr.toml")
-    case = next(case for case in interface_cases() if case.id == "interface.algorithm.weighted_average")
-    case.run(CaseContext(target, tmp_path))
+def test_native_export_round_trip(native_case_runner):
+    native_case_runner("interface.algorithm.weighted_average")
 
 
 def test_interface_suite_covers_workflow_boundaries():

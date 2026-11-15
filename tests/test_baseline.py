@@ -73,3 +73,18 @@ def test_baseline_does_not_tolerate_16bit_to_8bit_quantization(tmp_path):
     tifffile.imwrite(image, quantized, photometric="rgb")
     with pytest.raises(AssertionError, match="pixel"):
         Baseline(tmp_path / "frozen").check("precision", {"main": image})
+def test_unsupported_inventory_is_frozen_without_passing_reference(tmp_path):
+    from stack_conformance.baseline import Baseline
+    from stack_conformance.model import Case
+    baseline = Baseline(tmp_path / "reference", record=True)
+    baseline.note_unsupported("interface.gpu", "No guest GPU", suite="interface")
+    baseline.check("interface.cpu", {}, suite="interface")
+    baseline.save({})
+    replay = Baseline(tmp_path / "reference")
+    replay.validate_selection([Case("interface.gpu", "interface", lambda ctx: None),
+                               Case("interface.cpu", "interface", lambda ctx: None)])
+    assert "interface.gpu" not in replay.manifest["cases"]
+    assert replay.manifest["unsupported"]["interface.gpu"] == "No guest GPU"
+    import pytest
+    with pytest.raises(AssertionError, match="baseline has no case"):
+        replay.check("interface.gpu", {}, suite="interface")

@@ -139,7 +139,11 @@ class MacOSUISession:
                          and len(node.get("size", [])) == 2
                          and all(length > 0 for length in node["size"])), None)
 
-        self.click(control_selector)
+        actions = self._request("attributes", selector=control_selector).get("_AXActions", [])
+        if "AXShowMenu" in actions:
+            self._request("action", selector=control_selector, action="AXShowMenu")
+        else:
+            self.click(control_selector)
         item = self.wait(option, timeout=timeout, description=f"visible popup option {value}")
         self.click({"path": item["path"]})
         self.wait(lambda snapshot: selected(find_node(snapshot, control_selector)) and option(snapshot) is None,

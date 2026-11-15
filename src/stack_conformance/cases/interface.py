@@ -10,7 +10,7 @@ from types import SimpleNamespace
 
 from ..macos_ui import find_node
 from ..model import Case
-from ..validators import validate_image, assert_pixels_close
+from ..validators import validate_image
 
 METHODS = ("laplacian", "hybrid", "weighted_average", "depth_map", "exposure_fusion")
 ALIGNMENTS = ("Off", "Shift only", "Shift + rotation", "Standard", "Full affine", "Focus breathing")
@@ -78,9 +78,8 @@ def _algorithm(ctx, method):
         output = _export(ui, ctx.directory / "gui.tif")
         ctx.record_output(output, "gui")
         ctx.note("gui_image", validate_image(output, shape=fixture.shape, dtype="uint16", min_range=100))
-    cli = ctx.stack(fixture, method=method, bit_depth=16, output_format="tif")
-    assert cli.returncode == 0, cli.stderr
-    ctx.note("surface_parity", assert_pixels_close(output, cli.output, mean_limit=1, max_limit=257))
+    ctx.assert_cli_parity(output, fixture, mean_limit=1, max_limit=257,
+                          method=method, bit_depth=16, output_format="tif")
 
 
 def _has(snapshot, identifier):
@@ -320,9 +319,9 @@ def _alignment_crop(ctx):
         _stack(ui)
         output = _export(ui, ctx.directory / "aligned-gui.tif")
         ctx.record_output(output, "aligned-gui")
-    cli = ctx.stack(fixture, method="weighted_average", align=True, alignment_mode="translation", auto_crop=True, bit_depth=16, output_format="tif")
-    assert cli.returncode == 0, cli.stderr
-    ctx.note("surface_parity", assert_pixels_close(output, cli.output, mean_limit=1, max_limit=257))
+    ctx.assert_cli_parity(output, fixture, mean_limit=1, max_limit=257,
+                          method="weighted_average", align=True, alignment_mode="translation", auto_crop=True,
+                          bit_depth=16, output_format="tif")
 
 
 def interface_cases():
@@ -340,5 +339,5 @@ def interface_cases():
             Case("interface.controls.advanced-visibility", "interface", _advanced, "Method-specific advanced controls follow selected algorithm"),
             Case("interface.workflow.unsaved-discard", "interface", _unsaved, "Unsaved work can be kept or explicitly discarded"),
             Case("interface.lifecycle.pause-cancel", "interface", _lifecycle, "Real worker pause/resume/cancel and successful reuse"),
-            Case("interface.compute.gpu", "interface", _gpu, "GUI GPU preference reaches actual GPU completion"),
+            Case("interface.compute.gpu", "interface", _gpu, "GUI GPU preference reaches actual GPU completion", ("physical_gpu",)),
             Case("interface.alignment.crop", "interface", _alignment_crop, "GUI alignment and crop agree with CLI pixels")]

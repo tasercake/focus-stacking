@@ -16,6 +16,7 @@ class TargetSpec:
     stack: dict = field(default_factory=dict)
     capabilities: tuple[str, ...] = ()
     descriptor: Path | None = None
+    gui_vm: dict = field(default_factory=dict)
 
     @classmethod
     def load(cls, path):
@@ -35,7 +36,7 @@ class TargetSpec:
                 raise ValueError(f"{kind} must be an argument array")
         return cls(data["name"], root, tuple(data["cli"]), tuple(data.get("gui", [])),
                    data.get("adapter", ""), data.get("env", {}), data.get("stack", {}),
-                   tuple(data.get("capabilities", [])), path)
+                   tuple(data.get("capabilities", [])), path, data.get("gui_vm", {}))
 
     def with_commands(self, *, cli=None, gui=None):
         for command in (cli, gui):
