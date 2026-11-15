@@ -56,7 +56,10 @@ the unchanged `src.run.main()` entry point. Its hooks are limited to:
 
 1. Isolating QSettings in a case-owned INI profile; initial preference values are
    applied only when missing, so restart and fresh-profile tests remain valid.
-2. Assigning stable accessibility identifiers after normal widget creation.
+2. Assigning stable accessibility identifiers after the four normal window
+   constructors return. Arguments, return values and exceptions are preserved;
+   each original constructor runs once. No application-wide Python event filter
+   observes unrelated or retiring Qt objects.
 3. Providing a native accessible canvas for the existing custom image viewer.
    Its description is a read-only JSON object with `has_image`, `zoom`, `center`,
    `split`, `compare`, and `fit`. These are observations, not setters or commands.

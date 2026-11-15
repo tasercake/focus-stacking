@@ -26,9 +26,24 @@ IDENTIFIER_CONTRACT = (
 )
 
 
+def after_constructor(cls, metadata):
+    """Assign read-only metadata only after the original constructor succeeds."""
+    from functools import wraps
+
+    original = cls.__init__
+
+    @wraps(original)
+    def initialized(instance, *args, **kwargs):
+        result = original(instance, *args, **kwargs)
+        metadata(instance)
+        return result
+
+    cls.__init__ = initialized
+
+
 def install_identifiers(application):
-    """Assign semantic identifiers after normal widget construction, on Show."""
-    from PySide6 import QtCore as qtc, QtGui as qtg, QtWidgets as qtw
+    """Assign semantic identifiers after normal window construction."""
+    from PySide6 import QtGui as qtg, QtWidgets as qtw
 
     class ViewerAccessible(qtw.QAccessibleWidget):
         def __init__(self, viewer):
@@ -124,23 +139,14 @@ def install_identifiers(application):
             identify(getattr(dialog, attr), identifier)
         dialog.notes.setAccessibleDescription(dialog.notes.toPlainText())
 
-    class IdentifierFilter(qtc.QObject):
-        def eventFilter(self, watched, event):
-            if event.type() == qtc.QEvent.Show and isinstance(watched, qtw.QWidget):
-                cls = type(watched).__name__
-                if cls == "Window" and hasattr(watched, "stack_btn"):
-                    main_window(watched)
-                elif cls == "SettingsDialog":
-                    settings_dialog(watched)
-                elif cls == "ExportDialog":
-                    export_dialog(watched)
-                elif cls == "UpdateDialog":
-                    update_dialog(watched)
-            return False
+    from src.MainWindow import Window
+    from src.MainWindow.SettingsWidget import SettingsDialog
+    from src.MainWindow.ImageSavingDialog import ExportDialog
+    from src.MainWindow.UpdateDialog import UpdateDialog
 
-    observer = IdentifierFilter(application)
-    application.installEventFilter(observer)
-    application._conformance_identifier_filter = observer
+    for cls, metadata in ((Window, main_window), (SettingsDialog, settings_dialog),
+                          (ExportDialog, export_dialog), (UpdateDialog, update_dialog)):
+        after_constructor(cls, metadata)
 
 
 def install_worker_observers():
