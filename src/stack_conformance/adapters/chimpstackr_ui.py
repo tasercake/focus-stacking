@@ -74,6 +74,9 @@ def install_identifiers(application):
         window.viewer.viewport().setAccessibleName("Image viewer")
         identify(window.sidebar.frames, "frames")
         identify(window.sidebar.results, "results")
+        # Qt 6.9 uses item-view accessible names for native AX identifiers.
+        window.sidebar.frames.setAccessibleName("frames")
+        window.sidebar.results.setAccessibleName("results")
         for index, identifier in enumerate(("mode.view", "mode.compare")):
             identify(window.mode_switch.buttons[index], identifier)
         inspector = window.inspector
