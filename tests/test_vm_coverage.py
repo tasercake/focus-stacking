@@ -132,3 +132,15 @@ def test_empty_instrumented_child_is_not_normal_target_execution(tmp_path):
     subprocess.run([sys.executable, '-c', 'pass'], env=session.environment(os.environ), check=True)
     with pytest.raises(RuntimeError, match='no target source file executed'):
         session.finalize()
+
+
+def test_coverage_environment_disables_compile_time_numba_notifications_only(tmp_path):
+    from stack_conformance.coverage import CoverageSession
+
+    root = source_tree(tmp_path / 'source')
+    session = CoverageSession(root, tmp_path / 'coverage')
+    original = {'NUMBA_JIT_COVERAGE': '1', 'NUMBA_DISABLE_JIT': '0'}
+    environment = session.environment(original)
+    assert environment['NUMBA_JIT_COVERAGE'] == '0'
+    assert environment['NUMBA_DISABLE_JIT'] == '0'
+    assert original == {'NUMBA_JIT_COVERAGE': '1', 'NUMBA_DISABLE_JIT': '0'}

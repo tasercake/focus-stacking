@@ -58,6 +58,11 @@ and isolated packaged-app/fault environments can close parts of the gap.
 The denominator covers **Python executable code**. Embedded OpenCL C kernels,
 compiled dependencies and Lightroom Lua plugin execution need their own
 language/runtime collectors; this adapter does not claim to measure them.
+Numba's native machine code also runs outside ordinary Python tracing. Its
+Python source remains in the denominator. The collector disables Numba's
+compile-time coverage notifications: compiled lines do not prove runtime line
+or branch execution. JIT execution settings stay unchanged. See Numba's
+[compiled-code coverage documentation](https://numba.readthedocs.io/en/stable/user/code_coverage.html).
 Image/device conformance tests still execute and validate real GPU kernel
 results. Code coverage and output correctness remain separate evidence.
 

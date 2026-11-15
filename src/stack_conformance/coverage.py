@@ -85,6 +85,8 @@ class CoverageSession:
     def environment(self, base_env: Mapping[str, str]) -> dict[str, str]:
         env = startup_environment(base_env)
         env['COVERAGE_PROCESS_START'] = str(self.config_path)
+        # Numba compiler notifications are not runtime execution evidence.
+        env['NUMBA_JIT_COVERAGE'] = '0'
         return env
 
     def import_data(self, data_paths, *, source_root: str,
