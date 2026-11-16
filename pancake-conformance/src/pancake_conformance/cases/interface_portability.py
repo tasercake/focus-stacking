@@ -102,6 +102,9 @@ def _unicode_paths(ctx):
         shutil.copyfile(source, destination)
         paths.append(destination)
     with ctx.open_ui() as ui:
+        # Establish alignment before native file panels can leave stale AX row proxies.
+        # _prepare still verifies this selection after import, before stacking.
+        ui.select('alignment', 'Off')
         ui.click('import.files')
         ui.wait(lambda snap: _has(snap, 'open-panel'), description='native Unicode file import')
         ui.choose_file(paths[0])

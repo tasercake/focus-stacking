@@ -62,3 +62,19 @@ scoped statements (91.158%) and 1182/1563 branch exits (75.624%). Raw totals are
 replay. Its inputs and missing inventories remain in
 `artifacts/coverage-100-passing-union/`. Interrupted evidence remains in
 `artifacts/coverage-100-final/`; it is not imported into the passing-run union.
+
+## Unicode GUI follow-up
+
+The interrupted replay exposed a native accessibility row without text for the
+alignment popup's Off option after file-panel use. The Unicode case now sets
+alignment before opening the file panels; its post-import preparation, Unicode
+import/export checks and CLI pixel comparison remain intact. Application source
+is unchanged. The case passed in the headless VM, and 33 focused portability and
+native-protocol harness tests passed with VM flags. Evidence is retained in
+`artifacts/unicode-dialog-order-fix-1/`. These checks are not a full-suite replay.
+
+The corrected Unicode case passed twice in the headless VM. The second run also
+passed the method/alignment control case (2/2). All application sessions exited
+cleanly. Focused harness checks passed 33 tests; Ruff and diff checks passed.
+Evidence: `artifacts/unicode-dialog-order-fix-1/` and
+`artifacts/unicode-dialog-order-fix-2/`. Application source was unchanged.
