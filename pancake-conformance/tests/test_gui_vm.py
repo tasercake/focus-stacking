@@ -17,6 +17,7 @@ def isolated_vm_lease(tmp_path, monkeypatch):
     def initialize(vm, *args, **kwargs):
         original(vm, *args, **kwargs)
         vm._lease_path = tmp_path / "leases" / (vm.name + ".lock")
+        vm._bootstrap.cache = tmp_path / "bootstrap-cache"
     monkeypatch.setattr(TartGuiVM, "__init__", initialize)
 
 

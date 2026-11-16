@@ -5,6 +5,9 @@ description = "Pancake-conformance focus-stacking conformance suite."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+  "paramiko>=4,<5; sys_platform == 'darwin'",
+  "vncdotool>=1.2,<2; sys_platform == 'darwin'",
+  "pyobjc-framework-Vision>=11,<13; sys_platform == 'darwin'",
   "numpy>=2.2,<3",
   "pillow>=11,<13",
   "tifffile>=2025.1.10",

@@ -13,7 +13,7 @@ name = "pancake-conformance"
 ssh_user = "admin"
 guest_root = "/Users/admin/pancake-conformance"
 ssh_identity = "~/.ssh/pancake-conformance"
-python = "3.12.16"
+python = "3.12.14"
 
 [state]
 compute_cache = "{home}/device-cache"

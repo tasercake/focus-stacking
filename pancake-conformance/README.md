@@ -31,8 +31,9 @@ uv sync --frozen --extra chimpstackr
 uv run --frozen --extra chimpstackr pancake-conformance run --gui-vm --gui-vm-persist
 ```
 
-Configure the [dedicated macOS guest](docs/gui-vm-setup.md) before running native
-interface tests. CLI, algorithm, and physical-device cases stay on the host.
+`--gui-vm` [bootstraps a missing dedicated guest](docs/gui-vm-bootstrap.md)
+automatically on Apple Silicon macOS. Existing custom guests use the
+[manual setup guide](docs/gui-vm-setup.md). CLI, algorithm, and physical-device cases stay on the host.
 Guest transport preserves the repository paths `pancake-conformance/`
 and `submodules/ChimpStackr/` without copying other projects or host environments.
 

@@ -5,7 +5,14 @@ file-panel scenarios in a separate macOS desktop. The host launches no VM viewer
 when visibility is disabled. Host keyboard, pointer, clipboard, audio, and user
 preferences are not test inputs.
 
-## Prerequisites
+## Automatic setup
+
+`--gui-vm` now provisions a missing dedicated guest automatically. See
+[automatic bootstrap](gui-vm-bootstrap.md) for the fresh-checkout command,
+version pins, permissions, cache paths, and recovery behavior. The manual steps
+below apply to existing custom guests and document earlier setup evidence.
+
+## Manual prerequisites
 
 Use an Apple Silicon Mac with hardware virtualization, enough disk space for a
 macOS image and its test environment, and a logged-in user. Install Tart with:
