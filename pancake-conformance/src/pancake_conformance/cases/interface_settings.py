@@ -18,7 +18,7 @@ def about_item(snapshot):
 
 
 def status_text(node):
-    for key in ('value', 'title', 'description', 'help'):
+    for key in ('description', 'help', 'value', 'title'):
         value = node.get(key)
         if isinstance(value, str) and value.strip() and value.strip() != node.get('id'):
             return value.strip()

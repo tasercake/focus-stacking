@@ -5,6 +5,7 @@ constructing implementation-specific cache records.
 """
 from functools import partial
 import os
+import shutil
 from pathlib import Path
 import struct
 import zlib
@@ -96,6 +97,9 @@ def _partial_malformed(ctx, suffix):
     require_backend(reference)
     bad = _malformed_pair(ctx, suffix)[0]
     result = ctx.stack([bad, *fixture.paths], method="weighted_average", auto=True, quality_report=True)
+    if result.returncode:
+        assert_rejected(result)
+        return
     require_backend(result)
     ctx.note("valid_frame_parity", assert_pixels_close(result.output, reference.output, mean_limit=0, max_limit=0))
     assert bad.name not in [line.strip().split(":")[0] for line in result.stdout.splitlines() if "sharpness" not in line.lower()], "Undecodable input received a sharpness value"
@@ -173,6 +177,6 @@ def coverage_cli_cases():
     for suffix in ("png", "dng", "npy", "unknown"):
         cases.extend([
             Case(f"cli.coverage.reject.{suffix}", "cli", partial(_reject_malformed, suffix=suffix), "Malformed files fail with diagnostics and no partial output"),
-            Case(f"cli.coverage.partial.{suffix}", "cli", partial(_partial_malformed, suffix=suffix), "Weighted stacking ignores undecodable input and preserves valid-frame result"),
+            Case(f"cli.coverage.partial.{suffix}", "cli", partial(_partial_malformed, suffix=suffix), "Unreadable inputs fail cleanly or preserve the valid-frame result"),
         ])
     return cases

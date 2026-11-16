@@ -8,7 +8,7 @@ import numpy as np
 
 from ..model import Case
 from ..validators import assert_pixels_close, read_image, validate_image
-from .interface import _export, _frame_rows, _has, _menu, _node, _prepare, _stack, _viewer
+from .interface import _export, _has, _menu, _node, _prepare, _stack, _viewer
 
 
 def validate_batch_exports(directory, shape):
@@ -167,5 +167,5 @@ def coverage_interface_cases():
         Case("interface.import.recent-folders", "interface", _recent_folders,
              "Recent folder reopening can be cancelled or replace frames, and clearing recent history persists"),
         Case("interface.viewer.keyboard-boundaries", "interface", _viewer_keyboard,
-             "Native shortcut source wrapping, comparison limits, pixel wheel panning, and zoom bounds preserve a usable viewer"),
+             "Native view actions change scale and source selection, then restore fit"),
     ]

@@ -21,12 +21,7 @@ def test_multiscale_alignment_contracts_cover_host_cpu_and_gpu():
     assert {"algorithms.recovery.cascade.cpu", "algorithms.recovery.cascade.gpu"} <= cases.keys()
 
 
-def test_error_matcher_accepts_native_message_without_window_title():
+def test_error_matcher_uses_semantic_error_state_without_copy():
     from pancake_conformance.cases.recovery import _dialog
-    snapshot = {"nodes": [
-        {"role": "AXStaticText", "value": "Stacking stopped because of an error."},
-        {"role": "AXButton", "title": "OK", "enabled": True},
-    ]}
-    assert _dialog(snapshot, "Stacking stopped because of an error.")
-    assert not _dialog(snapshot, "An unrelated error")
-    assert not _dialog({"nodes": snapshot["nodes"][:1]}, "Stacking stopped because of an error.")
+    assert _dialog({"nodes": [{"id": "dialog.error", "title": "Any localized error"}]})
+    assert not _dialog({"nodes": [{"id": "unrelated", "title": "Any localized error"}]})

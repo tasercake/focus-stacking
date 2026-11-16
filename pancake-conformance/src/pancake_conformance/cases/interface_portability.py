@@ -3,35 +3,11 @@ from __future__ import annotations
 
 import shutil
 
-from ..macos_ui import find_node
 from ..model import Case
 from ..validators import assert_pixels_close, read_image, validate_image
-from .interface import _export, _frame_rows, _has, _menu, _node, _prepare, _stack
+from .interface import _export, _has, _menu, _node, _prepare, _stack
 
 UNICODE_EXPORT_NAME = '焦点 café 𐐀.tif'
-
-
-def result_rows(snapshot):
-    listing = find_node(snapshot, {'id': 'results', 'role': 'AXList'})
-    prefix = listing['path']
-    return [node for node in snapshot['nodes'] if node.get('role') == 'AXRow'
-            and len(node.get('path', [])) == len(prefix) + 1
-            and node['path'][:len(prefix)] == prefix]
-
-
-def result_row(snapshot, method_label):
-    matches = []
-    for row in result_rows(snapshot):
-        prefix = row['path']
-        texts = [text for node in snapshot['nodes']
-                 if node.get('path', [])[:len(prefix)] == prefix
-                 for key in ('title', 'value', 'description')
-                 if isinstance((text := node.get(key)), str)]
-        if any(text == method_label or text.startswith(method_label + '\n')
-               or text.startswith(method_label + ' ·') for text in texts):
-            matches.append(row)
-    assert len(matches) == 1, f'Expected one result for {method_label}; found {len(matches)}'
-    return matches[0]
 
 
 def _wait_for_result(ui, method_label):

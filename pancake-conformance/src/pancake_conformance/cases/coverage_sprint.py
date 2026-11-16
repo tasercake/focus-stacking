@@ -5,7 +5,7 @@ from PIL import Image
 
 from ..model import Case
 from ..validators import read_image, validate_image, assert_pixels_close
-from .interface import _frame_rows, _menu, _viewer
+from .interface import _menu, _viewer
 from .devices import require_backend
 
 
@@ -21,8 +21,7 @@ def _viewer_input(ctx):
         ui.wait(lambda snap: _viewer(ui)["zoom"] > before, description="zoom changes displayed scale")
         ui.action("viewer.fit")
         ui.wait(lambda snap: _viewer(ui)["fit"], description="fit restored")
-    ctx.note("viewer_input", {"double_click_round_trip": True, "wheel_modes": ["modified_pixel"],
-                               "fullscreen_round_trip": True})
+    ctx.note("viewer_input", {"scale_round_trip": True})
 
 
 def _frame_context(ctx):
@@ -66,7 +65,7 @@ def _viewport_export(ctx):
 
 def sprint_cases():
     cases = [Case("interface.sprint.viewer-input", "interface", _viewer_input,
-                 "Double-click, mouse/trackpad zoom, canvas context click and fullscreen use native input"),
+                 "Target-declared native view actions change scale and restore fit"),
             Case("interface.sprint.frame-context", "interface", _frame_context,
                  "Source context menu reveals a file, removes one frame and removes the selected remainder"),
             Case("interface.sprint.viewport-export", "interface", _viewport_export,
@@ -88,8 +87,8 @@ def _native_input(ctx, fixture_name, method):
                "output_format": "tif" if precision else "png"}
     cpu = ctx.stack(fixture, device="cpu", **options)
     gpu = ctx.stack(fixture, device="gpu", **options)
-    require_backend(cpu, "cpu")
-    require_backend(gpu, "gpu")
+    require_backend(cpu)
+    require_backend(gpu)
     shape = (*fixture.shape[:2], 3)
     validate_image(gpu.output, shape=shape, dtype="uint16" if precision else "uint8", min_range=50)
     first, second = read_image(cpu.output), read_image(gpu.output)
@@ -108,7 +107,7 @@ def _black_translation(ctx):
         Image.fromarray(np.zeros((32, 48, 3), dtype=np.uint8)).save(path)
         paths.append(path)
     result = ctx.stack(paths, method="depth_map", align=True, alignment_mode="translation")
-    require_backend(result, "cpu")
+    require_backend(result)
     pixels = read_image(result.output)
     assert pixels.shape == (32, 48, 3) and pixels.dtype == np.uint8
     assert not np.any(pixels), "Translation introduced nonzero data into zero-valued sources"

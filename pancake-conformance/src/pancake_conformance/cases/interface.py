@@ -49,9 +49,11 @@ def _prepare(ui, method, alignment="off"):
     if ui.node("autocrop").get("value"):
         ui.click("autocrop", physical=False)
         ui.wait(lambda snap: _node(snap, "autocrop").get("value") == 0, description="auto-crop disabled")
-    if ui.contract.get("initial_values"):
+    if ui.contract.get("initial_values") and _has(ui.snapshot(), "advanced") and not ui.node("advanced").get("value"):
         ui.action("advanced.open")
     for identifier, value in ui.contract.get("initial_values", {}).items():
+        if not _has(ui.snapshot(), identifier):
+            continue
         ui.edit(identifier, value)
         ui.wait(lambda snap, identifier=identifier, value=value: str(_node(snap, identifier).get("value")) == str(value),
                 description=f"{identifier} committed")
@@ -106,12 +108,6 @@ def _startup(ctx):
         ui.wait(lambda snapshot: ui.observe("selected_method", snapshot) == "hybrid",
                 description="hybrid method committed")
         assert not ui.node("stack.start")["enabled"]
-
-
-def _frame_rows(snapshot):
-    frames = find_node(snapshot, {"id": "frames", "role": "AXList"})
-    prefix = frames["path"]
-    return [node for node in snapshot["nodes"] if len(node["path"]) == len(prefix) + 1 and node["path"][:len(prefix)] == prefix and node.get("role") == "AXRow"]
 
 
 def _native_import(ctx):
@@ -212,23 +208,30 @@ def _close_settings(ui):
 
 
 def _settings(ctx):
+    expected = {}
+    initial = {}
     with ctx.open_ui(settings_id="preferences") as ui:
         _open_settings(ui)
-        for title in ("dark", "light", "system", "dark"):
-            ui.select("settings.theme", title)
-            ui.wait(lambda snap, title=title: _choice(snap, "settings.theme") == title, description=f"theme {title}")
-        for title in ("gpu", "auto", "cpu"):
-            ui.select("settings.device_mode", title)
-            ui.wait(lambda snap, title=title: _choice(snap, "settings.device_mode") == title, description=f"device {title}")
+        choices = ui.contract.get("settings_choices", {})
+        assert choices, "Target must declare settings choices for persistence testing"
+        for identifier, values in choices.items():
+            initial[identifier] = _choice(ui.snapshot(), identifier)
+            assert values, f"No choices declared for {identifier}"
+            for value in values:
+                ui.select(identifier, value)
+                ui.wait(lambda snap, identifier=identifier, value=value: _choice(snap, identifier) == value,
+                        description=f"preference {identifier} changed")
+            expected[identifier] = values[-1]
         _close_settings(ui)
     with ctx.open_ui(settings_id="preferences") as ui:
         _open_settings(ui)
-        assert _choice(ui.snapshot(), "settings.theme") == "dark"
-        assert _choice(ui.snapshot(), "settings.device_mode") == "cpu"
+        for identifier, value in expected.items():
+            assert _choice(ui.snapshot(), identifier) == value, f"Preference {identifier} did not persist"
         _close_settings(ui)
     with ctx.open_ui(settings_id="fresh") as ui:
         _open_settings(ui)
-        ctx.note("fresh_theme", ui.node("settings.theme").get("title", ui.node("settings.theme").get("value")))
+        for identifier, value in initial.items():
+            assert _choice(ui.snapshot(), identifier) == value, f"Fresh profile inherited {identifier}"
         _close_settings(ui)
 
 
@@ -248,7 +251,8 @@ def _layout(ctx):
 
 def _advanced(ctx):
     with ctx.open_ui() as ui:
-        ui.action("advanced.open")
+        if _has(ui.snapshot(), "advanced") and not ui.node("advanced").get("value"):
+            ui.action("advanced.open")
         for identifier, value in ui.contract.get("advanced_values", {}).items():
             ui.edit(identifier, value)
             ui.wait(lambda snap, identifier=identifier, value=value:

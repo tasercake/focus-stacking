@@ -50,3 +50,10 @@ def test_host_missing_capability_is_unsupported_and_does_not_execute(tmp_path):
     results = run_cases(cases, target=TargetSpec('minimal', tmp_path, ('unused',)), output=tmp_path / 'run')
     assert results[0].status == 'unsupported'
     assert 'optional_feature' in results[0].reason
+
+
+def test_automatic_execution_accepts_mixed_backend_without_stage_policy():
+    from pancake_conformance.cases.devices import require_backend
+    event = {'event': 'stack_complete', 'completed': True, 'actual_backend': 'mixed'}
+    result = SimpleNamespace(returncode=0, stderr='', diagnostics={'events': [event]})
+    assert require_backend(result) == event

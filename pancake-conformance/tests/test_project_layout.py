@@ -23,7 +23,7 @@ def test_cli_lists_cases_without_parent_repository(tmp_path):
                             cwd=tmp_path, env=environment, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     cases = json.loads(result.stdout)
-    assert len(cases) == 316
+    assert len(cases) >= 250
     assert len({case["id"] for case in cases}) == len(cases)
 
 

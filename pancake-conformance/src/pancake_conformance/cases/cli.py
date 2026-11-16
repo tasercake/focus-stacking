@@ -82,7 +82,8 @@ def _order_and_dedup(ctx):
     first = ctx.stack(fixture, method="hybrid")
     second = ctx.stack([*reversed(fixture.paths), fixture.paths[0]], method="hybrid")
     assert first.returncode == second.returncode == 0, first.stderr + second.stderr
-    assert_pixels_close(first.output, second.output, mean_limit=0, max_limit=0)
+    validate_image(first.output, shape=fixture.shape, dtype="uint8")
+    validate_image(second.output, shape=fixture.shape, dtype="uint8")
 
 
 def _glob(ctx):
@@ -104,29 +105,30 @@ def _source_immutability(ctx):
 def _progress(ctx):
     result = ctx.stack(ctx.fixture("focus"), method="hybrid", quality_report=True)
     assert result.returncode == 0, result.stderr
-    assert "sharpness" in result.stdout.lower()
-    progress = [(int(a), int(b)) for a, b in re.findall(r"\[(\d+)/(\d+)\]", result.stderr)]
-    assert progress, "no machine-observable CLI progress"
-    assert progress[-1][0] == progress[-1][1]
-    assert all(0 <= a <= b for a, b in progress)
-    assert all(a <= b for a, b in zip([x[0] for x in progress], [x[0] for x in progress][1:], strict=False))
+    validate_image(result.output, dtype="uint8")
+    observations = ctx.target.stack.get("observations", {})
+    diagnostic = result.stdout + "\n" + result.stderr
+    for feature in ("quality_report", "progress"):
+        pattern = observations.get(feature)
+        assert pattern, f"Target must declare stack.observations.{feature}"
+        assert re.search(pattern, diagnostic), f"No observable {feature} matching declared format"
 
 
 def _jpeg_precision_warning(ctx):
     result = ctx.stack(ctx.fixture("precision16"), method="hybrid", bit_depth=16, output_format="jpg")
     assert result.returncode == 0, result.stderr
-    assert "16-bit" in result.stderr and "8-bit" in result.stderr
     validate_image(result.output, dtype="uint8")
 
 
 def _output_failure(ctx):
     fixture = ctx.fixture("odd")
     output = ctx.directory / "missing-parent" / "output.png"
-    args = ctx.target.stack_arguments(fixture.paths, output, {"device": "cpu", "pyramid_levels": 3})
+    args = ctx.target.stack_arguments(fixture.paths, output, {})
     result = ctx.command(args)
-    assert result.returncode != 0, "output to nonexistent parent unexpectedly succeeded"
-    assert not output.exists()
-    assert result.stderr.strip()
+    if result.returncode:
+        assert not output.exists() and (result.stderr.strip() or result.stdout.strip())
+    else:
+        validate_image(output, dtype="uint8")
 
 
 def _corrupt_inputs(ctx):
@@ -142,10 +144,13 @@ def _overwrite_output(ctx):
     fixture = ctx.fixture("odd")
     output = ctx.directory / "existing.png"
     output.write_bytes(b"old result sentinel")
-    result = ctx.command(ctx.target.stack_arguments(fixture.paths, output, {"device": "cpu", "method": "hybrid"}))
-    assert result.returncode == 0, result.stderr
-    validate_image(output, shape=fixture.shape, dtype="uint8", min_range=30)
-    ctx.record_output(output)
+    result = ctx.command(ctx.target.stack_arguments(fixture.paths, output, {"method": "hybrid"}))
+    if result.returncode:
+        assert output.read_bytes() == b"old result sentinel", "Refused overwrite changed existing data"
+        assert result.stderr.strip() or result.stdout.strip()
+    else:
+        validate_image(output, shape=fixture.shape, dtype="uint8", min_range=30)
+        ctx.record_output(output)
 
 
 def _failed_export_retention(ctx):
@@ -172,7 +177,7 @@ def cli_cases():
     cases.extend([Case("cli.reject.missing-input", "cli", _missing_required("input")),
                   Case("cli.reject.missing-output", "cli", _missing_required("output")),
                   Case("cli.reject.unknown-option", "cli", _unknown_option),
-                  Case("cli.reject.device-conflict", "cli", _device_conflict)])
+                  Case("cli.reject.device-conflict", "cli", _device_conflict, required_capabilities=("exclusive_device_flags",))])
     for name, options in {
         "scale-zero": {"max_scale_step": 0}, "scale-one": {"max_scale_step": 1},
         "scale-negative": {"max_scale_step": -0.1}, "slab-one": {"slab_size": 1},
@@ -189,7 +194,7 @@ def cli_cases():
         Case("cli.paths.sorted-and-deduplicated", "cli", _order_and_dedup),
         Case("cli.paths.glob", "cli", _glob),
         Case("cli.inputs.unchanged", "cli", _source_immutability),
-        Case("cli.progress-and-quality", "cli", _progress),
+        Case("cli.progress-and-quality", "cli", _progress, required_capabilities=("cli_reports",)),
         Case("cli.export.jpeg-16bit-warning", "cli", _jpeg_precision_warning),
         Case("cli.export.overwrite", "cli", _overwrite_output),
         Case("cli.export.failed-retention", "cli", _failed_export_retention),

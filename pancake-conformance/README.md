@@ -3,7 +3,9 @@
 A standalone reference conformance suite for focus-stacking software. The suite
 owns observable contracts, synthetic fixtures, independent image validators,
 immutable baselines, and reports. Targets can use any language or UI framework.
-No application is selected by default.
+No application is selected by default. The contract preserves features and
+observable outcomes, with configurable CLI and semantic UI mappings. Backend
+strategy, internal state, and application delivery mechanisms are not required.
 
 Application integration belongs in [adapters](src/pancake_conformance/adapters/):
 launch hooks, dependency projects and locks, target descriptors, source coverage
@@ -33,8 +35,8 @@ uv run --locked pytest
 uv run --locked ruff check src tests
 ```
 
-Native smoke tests are skipped unless `pytest --target PATH` selects an
-application. Add `--gui-vm --gui-vm-persist` after provisioning a
+Live native smoke tests require both `pytest --target PATH` and `--gui-vm`;
+otherwise they skip. Add `--gui-vm-persist` after provisioning a
 [dedicated guest](docs/gui-vm-setup.md). CLI, algorithm, and physical-device cases
 stay on the host; interface cases run in the guest. Adapter tests live beneath
 adapters and are selected explicitly with their runtime environment.

@@ -33,7 +33,7 @@ def run_cases(cases, *, target, output, environment=None, progress=None, baselin
             start = time.monotonic()
             error = ""
             try:
-                missing = set(case.required_capabilities) - set(target.capabilities)
+                missing = set(case.required_capabilities) - set(getattr(target, "capabilities", ()))
                 if missing:
                     context.note("unsupported_capabilities", sorted(missing))
                 else:
@@ -160,7 +160,7 @@ def run_vm_cases(cases, *, target, output, workspace, environment=None, progress
         supported = []
         unsupported = {}
         for case in cases[first:last + 1]:
-            missing = set(case.required_capabilities) - {"cpu", "native_gui"}
+            missing = set(case.required_capabilities) - ((set(target.capabilities) | {"cpu", "native_gui"}) - {"physical_gpu", "gpu"})
             if missing:
                 reason = "macOS VM lacks capability: " + ", ".join(sorted(missing))
                 unsupported[case.id] = CaseResult(case.id, case.suite, "unsupported", 0,

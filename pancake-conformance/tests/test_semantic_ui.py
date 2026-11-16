@@ -147,3 +147,31 @@ def test_settings_catalog_has_no_update_preferences():
     cases = settings_cases()
     assert not any('update' in case.id for case in cases)
     assert next(case for case in cases if 'lightroom' in case.id).required_capabilities == ('lightroom',)
+
+
+def test_observation_accepts_same_snapshot_after_control_id_normalization():
+    from pancake_conformance.ui import SemanticUI
+    native = SimpleNamespace(snapshot=lambda: {'nodes': [{'id': 'motion', 'value': 'Move only'}]})
+    ui = SemanticUI(native, {'controls': {'alignment': {'id': 'motion'}},
+        'observations': {'alignment_value': {'selector': {'id': 'motion'}, 'attribute': 'value'}}})
+    assert ui.observe('alignment_value', ui.snapshot()) == 'Move only'
+
+
+def test_missing_semantic_node_uses_native_wait_contract():
+    from pancake_conformance.ui import SemanticUI
+    later = {'nodes': [{'id': 'real', 'enabled': True}]}
+    calls = []
+    native = SimpleNamespace(snapshot=lambda: {'nodes': []},
+        wait=lambda condition, **kwargs: calls.append(kwargs) or condition(later))
+    ui = SemanticUI(native, {'controls': {'export.depth': {'id': 'real'}}})
+    assert ui.node('export.depth')['enabled']
+    assert calls[0]['timeout'] == 5
+
+
+def test_declared_control_selector_disambiguates_existing_native_semantic_id():
+    from pancake_conformance.ui import SemanticUI
+    tree = {'nodes': [{'id': 'stack.pause', 'role': 'AXButton', 'enabled': True},
+                       {'role': 'AXMenuItem', 'title': 'Hold work', 'enabled': False}]}
+    ui = SemanticUI(SimpleNamespace(snapshot=lambda: tree), {'controls': {
+        'stack.pause': {'role': 'AXMenuItem', 'title': 'Hold work'}}})
+    assert ui.node('stack.pause')['enabled'] is False

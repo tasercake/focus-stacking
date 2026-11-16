@@ -11,7 +11,7 @@ from ..model import Case
 from ..validators import assert_pixels_close, validate_image
 from .coverage_interface import validate_batch_exports
 from .devices import require_backend
-from .interface import _close_settings, _open_settings, _export, _frame_rows, _has, _menu, _node, _prepare, _stack, _viewer
+from .interface import _close_settings, _open_settings, _export, _has, _menu, _node, _prepare, _stack, _viewer
 
 
 def _dialog(snapshot, title=None):
@@ -127,7 +127,7 @@ def _device_request(ctx):
         validate_image(output, shape=fixture.shape, dtype="uint16", min_range=100)
         ctx.record_output(output, "device-request")
         ctx.note("execution", event)
-        ctx.note("gpu_hardware_exercised", event["actual_backend"] == "gpu")
+        ctx.note("gpu_hardware_exercised", event.get("actual_backend") == "gpu")
     ctx.assert_cli_parity(output, fixture, mean_limit=1, max_limit=257,
                           method="hybrid", bit_depth=16, output_format="tif")
 
@@ -226,7 +226,7 @@ def recovery_cases():
         Case("interface.recovery.folder-import", "interface", _folder_import,
              "Recursive folder import skips hidden/unsupported entries, suppresses duplicates and preserves frames after rejection"),
         Case("interface.recovery.device-request", "interface", _device_request,
-             "A GPU preference completes with a reported actual device and valid pixels, including unavailable-device CPU fallback"),
+             "A GPU preference produces valid output without prescribing internal fallback strategy"),
         Case("interface.recovery.missing-source", "interface", _missing_source,
              "A source removed after import causes a recoverable worker error; restored inputs can be stacked"),
         Case("interface.recovery.batch-export", "interface", _batch_export,

@@ -25,8 +25,8 @@ def require_backend(result, expected=None):
     event = completed[-1]
     assert event.get('completed') is True, 'Stack did not complete'
     actual = event.get('actual_backend')
-    assert actual in ('cpu', 'gpu'), f'Unknown completed backend: {actual}'
     if expected is not None:
+        assert actual in ('cpu', 'gpu'), f'Unknown completed backend: {actual}'
         assert actual == expected, f'Expected {expected} execution, observed {actual}'
 
     return event

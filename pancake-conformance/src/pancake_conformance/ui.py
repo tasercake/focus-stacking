@@ -44,6 +44,10 @@ class SemanticUI:
         snapshot = deepcopy(snapshot)
         controls = self.contract.get('controls', {})
         for node in snapshot['nodes']:
+            raw_id = node.get('id')
+            if raw_id in controls and not all(node.get(key) == value for key, value in controls[raw_id].items()):
+                node['_native_id'] = raw_id
+                node['id'] = 'native:' + raw_id
             for identifier, selector in controls.items():
                 if all(node.get(key) == value for key, value in selector.items()):
                     node['_native_id'] = node.get('id')
@@ -59,10 +63,12 @@ class SemanticUI:
     def snapshot(self):
         return self.normalize(self.native.snapshot())
 
-    def node(self, selector, **kwargs):
-        if kwargs:
-            return self.wait(lambda snap: find_node(snap, selector), **kwargs)
-        return find_node(self.snapshot(), selector)
+    def node(self, selector, *, timeout=5):
+        try:
+            return find_node(self.snapshot(), selector)
+        except AssertionError:
+            return self.wait(lambda snap: find_node(snap, selector), timeout=timeout,
+                             description=f"UI control {selector}")
 
     def wait(self, condition, **kwargs):
         return self.native.wait(lambda snapshot: condition(self.normalize(snapshot)), **kwargs)
@@ -94,7 +100,7 @@ class SemanticUI:
         steps = self.contract.get('actions', {}).get(name, [{'click': name}])
         for step in steps:
             if 'click' in step:
-                self.click(step['click'], physical=step.get('physical', False))
+                self.click(step['click'], **{'physical': False, **{key: value for key, value in step.items() if key != 'click'}})
             elif 'select' in step:
                 self.select(step['select'], step['value'])
             elif 'key' in step:
@@ -126,7 +132,8 @@ class SemanticUI:
             within = self._observed_node(tree, rule['within'])['path'] if 'within' in rule else []
             return sum(all(node.get(key) == value for key, value in rule['count'].items())
                        and node.get('path', [])[:len(within)] == within
-                       and len(node.get('path', [])) > len(within) for node in tree['nodes'])
+                       and len(node.get('path', [])) > len(within)
+                       and (not rule.get('direct') or len(node['path']) == len(within) + 1) for node in tree['nodes'])
         node = self._observed_node(tree, rule['selector'])
         value = node[rule.get('attribute', 'value')]
         if 'json' in rule:

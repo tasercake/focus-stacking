@@ -308,8 +308,8 @@ def test_lifecycle_uses_public_menu_state_when_progress_children_are_unreadable(
             return {'nodes': [
                 {'id': 'stack.start', 'enabled': not busy},
                 {'id': 'export.start', 'enabled': self.state == 'done'},
-                {'role': 'AXMenuItem', 'title': 'Resume' if self.state == 'paused' else 'Pause', 'enabled': busy},
-                {'role': 'AXMenuItem', 'title': 'Stop', 'enabled': busy},
+                {'id': 'stack.resume' if self.state == 'paused' else 'stack.pause', 'enabled': busy},
+                {'id': 'stack.stop', 'enabled': busy},
                 {'path': [0, 0, 35]}, {'path': [0, 0, 36]},
             ]}
 
@@ -321,16 +321,17 @@ def test_lifecycle_uses_public_menu_state_when_progress_children_are_unreadable(
             assert result, kwargs.get('description')
             return result
 
+        def action(self, selector):
+            return self.click(selector)
+
         def click(self, selector, **kwargs):
             self.actions.append(selector)
             if selector == 'stack.start':
                 self.starts += 1
                 self.state = 'done' if self.starts == 2 else 'running'
             else:
-                assert selector['role'] == 'AXMenuItem'
-                title = selector['title']
-                expected, replacement = {'Pause': ('running', 'paused'), 'Resume': ('paused', 'running'),
-                                         'Stop': ('running', 'idle')}[title]
+                expected, replacement = {'stack.pause': ('running', 'paused'), 'stack.resume': ('paused', 'running'),
+                                         'stack.stop': ('running', 'idle')}[selector]
                 assert self.state == expected
                 self.state = replacement
 
@@ -338,7 +339,7 @@ def test_lifecycle_uses_public_menu_state_when_progress_children_are_unreadable(
     context = SimpleNamespace(fixture=lambda _: SimpleNamespace(paths=()), open_ui=lambda **_: ui)
     monkeypatch.setattr(interface, '_prepare', lambda *args: None)
     interface._lifecycle(context)
-    assert [action['title'] for action in ui.actions if isinstance(action, dict)] == ['Pause', 'Resume', 'Stop']
+    assert [action for action in ui.actions if action != 'stack.start'] == ['stack.pause', 'stack.resume', 'stack.stop']
     assert ui.starts == 2
     assert ui.state == 'done'
 
