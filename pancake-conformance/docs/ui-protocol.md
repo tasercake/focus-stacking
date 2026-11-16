@@ -112,3 +112,20 @@ file dialogs always navigate to a verified case-owned directory; remembered
 locations are not accepted. Screenshots, accessibility trees, action traces,
 and exported files remain evidence. Guest exports remain pending until host
 CLI pixel comparisons complete. See [VM setup](gui-vm-setup.md).
+
+
+Native selectors may use `any_of` for alternative observable presentations, such
+as a modal sheet or a dialog window. Exact native identifiers take precedence
+over broader role selectors. Matching never creates a UI state or calls target
+business logic. `empty_when` in a count observation requires the declared native
+empty-state text; an absent container alone does not imply zero images. Large
+virtualized lists use a declared `source_total` observation from an actual UI
+counter or status label rather than assuming all rows appear in the AX tree.
+
+A popup action acknowledgement does not prove that a menu opened. Selection
+requires a visible option and the committed resulting value. If AXShowMenu
+explicitly leaves a control collapsed, the driver may try its advertised
+AXPress action once. Expanded but unreadable popups still fail; no option index
+or postcondition is inferred. Pan checks first establish a zoom above observed
+fit scale. Disabled recent-history placeholders are read as published state,
+without treating their zero native bounds as clickable geometry.

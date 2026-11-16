@@ -39,3 +39,28 @@ checks require observed GPU completion. Guest GPU cases remain unsupported.
 Historical source-coverage exclusions are tied to old source lines and must
 not be blindly repinned after this correction. V2 uses a raw denominator with
 no exclusions; the old profile remains archived for historical evidence.
+
+
+Additional validation binds the original repeated checker and nearby
+non-repeating controls to actual Apple M4 Pro GPU completion for all four
+methods. All eight runs passed their unchanged geometry and focus oracles with
+zero measured transform drift. These are supplementary backend variants of the
+canonical CPU cases, not manufactured CPU/GPU differences.
+
+Mixed-dimension, mixed-depth exposure fusion now checks genuine sixteen-bit
+export and GPU/CPU parity. The measured mean error was 0.0594 and peak error
+16 sixteen-bit code values, with identical identity transforms; its limits are
+mean 1 and peak 32. Independent single-batch and multibatch gradient identity
+checks remain limited to one sixteen-bit code value. Dimension matching keeps
+the later source dtype even when the first source is eight-bit.
+
+The merged native harness needed repairs discovered by full guest replay:
+specific file-panel IDs precede broad dialog aliases; error sheets and windows
+have explicit alternatives; native About menu/window labels are mapped from
+observed UI; source-index regex escaping is corrected; menu clicks wait for
+visible items; disabled history placeholders are read without clicking them;
+empty-frame count requires actual empty-state text; pan tests first exceed fit
+zoom. Lifecycle setup selects the same breathing mode before bulk folder import
+and checks the published 64-image total, since the native virtualized list may
+publish only one AX row. Pause/resume/cancel still exercise actual processing,
+without delays, barriers, backend injection or completion substitution.

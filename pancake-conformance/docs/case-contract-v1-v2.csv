@@ -36,7 +36,7 @@ cli.coverage.raw.legacy-alignment,cli.coverage.raw.legacy-alignment,Retained req
 cli.coverage.input.npy,cli.coverage.input.npy,Retained request; input immutability now enforced on every stack call.
 cli.coverage.input.literal-glob,cli.coverage.input.literal-glob,Retained request; input immutability now enforced on every stack call.
 cli.coverage.input.directories,cli.coverage.input.directories,Retained request; input immutability now enforced on every stack call.
-cli.coverage.cache.recovery,cli.coverage.cache.recovery,Retained request; input immutability now enforced on every stack call.
+cli.coverage.cache.recovery,,Reference cache/calibration strategy retired from portable catalog; application behavior unchanged.
 cli.coverage.reject.oversize-png,cli.coverage.reject.oversize-png,Retained request; input immutability now enforced on every stack call.
 cli.coverage.reject.png,cli.coverage.reject.png,Retained request; input immutability now enforced on every stack call.
 cli.coverage.partial.png,cli.coverage.partial.png,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
@@ -46,15 +46,15 @@ cli.coverage.reject.npy,cli.coverage.reject.npy,Retained request; input immutabi
 cli.coverage.partial.npy,cli.coverage.partial.npy,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
 cli.coverage.reject.unknown,cli.coverage.reject.unknown,Retained request; input immutability now enforced on every stack call.
 cli.coverage.partial.unknown,cli.coverage.partial.unknown,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
-cli.service.version,cli.service.version,Retained request; input immutability now enforced on every stack call.
-cli.service.release-policy,cli.service.release-policy,Retained request; input immutability now enforced on every stack call.
-cli.service.release-empty,cli.service.release-empty,Retained request; input immutability now enforced on every stack call.
-cli.service.release-errors,cli.service.release-errors,Retained request; input immutability now enforced on every stack call.
-cli.service.download,cli.service.download,Retained request; input immutability now enforced on every stack call.
-cli.service.download-no-length,cli.service.download-no-length,Retained request; input immutability now enforced on every stack call.
-cli.service.download-errors,cli.service.download-errors,Retained request; input immutability now enforced on every stack call.
-cli.service.download-cancel,cli.service.download-cancel,Retained request; input immutability now enforced on every stack call.
-cli.service.source-install,cli.service.source-install,Retained request; input immutability now enforced on every stack call.
+cli.service.version,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+cli.service.release-policy,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+cli.service.release-empty,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+cli.service.release-errors,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+cli.service.download,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+cli.service.download-no-length,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+cli.service.download-errors,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+cli.service.download-cancel,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+cli.service.source-install,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
 algorithms.stack.laplacian,algorithms.stack.laplacian,Retained request; input immutability now enforced on every stack call.
 algorithms.odd_dimensions.laplacian,algorithms.odd_dimensions.laplacian,Retained request; input immutability now enforced on every stack call.
 algorithms.compatibility.flat.laplacian,algorithms.flat.laplacian,Constant source color; deterministic first source for zero focus weights.
@@ -258,12 +258,12 @@ devices.gpu.slabs.depth_map,devices.gpu.slabs.depth_map,Retained request; input 
 devices.gpu.precision16.hybrid,devices.gpu.precision16.hybrid,Retained request; input immutability now enforced on every stack call.
 devices.gpu.precision16.weighted_average,devices.gpu.precision16.weighted_average,Retained request; input immutability now enforced on every stack call.
 devices.gpu.precision16.depth_map,devices.gpu.precision16.depth_map,Retained request; input immutability now enforced on every stack call.
-devices.gpu.index.zero,devices.gpu.index.zero,Retained request; input immutability now enforced on every stack call.
-devices.gpu.index.negative,devices.gpu.index.negative,Retained request; input immutability now enforced on every stack call.
-devices.gpu.index.above_range,devices.gpu.index.above_range,Retained request; input immutability now enforced on every stack call.
+devices.gpu.index.zero,,Reference-only GPU-index normalization retained and rechecked; no longer a portable device-selection policy.
+devices.gpu.index.negative,,Reference-only GPU-index normalization retained and rechecked; no longer a portable device-selection policy.
+devices.gpu.index.above_range,,Reference-only GPU-index normalization retained and rechecked; no longer a portable device-selection policy.
 devices.gpu.high_precision,devices.gpu.high_precision,Retained request; input immutability now enforced on every stack call.
 devices.gpu.decode_fallback,devices.gpu.corrupt_input_rejected,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
-devices.auto.measured_cache_reuse,devices.auto.measured_cache_reuse,Retained request; input immutability now enforced on every stack call.
+devices.auto.measured_cache_reuse,,Reference cache/calibration strategy retired from portable catalog; application behavior unchanged.
 interface.controls.method-alignment,interface.controls.method-alignment,Retained request; input immutability now enforced on every stack call.
 interface.algorithm.laplacian,interface.algorithm.laplacian,Retained request; input immutability now enforced on every stack call.
 interface.algorithm.hybrid,interface.algorithm.hybrid,Retained request; input immutability now enforced on every stack call.
@@ -282,7 +282,7 @@ interface.lifecycle.pause-cancel,interface.lifecycle.pause-cancel,Retained reque
 interface.compute.gpu,interface.compute.gpu,Retained request; input immutability now enforced on every stack call.
 interface.alignment.crop,interface.alignment.crop,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
 interface.settings.persistence,interface.settings.persistence,Retained request; input immutability now enforced on every stack call.
-interface.settings.update-preferences,interface.settings.update-preferences,Retained request; input immutability now enforced on every stack call.
+interface.settings.update-preferences,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
 interface.settings.lightroom-status,interface.settings.lightroom-status,Retained request; input immutability now enforced on every stack call.
 interface.about,interface.about,Retained request; input immutability now enforced on every stack call.
 interface.portability.retained-results,interface.portability.retained-results,Retained request; input immutability now enforced on every stack call.
@@ -291,9 +291,9 @@ interface.export.batch,interface.export.batch,Retained request; input immutabili
 interface.result.manual-crop,interface.result.manual-crop,Retained request; input immutability now enforced on every stack call.
 interface.import.recent-folders,interface.import.recent-folders,Retained request; input immutability now enforced on every stack call.
 interface.viewer.keyboard-boundaries,interface.viewer.keyboard-boundaries,Retained request; input immutability now enforced on every stack call.
-interface.updates.available,interface.updates.available,Retained request; input immutability now enforced on every stack call.
-interface.updates.current,interface.updates.current,Retained request; input immutability now enforced on every stack call.
-interface.updates.network-error,interface.updates.network-error,Retained request; input immutability now enforced on every stack call.
+interface.updates.available,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+interface.updates.current,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
+interface.updates.network-error,,Reference delivery/update contract retired from portable feature catalog; application behavior unchanged.
 interface.sprint.viewer-input,interface.sprint.viewer-input,Retained request; input immutability now enforced on every stack call.
 interface.sprint.frame-context,interface.sprint.frame-context,Retained request; input immutability now enforced on every stack call.
 interface.sprint.viewport-export,interface.sprint.viewport-export,Retained request; input immutability now enforced on every stack call.
@@ -315,80 +315,81 @@ interface.recovery.device-request,interface.recovery.device-request,Retained req
 interface.recovery.missing-source,interface.recovery.missing-source,Retained request; input immutability now enforced on every stack call.
 interface.recovery.batch-export,interface.recovery.batch-export,Retained request; input immutability now enforced on every stack call.
 interface.recovery.export-cancel,interface.recovery.export-cancel,Retained request; input immutability now enforced on every stack call.
-,algorithms.alignment.nonrepeating_slabs.laplacian,New independent v2 regression contract.
-,algorithms.alignment.nonrepeating_slabs.hybrid,New independent v2 regression contract.
-,algorithms.alignment.nonrepeating_slabs.weighted_average,New independent v2 regression contract.
-,algorithms.alignment.nonrepeating_slabs.depth_map,New independent v2 regression contract.
-,algorithms.precision16.png.exposure_fusion,New independent v2 regression contract.
-,algorithms.precision16.tif.exposure_fusion,New independent v2 regression contract.
-,algorithms.cross_export.exposure_fusion,New independent v2 regression contract.
-,algorithms.input.orientation1,New independent v2 regression contract.
-,algorithms.exposure_constant_mix.4,New independent v2 regression contract.
-,algorithms.exposure_constant_mix.9,New independent v2 regression contract.
-,algorithms.weighted.zero_regions,New independent v2 regression contract.
-,algorithms.exposure_precision.2.png,New independent v2 regression contract.
-,algorithms.exposure_precision.2.tif,New independent v2 regression contract.
-,algorithms.exposure_precision.4.tif,New independent v2 regression contract.
-,algorithms.exposure_precision.9.png,New independent v2 regression contract.
-,algorithms.exposure_precision.9.tif,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.laplacian.stack,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.laplacian.translation,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.laplacian.euclidean,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.laplacian.similarity,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.laplacian.affine,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.laplacian.breathing,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.hybrid.stack,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.hybrid.translation,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.hybrid.euclidean,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.hybrid.similarity,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.hybrid.affine,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.hybrid.breathing,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.weighted_average.translation,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.weighted_average.euclidean,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.weighted_average.affine,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.weighted_average.breathing,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.depth_map.translation,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.depth_map.euclidean,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.depth_map.affine,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.depth_map.breathing,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.exposure_fusion.translation,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.exposure_fusion.euclidean,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.exposure_fusion.affine,New independent v2 regression contract.
-,algorithms.coverage.partial_corrupt.exposure_fusion.breathing,New independent v2 regression contract.
-,devices.gpu.precision16.exposure_fusion,New independent v2 regression contract.
-,devices.gpu.weighted.zero_regions,New independent v2 regression contract.
-,devices.gpu.exposure_constant_mix.4,New independent v2 regression contract.
-,devices.gpu.exposure_constant_mix.9,New independent v2 regression contract.
-,devices.gpu.exposure_precision.2,New independent v2 regression contract.
-,devices.gpu.exposure_precision.4,New independent v2 regression contract.
-,devices.gpu.exposure_precision.9,New independent v2 regression contract.
-,devices.gpu.corrupt.laplacian.stack,New independent v2 regression contract.
-,devices.gpu.corrupt.laplacian.translation,New independent v2 regression contract.
-,devices.gpu.corrupt.laplacian.euclidean,New independent v2 regression contract.
-,devices.gpu.corrupt.laplacian.similarity,New independent v2 regression contract.
-,devices.gpu.corrupt.laplacian.affine,New independent v2 regression contract.
-,devices.gpu.corrupt.laplacian.breathing,New independent v2 regression contract.
-,devices.gpu.corrupt.hybrid.stack,New independent v2 regression contract.
-,devices.gpu.corrupt.hybrid.translation,New independent v2 regression contract.
-,devices.gpu.corrupt.hybrid.euclidean,New independent v2 regression contract.
-,devices.gpu.corrupt.hybrid.similarity,New independent v2 regression contract.
-,devices.gpu.corrupt.hybrid.affine,New independent v2 regression contract.
-,devices.gpu.corrupt.hybrid.breathing,New independent v2 regression contract.
-,devices.gpu.corrupt.weighted_average.stack,New independent v2 regression contract.
-,devices.gpu.corrupt.weighted_average.translation,New independent v2 regression contract.
-,devices.gpu.corrupt.weighted_average.euclidean,New independent v2 regression contract.
-,devices.gpu.corrupt.weighted_average.similarity,New independent v2 regression contract.
-,devices.gpu.corrupt.weighted_average.affine,New independent v2 regression contract.
-,devices.gpu.corrupt.weighted_average.breathing,New independent v2 regression contract.
-,devices.gpu.corrupt.depth_map.stack,New independent v2 regression contract.
-,devices.gpu.corrupt.depth_map.translation,New independent v2 regression contract.
-,devices.gpu.corrupt.depth_map.euclidean,New independent v2 regression contract.
-,devices.gpu.corrupt.depth_map.similarity,New independent v2 regression contract.
-,devices.gpu.corrupt.depth_map.affine,New independent v2 regression contract.
-,devices.gpu.corrupt.depth_map.breathing,New independent v2 regression contract.
-,devices.gpu.corrupt.exposure_fusion.stack,New independent v2 regression contract.
-,devices.gpu.corrupt.exposure_fusion.translation,New independent v2 regression contract.
-,devices.gpu.corrupt.exposure_fusion.euclidean,New independent v2 regression contract.
-,devices.gpu.corrupt.exposure_fusion.similarity,New independent v2 regression contract.
-,devices.gpu.corrupt.exposure_fusion.affine,New independent v2 regression contract.
-,devices.gpu.corrupt.exposure_fusion.breathing,New independent v2 regression contract.
+,algorithms.alignment.nonrepeating_slabs.laplacian,New independent v2 correctness contract.
+,algorithms.alignment.nonrepeating_slabs.hybrid,New independent v2 correctness contract.
+,algorithms.alignment.nonrepeating_slabs.weighted_average,New independent v2 correctness contract.
+,algorithms.alignment.nonrepeating_slabs.depth_map,New independent v2 correctness contract.
+,algorithms.precision16.png.exposure_fusion,New independent v2 correctness contract.
+,algorithms.precision16.tif.exposure_fusion,New independent v2 correctness contract.
+,algorithms.cross_export.exposure_fusion,New independent v2 correctness contract.
+,algorithms.input.orientation1,New independent v2 correctness contract.
+,algorithms.exposure_constant_mix.4,New independent v2 correctness contract.
+,algorithms.exposure_constant_mix.9,New independent v2 correctness contract.
+,algorithms.weighted.zero_regions,New independent v2 correctness contract.
+,algorithms.exposure_precision.2.png,New independent v2 correctness contract.
+,algorithms.exposure_precision.2.tif,New independent v2 correctness contract.
+,algorithms.exposure_precision.4.tif,New independent v2 correctness contract.
+,algorithms.exposure_precision.9.png,New independent v2 correctness contract.
+,algorithms.exposure_precision.9.tif,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.laplacian.stack,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.laplacian.translation,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.laplacian.euclidean,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.laplacian.similarity,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.laplacian.affine,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.laplacian.breathing,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.hybrid.stack,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.hybrid.translation,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.hybrid.euclidean,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.hybrid.similarity,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.hybrid.affine,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.hybrid.breathing,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.weighted_average.translation,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.weighted_average.euclidean,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.weighted_average.affine,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.weighted_average.breathing,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.depth_map.translation,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.depth_map.euclidean,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.depth_map.affine,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.depth_map.breathing,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.exposure_fusion.translation,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.exposure_fusion.euclidean,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.exposure_fusion.affine,New independent v2 correctness contract.
+,algorithms.coverage.partial_corrupt.exposure_fusion.breathing,New independent v2 correctness contract.
+,devices.gpu.precision16.exposure_fusion,New independent v2 correctness contract.
+,devices.gpu.weighted.zero_regions,New independent v2 correctness contract.
+,devices.gpu.exposure_constant_mix.4,New independent v2 correctness contract.
+,devices.gpu.exposure_constant_mix.9,New independent v2 correctness contract.
+,devices.gpu.exposure_precision.2,New independent v2 correctness contract.
+,devices.gpu.exposure_precision.4,New independent v2 correctness contract.
+,devices.gpu.exposure_precision.9,New independent v2 correctness contract.
+,devices.gpu.corrupt.laplacian.stack,New independent v2 correctness contract.
+,devices.gpu.corrupt.laplacian.translation,New independent v2 correctness contract.
+,devices.gpu.corrupt.laplacian.euclidean,New independent v2 correctness contract.
+,devices.gpu.corrupt.laplacian.similarity,New independent v2 correctness contract.
+,devices.gpu.corrupt.laplacian.affine,New independent v2 correctness contract.
+,devices.gpu.corrupt.laplacian.breathing,New independent v2 correctness contract.
+,devices.gpu.corrupt.hybrid.stack,New independent v2 correctness contract.
+,devices.gpu.corrupt.hybrid.translation,New independent v2 correctness contract.
+,devices.gpu.corrupt.hybrid.euclidean,New independent v2 correctness contract.
+,devices.gpu.corrupt.hybrid.similarity,New independent v2 correctness contract.
+,devices.gpu.corrupt.hybrid.affine,New independent v2 correctness contract.
+,devices.gpu.corrupt.hybrid.breathing,New independent v2 correctness contract.
+,devices.gpu.corrupt.weighted_average.stack,New independent v2 correctness contract.
+,devices.gpu.corrupt.weighted_average.translation,New independent v2 correctness contract.
+,devices.gpu.corrupt.weighted_average.euclidean,New independent v2 correctness contract.
+,devices.gpu.corrupt.weighted_average.similarity,New independent v2 correctness contract.
+,devices.gpu.corrupt.weighted_average.affine,New independent v2 correctness contract.
+,devices.gpu.corrupt.weighted_average.breathing,New independent v2 correctness contract.
+,devices.gpu.corrupt.depth_map.stack,New independent v2 correctness contract.
+,devices.gpu.corrupt.depth_map.translation,New independent v2 correctness contract.
+,devices.gpu.corrupt.depth_map.euclidean,New independent v2 correctness contract.
+,devices.gpu.corrupt.depth_map.similarity,New independent v2 correctness contract.
+,devices.gpu.corrupt.depth_map.affine,New independent v2 correctness contract.
+,devices.gpu.corrupt.depth_map.breathing,New independent v2 correctness contract.
+,devices.gpu.corrupt.exposure_fusion.stack,New independent v2 correctness contract.
+,devices.gpu.corrupt.exposure_fusion.translation,New independent v2 correctness contract.
+,devices.gpu.corrupt.exposure_fusion.euclidean,New independent v2 correctness contract.
+,devices.gpu.corrupt.exposure_fusion.similarity,New independent v2 correctness contract.
+,devices.gpu.corrupt.exposure_fusion.affine,New independent v2 correctness contract.
+,devices.gpu.corrupt.exposure_fusion.breathing,New independent v2 correctness contract.
+,devices.gpu.exposure_mixed_dimensions,New independent v2 correctness contract.

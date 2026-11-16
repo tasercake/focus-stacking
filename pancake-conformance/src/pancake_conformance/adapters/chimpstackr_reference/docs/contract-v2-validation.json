@@ -1,0 +1,2732 @@
+{
+  "schema_version": 1,
+  "contract_version": 2,
+  "application_commit": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "application_tests": {
+    "host_headless_passed": 362,
+    "guest_gui_passed": 40,
+    "guest_gui_skipped_no_opencl": 3,
+    "host_data_only_gpu_preview_passed": 3,
+    "total_distinct_passed": 405
+  },
+  "suite_self_tests": {
+    "passed": 324,
+    "skipped": 2,
+    "skip_reason": "Native smoke wrappers require explicit VM/target; equivalent cases executed through conformance runner."
+  },
+  "reference_conformance": {
+    "selected": 376,
+    "passed": 375,
+    "failed": 0,
+    "unsupported": {
+      "interface.compute.gpu": "macOS VM lacks physical GPU"
+    }
+  },
+  "supplementary_gpu_repeated_and_nonrepeating_controls": {
+    "passed": 8,
+    "device": "Apple M4 Pro",
+    "all_transform_drift_pixels": 0.0
+  },
+  "baseline": {
+    "path": "baselines/contract-v2-2026-11-16",
+    "decoded_outputs": 346,
+    "manifest_sha256": "dacb538f5e141efb069f167dc9af0328a80b83a10c6f7922df2dce9ddf136ddc",
+    "overwrite_allowed": false
+  },
+  "rust_scaffold": {
+    "unchanged_files": 34,
+    "checked_by_sha256": true
+  },
+  "limitations": [
+    "Native physical-GPU GUI conformance cannot run in macOS VM; host CLI/device evidence is separate.",
+    "No portable repeatable genuine GPU runtime/driver failure trigger was available. Corrupt-input rejection is not fallback evidence.",
+    "Unsupported motion uses identity with zero confidence; genuinely unidentifiable real motion may remain uncorrected.",
+    "Generated fixtures and Darwin arm64 reference runtime do not certify every real photograph, RAW variant, OS, or Python version."
+  ],
+  "validation_history": [
+    {
+      "run": "final-host",
+      "counts": {
+        "passed": 341,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "complete": true,
+      "sha256": "564de2e416530959cd45bc61c6b8bbfa6c4a9a0031f4a31d7e310b2a142129d4"
+    },
+    {
+      "run": "final-interface-custom-vm",
+      "counts": {
+        "passed": 21,
+        "failed": 13,
+        "unsupported": 1
+      },
+      "complete": true,
+      "sha256": "e695442d8e9082b0ca343fd5fe66b7feacdbf5d0367e12853c1c65f18ec4f907"
+    },
+    {
+      "run": "interface-repair",
+      "counts": {
+        "passed": 9,
+        "failed": 5,
+        "unsupported": 0
+      },
+      "complete": true,
+      "sha256": "e6a8faddc191ab612deb03cbce571277b39aa85b2a974a1d1a79fd6ce07f1b31"
+    },
+    {
+      "run": "interface-repair-2",
+      "counts": {
+        "passed": 4,
+        "failed": 1,
+        "unsupported": 0
+      },
+      "complete": true,
+      "sha256": "d6e34487ebf354569eb7b27d12ab8c5596202715983b102c5e2262145dc76613"
+    },
+    {
+      "run": "lifecycle-final",
+      "counts": {
+        "passed": 1,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "complete": true,
+      "sha256": "cb50688eff5c4b838fc740f46dbb31a80848ae082f6be26934572046462359a6"
+    }
+  ],
+  "final_case_verdicts": [
+    {
+      "id": "algorithms.alignment.affine.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.affine.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.affine.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.affine.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.affine.reference_middle",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.affine.reference_previous",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.affine.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.auto_crop",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.breathing.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.breathing.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.breathing.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.breathing.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.breathing.max_precision",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.breathing.reference_middle",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.breathing.reference_previous",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.breathing.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.euclidean.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.euclidean.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.euclidean.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.euclidean.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.euclidean.reference_middle",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.euclidean.reference_previous",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.euclidean.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.legacy_rotation_scale",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.mixed_dimensions.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.mixed_dimensions.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.mixed_dimensions.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.mixed_dimensions.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.mixed_dimensions.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.nonrepeating_slabs.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.nonrepeating_slabs.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.nonrepeating_slabs.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.nonrepeating_slabs.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.repeated_breathing_slabs.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.repeated_breathing_slabs.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.repeated_breathing_slabs.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.repeated_breathing_slabs.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.similarity.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.similarity.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.similarity.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.similarity.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.similarity.reference_middle",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.similarity.reference_previous",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.similarity.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.translation.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.translation.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.translation.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.translation.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.translation.reference_middle",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.translation.reference_previous",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.translation.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.alignment.translation_bounded_crop",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.automatic_parameters.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.automatic_parameters.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.automatic_parameters.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.automatic_parameters.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.automatic_parameters.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.dimensions_resize_over_twofold",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.featureless.affine",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.featureless.similarity",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.gray_array.depth_map.cpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.gray_array.depth_map.gpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.gray_array.hybrid.cpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.gray_array.hybrid.gpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.gray_array.weighted_average.cpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.gray_array.weighted_average.gpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.hdr_multibatch.cpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.hdr_multibatch.gpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.implausible.anisotropy",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.implausible.rotation",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.implausible.scale",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.mixed_precision.ref16.aligned",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.mixed_precision.ref16.stack",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.mixed_precision.ref8.aligned",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.mixed_precision.ref8.stack",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.no_decodable_frames.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.no_decodable_frames.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.no_decodable_frames.sequential",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.no_decodable_frames.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.depth_map.affine",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.depth_map.breathing",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.depth_map.euclidean",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.depth_map.similarity",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.depth_map.stack",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.depth_map.translation",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.exposure_fusion.affine",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.exposure_fusion.breathing",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.exposure_fusion.euclidean",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.exposure_fusion.similarity",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.exposure_fusion.stack",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.exposure_fusion.translation",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.hybrid.affine",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.hybrid.breathing",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.hybrid.euclidean",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.hybrid.similarity",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.hybrid.stack",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.hybrid.translation",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.laplacian.affine",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.laplacian.breathing",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.laplacian.euclidean",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.laplacian.similarity",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.laplacian.stack",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.laplacian.translation",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.weighted_average.affine",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.weighted_average.breathing",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.weighted_average.euclidean",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.weighted_average.similarity",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.weighted_average.stack",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.partial_corrupt.weighted_average.translation",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.precision.affine",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.precision.euclidean",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.coverage.scale_clamp",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.cross_export.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.cross_export.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.cross_export.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.cross_export.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.cross_export.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.deterministic.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.deterministic.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.deterministic.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.deterministic.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.deterministic.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.export.exr",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.export.jpg",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.export.tif",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_brackets",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_constant_mix.4",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_constant_mix.9",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_precision.2.png",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_precision.2.tif",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_precision.4.png",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_precision.4.tif",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_precision.9.png",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.exposure_precision.9.tif",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.flat.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.flat.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.flat.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.flat.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.flat.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.bayer_dng.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.bayer_dng.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.bayer_dng.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.bayer_dng.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.bayer_dng.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.exr",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.float01",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.float255",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.formats",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.grayscale",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.grayscale16",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.orientation1",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.orientation2",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.orientation3",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.orientation4",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.orientation5",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.orientation6",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.orientation7",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.orientation8",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.rgba",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.input.unicode",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.odd_dimensions.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.odd_dimensions.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.odd_dimensions.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.odd_dimensions.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.odd_dimensions.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.parameters.kernel_11",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.parameters.kernel_2",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.parameters.kernel_6",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.parameters.pyramid_levels_2",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.parameters.pyramid_levels_6",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.png.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.png.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.png.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.png.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.png.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.tif.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.tif.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.tif.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.tif.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.precision16.tif.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.quality_report.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.quality_report.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.quality_report.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.quality_report.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.quality_report.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.recovery.cascade.cpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.recovery.cascade.gpu",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.2.0.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.2.0.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.2.0.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.2.0.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.3.1.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.3.1.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.3.1.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.3.1.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.4.2.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.4.2.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.4.2.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.4.2.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.9.0.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.9.0.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.9.0.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.9.0.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.breathing.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.breathing.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.breathing.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.slabs.breathing.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.black-translation",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.grayscale.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.grayscale.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.grayscale.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.grayscale16.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.grayscale16.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.grayscale16.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.rgba.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.rgba.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.sprint.native-input.rgba.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.stack.depth_map",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.stack.exposure_fusion",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.stack.hybrid",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.stack.laplacian",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.stack.weighted_average",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "algorithms.weighted.zero_regions",
+      "suite": "algorithms",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.auto.large",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.auto.medium",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.auto.unmeasured",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.input.directories",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.input.literal-glob",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.input.npy",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.partial.dng",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.partial.npy",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.partial.png",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.partial.unknown",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.raw.legacy-alignment",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.reject.dng",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.reject.npy",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.reject.oversize-png",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.reject.png",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.coverage.reject.unknown",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.export.failed-retention",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.export.jpeg-16bit-warning",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.export.overwrite",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.help",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.inputs.unchanged",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.paths.glob",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.paths.sorted-and-deduplicated",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.progress-and-quality",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.alignment",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.bit-depth",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.corrupt-images",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.device-conflict",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.duplicate-single",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.integer",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.method",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.missing-input",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.missing-output",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.no-arguments",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.no-files",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.one-file",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.output-parent",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.overlap-negative",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.overlap-too-large",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.reference",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.scale-negative",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.scale-one",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.scale-zero",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.slab-negative",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.slab-one",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "cli.reject.unknown-option",
+      "suite": "cli",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.auto.cold.depth_map",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.auto.cold.exposure_fusion",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.auto.cold.hybrid",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.auto.cold.laplacian",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.auto.cold.weighted_average",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.cpu.depth_map",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.cpu.exposure_fusion",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.cpu.hybrid",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.cpu.laplacian",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.cpu.weighted_average",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.aligned.depth_map",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.aligned.exposure_fusion",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.aligned.hybrid",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.aligned.laplacian",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.aligned.weighted_average",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.alignment.affine",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.alignment.breathing",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.alignment.euclidean",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.alignment.similarity",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.alignment.translation",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.depth_map.affine",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.depth_map.breathing",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.depth_map.euclidean",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.depth_map.similarity",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.depth_map.stack",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.depth_map.translation",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.exposure_fusion.affine",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.exposure_fusion.breathing",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.exposure_fusion.euclidean",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.exposure_fusion.similarity",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.exposure_fusion.stack",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.exposure_fusion.translation",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.hybrid.affine",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.hybrid.breathing",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.hybrid.euclidean",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.hybrid.similarity",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.hybrid.stack",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.hybrid.translation",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.laplacian.affine",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.laplacian.breathing",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.laplacian.euclidean",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.laplacian.similarity",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.laplacian.stack",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.laplacian.translation",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.weighted_average.affine",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.weighted_average.breathing",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.weighted_average.euclidean",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.weighted_average.similarity",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.weighted_average.stack",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt.weighted_average.translation",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.corrupt_input_rejected",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.exposure_constant_mix.4",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.exposure_constant_mix.9",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.exposure_mixed_dimensions",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.exposure_precision.2",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.exposure_precision.4",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.exposure_precision.9",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.high_precision",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.precision16.depth_map",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.precision16.exposure_fusion",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.precision16.hybrid",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.precision16.weighted_average",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.slabs.depth_map",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.slabs.hybrid",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.slabs.laplacian",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.slabs.weighted_average",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.stack.depth_map",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.stack.exposure_fusion",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.stack.hybrid",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.stack.laplacian",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.stack.weighted_average",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "devices.gpu.weighted.zero_regions",
+      "suite": "devices",
+      "status": "passed",
+      "run": "final-host",
+      "reason": ""
+    },
+    {
+      "id": "interface.about",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair-2",
+      "reason": ""
+    },
+    {
+      "id": "interface.algorithm.depth_map",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.algorithm.exposure_fusion",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.algorithm.hybrid",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.algorithm.laplacian",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.algorithm.weighted_average",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.alignment.crop",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.compute.gpu",
+      "suite": "interface",
+      "status": "unsupported",
+      "run": "final-interface-custom-vm",
+      "reason": "macOS VM lacks capability: physical_gpu"
+    },
+    {
+      "id": "interface.controls.advanced-visibility",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.controls.method-alignment",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.export.batch",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.export.formats",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.import.native-dialogs",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.import.raw",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.import.recent-folders",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair-2",
+      "reason": ""
+    },
+    {
+      "id": "interface.layout.panels",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.lifecycle.pause-cancel",
+      "suite": "interface",
+      "status": "passed",
+      "run": "lifecycle-final",
+      "reason": ""
+    },
+    {
+      "id": "interface.portability.retained-results",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.portability.unicode-paths",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.batch-export",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair-2",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.close-unsaved",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.device-request",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.export-cancel",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.folder-import",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.missing-source",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.result.manual-crop",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.settings.lightroom-status",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.settings.persistence",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.sprint.frame-context",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.sprint.viewer-input",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.sprint.viewport-export",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.startup.empty",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    },
+    {
+      "id": "interface.viewer.keyboard-boundaries",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair-2",
+      "reason": ""
+    },
+    {
+      "id": "interface.viewer.navigation-comparison",
+      "suite": "interface",
+      "status": "passed",
+      "run": "interface-repair",
+      "reason": ""
+    },
+    {
+      "id": "interface.workflow.unsaved-discard",
+      "suite": "interface",
+      "status": "passed",
+      "run": "final-interface-custom-vm",
+      "reason": ""
+    }
+  ]
+}
