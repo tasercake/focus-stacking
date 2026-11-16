@@ -211,7 +211,7 @@ def test_dialog_selector_accepts_native_sheet_or_window_without_masking_about():
                 'about.window': {'role': 'AXWindow', 'title': 'About'}}
     for node in ({'role': 'AXSheet'}, {'role': 'AXWindow', 'subrole': 'AXDialog'}):
         snapshot = {'nodes': [dict(node, path=[0])]}
-        ui = SemanticUI(SimpleNamespace(snapshot=lambda: snapshot), {'controls': controls})
+        ui = SemanticUI(SimpleNamespace(snapshot=lambda snapshot=snapshot: snapshot), {'controls': controls})
         assert ui.normalize(snapshot)['nodes'][0]['id'] == 'dialog.error'
         assert ui.selector('dialog.error') == {'path': [0]}
     ui = SemanticUI(None, {'controls': controls})

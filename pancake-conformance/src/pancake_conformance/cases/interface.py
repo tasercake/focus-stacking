@@ -299,7 +299,7 @@ def _prepare_lifecycle(ui, fixture):
     ui.wait(lambda snap: _has(snap, "open-panel"), description="lifecycle folder import")
     ui.navigate_folder(fixture.paths[0].parent)
     ui.click("OKButton", physical=False)
-    ui.wait(lambda snap: ui.observe("frame_count", snap) == len(fixture.paths), description="lifecycle inputs imported")
+    ui.wait(lambda snap: ui.observe("source_total", snap) == len(fixture.paths), description="lifecycle inputs imported")
     _prepare(ui, "laplacian", "breathing")
 
 

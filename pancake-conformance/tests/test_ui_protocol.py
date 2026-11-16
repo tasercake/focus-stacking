@@ -641,6 +641,7 @@ def test_lifecycle_configures_motion_before_bulk_native_import(monkeypatch):
         def click(self, name, **kwargs):
             calls.append(('click', name))
         def observe(self, name, snapshot=None):
+            assert name == 'source_total', 'Virtualized AX rows are not the imported image count'
             return 64
     monkeypatch.setattr(interface, '_prepare', lambda ui, method, mode: calls.append(('prepare', method, mode)))
     fixture = SimpleNamespace(paths=[Path('/fixture/frame.png')]*64)

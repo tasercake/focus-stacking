@@ -159,6 +159,7 @@ progress = '\[[0-9]+/[0-9]+\]'
 "export.depth" = { "8" = "8-bit", "16" = "16-bit", "float32" = "32-bit float" }
 
 [ui.observations]
+"source_total" = { selector = { id = "status" }, attribute = "value", pattern = 'frame \d+ of (\d+)', type = "integer" }
 "frame_count" = { count = { role = "AXRow" }, within = { id = "frames", role = "AXList" }, direct = true, empty_when = { role = "AXStaticText", value = "No frames yet.\nDrop images or a folder here." } }
 "result_count" = { count = { role = "AXRow" }, within = { id = "results", role = "AXList" }, direct = true }
 "result_cropped" = { selector = { id = "status" }, pattern = 'Cropped the empty borders' }
