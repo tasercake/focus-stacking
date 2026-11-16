@@ -22,9 +22,13 @@ dedicated SSH key, copies the host uv executable, and installs the target's
 Python version. The base image supplies Swift command-line tools. Its upstream
 SIP setting is restored to enabled through guest Recovery before tests run.
 
+The remembered guest display mode is set persistently to 1440 × 1000 with a
+2880 × 2000 Retina framebuffer and checked again after the setup process exits.
+
 Permissions are checked from a LaunchAgent using the same Python environment
 as the suite. Bootstrap grants Accessibility and Screen Recording through guest
-System Settings and accepts the guest's System Events request. It does not
+System Settings and accepts the guest's System Events request, and clears the additional screen-capture
+consent dialog before test input begins. It does not
 change TCC databases, disable SIP, or send input to the host desktop. The visual
 provisioner uses OCR against the pinned English-language guest UI. Unexpected
 UI, ambiguous labels, or denied permissions fail setup with retained evidence.
@@ -52,3 +56,34 @@ Version pins live in `src/pancake_conformance/vm_bootstrap.py`. Update the Tart
 archive checksum and image digest only after repeating the cold-start permission
 and GUI smoke checks. The reference descriptor uses Python 3.12.14 because this
 version is available in the tested uv Python catalog.
+
+## Verification — 2026-11-16
+
+The final clean-guest replay passed `interface.startup.empty`,
+`interface.import.native-dialogs`, and `interface.algorithm.laplacian`, including
+host CLI pixel parity. Tart was hidden from the host PATH. Bootstrap used its
+verified cached Tart app bundle and cloned a new guest from the pinned image.
+The base image was already in Tart's OCI cache; its multi-gigabyte network fetch
+was not repeated. An earlier run downloaded and verified the Tart release bundle.
+
+The guest reported SIP enabled, all five permission checks true (Accessibility,
+input posting, System Events, screen access, screenshot capture), and a persistent
+1440 × 1000 / 2880 × 2000 display mode. A warm run also passed native import and
+Laplacian export with CLI pixel parity.
+
+The complete harness command was:
+
+```sh
+uv run --project pancake-conformance --locked --extra chimpstackr \
+  pytest pancake-conformance/tests --gui-vm --gui-vm-persist -q
+```
+
+Result: **281 passed** in 353.64 seconds. Its native control and weighted-average
+export smoke tests ran in the default dedicated VM. Three dependency deprecation
+warnings came from vncdotool's VNC authentication implementation.
+
+Bootstrap unit checks cover archive integrity and traversal, the embedded app
+profile, concurrent installation, guest ownership, loopback-only VNC, exact OCR
+labels, reconnecting frame reads, permission completeness, expected consent
+prompts, persistent display verification, Recovery SIP enablement, and early
+Tart process failure. No physical-GPU behavior was validated by these GUI runs.

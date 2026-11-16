@@ -68,7 +68,7 @@ name = "pancake-conformance"
 ssh_user = "admin"
 guest_root = "/Users/admin/pancake-conformance"
 ssh_identity = "~/.ssh/pancake-conformance"
-python = "3.12.16"
+python = "3.12.14"
 ```
 
 Tart's `--no-graphics` flag prevents a host window. Automated runs must not
@@ -108,7 +108,7 @@ Install `uv` and Python 3.12 inside the guest:
 
 ```sh
 /opt/homebrew/bin/brew install uv
-/opt/homebrew/bin/uv python install 3.12.16
+/opt/homebrew/bin/uv python install 3.12.14
 ```
 
 See the official [uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/)
@@ -117,7 +117,7 @@ The VM transport copies the project to
 `/Users/admin/pancake-conformance/pancake-conformance` and the initialized ChimpStackr
 submodule to `/Users/admin/pancake-conformance/submodules/ChimpStackr`, preserving their
 relative paths. It runs
-`uv sync --locked --python 3.12.16 --extra chimpstackr` from the guest project
+`uv sync --locked --python 3.12.14 --extra chimpstackr` from the guest project
 directory. The optional
 `gui_vm.python` pin preserves the guest interpreter that received desktop
 permissions even if the host project's `.python-version` changes. It must
@@ -210,7 +210,7 @@ new suite directory can require fresh native-helper permission grants.
 The setup on 2026-11-15 used Tart 2.41.1 and image digest
 `sha256:65c3133a633fda8753cf1f71f2d55727792d534a2125b0032466563dcc8e58fd`.
 The guest reports macOS 26.6.2 (25G83), arm64, `admin` UID 501, Swift 6.3.3,
-uv 0.13.8, and managed Python 3.12.16. Its configuration is four CPUs, 8192 MB
+uv 0.13.8, and managed Python 3.12.14. Its configuration is four CPUs, 8192 MB
 RAM, an 80 GB disk, and a 1440 × 1000 point display.
 
 The upstream image initially reported SIP disabled. Before conformance
