@@ -6,7 +6,7 @@ Python internals nor OpenCL implementation functions.
 from functools import partial
 
 from ..model import Case
-from ..validators import assert_pixels_close, read_image, validate_image
+from ..validators import assert_incomplete, assert_pixels_close, read_image, validate_image
 
 METHODS = ('laplacian', 'hybrid', 'weighted_average', 'depth_map', 'exposure_fusion')
 ALIGNMENT_FIXTURES = {'translation': 'translation', 'euclidean': 'rotation',
@@ -89,20 +89,31 @@ def _gpu_index(ctx, index):
     ctx.note('normalized_index', index)
 
 
-def _decode_fallback(ctx):
+def _decode_rejected(ctx):
     fixture = ctx.fixture('focus')
     corrupt = ctx.directory / 'corrupt.png'
     corrupt.write_bytes(b'not a PNG image')
-    valid = [fixture.paths[0], fixture.paths[1]]
-    reference = ctx.stack(valid, method='weighted_average', device='cpu')
-    fallback = ctx.stack([valid[0], corrupt, valid[1]], method='weighted_average', device='gpu')
-    require_backend(reference, 'cpu')
-    event = require_backend(fallback, 'cpu')
-    assert event.get('requested_backend') == 'gpu'
-    assert any(item.get('event') == 'backend_fallback' for item in fallback.diagnostics['events']), 'GPU decode failure did not report CPU fallback'
-    ctx.note('image', validate_image(fallback.output, shape=fixture.shape, dtype='uint8', min_range=20))
-    ctx.note('parity', assert_pixels_close(fallback.output, reference.output, mean_limit=0, max_limit=0))
-    ctx.note('compatibility', 'GPU rejects corrupt frame; weighted CPU fallback skips it and preserves valid-frame result')
+    result = ctx.stack([fixture.paths[0], corrupt, fixture.paths[1]], method='weighted_average', device='gpu')
+    assert_incomplete(result, corrupt)
+
+
+def _corrupt_matrix(ctx, method, mode):
+    from .coverage_algorithms import _partial_corrupt
+    _partial_corrupt(ctx, method, align=mode != 'stack',
+                     mode='translation' if mode == 'stack' else mode, device='gpu')
+
+
+def _exposure_precision(ctx, count):
+    fixture = ctx.fixture('precision16')
+    paths = [fixture.paths[i % len(fixture.paths)] for i in range(count)]
+    cpu = ctx.stack(paths, method='exposure_fusion', device='cpu', bit_depth=16, output_format='tif')
+    gpu = ctx.stack(paths, method='exposure_fusion', device='gpu', bit_depth=16, output_format='tif')
+    require_backend(cpu, 'cpu')
+    require_backend(gpu, 'gpu')
+    for output in (cpu.output, gpu.output):
+        validate_image(output, dtype='uint16', shape=fixture.shape, genuine_16bit=True)
+        assert_pixels_close(output, fixture.truth_path, mean_limit=1, max_limit=1)
+    ctx.note('identity_parity', assert_pixels_close(cpu.output, gpu.output, mean_limit=1, max_limit=1))
 
 
 def _measured_auto(ctx):
@@ -153,7 +164,7 @@ def device_cases():
         cases.append(Case(f'devices.gpu.slabs.{method}', 'devices',
                           partial(_parity, method=method, fixture_name='deep', slab_size=4, slab_overlap=1),
                           'Overlapping GPU slabs agree with CPU slabs'))
-    for method in ('hybrid', 'weighted_average', 'depth_map'):
+    for method in ('hybrid', 'weighted_average', 'depth_map', 'exposure_fusion'):
         cases.append(Case(f'devices.gpu.precision16.{method}', 'devices',
                           partial(_parity, method=method, fixture_name='precision16', bit_depth=16, output_format='tif'),
                           'GPU retains genuine 16-bit input precision and CPU parity'))
@@ -164,8 +175,21 @@ def device_cases():
                       partial(_parity, method='hybrid', fixture_name='breathing', align=True,
                               alignment_mode='breathing', max_precision=True),
                       'CPU maximum-precision alignment with GPU fusion is reported accurately'))
-    cases.append(Case('devices.gpu.decode_fallback', 'devices', _decode_fallback,
-                      'Real corrupt-frame GPU failure completes through CPU fallback'))
+    cases.append(Case('devices.gpu.corrupt_input_rejected', 'devices', _decode_rejected,
+                      'Corrupt input fails the complete job without backend fallback'))
     cases.append(Case('devices.auto.measured_cache_reuse', 'devices', _measured_auto,
                       'Large generated inputs trigger real calibration and warm cache reuse'))
+    from .algorithms import _zero_regions, _exposure_constant_mix
+    cases.append(Case('devices.gpu.weighted.zero_regions', 'devices', partial(_zero_regions, device='gpu'),
+                      'Zero-weight regions preserve deterministic source color'))
+    for count in (4, 9):
+        cases.append(Case(f'devices.gpu.exposure_constant_mix.{count}', 'devices', partial(_exposure_constant_mix, count=count, device='gpu'),
+                          'Analytic equal-weight fusion preserves low bits through batch tree'))
+    for count in (2, 4, 9):
+        cases.append(Case(f'devices.gpu.exposure_precision.{count}', 'devices', partial(_exposure_precision, count=count),
+                          'Independent full-precision identity and CPU/GPU parity'))
+    for method in METHODS:
+        for mode in ('stack', 'translation', 'euclidean', 'similarity', 'affine', 'breathing'):
+            cases.append(Case(f'devices.gpu.corrupt.{method}.{mode}', 'devices', partial(_corrupt_matrix, method=method, mode=mode),
+                              'Corrupt requested input rejects complete job and retains existing export'))
     return cases

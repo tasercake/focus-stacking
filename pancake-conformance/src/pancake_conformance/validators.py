@@ -113,3 +113,16 @@ def sharpness(image: np.ndarray, region=None) -> float:
     laplacian = (gray[:-2, 1:-1] + gray[2:, 1:-1] + gray[1:-1, :-2]
                  + gray[1:-1, 2:] - 4 * gray[1:-1, 1:-1])
     return float(laplacian.var())
+
+
+def assert_incomplete(result, input_path, *, retained=None):
+    """An undecodable requested input fails the whole job, without publication."""
+    assert result.returncode != 0, "Corrupt input produced a successful partial job"
+    assert str(input_path) in result.stderr or str(input_path.name) in result.stderr, "Diagnostic does not identify rejected input"
+    if retained is None:
+        assert not result.output.exists(), "Failed job published a partial output"
+    else:
+        assert result.output.read_bytes() == retained, "Failed job damaged existing output"
+    events = result.diagnostics.get("events", [])
+    assert not any(e.get("event") == "stack_complete" and e.get("completed") for e in events), "Incomplete job reported completion"
+    assert not any(e.get("event") == "backend_fallback" for e in events), "Input corruption treated as backend failure"

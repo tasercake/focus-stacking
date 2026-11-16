@@ -61,3 +61,21 @@ def test_ui_service_endpoints_use_declarative_target_mapping(tmp_path, monkeypat
     assert seen["env"]["TEST_RELEASE_ENDPOINT"] == "http://127.0.0.1:8123/releases"
     with pytest.raises(ValueError, match="service"):
         ctx.open_ui(service_endpoints={"unknown": "http://127.0.0.1:8123"})
+
+
+def test_stack_rejects_input_mutation_even_on_failed_job(tmp_path):
+    import pytest
+    from pancake_conformance.context import CaseContext
+    from pancake_conformance.model import ProcessResult
+    from pancake_conformance.target import TargetSpec
+    target = TargetSpec('other', tmp_path, ('other',), stack={'options': {
+        'device': {'cpu': ['--cpu']}, 'kernel_size': '--kernel', 'pyramid_levels': '--levels', 'scale_factor': '--scale'}})
+    context = CaseContext(target, tmp_path / 'case')
+    source = tmp_path / 'source.png'
+    source.write_bytes(b'original')
+    def damage(args):
+        source.write_bytes(b'changed')
+        return ProcessResult(args, 1, '', 'failure', 0)
+    context.command = damage
+    with pytest.raises(AssertionError, match='Input modified'):
+        context.stack([source])

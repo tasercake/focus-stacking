@@ -1,6 +1,6 @@
 # Pancake-conformance
 
-A standalone reference conformance suite for focus-stacking software. The suite
+Behavior contract version 2. A standalone reference conformance suite for focus-stacking software. The suite
 owns observable contracts, synthetic fixtures, independent image validators,
 immutable baselines, and reports. Targets can use any language or UI framework.
 No application is selected by default.

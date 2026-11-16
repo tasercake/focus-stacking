@@ -1,0 +1,394 @@
+old_case,new_case,intentional_change
+cli.help,cli.help,Retained request; input immutability now enforced on every stack call.
+cli.reject.no-arguments,cli.reject.no-arguments,Retained request; input immutability now enforced on every stack call.
+cli.reject.method,cli.reject.method,Retained request; input immutability now enforced on every stack call.
+cli.reject.alignment,cli.reject.alignment,Retained request; input immutability now enforced on every stack call.
+cli.reject.reference,cli.reject.reference,Retained request; input immutability now enforced on every stack call.
+cli.reject.bit-depth,cli.reject.bit-depth,Retained request; input immutability now enforced on every stack call.
+cli.reject.integer,cli.reject.integer,Retained request; input immutability now enforced on every stack call.
+cli.reject.missing-input,cli.reject.missing-input,Retained request; input immutability now enforced on every stack call.
+cli.reject.missing-output,cli.reject.missing-output,Retained request; input immutability now enforced on every stack call.
+cli.reject.unknown-option,cli.reject.unknown-option,Retained request; input immutability now enforced on every stack call.
+cli.reject.device-conflict,cli.reject.device-conflict,Retained request; input immutability now enforced on every stack call.
+cli.reject.scale-zero,cli.reject.scale-zero,Retained request; input immutability now enforced on every stack call.
+cli.reject.scale-one,cli.reject.scale-one,Retained request; input immutability now enforced on every stack call.
+cli.reject.scale-negative,cli.reject.scale-negative,Retained request; input immutability now enforced on every stack call.
+cli.reject.slab-one,cli.reject.slab-one,Retained request; input immutability now enforced on every stack call.
+cli.reject.slab-negative,cli.reject.slab-negative,Retained request; input immutability now enforced on every stack call.
+cli.reject.overlap-negative,cli.reject.overlap-negative,Retained request; input immutability now enforced on every stack call.
+cli.reject.overlap-too-large,cli.reject.overlap-too-large,Retained request; input immutability now enforced on every stack call.
+cli.reject.no-files,cli.reject.no-files,Retained request; input immutability now enforced on every stack call.
+cli.reject.one-file,cli.reject.one-file,Retained request; input immutability now enforced on every stack call.
+cli.reject.duplicate-single,cli.reject.duplicate-single,Retained request; input immutability now enforced on every stack call.
+cli.reject.corrupt-images,cli.reject.corrupt-images,Retained request; input immutability now enforced on every stack call.
+cli.reject.output-parent,cli.reject.output-parent,Retained request; input immutability now enforced on every stack call.
+cli.paths.sorted-and-deduplicated,cli.paths.sorted-and-deduplicated,Retained request; input immutability now enforced on every stack call.
+cli.paths.glob,cli.paths.glob,Retained request; input immutability now enforced on every stack call.
+cli.inputs.unchanged,cli.inputs.unchanged,Retained request; input immutability now enforced on every stack call.
+cli.progress-and-quality,cli.progress-and-quality,Retained request; input immutability now enforced on every stack call.
+cli.export.jpeg-16bit-warning,cli.export.jpeg-16bit-warning,Retained request; input immutability now enforced on every stack call.
+cli.export.overwrite,cli.export.overwrite,Retained request; input immutability now enforced on every stack call.
+cli.export.failed-retention,cli.export.failed-retention,Retained request; input immutability now enforced on every stack call.
+cli.coverage.auto.medium,cli.coverage.auto.medium,Retained request; input immutability now enforced on every stack call.
+cli.coverage.auto.large,cli.coverage.auto.large,Retained request; input immutability now enforced on every stack call.
+cli.coverage.auto.unmeasured,cli.coverage.auto.unmeasured,Retained request; input immutability now enforced on every stack call.
+cli.coverage.raw.legacy-alignment,cli.coverage.raw.legacy-alignment,Retained request; input immutability now enforced on every stack call.
+cli.coverage.input.npy,cli.coverage.input.npy,Retained request; input immutability now enforced on every stack call.
+cli.coverage.input.literal-glob,cli.coverage.input.literal-glob,Retained request; input immutability now enforced on every stack call.
+cli.coverage.input.directories,cli.coverage.input.directories,Retained request; input immutability now enforced on every stack call.
+cli.coverage.cache.recovery,cli.coverage.cache.recovery,Retained request; input immutability now enforced on every stack call.
+cli.coverage.reject.oversize-png,cli.coverage.reject.oversize-png,Retained request; input immutability now enforced on every stack call.
+cli.coverage.reject.png,cli.coverage.reject.png,Retained request; input immutability now enforced on every stack call.
+cli.coverage.partial.png,cli.coverage.partial.png,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+cli.coverage.reject.dng,cli.coverage.reject.dng,Retained request; input immutability now enforced on every stack call.
+cli.coverage.partial.dng,cli.coverage.partial.dng,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+cli.coverage.reject.npy,cli.coverage.reject.npy,Retained request; input immutability now enforced on every stack call.
+cli.coverage.partial.npy,cli.coverage.partial.npy,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+cli.coverage.reject.unknown,cli.coverage.reject.unknown,Retained request; input immutability now enforced on every stack call.
+cli.coverage.partial.unknown,cli.coverage.partial.unknown,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+cli.service.version,cli.service.version,Retained request; input immutability now enforced on every stack call.
+cli.service.release-policy,cli.service.release-policy,Retained request; input immutability now enforced on every stack call.
+cli.service.release-empty,cli.service.release-empty,Retained request; input immutability now enforced on every stack call.
+cli.service.release-errors,cli.service.release-errors,Retained request; input immutability now enforced on every stack call.
+cli.service.download,cli.service.download,Retained request; input immutability now enforced on every stack call.
+cli.service.download-no-length,cli.service.download-no-length,Retained request; input immutability now enforced on every stack call.
+cli.service.download-errors,cli.service.download-errors,Retained request; input immutability now enforced on every stack call.
+cli.service.download-cancel,cli.service.download-cancel,Retained request; input immutability now enforced on every stack call.
+cli.service.source-install,cli.service.source-install,Retained request; input immutability now enforced on every stack call.
+algorithms.stack.laplacian,algorithms.stack.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.odd_dimensions.laplacian,algorithms.odd_dimensions.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.flat.laplacian,algorithms.flat.laplacian,Constant source color; deterministic first source for zero focus weights.
+algorithms.deterministic.laplacian,algorithms.deterministic.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.automatic_parameters.laplacian,algorithms.automatic_parameters.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.translation.laplacian,algorithms.alignment.translation.laplacian,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.euclidean.laplacian,algorithms.alignment.euclidean.laplacian,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.similarity.laplacian,algorithms.alignment.similarity.laplacian,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.affine.laplacian,algorithms.alignment.affine.laplacian,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.breathing.laplacian,algorithms.alignment.breathing.laplacian,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.quality_report.laplacian,algorithms.quality_report.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.input.bayer_dng.laplacian,algorithms.input.bayer_dng.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.mixed_dimensions.laplacian,algorithms.alignment.mixed_dimensions.laplacian,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.stack.hybrid,algorithms.stack.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.odd_dimensions.hybrid,algorithms.odd_dimensions.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.flat.hybrid,algorithms.flat.hybrid,Constant source color; deterministic first source for zero focus weights.
+algorithms.deterministic.hybrid,algorithms.deterministic.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.automatic_parameters.hybrid,algorithms.automatic_parameters.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.translation.hybrid,algorithms.alignment.translation.hybrid,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.euclidean.hybrid,algorithms.alignment.euclidean.hybrid,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.similarity.hybrid,algorithms.alignment.similarity.hybrid,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.affine.hybrid,algorithms.alignment.affine.hybrid,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.breathing.hybrid,algorithms.alignment.breathing.hybrid,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.quality_report.hybrid,algorithms.quality_report.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.input.bayer_dng.hybrid,algorithms.input.bayer_dng.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.mixed_dimensions.hybrid,algorithms.alignment.mixed_dimensions.hybrid,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.stack.weighted_average,algorithms.stack.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.odd_dimensions.weighted_average,algorithms.odd_dimensions.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.flat.weighted_average,algorithms.flat.weighted_average,Constant source color; deterministic first source for zero focus weights.
+algorithms.deterministic.weighted_average,algorithms.deterministic.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.automatic_parameters.weighted_average,algorithms.automatic_parameters.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.translation.weighted_average,algorithms.alignment.translation.weighted_average,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.euclidean.weighted_average,algorithms.alignment.euclidean.weighted_average,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.similarity.weighted_average,algorithms.alignment.similarity.weighted_average,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.affine.weighted_average,algorithms.alignment.affine.weighted_average,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.breathing.weighted_average,algorithms.alignment.breathing.weighted_average,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.quality_report.weighted_average,algorithms.quality_report.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.input.bayer_dng.weighted_average,algorithms.input.bayer_dng.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.mixed_dimensions.weighted_average,algorithms.alignment.mixed_dimensions.weighted_average,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.stack.depth_map,algorithms.stack.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.odd_dimensions.depth_map,algorithms.odd_dimensions.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.flat.depth_map,algorithms.flat.depth_map,Constant source color; deterministic first source for zero focus weights.
+algorithms.deterministic.depth_map,algorithms.deterministic.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.automatic_parameters.depth_map,algorithms.automatic_parameters.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.translation.depth_map,algorithms.alignment.translation.depth_map,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.euclidean.depth_map,algorithms.alignment.euclidean.depth_map,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.similarity.depth_map,algorithms.alignment.similarity.depth_map,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.affine.depth_map,algorithms.alignment.affine.depth_map,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.breathing.depth_map,algorithms.alignment.breathing.depth_map,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.quality_report.depth_map,algorithms.quality_report.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.input.bayer_dng.depth_map,algorithms.input.bayer_dng.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.mixed_dimensions.depth_map,algorithms.alignment.mixed_dimensions.depth_map,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.stack.exposure_fusion,algorithms.stack.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.odd_dimensions.exposure_fusion,algorithms.odd_dimensions.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.compatibility.flat.exposure_fusion,algorithms.flat.exposure_fusion,Constant source color; deterministic first source for zero focus weights.
+algorithms.deterministic.exposure_fusion,algorithms.deterministic.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.automatic_parameters.exposure_fusion,algorithms.automatic_parameters.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.alignment.translation.exposure_fusion,algorithms.alignment.translation.exposure_fusion,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.euclidean.exposure_fusion,algorithms.alignment.euclidean.exposure_fusion,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.similarity.exposure_fusion,algorithms.alignment.similarity.exposure_fusion,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.affine.exposure_fusion,algorithms.alignment.affine.exposure_fusion,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.breathing.exposure_fusion,algorithms.alignment.breathing.exposure_fusion,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.quality_report.exposure_fusion,algorithms.quality_report.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.input.bayer_dng.exposure_fusion,algorithms.input.bayer_dng.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.alignment.mixed_dimensions.exposure_fusion,algorithms.alignment.mixed_dimensions.exposure_fusion,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.precision16.png.laplacian,algorithms.precision16.png.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.precision16.tif.laplacian,algorithms.precision16.tif.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.cross_export.laplacian,algorithms.cross_export.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.2.0.laplacian,algorithms.slabs.2.0.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.3.1.laplacian,algorithms.slabs.3.1.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.4.2.laplacian,algorithms.slabs.4.2.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.9.0.laplacian,algorithms.slabs.9.0.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.breathing.laplacian,algorithms.slabs.breathing.laplacian,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.ambiguous_breathing_slabs.laplacian,algorithms.alignment.repeated_breathing_slabs.laplacian,"Same 65x99 checker and four methods; direct geometry, focus and truth-error assertions."
+algorithms.precision16.png.hybrid,algorithms.precision16.png.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.precision16.tif.hybrid,algorithms.precision16.tif.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.cross_export.hybrid,algorithms.cross_export.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.2.0.hybrid,algorithms.slabs.2.0.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.3.1.hybrid,algorithms.slabs.3.1.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.4.2.hybrid,algorithms.slabs.4.2.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.9.0.hybrid,algorithms.slabs.9.0.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.breathing.hybrid,algorithms.slabs.breathing.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.ambiguous_breathing_slabs.hybrid,algorithms.alignment.repeated_breathing_slabs.hybrid,"Same 65x99 checker and four methods; direct geometry, focus and truth-error assertions."
+algorithms.precision16.png.weighted_average,algorithms.precision16.png.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.precision16.tif.weighted_average,algorithms.precision16.tif.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.cross_export.weighted_average,algorithms.cross_export.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.2.0.weighted_average,algorithms.slabs.2.0.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.3.1.weighted_average,algorithms.slabs.3.1.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.4.2.weighted_average,algorithms.slabs.4.2.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.9.0.weighted_average,algorithms.slabs.9.0.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.breathing.weighted_average,algorithms.slabs.breathing.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.ambiguous_breathing_slabs.weighted_average,algorithms.alignment.repeated_breathing_slabs.weighted_average,"Same 65x99 checker and four methods; direct geometry, focus and truth-error assertions."
+algorithms.precision16.png.depth_map,algorithms.precision16.png.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.precision16.tif.depth_map,algorithms.precision16.tif.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.cross_export.depth_map,algorithms.cross_export.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.2.0.depth_map,algorithms.slabs.2.0.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.3.1.depth_map,algorithms.slabs.3.1.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.4.2.depth_map,algorithms.slabs.4.2.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.9.0.depth_map,algorithms.slabs.9.0.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.slabs.breathing.depth_map,algorithms.slabs.breathing.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.ambiguous_breathing_slabs.depth_map,algorithms.alignment.repeated_breathing_slabs.depth_map,"Same 65x99 checker and four methods; direct geometry, focus and truth-error assertions."
+algorithms.alignment.translation.reference_middle,algorithms.alignment.translation.reference_middle,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.translation.reference_previous,algorithms.alignment.translation.reference_previous,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.euclidean.reference_middle,algorithms.alignment.euclidean.reference_middle,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.euclidean.reference_previous,algorithms.alignment.euclidean.reference_previous,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.similarity.reference_middle,algorithms.alignment.similarity.reference_middle,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.similarity.reference_previous,algorithms.alignment.similarity.reference_previous,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.affine.reference_middle,algorithms.alignment.affine.reference_middle,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.affine.reference_previous,algorithms.alignment.affine.reference_previous,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.breathing.reference_middle,algorithms.alignment.breathing.reference_middle,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.breathing.reference_previous,algorithms.alignment.breathing.reference_previous,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.input.grayscale,algorithms.input.grayscale,Retained request; input immutability now enforced on every stack call.
+algorithms.input.rgba,algorithms.input.rgba,Retained request; input immutability now enforced on every stack call.
+algorithms.input.formats,algorithms.input.formats,Retained request; input immutability now enforced on every stack call.
+algorithms.input.unicode,algorithms.input.unicode,Retained request; input immutability now enforced on every stack call.
+algorithms.input.float01,algorithms.input.float01,Retained request; input immutability now enforced on every stack call.
+algorithms.input.float255,algorithms.input.float255,Retained request; input immutability now enforced on every stack call.
+algorithms.input.exr,algorithms.input.exr,Retained request; input immutability now enforced on every stack call.
+algorithms.input.grayscale16,algorithms.input.grayscale16,Retained request; input immutability now enforced on every stack call.
+algorithms.input.orientation2,algorithms.input.orientation2,Retained request; input immutability now enforced on every stack call.
+algorithms.input.orientation3,algorithms.input.orientation3,Retained request; input immutability now enforced on every stack call.
+algorithms.input.orientation4,algorithms.input.orientation4,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.input.orientation5,algorithms.input.orientation5,Standards-correct EXIF; removed 180-degree truth compensation.
+algorithms.input.orientation6,algorithms.input.orientation6,Retained request; input immutability now enforced on every stack call.
+algorithms.compatibility.input.orientation7,algorithms.input.orientation7,Standards-correct EXIF; removed 180-degree truth compensation.
+algorithms.input.orientation8,algorithms.input.orientation8,Retained request; input immutability now enforced on every stack call.
+algorithms.export.jpg,algorithms.export.jpg,Retained request; input immutability now enforced on every stack call.
+algorithms.export.tif,algorithms.export.tif,Retained request; input immutability now enforced on every stack call.
+algorithms.export.exr,algorithms.export.exr,Retained request; input immutability now enforced on every stack call.
+algorithms.parameters.pyramid_levels_2,algorithms.parameters.pyramid_levels_2,Retained request; input immutability now enforced on every stack call.
+algorithms.parameters.pyramid_levels_6,algorithms.parameters.pyramid_levels_6,Retained request; input immutability now enforced on every stack call.
+algorithms.parameters.kernel_2,algorithms.parameters.kernel_2,Retained request; input immutability now enforced on every stack call.
+algorithms.parameters.kernel_6,algorithms.parameters.kernel_6,Retained request; input immutability now enforced on every stack call.
+algorithms.parameters.kernel_11,algorithms.parameters.kernel_11,Retained request; input immutability now enforced on every stack call.
+algorithms.alignment.breathing.max_precision,algorithms.alignment.breathing.max_precision,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.legacy_rotation_scale,algorithms.alignment.legacy_rotation_scale,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.alignment.auto_crop,algorithms.alignment.auto_crop,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+algorithms.compatibility.translation_overcrop,algorithms.alignment.translation_bounded_crop,Same translation request; generated matrix and bounded symmetric crop assertions.
+algorithms.exposure_brackets,algorithms.exposure_brackets,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.compatibility.exposure_fusion_8bit_internal_precision,algorithms.exposure_precision.4.png,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.coverage.precision.euclidean,algorithms.coverage.precision.euclidean,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.precision.affine,algorithms.coverage.precision.affine,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.scale_clamp,algorithms.coverage.scale_clamp,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.featureless.similarity,algorithms.coverage.featureless.similarity,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.featureless.affine,algorithms.coverage.featureless.affine,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.implausible.rotation,algorithms.coverage.implausible.rotation,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.implausible.anisotropy,algorithms.coverage.implausible.anisotropy,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.implausible.scale,algorithms.coverage.implausible.scale,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.dimensions_resize_over_twofold,algorithms.coverage.dimensions_resize_over_twofold,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.mixed_precision.ref8.stack,algorithms.coverage.mixed_precision.ref8.stack,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.mixed_precision.ref8.aligned,algorithms.coverage.mixed_precision.ref8.aligned,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.mixed_precision.ref16.stack,algorithms.coverage.mixed_precision.ref16.stack,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.mixed_precision.ref16.aligned,algorithms.coverage.mixed_precision.ref16.aligned,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.hdr_multibatch.cpu,algorithms.coverage.hdr_multibatch.cpu,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.hdr_multibatch.gpu,algorithms.coverage.hdr_multibatch.gpu,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.partial_corrupt.weighted_average.stack,algorithms.coverage.partial_corrupt.weighted_average.stack,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+algorithms.coverage.partial_corrupt.weighted_average.aligned,algorithms.coverage.partial_corrupt.weighted_average.similarity,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+algorithms.coverage.partial_corrupt.depth_map.stack,algorithms.coverage.partial_corrupt.depth_map.stack,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+algorithms.coverage.partial_corrupt.depth_map.aligned,algorithms.coverage.partial_corrupt.depth_map.similarity,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+algorithms.coverage.partial_corrupt.exposure_fusion.stack,algorithms.coverage.partial_corrupt.exposure_fusion.stack,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+algorithms.coverage.partial_corrupt.exposure_fusion.aligned,algorithms.coverage.partial_corrupt.exposure_fusion.similarity,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+algorithms.coverage.no_decodable_frames.weighted_average,algorithms.coverage.no_decodable_frames.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.no_decodable_frames.depth_map,algorithms.coverage.no_decodable_frames.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.no_decodable_frames.exposure_fusion,algorithms.coverage.no_decodable_frames.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+algorithms.coverage.no_decodable_frames.sequential,algorithms.coverage.no_decodable_frames.sequential,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.gray_array.hybrid.cpu,algorithms.coverage.gray_array.hybrid.cpu,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.gray_array.hybrid.gpu,algorithms.coverage.gray_array.hybrid.gpu,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.gray_array.weighted_average.cpu,algorithms.coverage.gray_array.weighted_average.cpu,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.gray_array.weighted_average.gpu,algorithms.coverage.gray_array.weighted_average.gpu,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.gray_array.depth_map.cpu,algorithms.coverage.gray_array.depth_map.cpu,Retained request; input immutability now enforced on every stack call.
+algorithms.coverage.gray_array.depth_map.gpu,algorithms.coverage.gray_array.depth_map.gpu,Retained request; input immutability now enforced on every stack call.
+devices.cpu.laplacian,devices.cpu.laplacian,Retained request; input immutability now enforced on every stack call.
+devices.gpu.stack.laplacian,devices.gpu.stack.laplacian,Retained request; input immutability now enforced on every stack call.
+devices.auto.cold.laplacian,devices.auto.cold.laplacian,Retained request; input immutability now enforced on every stack call.
+devices.gpu.aligned.laplacian,devices.gpu.aligned.laplacian,Retained request; input immutability now enforced on every stack call.
+devices.cpu.hybrid,devices.cpu.hybrid,Retained request; input immutability now enforced on every stack call.
+devices.gpu.stack.hybrid,devices.gpu.stack.hybrid,Retained request; input immutability now enforced on every stack call.
+devices.auto.cold.hybrid,devices.auto.cold.hybrid,Retained request; input immutability now enforced on every stack call.
+devices.gpu.aligned.hybrid,devices.gpu.aligned.hybrid,Retained request; input immutability now enforced on every stack call.
+devices.cpu.weighted_average,devices.cpu.weighted_average,Retained request; input immutability now enforced on every stack call.
+devices.gpu.stack.weighted_average,devices.gpu.stack.weighted_average,Retained request; input immutability now enforced on every stack call.
+devices.auto.cold.weighted_average,devices.auto.cold.weighted_average,Retained request; input immutability now enforced on every stack call.
+devices.gpu.aligned.weighted_average,devices.gpu.aligned.weighted_average,Retained request; input immutability now enforced on every stack call.
+devices.cpu.depth_map,devices.cpu.depth_map,Retained request; input immutability now enforced on every stack call.
+devices.gpu.stack.depth_map,devices.gpu.stack.depth_map,Retained request; input immutability now enforced on every stack call.
+devices.auto.cold.depth_map,devices.auto.cold.depth_map,Retained request; input immutability now enforced on every stack call.
+devices.gpu.aligned.depth_map,devices.gpu.aligned.depth_map,Retained request; input immutability now enforced on every stack call.
+devices.cpu.exposure_fusion,devices.cpu.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+devices.gpu.stack.exposure_fusion,devices.gpu.stack.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+devices.auto.cold.exposure_fusion,devices.auto.cold.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+devices.gpu.aligned.exposure_fusion,devices.gpu.aligned.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+devices.gpu.alignment.translation,devices.gpu.alignment.translation,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+devices.gpu.alignment.euclidean,devices.gpu.alignment.euclidean,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+devices.gpu.alignment.similarity,devices.gpu.alignment.similarity,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+devices.gpu.alignment.affine,devices.gpu.alignment.affine,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+devices.gpu.alignment.breathing,devices.gpu.alignment.breathing,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+devices.gpu.slabs.laplacian,devices.gpu.slabs.laplacian,Retained request; input immutability now enforced on every stack call.
+devices.gpu.slabs.hybrid,devices.gpu.slabs.hybrid,Retained request; input immutability now enforced on every stack call.
+devices.gpu.slabs.weighted_average,devices.gpu.slabs.weighted_average,Retained request; input immutability now enforced on every stack call.
+devices.gpu.slabs.depth_map,devices.gpu.slabs.depth_map,Retained request; input immutability now enforced on every stack call.
+devices.gpu.precision16.hybrid,devices.gpu.precision16.hybrid,Retained request; input immutability now enforced on every stack call.
+devices.gpu.precision16.weighted_average,devices.gpu.precision16.weighted_average,Retained request; input immutability now enforced on every stack call.
+devices.gpu.precision16.depth_map,devices.gpu.precision16.depth_map,Retained request; input immutability now enforced on every stack call.
+devices.gpu.index.zero,devices.gpu.index.zero,Retained request; input immutability now enforced on every stack call.
+devices.gpu.index.negative,devices.gpu.index.negative,Retained request; input immutability now enforced on every stack call.
+devices.gpu.index.above_range,devices.gpu.index.above_range,Retained request; input immutability now enforced on every stack call.
+devices.gpu.high_precision,devices.gpu.high_precision,Retained request; input immutability now enforced on every stack call.
+devices.gpu.decode_fallback,devices.gpu.corrupt_input_rejected,"Complete-job failure, identified input, no publication or completion, existing output retained; corruption is not GPU failure."
+devices.auto.measured_cache_reuse,devices.auto.measured_cache_reuse,Retained request; input immutability now enforced on every stack call.
+interface.controls.method-alignment,interface.controls.method-alignment,Retained request; input immutability now enforced on every stack call.
+interface.algorithm.laplacian,interface.algorithm.laplacian,Retained request; input immutability now enforced on every stack call.
+interface.algorithm.hybrid,interface.algorithm.hybrid,Retained request; input immutability now enforced on every stack call.
+interface.algorithm.weighted_average,interface.algorithm.weighted_average,Retained request; input immutability now enforced on every stack call.
+interface.algorithm.depth_map,interface.algorithm.depth_map,Retained request; input immutability now enforced on every stack call.
+interface.algorithm.exposure_fusion,interface.algorithm.exposure_fusion,Floating-point fusion and batches; possible low-bit/rounding output changes; precision tolerances tightened.
+interface.startup.empty,interface.startup.empty,Retained request; input immutability now enforced on every stack call.
+interface.import.native-dialogs,interface.import.native-dialogs,Retained request; input immutability now enforced on every stack call.
+interface.import.raw,interface.import.raw,Retained request; input immutability now enforced on every stack call.
+interface.export.formats,interface.export.formats,Retained request; input immutability now enforced on every stack call.
+interface.viewer.navigation-comparison,interface.viewer.navigation-comparison,Retained request; input immutability now enforced on every stack call.
+interface.layout.panels,interface.layout.panels,Retained request; input immutability now enforced on every stack call.
+interface.controls.advanced-visibility,interface.controls.advanced-visibility,Retained request; input immutability now enforced on every stack call.
+interface.workflow.unsaved-discard,interface.workflow.unsaved-discard,Retained request; input immutability now enforced on every stack call.
+interface.lifecycle.pause-cancel,interface.lifecycle.pause-cancel,Retained request; input immutability now enforced on every stack call.
+interface.compute.gpu,interface.compute.gpu,Retained request; input immutability now enforced on every stack call.
+interface.alignment.crop,interface.alignment.crop,Same request; validated transforms and honored middle reference; conservative identity for unsupported motion.
+interface.settings.persistence,interface.settings.persistence,Retained request; input immutability now enforced on every stack call.
+interface.settings.update-preferences,interface.settings.update-preferences,Retained request; input immutability now enforced on every stack call.
+interface.settings.lightroom-status,interface.settings.lightroom-status,Retained request; input immutability now enforced on every stack call.
+interface.about,interface.about,Retained request; input immutability now enforced on every stack call.
+interface.portability.retained-results,interface.portability.retained-results,Retained request; input immutability now enforced on every stack call.
+interface.portability.unicode-paths,interface.portability.unicode-paths,Retained request; input immutability now enforced on every stack call.
+interface.export.batch,interface.export.batch,Retained request; input immutability now enforced on every stack call.
+interface.result.manual-crop,interface.result.manual-crop,Retained request; input immutability now enforced on every stack call.
+interface.import.recent-folders,interface.import.recent-folders,Retained request; input immutability now enforced on every stack call.
+interface.viewer.keyboard-boundaries,interface.viewer.keyboard-boundaries,Retained request; input immutability now enforced on every stack call.
+interface.updates.available,interface.updates.available,Retained request; input immutability now enforced on every stack call.
+interface.updates.current,interface.updates.current,Retained request; input immutability now enforced on every stack call.
+interface.updates.network-error,interface.updates.network-error,Retained request; input immutability now enforced on every stack call.
+interface.sprint.viewer-input,interface.sprint.viewer-input,Retained request; input immutability now enforced on every stack call.
+interface.sprint.frame-context,interface.sprint.frame-context,Retained request; input immutability now enforced on every stack call.
+interface.sprint.viewport-export,interface.sprint.viewport-export,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.grayscale.hybrid,algorithms.sprint.native-input.grayscale.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.grayscale.weighted_average,algorithms.sprint.native-input.grayscale.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.grayscale.depth_map,algorithms.sprint.native-input.grayscale.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.grayscale16.hybrid,algorithms.sprint.native-input.grayscale16.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.grayscale16.weighted_average,algorithms.sprint.native-input.grayscale16.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.grayscale16.depth_map,algorithms.sprint.native-input.grayscale16.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.rgba.hybrid,algorithms.sprint.native-input.rgba.hybrid,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.rgba.weighted_average,algorithms.sprint.native-input.rgba.weighted_average,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.native-input.rgba.depth_map,algorithms.sprint.native-input.rgba.depth_map,Retained request; input immutability now enforced on every stack call.
+algorithms.sprint.black-translation,algorithms.sprint.black-translation,Retained request; input immutability now enforced on every stack call.
+interface.recovery.close-unsaved,interface.recovery.close-unsaved,Retained request; input immutability now enforced on every stack call.
+algorithms.recovery.cascade.cpu,algorithms.recovery.cascade.cpu,Retained request; input immutability now enforced on every stack call.
+algorithms.recovery.cascade.gpu,algorithms.recovery.cascade.gpu,Retained request; input immutability now enforced on every stack call.
+interface.recovery.folder-import,interface.recovery.folder-import,Retained request; input immutability now enforced on every stack call.
+interface.recovery.device-request,interface.recovery.device-request,Retained request; input immutability now enforced on every stack call.
+interface.recovery.missing-source,interface.recovery.missing-source,Retained request; input immutability now enforced on every stack call.
+interface.recovery.batch-export,interface.recovery.batch-export,Retained request; input immutability now enforced on every stack call.
+interface.recovery.export-cancel,interface.recovery.export-cancel,Retained request; input immutability now enforced on every stack call.
+,algorithms.alignment.nonrepeating_slabs.laplacian,New independent v2 regression contract.
+,algorithms.alignment.nonrepeating_slabs.hybrid,New independent v2 regression contract.
+,algorithms.alignment.nonrepeating_slabs.weighted_average,New independent v2 regression contract.
+,algorithms.alignment.nonrepeating_slabs.depth_map,New independent v2 regression contract.
+,algorithms.precision16.png.exposure_fusion,New independent v2 regression contract.
+,algorithms.precision16.tif.exposure_fusion,New independent v2 regression contract.
+,algorithms.cross_export.exposure_fusion,New independent v2 regression contract.
+,algorithms.input.orientation1,New independent v2 regression contract.
+,algorithms.exposure_constant_mix.4,New independent v2 regression contract.
+,algorithms.exposure_constant_mix.9,New independent v2 regression contract.
+,algorithms.weighted.zero_regions,New independent v2 regression contract.
+,algorithms.exposure_precision.2.png,New independent v2 regression contract.
+,algorithms.exposure_precision.2.tif,New independent v2 regression contract.
+,algorithms.exposure_precision.4.tif,New independent v2 regression contract.
+,algorithms.exposure_precision.9.png,New independent v2 regression contract.
+,algorithms.exposure_precision.9.tif,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.laplacian.stack,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.laplacian.translation,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.laplacian.euclidean,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.laplacian.similarity,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.laplacian.affine,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.laplacian.breathing,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.hybrid.stack,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.hybrid.translation,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.hybrid.euclidean,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.hybrid.similarity,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.hybrid.affine,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.hybrid.breathing,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.weighted_average.translation,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.weighted_average.euclidean,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.weighted_average.affine,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.weighted_average.breathing,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.depth_map.translation,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.depth_map.euclidean,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.depth_map.affine,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.depth_map.breathing,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.exposure_fusion.translation,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.exposure_fusion.euclidean,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.exposure_fusion.affine,New independent v2 regression contract.
+,algorithms.coverage.partial_corrupt.exposure_fusion.breathing,New independent v2 regression contract.
+,devices.gpu.precision16.exposure_fusion,New independent v2 regression contract.
+,devices.gpu.weighted.zero_regions,New independent v2 regression contract.
+,devices.gpu.exposure_constant_mix.4,New independent v2 regression contract.
+,devices.gpu.exposure_constant_mix.9,New independent v2 regression contract.
+,devices.gpu.exposure_precision.2,New independent v2 regression contract.
+,devices.gpu.exposure_precision.4,New independent v2 regression contract.
+,devices.gpu.exposure_precision.9,New independent v2 regression contract.
+,devices.gpu.corrupt.laplacian.stack,New independent v2 regression contract.
+,devices.gpu.corrupt.laplacian.translation,New independent v2 regression contract.
+,devices.gpu.corrupt.laplacian.euclidean,New independent v2 regression contract.
+,devices.gpu.corrupt.laplacian.similarity,New independent v2 regression contract.
+,devices.gpu.corrupt.laplacian.affine,New independent v2 regression contract.
+,devices.gpu.corrupt.laplacian.breathing,New independent v2 regression contract.
+,devices.gpu.corrupt.hybrid.stack,New independent v2 regression contract.
+,devices.gpu.corrupt.hybrid.translation,New independent v2 regression contract.
+,devices.gpu.corrupt.hybrid.euclidean,New independent v2 regression contract.
+,devices.gpu.corrupt.hybrid.similarity,New independent v2 regression contract.
+,devices.gpu.corrupt.hybrid.affine,New independent v2 regression contract.
+,devices.gpu.corrupt.hybrid.breathing,New independent v2 regression contract.
+,devices.gpu.corrupt.weighted_average.stack,New independent v2 regression contract.
+,devices.gpu.corrupt.weighted_average.translation,New independent v2 regression contract.
+,devices.gpu.corrupt.weighted_average.euclidean,New independent v2 regression contract.
+,devices.gpu.corrupt.weighted_average.similarity,New independent v2 regression contract.
+,devices.gpu.corrupt.weighted_average.affine,New independent v2 regression contract.
+,devices.gpu.corrupt.weighted_average.breathing,New independent v2 regression contract.
+,devices.gpu.corrupt.depth_map.stack,New independent v2 regression contract.
+,devices.gpu.corrupt.depth_map.translation,New independent v2 regression contract.
+,devices.gpu.corrupt.depth_map.euclidean,New independent v2 regression contract.
+,devices.gpu.corrupt.depth_map.similarity,New independent v2 regression contract.
+,devices.gpu.corrupt.depth_map.affine,New independent v2 regression contract.
+,devices.gpu.corrupt.depth_map.breathing,New independent v2 regression contract.
+,devices.gpu.corrupt.exposure_fusion.stack,New independent v2 regression contract.
+,devices.gpu.corrupt.exposure_fusion.translation,New independent v2 regression contract.
+,devices.gpu.corrupt.exposure_fusion.euclidean,New independent v2 regression contract.
+,devices.gpu.corrupt.exposure_fusion.similarity,New independent v2 regression contract.
+,devices.gpu.corrupt.exposure_fusion.affine,New independent v2 regression contract.
+,devices.gpu.corrupt.exposure_fusion.breathing,New independent v2 regression contract.

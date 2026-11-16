@@ -26,5 +26,5 @@ completed backend fail diagnostic assertions.
 CPU/GPU parity uses independently decoded RGB pixels. Geometry must match
 before numerical comparisons. Measured timings under instrumentation are
 execution observations, not uninstrumented performance benchmarks. Numeric
-budgets and compatibility cases are explicit in the case catalog and
+budgets and versioned correctness cases are explicit in the case catalog and
 [numerical contract](algorithm-contract.md).

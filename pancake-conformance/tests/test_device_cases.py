@@ -48,8 +48,8 @@ def test_device_contract_accepts_actual_completed_stage():
     assert require_backend(result([{'event': 'observer_ready'}, event]), 'gpu') is event
 
 
-def test_device_catalog_contains_real_fallback_and_measured_cache_reuse():
+def test_device_catalog_separates_corruption_from_backend_fallback():
     from pancake_conformance.cases.devices import device_cases
     identifiers = {case.id for case in device_cases()}
-    assert 'devices.gpu.decode_fallback' in identifiers
+    assert 'devices.gpu.corrupt_input_rejected' in identifiers
     assert 'devices.auto.measured_cache_reuse' in identifiers

@@ -88,3 +88,21 @@ def test_unsupported_inventory_is_frozen_without_passing_reference(tmp_path):
     import pytest
     with pytest.raises(AssertionError, match="baseline has no case"):
         replay.check("interface.gpu", {}, suite="interface")
+
+
+def test_exposure_uses_full_16bit_baseline_tolerance(tmp_path):
+    import tifffile
+    from pancake_conformance.baseline import Baseline
+    image = tmp_path / 'precision.tif'
+    pixels = np.arange(3000, dtype=np.uint16).reshape(20, 50, 3) + 10000
+    tifffile.imwrite(image, pixels)
+    baseline = Baseline(tmp_path / 'frozen', record=True)
+    baseline.check('algorithms.precision16.exposure_fusion', {'main': image},
+                   contract={'requests': [{'options': {'method': 'exposure_fusion'}}]})
+    assert baseline.manifest['cases']['algorithms.precision16.exposure_fusion']['main']['mean_limit'] == 8/65535
+
+
+def test_recorded_baseline_declares_corrected_contract_version(tmp_path):
+    from pancake_conformance.baseline import Baseline
+    baseline = Baseline(tmp_path / 'new', record=True)
+    assert baseline.manifest['contract_version'] == 2

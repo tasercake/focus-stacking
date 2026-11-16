@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 
 from .validators import read_image
+from . import CONTRACT_VERSION
 
 
 class Baseline:
@@ -14,7 +15,7 @@ class Baseline:
         self.record = record
         self.mean_limit = mean_limit
         self.peak_limit = peak_limit
-        self.manifest = {"schema_version": 1, "cases": {}, "case_suites": {}, "contracts": {}, "unsupported": {}}
+        self.manifest = {"schema_version": 1, "contract_version": CONTRACT_VERSION, "cases": {}, "case_suites": {}, "contracts": {}, "unsupported": {}}
         if record:
             if self.directory.exists() and any(self.directory.iterdir()):
                 raise ValueError(f"baseline already exists: {self.directory}")
@@ -27,6 +28,8 @@ class Baseline:
     def validate_selection(self, cases, *, suites=None, patterns=None):
         if self.record:
             return
+        if self.manifest.get("contract_version", 1) != CONTRACT_VERSION:
+            raise ValueError("Baseline uses an older behavior contract; preserve it and capture a new v2 baseline")
         inventory = self.manifest["cases"].keys() | self.manifest.get("unsupported", {}).keys()
         expected = {ident for ident in inventory
                     if (not suites or self.manifest.get("case_suites", {}).get(ident, ident.split(".")[0]) in suites)
@@ -50,10 +53,7 @@ class Baseline:
                 filename = hashlib.sha256(f"{case_id}/{name}".encode()).hexdigest() + ".npz"
                 dest = self.directory / filename
                 np.savez_compressed(dest, pixels=pixels)
-                exposure = "exposure_fusion" in case_id or any(
-                    request.get("options", {}).get("method") == "exposure_fusion"
-                    for request in contract.get("requests", []))
-                precise_16bit = pixels.dtype.kind == "u" and pixels.dtype.itemsize == 2 and not exposure
+                precise_16bit = pixels.dtype.kind == "u" and pixels.dtype.itemsize == 2
                 mean_limit = self.mean_limit if self.mean_limit is not None else (8 / 65535 if precise_16bit else 0.5 / 255)
                 peak_limit = self.peak_limit if self.peak_limit is not None else (128 / 65535 if precise_16bit else 3 / 255)
                 record[name] = {"file": filename, "sha256": hashlib.sha256(dest.read_bytes()).hexdigest(),

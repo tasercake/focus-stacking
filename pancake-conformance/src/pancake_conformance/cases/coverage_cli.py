@@ -14,7 +14,7 @@ import numpy as np
 from PIL import Image
 
 from ..model import Case
-from ..validators import assert_pixels_close, read_image, validate_image
+from ..validators import assert_incomplete, assert_pixels_close, read_image, validate_image
 from .devices import require_backend
 
 
@@ -103,13 +103,9 @@ def _reject_malformed(ctx, suffix):
 
 def _partial_malformed(ctx, suffix):
     fixture = ctx.fixture("focus")
-    reference = ctx.stack(fixture, method="weighted_average")
-    require_backend(reference, "cpu")
     bad = _malformed_pair(ctx, suffix)[0]
     result = ctx.stack([bad, *fixture.paths], method="weighted_average", auto=True, quality_report=True)
-    require_backend(result, "cpu")
-    ctx.note("valid_frame_parity", assert_pixels_close(result.output, reference.output, mean_limit=0, max_limit=0))
-    assert bad.name not in [line.strip().split(":")[0] for line in result.stdout.splitlines() if "sharpness" not in line.lower()], "Undecodable input received a sharpness value"
+    assert_incomplete(result, bad)
 
 
 def _directory_inputs(ctx):
@@ -235,6 +231,6 @@ def coverage_cli_cases():
     for suffix in ("png", "dng", "npy", "unknown"):
         cases.extend([
             Case(f"cli.coverage.reject.{suffix}", "cli", partial(_reject_malformed, suffix=suffix), "Malformed files fail with diagnostics and no partial output"),
-            Case(f"cli.coverage.partial.{suffix}", "cli", partial(_partial_malformed, suffix=suffix), "Weighted stacking ignores undecodable input and preserves valid-frame result"),
+            Case(f"cli.coverage.partial.{suffix}", "cli", partial(_partial_malformed, suffix=suffix), "An undecodable input rejects the complete job"),
         ])
     return cases
