@@ -53,7 +53,7 @@ def _zero_regions(ctx, device="cpu"):
     from .devices import require_backend
     fixture = ctx.fixture("zero_regions")
     result = _success(ctx.stack(fixture, method="weighted_average", device=device))
-    require_backend(result, device)
+    require_backend(result, "gpu" if device == "gpu" else None)
     validate_image(result.output, shape=fixture.shape, dtype="uint8")
     ctx.note("identity", assert_pixels_close(result.output, fixture.truth_path, mean_limit=0, max_limit=0))
 
@@ -99,7 +99,7 @@ def _exposure_constant_mix(ctx, count=9, device="cpu"):
     # gives equal weights to batches, including a final one-frame remainder.
     expected = np.rint(np.mean([np.mean(arrays[i:i+4], axis=0) for i in range(0, count, 4)], axis=0)).astype(np.uint16)
     result = ctx.stack(paths, method="exposure_fusion", device=device, bit_depth=16, output_format="tif")
-    require_backend(result, device)
+    require_backend(result, "gpu" if device == "gpu" else None)
     ctx.note("analytic_fusion_error", assert_pixels_close(result.output, expected, mean_limit=1, max_limit=1))
 
 
@@ -127,7 +127,7 @@ def _aligned_geometry(ctx, method, mode, reference="first"):
                                 alignment_mode=mode, alignment_reference=reference))
     ctx.note("image", validate_image(result.output, shape=fixture.shape, dtype="uint8", min_range=50))
     from .devices import require_backend
-    event = require_backend(result, "cpu")
+    event = require_backend(result)
     expected = np.asarray(fixture.metadata["source_transforms"], float)
     r = len(fixture.paths)//2 if reference == "middle" else 0
     ref_inverse = np.linalg.inv(np.vstack((expected[r], [0, 0, 1])))
@@ -212,7 +212,7 @@ def _translation_bounded_crop(ctx):
     fixture = ctx.fixture("translation")
     result = _success(ctx.stack(fixture, method="weighted_average", align=True,
                                 alignment_mode="translation", auto_crop=True))
-    event = require_backend(result, "cpu")
+    event = require_backend(result)
     actual = np.asarray([event["alignment_transforms"][str(path)] for path in fixture.paths], float)
     expected = np.asarray(fixture.metadata["source_transforms"], float)
     assert np.max(np.abs(actual - expected)) <= .3, f"Translation estimation error: {actual - expected}"
@@ -233,7 +233,7 @@ def _ambiguous_slabs(ctx, method, fixture_name="deep"):
     fixture = ctx.fixture(fixture_name)
     result = _success(ctx.stack(fixture, method=method, slab_size=4, slab_overlap=1,
                                 align=True, alignment_mode="breathing"))
-    event = require_backend(result, "cpu")
+    event = require_backend(result)
     validate_image(result.output, shape=fixture.shape, dtype="uint8", min_range=30)
     transforms = np.asarray(event["sequential_transforms"], float)
     # These fixtures have focus changes but no camera motion. Assert geometry
@@ -264,7 +264,9 @@ def _auto_crop(ctx):
 def algorithm_cases() -> list[Case]:
     cases = []
     def add(identifier, function, description="", **kwargs):
-        cases.append(Case("algorithms." + identifier, "algorithms", partial(function, **kwargs), description))
+        capabilities = ("alignment_evidence",) if function in (_aligned_geometry, _translation_bounded_crop, _ambiguous_slabs) else ()
+        cases.append(Case("algorithms." + identifier, "algorithms", partial(function, **kwargs), description,
+                          required_capabilities=capabilities))
 
     for method in METHODS:
         add(f"stack.{method}", _run_stack,

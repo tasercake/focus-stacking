@@ -21,12 +21,29 @@ def catalog():
     from .cases.coverage_algorithms import coverage_algorithm_cases
     from .cases.coverage_cli import coverage_cli_cases
     from .cases.coverage_interface import coverage_interface_cases
-    from .cases.interface_updates import update_cases
-    from .cases.services import service_cases
     from .cases.coverage_sprint import sprint_cases
     from .cases.recovery import recovery_cases
-    return [*cli_cases(), *coverage_cli_cases(), *service_cases(), *algorithm_cases(), *coverage_algorithm_cases(), *device_cases(),
-            *interface_cases(), *settings_cases(), *portability_cases(), *coverage_interface_cases(), *update_cases(), *sprint_cases(), *recovery_cases()]
+    cases = [*cli_cases(), *coverage_cli_cases(), *algorithm_cases(), *coverage_algorithm_cases(), *device_cases(),
+            *interface_cases(), *settings_cases(), *portability_cases(), *coverage_interface_cases(), *sprint_cases(), *recovery_cases()]
+    from dataclasses import replace
+    optional = {
+        "interface.layout.panels": "layout_panels",
+        "interface.controls.advanced-visibility": "advanced_controls",
+        "interface.settings.persistence": "preferences",
+        "interface.import.recent-folders": "recent_folders",
+        "interface.export.batch": "batch_export",
+        "interface.recovery.batch-export": "batch_export",
+        "interface.sprint.frame-context": "source_context",
+        "interface.sprint.viewport-export": "viewport_export",
+        "interface.portability.retained-results": "retained_results",
+        "interface.result.manual-crop": "manual_crop",
+        "interface.lifecycle.pause-cancel": "pause_resume",
+        "interface.recovery.device-request": "gpu_preference",
+    }
+    return [replace(case, required_capabilities=tuple(dict.fromkeys(
+        (*case.required_capabilities, *(('native_gui',) if case.suite == 'interface' else ()),
+         *((optional[case.id],) if case.id in optional else ()))))) for case in cases]
+
 
 
 def _parser():

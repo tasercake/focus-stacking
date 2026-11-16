@@ -139,13 +139,20 @@ def install_identifiers(application):
             identify(getattr(dialog, attr), identifier)
         dialog.notes.setAccessibleDescription(dialog.notes.toPlainText())
 
-    from src.MainWindow import Window
+    def about_dialog(dialog):
+        identify(dialog, "about.window")
+        for label in dialog.findChildren(qtw.QLabel):
+            if label.text().startswith("Version "):
+                identify(label, "about.version")
+                label.setAccessibleDescription(label.text())
+
+    from src.MainWindow import Window, AboutDialog
     from src.MainWindow.SettingsWidget import SettingsDialog
     from src.MainWindow.ImageSavingDialog import ExportDialog
     from src.MainWindow.UpdateDialog import UpdateDialog
 
     for cls, metadata in ((Window, main_window), (SettingsDialog, settings_dialog),
-                          (ExportDialog, export_dialog), (UpdateDialog, update_dialog)):
+                          (ExportDialog, export_dialog), (UpdateDialog, update_dialog), (AboutDialog, about_dialog)):
         after_constructor(cls, metadata)
 
 
@@ -181,7 +188,7 @@ def install_worker_observers():
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target-root", type=Path, default=os.environ.get("CHIMPSTACKR_CONFORMANCE_TARGET_ROOT"), required=not bool(os.environ.get("CHIMPSTACKR_CONFORMANCE_TARGET_ROOT")))
-    parser.add_argument("--settings-root", type=Path, default=os.environ.get("CF_UI_SETTINGS_DIR"), required=not bool(os.environ.get("CF_UI_SETTINGS_DIR")))
+    parser.add_argument("--settings-root", type=Path, default=os.environ.get("CONFORMANCE_UI_SETTINGS_DIR") or os.environ.get("CF_UI_SETTINGS_DIR"), required=not bool(os.environ.get("CONFORMANCE_UI_SETTINGS_DIR") or os.environ.get("CF_UI_SETTINGS_DIR")))
     parser.add_argument("--initial-settings", default=os.environ.get("CF_UI_INITIAL_SETTINGS", "{}"), help="Initial user preference JSON; existing values persist")
     parser.add_argument("paths", nargs="*")
     args = parser.parse_args(argv)

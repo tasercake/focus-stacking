@@ -13,11 +13,16 @@ from ..model import Case
 from ..validators import validate_image
 
 METHODS = ("laplacian", "hybrid", "weighted_average", "depth_map", "exposure_fusion")
-ALIGNMENTS = ("Off", "Shift only", "Shift + rotation", "Standard", "Full affine", "Focus breathing")
+ALIGNMENTS = ("off", "translation", "euclidean", "similarity", "affine", "breathing")
 
 
 def _node(snapshot, identifier):
     return find_node(snapshot, identifier)
+
+
+def _choice(snapshot, identifier):
+    node = _node(snapshot, identifier)
+    return node.get("value") if isinstance(node.get("value"), str) else node.get("title")
 
 
 def _method_alignment(ctx):
@@ -25,33 +30,33 @@ def _method_alignment(ctx):
         assert not ui.node("stack.start")["enabled"]
         assert not ui.node("export.start")["enabled"]
         for method in METHODS:
-            ui.click(f"method.{method}", physical=False)
-            ui.wait(lambda snap, method=method: _node(snap, f"method.{method}").get("value") == 1,
+            ui.action(f"method.{method}")
+            ui.wait(lambda snap, method=method: ui.observe("selected_method", snap) == method,
                     description=f"method {method} selected")
-            snapshot = ui.snapshot()
-            assert sum(_node(snapshot, f"method.{key}").get("value", 0) for key in METHODS) == 1
+
         for alignment in ALIGNMENTS:
             ui.select("alignment", alignment)
-            ui.wait(lambda snap, alignment=alignment: _node(snap, "alignment").get("title") == alignment,
+            ui.wait(lambda snap, alignment=alignment: _choice(snap, "alignment") == alignment,
                     description=f"alignment {alignment} selected")
 
 
-def _prepare(ui, method, alignment="Off"):
+def _prepare(ui, method, alignment="off"):
     ui.wait(lambda snap: _node(snap, "stack.start").get("enabled"), timeout=30, description="imported stack ready")
     ui.select("alignment", alignment)
-    ui.click(f"method.{method}", physical=False)
-    ui.wait(lambda snapshot: _node(snapshot, f"method.{method}").get("value") == 1,
+    ui.action(f"method.{method}")
+    ui.wait(lambda snapshot: ui.observe("selected_method", snapshot) == method,
             description=f"method {method} committed")
     if ui.node("autocrop").get("value"):
         ui.click("autocrop", physical=False)
         ui.wait(lambda snap: _node(snap, "autocrop").get("value") == 0, description="auto-crop disabled")
-    if not ui.node("advanced").get("value"):
-        ui.click("advanced")
-    for identifier, value in (("parameter.kernel", 3), ("parameter.levels", 4), ("parameter.contrast", 0)):
-        nodes = [node for node in ui.snapshot()["nodes"] if node.get("id") == identifier]
-        if nodes:
-            ui.edit(identifier, value)
-            ui.wait(lambda snap, identifier=identifier, value=value: str(_node(snap, identifier).get("value")) == str(value), description=f"{identifier} committed")
+    if ui.contract.get("initial_values") and _has(ui.snapshot(), "advanced") and not ui.node("advanced").get("value"):
+        ui.action("advanced.open")
+    for identifier, value in ui.contract.get("initial_values", {}).items():
+        if not _has(ui.snapshot(), identifier):
+            continue
+        ui.edit(identifier, value)
+        ui.wait(lambda snap, identifier=identifier, value=value: str(_node(snap, identifier).get("value")) == str(value),
+                description=f"{identifier} committed")
 
 
 def _stack(ui):
@@ -59,10 +64,10 @@ def _stack(ui):
     ui.wait(lambda snap: _node(snap, "export.start").get("enabled"), timeout=120, description="stack result ready")
 
 
-def _export(ui, path, fmt="TIFF", depth="16-bit"):
-    ui.click("export.start")
+def _export(ui, path, fmt="TIFF", depth="16"):
+    ui.action("export.open")
     ui.wait(lambda snap: any(node.get("id") == "export.format" for node in snap["nodes"]), description="export options")
-    label = {"TIFF": "TIFF (.tif)", "PNG": "PNG (.png)", "JPG": "JPEG (.jpg)", "EXR": "OpenEXR (.exr)"}[fmt]
+    label = {"TIFF": "tif", "PNG": "png", "JPG": "jpg", "EXR": "exr"}[fmt]
     ui.select("export.format", label)
     if ui.node("export.depth").get("enabled"):
         ui.select("export.depth", depth)
@@ -87,7 +92,7 @@ def _has(snapshot, identifier):
 
 
 def _menu(ui, title):
-    ui.click({"role": "AXMenuItem", "title": title}, physical=False)
+    ui.action(title)
 
 
 def _viewer(ui):
@@ -99,16 +104,10 @@ def _startup(ctx):
         for identifier in ("stack.start", "export.start", "mode.compare"):
             assert not ui.node(identifier)["enabled"], identifier
         assert not _viewer(ui)["has_image"]
-        ui.click("method.hybrid", physical=False)
-        ui.wait(lambda snapshot: _node(snapshot, "method.hybrid").get("value") == 1,
+        ui.action("method.hybrid")
+        ui.wait(lambda snapshot: ui.observe("selected_method", snapshot) == "hybrid",
                 description="hybrid method committed")
         assert not ui.node("stack.start")["enabled"]
-
-
-def _frame_rows(snapshot):
-    frames = find_node(snapshot, {"id": "frames", "role": "AXList"})
-    prefix = frames["path"]
-    return [node for node in snapshot["nodes"] if len(node["path"]) == len(prefix) + 1 and node["path"][:len(prefix)] == prefix and node.get("role") == "AXRow"]
 
 
 def _native_import(ctx):
@@ -129,16 +128,16 @@ def _native_import(ctx):
         ui.click("import.files")
         ui.wait(lambda snap: _has(snap, "open-panel"), description="native file import")
         ui.choose_file(paths[0])
-        ui.wait(lambda snap: _has(snap, "frames") and len(_frame_rows(snap)) == 1, description="one imported frame")
+        ui.wait(lambda snap: _has(snap, "frames") and ui.observe("frame_count", snap) == 1, description="one imported frame")
         assert not ui.node("stack.start")["enabled"]
-        _menu(ui, "Add Folder…")
+        _menu(ui, "import.folder")
         ui.wait(lambda snap: _has(snap, "open-panel"), description="native folder import")
         ui.navigate_folder(inputs)
         ui.click("OKButton", physical=False)
-        ui.wait(lambda snap: len(_frame_rows(snap)) == 3, description="folder import with duplicate suppression")
+        ui.wait(lambda snap: ui.observe("frame_count", snap) == 3, description="folder import with duplicate suppression")
         assert ui.node("stack.start")["enabled"]
-        ui.key("a", ("command",))
-        ui.key("delete")
+        ui.action("frames.select_all")
+        ui.action("frames.remove_selected")
         ui.wait(lambda snap: not _node(snap, "stack.start")["enabled"], description="selected frames removed")
 
 
@@ -155,9 +154,9 @@ def _raw_import(ctx):
 
 def _formats(ctx):
     fixture = ctx.fixture("focus")
-    choices = (("JPG", "8-bit", "jpg", "uint8"), ("PNG", "8-bit", "png", "uint8"),
-               ("PNG", "16-bit", "png", "uint16"), ("TIFF", "8-bit", "tif", "uint8"),
-               ("TIFF", "16-bit", "tif", "uint16"), ("EXR", "32-bit float", "exr", "float32"))
+    choices = (("JPG", "8", "jpg", "uint8"), ("PNG", "8", "png", "uint8"),
+               ("PNG", "16", "png", "uint16"), ("TIFF", "8", "tif", "uint8"),
+               ("TIFF", "16", "tif", "uint16"), ("EXR", "float32", "exr", "float32"))
     with ctx.open_ui(paths=fixture.paths) as ui:
         _prepare(ui, "weighted_average")
         _stack(ui)
@@ -175,59 +174,64 @@ def _viewer_workflow(ctx):
         ui.click("mode.compare")
         ui.wait(lambda snap: _viewer(ui)["compare"], description="comparison enabled")
         ui.drag("viewer", (0.5, 0.5), (0.7, 0.5))
-        ui.wait(lambda snap: 0.65 < _viewer(ui)["split"] < 0.75, description="comparison divider moved")
+        ui.wait(lambda snap: _viewer(ui)["split"] > 0.5, description="comparison divider moved")
         ui.click("mode.view")
         ui.click("viewer")
-        ui.key("1")
+        ui.action("viewer.actual")
         ui.wait(lambda snap: abs(_viewer(ui)["zoom"] - 1) < 1e-6, description="actual size")
-        for _ in range(10):
-            ui.key("=", ("command",))
-        ui.wait(lambda snap: _viewer(ui)["zoom"] > 8, description="detail zoom")
+        before_zoom = _viewer(ui)["zoom"]
+        ui.action("viewer.zoom_in")
+        ui.wait(lambda snap: _viewer(ui)["zoom"] > before_zoom, description="detail zoom")
         before = _viewer(ui)
         ui.drag("viewer", (0.35, 0.45), (0.6, 0.55))
         ui.wait(lambda snap: sum(abs(a-b) for a, b in zip(_viewer(ui)["center"], before["center"], strict=True)) > 1, description="panned image")
         locked = _viewer(ui)
-        first_frame = _frame_rows(ui.snapshot())[0]
-        ui.click({"path": first_frame["path"]})
-        ui.wait(lambda snap: "frame 1 of" in str(_node(snap, "status").get("value", "")), timeout=8, description="source selected")
+        ui.action("frames.select_first")
+        ui.wait(lambda snap: ui.observe("source_index", snap) == 1, timeout=8, description="source selected")
         after = _viewer(ui)
         assert abs(after["zoom"] - locked["zoom"]) < 1e-6
         assert max(abs(a-b) for a, b in zip(after["center"], locked["center"], strict=True)) < 1
-        ui.key("right", ("command",))
-        ui.wait(lambda snap: "frame 2 of" in str(_node(snap, "status").get("value", "")), timeout=8, description="keyboard image navigation")
-        ui.key("0")
+        ui.action("viewer.next")
+        ui.wait(lambda snap: ui.observe("source_index", snap) == 2, timeout=8, description="keyboard image navigation")
+        ui.action("viewer.fit")
         ui.wait(lambda snap: _viewer(ui)["fit"], description="fit restored")
 
 
 def _open_settings(ui):
-    _menu(ui, "Settings…")
+    _menu(ui, "settings.open")
     ui.wait(lambda snap: _has(snap, "settings.theme"), description="settings window")
 
 
 def _close_settings(ui):
-    ui.click({"role": "AXButton", "title": "Close"})
+    ui.click("dialog.close")
     ui.wait(lambda snap: not _has(snap, "settings.theme"), description="settings closed")
 
 
 def _settings(ctx):
+    expected = {}
+    initial = {}
     with ctx.open_ui(settings_id="preferences") as ui:
         _open_settings(ui)
-        for title in ("Dark", "Light", "Match system", "Dark"):
-            ui.select("settings.theme", title)
-            ui.wait(lambda snap, title=title: _node(snap, "settings.theme").get("title") == title, description=f"theme {title}")
-        for title in ("Always GPU", "Automatic (recommended)", "Always CPU"):
-            ui.select("settings.device_mode", title)
-            ui.wait(lambda snap, title=title: _node(snap, "settings.device_mode").get("title") == title, description=f"device {title}")
-        assert _has(ui.snapshot(), "settings.lightroom.status")
+        choices = ui.contract.get("settings_choices", {})
+        assert choices, "Target must declare settings choices for persistence testing"
+        for identifier, values in choices.items():
+            initial[identifier] = _choice(ui.snapshot(), identifier)
+            assert values, f"No choices declared for {identifier}"
+            for value in values:
+                ui.select(identifier, value)
+                ui.wait(lambda snap, identifier=identifier, value=value: _choice(snap, identifier) == value,
+                        description=f"preference {identifier} changed")
+            expected[identifier] = values[-1]
         _close_settings(ui)
     with ctx.open_ui(settings_id="preferences") as ui:
         _open_settings(ui)
-        assert ui.node("settings.theme")["title"] == "Dark"
-        assert ui.node("settings.device_mode")["title"] == "Always CPU"
+        for identifier, value in expected.items():
+            assert _choice(ui.snapshot(), identifier) == value, f"Preference {identifier} did not persist"
         _close_settings(ui)
     with ctx.open_ui(settings_id="fresh") as ui:
         _open_settings(ui)
-        assert ui.node("settings.theme")["title"] == "Match system"
+        for identifier, value in initial.items():
+            assert _choice(ui.snapshot(), identifier) == value, f"Fresh profile inherited {identifier}"
         _close_settings(ui)
 
 
@@ -235,31 +239,26 @@ def _layout(ctx):
     fixture = ctx.fixture("focus")
     with ctx.open_ui(paths=fixture.paths) as ui:
         ui.wait(lambda snap: _has(snap, "frames"), description="frame sidebar")
-        _menu(ui, "Show Sidebar")
+        _menu(ui, "layout.sidebar")
         ui.wait(lambda snap: not _has(snap, "frames"), description="sidebar hidden")
-        _menu(ui, "Show Sidebar")
+        _menu(ui, "layout.sidebar")
         ui.wait(lambda snap: _has(snap, "frames"), description="sidebar restored")
-        _menu(ui, "Show Inspector")
+        _menu(ui, "layout.inspector")
         ui.wait(lambda snap: not _has(snap, "method.hybrid"), description="inspector hidden")
-        _menu(ui, "Show Inspector")
+        _menu(ui, "layout.inspector")
         ui.wait(lambda snap: _has(snap, "method.hybrid"), description="inspector restored")
 
 
 def _advanced(ctx):
     with ctx.open_ui() as ui:
-        ui.click("advanced")
-        for method, expected, absent in (("laplacian", "parameter.contrast", "parameter.smoothing"),
-                                         ("hybrid", "parameter.levels", "parameter.contrast"),
-                                         ("weighted_average", "parameter.kernel", "parameter.levels"),
-                                         ("depth_map", "parameter.smoothing", "parameter.kernel"),
-                                         ("exposure_fusion", None, "parameter.slab")):
-            ui.click(f"method.{method}", physical=False)
-            ui.wait(lambda snapshot, method=method: _node(snapshot, f"method.{method}").get("value") == 1,
-                    description=f"method {method} committed")
-            snapshot = ui.snapshot()
-            if expected:
-                assert _has(snapshot, expected), (method, expected)
-            assert not _has(snapshot, absent), (method, absent)
+        if _has(ui.snapshot(), "advanced") and not ui.node("advanced").get("value"):
+            ui.action("advanced.open")
+        for identifier, value in ui.contract.get("advanced_values", {}).items():
+            ui.edit(identifier, value)
+            ui.wait(lambda snap, identifier=identifier, value=value:
+                    str(_node(snap, identifier).get("value")) == str(value),
+                    description=f"advanced value {identifier} changed")
+        assert ui.contract.get("advanced_values"), "No advanced setting declared by target"
 
 
 def _unsaved(ctx):
@@ -267,31 +266,31 @@ def _unsaved(ctx):
     with ctx.open_ui(paths=fixture.paths) as ui:
         _prepare(ui, "weighted_average")
         _stack(ui)
-        ui.key("n", ("command",))
-        ui.wait(lambda snap: any(node.get("title") == "Discard" for node in snap["nodes"]), description="unsaved result warning")
-        ui.click({"role": "AXButton", "title": "Cancel"})
+        ui.action("workspace.new")
+        ui.wait(lambda snap: _has(snap, "dialog.discard"), description="unsaved result warning")
+        ui.click("dialog.cancel")
         assert ui.node("export.start")["enabled"]
-        ui.key("n", ("command",))
-        ui.wait(lambda snap: any(node.get("title") == "Discard" for node in snap["nodes"]), description="discard warning repeated")
-        ui.click({"role": "AXButton", "title": "Discard"})
+        ui.action("workspace.new")
+        ui.wait(lambda snap: _has(snap, "dialog.discard"), description="discard warning repeated")
+        ui.click("dialog.discard")
         ui.wait(lambda snap: not _node(snap, "stack.start")["enabled"] and not _node(snap, "export.start")["enabled"], description="new stack after explicit discard")
 
 
 def _lifecycle(ctx):
     fixture = ctx.fixture("lifecycle")
     with ctx.open_ui(paths=fixture.paths) as ui:
-        _prepare(ui, "laplacian", "Focus breathing")
+        _prepare(ui, "laplacian", "breathing")
         ui.click("stack.start", position=(0.3, 0.5))
         def menu_enabled(snapshot, title):
-            return bool(find_node(snapshot, {"role": "AXMenuItem", "title": title}).get("enabled"))
+            return bool(find_node(snapshot, title).get("enabled"))
 
-        ui.wait(lambda snap: menu_enabled(snap, "Pause") and menu_enabled(snap, "Stop"), description="running stack")
-        _menu(ui, "Pause")
-        ui.wait(lambda snap: menu_enabled(snap, "Resume"), description="paused stack")
-        _menu(ui, "Resume")
-        ui.wait(lambda snap: menu_enabled(snap, "Pause"), description="resumed stack")
-        _menu(ui, "Stop")
-        ui.wait(lambda snap: not menu_enabled(snap, "Pause") and not menu_enabled(snap, "Stop")
+        ui.wait(lambda snap: menu_enabled(snap, "stack.pause") and menu_enabled(snap, "stack.stop"), description="running stack")
+        _menu(ui, "stack.pause")
+        ui.wait(lambda snap: menu_enabled(snap, "stack.resume"), description="paused stack")
+        _menu(ui, "stack.resume")
+        ui.wait(lambda snap: menu_enabled(snap, "stack.pause"), description="resumed stack")
+        _menu(ui, "stack.stop")
+        ui.wait(lambda snap: not menu_enabled(snap, "stack.pause") and not menu_enabled(snap, "stack.stop")
                 and _node(snap, "stack.start")["enabled"], timeout=120, description="cancelled stack settled")
         assert not ui.node("export.start")["enabled"]
         _stack(ui)
@@ -303,21 +302,20 @@ def _gpu(ctx):
     fixture = ctx.fixture("focus")
     with ctx.open_ui(paths=fixture.paths) as ui:
         _open_settings(ui)
-        ui.select("settings.device_mode", "Always GPU")
+        ui.select("settings.device_mode", "gpu")
         _close_settings(ui)
         _prepare(ui, "hybrid")
         _stack(ui)
         events = [json.loads(line) for line in (ui.directory / "events.jsonl").read_text().splitlines() if line.strip()]
         result = SimpleNamespace(returncode=0, stderr="", diagnostics={"events": events})
         event = require_backend(result, "gpu")
-        assert event["requested_backend"] == "gpu"
         ctx.note("execution", event)
 
 
 def _alignment_crop(ctx):
     fixture = ctx.fixture("translation")
     with ctx.open_ui(paths=fixture.paths) as ui:
-        _prepare(ui, "weighted_average", "Shift only")
+        _prepare(ui, "weighted_average", "translation")
         ui.click("autocrop", physical=False)
         ui.wait(lambda snap: _node(snap, "autocrop").get("value") == 1, description="auto-crop enabled")
         _stack(ui)

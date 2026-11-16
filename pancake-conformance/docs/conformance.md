@@ -36,8 +36,36 @@ implements the [native UI contract](ui-protocol.md). `[env]` declares child
 variables with `{case}`, `{home}`, `{target}`, and `{run}` substitutions.
 `[state]` names case-contained mutable directories. `[services]` maps service
 names to endpoint environment variables. `capabilities` declares target features.
-`[fixtures] native_update_asset = "MyApp-macOS.dmg"` declares the release filename
-used by the service policy fixture; its default is `FocusStacker-macOS.dmg`.
+No update or delivery mechanism is part of the portable catalog.
+
+## Feature contracts and optional capabilities
+
+The suite preserves user-visible features rather than reference internals.
+Selected optional cases run only when the descriptor declares their required
+capabilities. Missing features are reported as `unsupported`; these cases are
+not passed and do not execute the target. Reports and baselines retain the
+unsupported reason. Declare `native_gui` for GUI cases; diagnostic device cases
+also require `backend_evidence` and the requested `cpu` or `gpu` capability.
+VM runs exclude physical-GPU requirements even when host hardware supports them.
+
+`CaseContext.stack` sends only requested options plus explicit `[stack.defaults]`.
+There is no global CPU, kernel, pyramid, or scale setting. CLI syntax remains
+in `[stack.options]`. If `cli_reports` is declared, `[stack.observations]` supplies
+regular expressions for `progress` and `quality_report`; diagnostics may use
+any readable format or output stream. Neither `[n/n]` syntax nor warning words
+are universal requirements. Existing-output refusal and parent-directory
+creation are valid policies when output and existing files stay correct.
+Input-order tests validate usable output without demanding pixel identity after
+reordering. Legacy case identifiers remain stable for selection compatibility;
+their descriptions and assertions define the current behavior.
+
+The [semantic UI contract](ui-protocol.md) maps actions, controls, choices, and
+read-only observations to each implementation. It supports different labels,
+shortcuts, dropdown/radio selection, and collection layouts. Cases verify actual
+state changes and exported pixels; mappings cannot manufacture successful state.
+Optional strict frozen-baseline comparisons remain available when pixel-level
+regression identity is wanted. Baseline capture is not a requirement to use the
+feature cases, and old snapshots should be reviewed after a contract revision.
 
 ## Adapter hooks and dependencies
 

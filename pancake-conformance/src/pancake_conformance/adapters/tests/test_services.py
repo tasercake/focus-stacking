@@ -14,11 +14,3 @@ def test_service_adapter_preserves_real_semver_and_display_semantics(tmp_path):
     assert versions[1]["version"]["prerelease"] is True
     assert versions[2]["version"] is None
     assert versions[0]["display"] == "1.2.3"
-
-
-def test_release_policy_uses_declared_native_asset_name(tmp_path):
-    from pancake_conformance.cases.services import _release_policy
-    from pancake_conformance.context import CaseContext
-    from pancake_conformance.target import TargetSpec
-    descriptor = Path(__file__).resolve().parents[1] / "chimpstackr_reference/chimpstackr.toml"
-    _release_policy(CaseContext(TargetSpec.load(descriptor), tmp_path))

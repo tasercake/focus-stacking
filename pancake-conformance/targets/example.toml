@@ -16,9 +16,6 @@ cli = ["./bin/stacker"]
 # [runtime]
 # project = "."
 
-[fixtures]
-native_update_asset = "MyApp-macOS.dmg"
-
 [stack]
 input = ["--input", "{inputs}"]
 output = ["--output", "{output}"]
@@ -41,6 +38,5 @@ quality = "--quality"
 quality_report = "--quality-report"
 bit_depth = "--bit-depth"
 gpu_id = "--gpu-id"
-measure = "--measure"
 rotation_scale = "--rotation-scale"
 device = { cpu = ["--cpu"], gpu = ["--gpu"], auto = [] }

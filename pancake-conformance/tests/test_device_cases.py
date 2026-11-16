@@ -48,8 +48,10 @@ def test_device_contract_accepts_actual_completed_stage():
     assert require_backend(result([{'event': 'observer_ready'}, event]), 'gpu') is event
 
 
-def test_device_catalog_separates_corruption_from_backend_fallback():
+def test_device_catalog_does_not_prescribe_fallback_or_calibration():
     from pancake_conformance.cases.devices import device_cases
     identifiers = {case.id for case in device_cases()}
     assert 'devices.gpu.corrupt_input_rejected' in identifiers
-    assert 'devices.auto.measured_cache_reuse' in identifiers
+    assert 'devices.gpu.decode_fallback' not in identifiers
+    assert 'devices.auto.measured_cache_reuse' not in identifiers
+    assert not any('.index.' in identifier for identifier in identifiers)

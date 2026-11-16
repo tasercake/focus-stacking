@@ -1,114 +1,114 @@
-# Native macOS interface conformance
+# Semantic native UI contract
 
-Interface scenarios use the operating system boundary. They do not import the
-application, Qt, PySide, widget classes, algorithm functions, or export helpers.
-The generic driver launches the configured GUI command, then controls its PID
-through macOS Accessibility, native pointer events, and System Events keyboard
-input. A different implementation can use the same scenarios by publishing the
-same semantic identifiers and read-only observations.
+The interface suite preserves workflows and observable results: import sources,
+choose processing options, run a stack, inspect or compare images, change the
+view, export pixels, retain results, persist preferences, cancel work, and
+recover from file errors. It does not require a particular arrangement of
+panels, control classes, menu labels, status messages, shortcuts, or zoom step.
+Optional features are declared in the target's `capabilities`; unsupported
+cases are reported as `unsupported`, not passed.
 
-## Requirements
+## Native boundary
 
-Run in an unlocked, logged-in macOS desktop session with Xcode command-line tools
-(`xcrun swiftc`). Allow Accessibility access for the application or terminal that
-starts the CLI. Also allow its Automation access to **System Events**. macOS
-requires this permission for reliable keyboard input into native file panels.
-Permission failures fail the run; they are not converted into passing skips.
+`CaseContext.open_ui()` wraps the native macOS session in `SemanticUI`. The
+wrapper maps declarative selectors and input sequences to operating-system
+Accessibility, keyboard, and pointer operations. It does not call target
+business methods. Action completion is not evidence of application success:
+cases separately wait for observed UI state or validate exported files.
 
-Screen Recording permission permits target-window screenshots on failure. The
-suite does not capture the whole desktop. Accessibility trees and action traces
-remain available when screenshots cannot be captured. Run only one interface
-suite at a time: keyboard and pointer input share the desktop.
+A target can publish the semantic identifiers directly, or provide `[ui]`
+mappings in its descriptor. For example, this implementation uses a dropdown
+instead of method radio cards and displays different words:
 
-`native_macos.swift` compiles on demand into a source-hashed temporary cache. No
-Appium server, browser, downloaded fixture set, or application rebuild is needed.
+```toml
+capabilities = ["cli", "native_gui", "preferences"]
 
-## Boundary
+[ui.controls]
+method = { id = "fusion-dropdown" }
+alignment = { id = "motion-dropdown" }
+"stack.start" = { id = "combine-button" }
 
-`MacOSUISession` exposes `snapshot`, `node`, `click`, `select`, `key`, `text`,
-`edit`, `drag`, `scroll`, `wait`, and native file-panel operations. The underlying
-transport is JSON Lines over standard input and output. Requests name a PID,
-command, and accessibility selector; responses contain `ok` and either `result`
-or `error`. Every request and response is recorded in the case directory.
+[ui.choices]
+method = { hybrid = "Detail blend", laplacian = "Pyramid" }
+alignment = { off = "Disabled", translation = "Move only" }
 
-Selectors use a stable `id`, optionally an accessibility role, or a path from a
-fresh accessibility snapshot. Native lists can repeat their identifier on rows
-and columns; list assertions therefore qualify the identifier with `AXList`.
-Snapshots omit the system Apple menu and the virtualized contents of native file
-browsers. Native file panels are controlled through their real controls and
-keyboard navigation, without walking unrelated directory contents.
+[ui.actions]
+"method.hybrid" = [{ select = "method", value = "hybrid" }]
+"method.laplacian" = [{ select = "method", value = "laplacian" }]
+"settings.open" = [{ key = ",", modifiers = ["control"] }]
 
-Pointer input uses coordinates relative to the identified control. Accessibility
-press actions activate semantic radio choices, native menu commands, and controls
-that are partially clipped by the existing application layout. Both routes use public
-operating-system input APIs. Popup selection opens through an advertised public
-Accessibility action when available, otherwise a pointer click. Options must be
-readable before native pointer selection; selection then requires the exact
-committed value and popup dismissal. An invalid native accessibility tree fails
-instead of inferring an invisible choice. Selecting an
-already committed value sends no input. Scenarios never call an application
-operation.
+[ui.observations]
+selected_method = { selector = { id = "fusion-dropdown" }, attribute = "value", values = { "Detail blend" = "hybrid", "Pyramid" = "laplacian" } }
+frame_count = { count = { role = "AXButton" }, within = { id = "source-grid" } }
 
-## Adapter boundary
+[ui.settings_choices]
+"settings.theme" = ["light", "dark"]
+```
 
-An optional launch adapter may isolate user settings, attach stable semantic
-identifiers after normal construction, expose read-only viewer observations,
-and instrument native worker entry points. These hooks must preserve original
-arguments, results, exceptions, and application behavior. They must not invoke
-business operations for cases or replace native controls.
+Provide mappings for every action, choice, and observation used by selected
+cases. Unknown or missing controls fail explicitly. The mapping changes only
+presentation details. Raw rendered text remains available, and no action
+writes a successful postcondition into the accessibility snapshot.
 
-Framework-specific mechanics, identifier mappings, source-specific limitations,
-and hook regression tests live in adapters. An application may instead publish
-the identifiers and observations directly in its own UI toolkit.
+## Mapping forms
 
-## Semantic identifiers
+`[ui.controls]` maps semantic identifiers to native selector dictionaries.
+Selectors can use `id`, `role`, `title`, or an observed `path`. Collection
+selectors can use `within`, an item `role`, and `index`, or a `text_pattern`
+matching text on the item or its descendants. The returned click target is a
+real path from a fresh native snapshot. Thus a source grid, nested outline, or
+flat list can expose the same count and selection behavior.
 
-| Group | Examples |
-|---|---|
-| Workspace and input | `import.files`, `frames`, `results`, `status`, `device` |
-| Processing controls | `stack.start`, `stack.pause`, `stack.stop`, `method.hybrid`, `alignment`, `autocrop`, `parameter.kernel` |
-| Viewer | `viewer`, `zoom`, `mode.view`, `mode.compare` |
-| Export | `export.start`, `export.format`, `export.depth`, `export.quality`, `export.compression`, `export.confirm` |
-| Preferences | `settings.theme`, `settings.device_mode`, `settings.gpu`, `settings.auto_updates`, `settings.prereleases`, `settings.lightroom.status` |
-| Updates | `updates.notes`, `updates.auto`, `updates.skip`, `updates.later`, `updates.download` |
+`[ui.actions]` maps an action to an ordered array of native input steps. Steps
+are `click`, `select` with `value`, or `key` with optional `modifiers`. Clicks
+use native Accessibility activation by default; `physical = true` requests
+pointer input and can include `button`, `count`, and relative `position`.
+Unmapped actions activate their semantic identifier directly.
 
-The complete reference mapping is `IDENTIFIER_CONTRACT` in the adapter. macOS
-native window wrappers may not expose a widget's identifier; readiness checks
-use actual native window roles and dialog child identifiers instead.
+`[ui.choices]` maps canonical option values to displayed strings. The wrapper
+maps actual observed choices back to their canonical values. It never assumes
+that sending a selection made it succeed.
 
-## Native file-panel safety
+`[ui.observations]` reads real accessibility data. A rule can select an
+attribute, read a JSON field, extract a regular-expression group, translate a
+value, count matching descendants, or identify one selected control. A count
+with `direct = true` counts only direct children of the declared container.
+Radio-card and dropdown observations can therefore expose the same selected
+method without requiring the same control structure. Viewer observations use
+read-only accessible metadata for image presence, scale, center, comparison
+state, divider position, and fit mode. Source/result selection observations
+must describe the currently displayed item, not the last requested action.
 
-Cocoa remembers native file-panel locations outside QSettings. Changing `HOME`
-does not isolate those locations. The suite never accepts that remembered
-destination. It navigates to an existing case-owned directory using the actual
-Go to Folder sheet, checks the exact entered absolute path, and verifies the
-native path menu's complete directory ancestry. Matching only the leaf directory
-name is insufficient: another run can have the same case name.
+`[ui.initial_values]` may declare target-specific numerical settings needed for
+CLI/GUI parity. Only controls actually exposed for the selected method are
+edited. `[ui.advanced_values]` declares the setting exercised by the optional
+advanced-control case. These are target data, not global engine defaults.
 
-The Save panel is accepted only after that verification and after checking the
-filename. Existing files are not overwritten. Export checks then independently
-decode the file at the requested sandbox path. Native input files also must be
-inside the case directory.
+## Feature scope
 
-The current reference menu can consume Command+A inside native panels as its
-Select All Frames command. The driver therefore clears the native path editor
-through its public AX value interface, then sends real text input before
-accepting navigation. It does not replace the file chooser or provide a fake
-path response.
+The core workflow uses semantic processing and export controls. Optional
+capabilities include `preferences`, `about`, `lightroom`, `layout_panels`,
+`advanced_controls`, `recent_folders`, `batch_export`, `source_context`,
+`viewport_export`, `retained_results`, `manual_crop`, `pause_resume`, and
+`gpu_preference`. Declaring a feature commits the target to its observable
+case, while leaving its presentation and implementation free. Backend evidence
+has a separate [diagnostic contract](diagnostics.md).
 
-## Coverage and limits
+Automatic updater preferences, release feeds, version ordering, downloads,
+installation, and delivery mechanisms are outside application conformance.
+Readable Lightroom integration status is optional and never installs or starts
+another application.
 
-The interface suite covers method selection, every stacking method with CLI
-pixel parity, all export formats and depths, native file/folder dialogs,
-duplicate suppression, removal, RAW preview/export, alignment/crop, comparison
-divider, zoom/pan/navigation, panel visibility, preferences/restart isolation,
-unsaved-work prompts, pause/resume/cancel/reuse, and GUI-selected GPU execution.
-VM mode runs this same native transport inside the guest. Its physical-GPU GUI
-case remains explicitly unsupported; host device cases validate the actual GPU.
+## GUI verification
 
-Updater preferences and readable Lightroom setup state are tested without
-network downloads, installing/updating/removing user applications, or operating
-Lightroom itself. Packaged-application installers, live update application,
-physical touch/trackpad gestures, and other operating systems remain separate
-coverage gaps. The coverage report includes their owning source files instead
-of excluding them to inflate the result.
+Run live GUI tests only inside a configured macOS VM. Native pytest smoke
+cases require both `--gui-vm` and an explicit `--target PATH`; otherwise they
+skip. Use `--gui-vm-persist` to retain the guest. Driver unit tests use fake
+native sessions or construct events without sending host input.
+
+The guest needs a logged-in Aqua session, Xcode command-line tools,
+Accessibility permission, and Automation permission for System Events. Native
+file dialogs always navigate to a verified case-owned directory; remembered
+locations are not accepted. Screenshots, accessibility trees, action traces,
+and exported files remain evidence. Guest exports remain pending until host
+CLI pixel comparisons complete. See [VM setup](gui-vm-setup.md).

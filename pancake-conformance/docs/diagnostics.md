@@ -1,30 +1,39 @@
-# Portable execution diagnostics
+# Optional execution diagnostics
 
-Cases may inspect read-only execution records published to
-`CONFORMANCE_EVENTS_PATH`. The suite sets a case-owned JSON Lines path for each
-call. An adapter may translate this setting into its application's observation
-hook. Target module names, private caches, and profiler mechanics belong in
-adapters.
+Ordinary image cases validate process completion and independently decoded
+output. They do not require calibration records, device-selection algorithms,
+cache files, per-stage backends, or alignment matrices. Automatic execution may
+use any valid strategy and may select different devices for repeated work.
 
-Records describe completed execution. Backend selection or initialization alone
-does not prove GPU completion. Device cases require completed output and backend
-evidence; ordinary algorithm cases validate exported images independently.
+A target declaring `backend_evidence` can run explicit CPU/GPU proof cases.
+It writes JSON Lines to the case-owned `CONFORMANCE_EVENTS_PATH`, directly or
+through an adapter. A completion record has this minimum form:
 
-Core records include `stack_complete`, `backend_fallback`, `crop_complete`,
-`measurement_complete`, `measurement_lookup`, and `device_decision`.
-`stack_complete.actual_backend` is `cpu`, `gpu`, or null for incomplete work;
-`actual_backend_by_stage` distinguishes fusion, alignment estimation, and warping.
-`not_requested` marks stages omitted by the request. Output shape uses
-height/width/channel order; matrix coordinates use x/y image order.
+```json
+{"event":"stack_complete","completed":true,"actual_backend":"gpu"}
+```
 
-Records can include requested backend, effective parameters, input order,
-alignment matrices, measured timings, and cache reuse. Observation must not
-change target results, suppress exceptions, or initiate business operations.
-`observer_error`, absent completion evidence, incomplete output, and wrong
-completed backend fail diagnostic assertions.
+A requested or initialized backend is not proof of completed execution. Explicit
+proof cases require a successful process, completed output, and truthful
+aggregate backend evidence matching the request. `observer_error` fails the
+diagnostic check. Missing optional telemetry is permitted in ordinary image
+cases, which then make no hardware-execution claim. Extra diagnostic fields
+may be retained as evidence but are not mandatory or compared as architecture.
 
-CPU/GPU parity uses independently decoded RGB pixels. Geometry must match
-before numerical comparisons. Measured timings under instrumentation are
-execution observations, not uninstrumented performance benchmarks. Numeric
-budgets and versioned correctness cases are explicit in the case catalog and
-[numerical contract](algorithm-contract.md).
+CPU/GPU parity checks compare decoded RGB geometry and numerical error. They do
+not prescribe which internal stages use a device. Instrumented timings are not
+uninstrumented performance benchmarks. Source coverage remains an optional,
+adapter-specific measurement described in [coverage](coverage.md).
+
+
+The optional `alignment_evidence` capability enables v2 geometry oracles.
+A `stack_complete` record supplies `alignment_transforms`, keyed by input path,
+and `sequential_transforms` in input order when chaining. Every matrix is finite
+2×3, mapping reference x/y coordinates to source x/y coordinates. These fields
+specify observable geometry, not implementation language, estimator or device.
+Targets without this capability report these cases as unsupported; ordinary
+pixel-based alignment tests remain available.
+
+Failed decode records must never claim successful completion or CPU fallback
+from input corruption. Optional telemetry may be absent, but any published
+completion or backend evidence must be truthful.

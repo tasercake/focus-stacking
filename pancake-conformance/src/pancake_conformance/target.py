@@ -25,6 +25,7 @@ class TargetSpec:
     instrumentation: dict = field(default_factory=dict)
     runtime: dict = field(default_factory=dict)
     fixtures: dict = field(default_factory=dict)
+    ui: dict = field(default_factory=dict)
 
     @classmethod
     def load(cls, path):
@@ -47,7 +48,7 @@ class TargetSpec:
                    tuple(data.get("capabilities", [])), path, data.get("gui_vm", {}),
                    data.get("state", {}), tuple(data.get("probe", [])), data.get("services", {}),
                    (path.parent / data["coverage_scope"]).resolve() if data.get("coverage_scope") else None,
-                   data.get("instrumentation", {}), data.get("runtime", {}), data.get("fixtures", {}))
+                   data.get("instrumentation", {}), data.get("runtime", {}), data.get("fixtures", {}), data.get("ui", {}))
 
     @property
     def coverage_source(self):
