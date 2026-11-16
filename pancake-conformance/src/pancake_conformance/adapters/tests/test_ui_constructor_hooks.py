@@ -132,9 +132,6 @@ def test_identifier_installer_hooks_only_completed_window_constructors(monkeypat
         if module_name == 'src.MainWindow':
             module.AboutDialog = AboutDialog
         monkeypatch.setitem(sys.modules, module_name, module)
-    class AboutDialog(Widget):
-        pass
-    sys.modules["src.MainWindow"].AboutDialog = AboutDialog
     app = SimpleNamespace(installEventFilter=filters.append)
     install_identifiers(app)
     assert filters == [], 'Application-wide event filters convert unrelated worker QObjects through Python'

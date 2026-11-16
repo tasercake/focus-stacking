@@ -585,3 +585,39 @@ def test_scroll_event_targets_requested_viewport_before_native_post(tmp_path):
                       '}\n')
     result = subprocess.run(['swift', str(script)], capture_output=True, text=True, check=True)
     assert result.stdout.splitlines() == ['321.0,654.0,1', '789.0,123.0,1'], 'Native scroll inherited stale pointer coordinates'
+
+
+def test_select_retries_advertised_press_only_when_show_menu_remains_collapsed(tmp_path):
+    from types import SimpleNamespace
+    from pancake_conformance.macos_ui import MacOSUISession
+
+    class CollapsedDriver(MacOSUISession):
+        def __init__(self):
+            self.directory = tmp_path
+            self.process = SimpleNamespace(poll=lambda: None)
+            self.expanded = self.chosen = False
+            self.actions = []
+        def _request(self, command, **values):
+            if command == 'snapshot':
+                nodes = [{'id': 'alignment', 'role': 'AXMenuButton', 'title': 'Focus breathing' if self.chosen else 'Standard',
+                          'path': [0], 'size': [200, 30]}]
+                if self.expanded:
+                    nodes.append({'role': 'AXMenuItem', 'title': 'Focus breathing', 'path': [1], 'size': [200, 30]})
+                return {'nodes': nodes}
+            if command == 'attributes':
+                return {'_AXActions': ['AXShowMenu', 'AXPress'], 'AXExpanded': self.expanded}
+            if command == 'action':
+                self.actions.append(values['action'])
+                self.expanded = values['action'] == 'AXPress'
+                return {'performed': values['action']}
+            if command == 'click':
+                assert self.expanded and values['selector'] == {'path': [1]}
+                self.chosen, self.expanded = True, False
+                return {}
+            if command == 'screenshot':
+                return {}
+            raise AssertionError(command)
+    driver = CollapsedDriver()
+    driver.select('alignment', 'Focus breathing', timeout=.01)
+    assert driver.actions == ['AXShowMenu', 'AXPress']
+    assert driver.chosen

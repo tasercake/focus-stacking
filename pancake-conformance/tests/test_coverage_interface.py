@@ -101,8 +101,10 @@ def test_recent_workflow_opens_target_declared_action():
     from types import SimpleNamespace
     from pancake_conformance.cases.coverage_interface import _recent_menu
     actions = []
-    _recent_menu(SimpleNamespace(action=actions.append))
-    assert actions == ["recent.open"]
+    def wait(predicate, **kwargs):
+        assert predicate({"nodes": [{"id": "recent.open", "role": "AXMenuItem", "size": [100, 20]}]})
+    _recent_menu(SimpleNamespace(action=actions.append, wait=wait))
+    assert actions == ["file.menu", "recent.open"]
 
 
 def test_recent_clear_checks_observed_empty_state():
@@ -112,11 +114,32 @@ def test_recent_clear_checks_observed_empty_state():
         if name == "recent.clear":
             state["empty"] = True
     def wait(predicate, **kwargs):
-        tree = {"nodes": [{"id": "recent.clear", "enabled": True},
-                          {"id": "recent.empty", "enabled": not state["empty"]}]}
+        tree = {"nodes": [{"id": "recent.open", "role": "AXMenuItem", "size": [100, 20]},
+                          {"id": "recent.clear", "role": "AXMenuItem", "size": [100, 20], "enabled": True},
+                          {"id": "recent.empty", "role": "AXMenuItem", "size": [100, 20], "enabled": not state["empty"]}]}
         value = predicate(tree)
         assert value
         return value
     from types import SimpleNamespace
     _clear_recent_folders(SimpleNamespace(action=action, wait=wait))
     assert state["empty"]
+
+
+def test_recent_menu_waits_for_each_visible_native_transition():
+    from pancake_conformance.cases.coverage_interface import _recent_item
+    class UI:
+        phase = 'idle'
+        def action(self, name):
+            if name == 'file.menu':
+                assert self.phase == 'idle'
+                self.phase = 'file'
+            elif name == 'recent.open':
+                assert self.phase == 'file', 'Recent submenu opened before parent was observed'
+                self.phase = 'recent'
+        def wait(self, condition, **kwargs):
+            name = 'recent.open' if self.phase == 'file' else 'folder'
+            node = {'id': name, 'title': name, 'role': 'AXMenuItem', 'size': [100, 20]}
+            result = condition({'nodes': [node]})
+            assert result
+            return result
+    assert _recent_item(UI(), 'folder')['id'] == 'folder'

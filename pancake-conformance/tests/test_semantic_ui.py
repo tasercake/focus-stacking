@@ -175,3 +175,30 @@ def test_declared_control_selector_disambiguates_existing_native_semantic_id():
     ui = SemanticUI(SimpleNamespace(snapshot=lambda: tree), {'controls': {
         'stack.pause': {'role': 'AXMenuItem', 'title': 'Hold work'}}})
     assert ui.node('stack.pause')['enabled'] is False
+
+
+def test_exact_control_identity_precedes_broad_dialog_selector():
+    from pancake_conformance.ui import SemanticUI
+    ui = SemanticUI(None, {'controls': {
+        'dialog.error': {'role': 'AXWindow', 'subrole': 'AXDialog'},
+        'open-panel': {'id': 'open-panel'},
+    }})
+    snapshot = {'nodes': [
+        {'id': 'open-panel', 'role': 'AXWindow', 'subrole': 'AXDialog', 'path': [0]},
+        {'id': None, 'role': 'AXWindow', 'subrole': 'AXDialog', 'path': [1]},
+    ]}
+    normalized = ui.normalize(snapshot)
+    assert normalized['nodes'][0]['id'] == 'open-panel'
+    assert normalized['nodes'][1]['id'] == 'dialog.error'
+
+
+def test_count_zero_requires_observed_empty_state_when_container_is_absent():
+    from pancake_conformance.ui import SemanticUI
+    import pytest
+    ui = SemanticUI(None, {'observations': {'frame_count': {
+        'count': {'role': 'AXRow'}, 'within': {'id': 'frames', 'role': 'AXList'},
+        'empty_when': {'role': 'AXStaticText', 'value': 'No images'},
+    }}})
+    assert ui.observe('frame_count', {'nodes': [{'role': 'AXStaticText', 'value': 'No images'}]}) == 0
+    with pytest.raises(AssertionError):
+        ui.observe('frame_count', {'nodes': []})

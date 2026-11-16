@@ -95,17 +95,19 @@ def _close_recent_window(ui):
 
 def _visible_menu_item(snapshot, title, role="AXMenuItem"):
     return next((node for node in snapshot["nodes"]
-                 if node.get("role") == role and node.get("title") == title
+                 if node.get("role") == role and (node.get("title") == title or node.get("id") == title)
                  and len(node.get("size", [])) == 2 and all(n > 0 for n in node["size"])), None)
 
 
 def _recent_menu(ui):
+    ui.action("file.menu")
+    ui.wait(lambda snap: _visible_menu_item(snap, "recent.open"), description="visible recent submenu")
     ui.action("recent.open")
 
 
 def _recent_item(ui, title):
     _recent_menu(ui)
-    return ui.wait(lambda snap: next((node for node in snap["nodes"] if node.get("id") == title or node.get("title") == title), None), description=f"visible {title}")
+    return ui.wait(lambda snap: _visible_menu_item(snap, title), description=f"visible {title}")
 
 
 def _clear_recent_folders(ui):

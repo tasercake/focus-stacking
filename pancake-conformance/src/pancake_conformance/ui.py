@@ -48,7 +48,8 @@ class SemanticUI:
             if raw_id in controls and not all(node.get(key) == value for key, value in controls[raw_id].items()):
                 node['_native_id'] = raw_id
                 node['id'] = 'native:' + raw_id
-            for identifier, selector in controls.items():
+            # Specific identities take precedence over broad role selectors.
+            for identifier, selector in sorted(controls.items(), key=lambda item: ('id' not in item[1], -len(item[1]))):
                 if all(node.get(key) == value for key, value in selector.items()):
                     node['_native_id'] = node.get('id')
                     node['id'] = identifier
@@ -129,6 +130,9 @@ class SemanticUI:
             assert len(selected) == 1, f'Expected one selected {name}: {selected}'
             return selected[0]
         if 'count' in rule:
+            if 'empty_when' in rule and any(all(node.get(key) == value for key, value in rule['empty_when'].items())
+                                            for node in tree['nodes']):
+                return 0
             within = self._observed_node(tree, rule['within'])['path'] if 'within' in rule else []
             return sum(all(node.get(key) == value for key, value in rule['count'].items())
                        and node.get('path', [])[:len(within)] == within

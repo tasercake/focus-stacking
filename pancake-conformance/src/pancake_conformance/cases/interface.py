@@ -166,6 +166,17 @@ def _formats(ctx):
             ctx.note(f"{fmt}-{depth}", validate_image(output, shape=fixture.shape, dtype=dtype, min_range=0.1))
 
 
+def _zoom_for_pan(ui, fitted_zoom):
+    """Make the generated image larger than the viewport before testing pan."""
+    for _ in range(12):
+        previous = _viewer(ui)["zoom"]
+        if previous > fitted_zoom * 1.25:
+            return
+        ui.action("viewer.zoom_in")
+        ui.wait(lambda snap: _viewer(ui)["zoom"] > previous, description="zoom reaches pannable scale")
+    raise AssertionError("Viewer did not reach pannable zoom")
+
+
 def _viewer_workflow(ctx):
     fixture = ctx.fixture("focus")
     with ctx.open_ui(paths=fixture.paths) as ui:
@@ -177,11 +188,15 @@ def _viewer_workflow(ctx):
         ui.wait(lambda snap: _viewer(ui)["split"] > 0.5, description="comparison divider moved")
         ui.click("mode.view")
         ui.click("viewer")
+        ui.action("viewer.fit")
+        ui.wait(lambda snap: _viewer(ui)["fit"], description="fit before zoom checks")
+        fitted_zoom = _viewer(ui)["zoom"]
         ui.action("viewer.actual")
         ui.wait(lambda snap: abs(_viewer(ui)["zoom"] - 1) < 1e-6, description="actual size")
         before_zoom = _viewer(ui)["zoom"]
         ui.action("viewer.zoom_in")
         ui.wait(lambda snap: _viewer(ui)["zoom"] > before_zoom, description="detail zoom")
+        _zoom_for_pan(ui, fitted_zoom)
         before = _viewer(ui)
         ui.drag("viewer", (0.35, 0.45), (0.6, 0.55))
         ui.wait(lambda snap: sum(abs(a-b) for a, b in zip(_viewer(ui)["center"], before["center"], strict=True)) > 1, description="panned image")

@@ -26,3 +26,21 @@ def test_interface_suite_covers_workflow_boundaries():
     assert {"interface.startup.empty", "interface.import.native-dialogs", "interface.export.formats",
             "interface.viewer.navigation-comparison", "interface.settings.persistence",
             "interface.layout.panels", "interface.lifecycle.pause-cancel", "interface.compute.gpu"} <= identifiers
+
+
+def test_pan_setup_exceeds_observed_fit_zoom():
+    import json
+    from pancake_conformance.cases.interface import _zoom_for_pan
+    class UI:
+        zoom = 1.25
+        def node(self, name):
+            assert name == 'viewer'
+            return {'description': json.dumps({'zoom': self.zoom})}
+        def action(self, name):
+            assert name == 'viewer.zoom_in'
+            self.zoom *= 1.25
+        def wait(self, predicate, **kwargs):
+            assert predicate({})
+    ui = UI()
+    _zoom_for_pan(ui, 3.5)
+    assert ui.zoom > 3.5 * 1.25
