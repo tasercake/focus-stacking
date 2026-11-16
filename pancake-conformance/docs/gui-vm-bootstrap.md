@@ -59,4 +59,3 @@ Version pins live in `src/pancake_conformance/vm_bootstrap.py`. Update the Tart
 archive checksum and image digest only after repeating the cold-start permission
 and GUI smoke checks. The default guest Python version is 3.12.14, available in the tested uv
 Python catalog. A target can override it with `gui_vm.python`.
-

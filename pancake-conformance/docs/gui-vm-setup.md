@@ -6,10 +6,11 @@ CLI, algorithms, and physical-device tests stay on the host.
 
 ## Automatic setup
 
-`--gui-vm` can provision a missing dedicated guest. See [bootstrap](gui-vm-bootstrap.md).
-The steps below also support existing custom guests.
+`--gui-vm` provisions a missing dedicated guest automatically. See the
+[bootstrap guide](gui-vm-bootstrap.md) for installation, permissions, version
+pins, and verification. Existing custom guests retain manual configuration.
 
-## Provision once
+## Provision a custom guest
 
 1. Install Tart on a native Apple Silicon macOS host. Create a dedicated arm64
    macOS guest; record its name in `[gui_vm]`.
@@ -27,7 +28,7 @@ name = "focus-conformance"
 ssh_user = "admin"
 guest_root = "/Users/admin/focus-conformance"
 ssh_identity = "~/.ssh/focus-conformance"
-python = "3.12.16"
+python = "3.12.14"
 ```
 
 `guest_root` must be a dedicated directory beneath that user's home. Transport

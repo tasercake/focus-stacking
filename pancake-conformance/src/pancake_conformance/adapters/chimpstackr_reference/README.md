@@ -6,6 +6,10 @@ coverage exclusions belong here, outside the core suite contract.
 
 ## Setup and run
 
+`--gui-vm` [bootstraps a dedicated guest automatically](docs/gui-vm-bootstrap.md).
+The default managed guest is `pancake-conformance`; custom guest names remain
+configurable in the descriptor.
+
 From the `pancake-conformance` project directory:
 
 ```sh

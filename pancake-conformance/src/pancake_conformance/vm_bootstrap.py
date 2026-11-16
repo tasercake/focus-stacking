@@ -103,7 +103,8 @@ class Bootstrap:
         self._check_boot()
         marker = self.cache / 'guests' / (vm.name + '.json')
         state = json.loads(marker.read_text())
-        if not vm._started and not state.get('complete'):
+        self.log_path = Path(state.get('boot_log', vm.output / 'tart.log'))
+        if not vm._started and (not state.get('complete') or not self.log_path.is_file()):
             self._restart()
         if vm._started:
             state['boot_log'] = str(vm.output / 'tart.log')
@@ -163,6 +164,22 @@ class Bootstrap:
         vm._ssh('~/.local/bin/uv python install ' + shlex.quote(version), timeout=300)
         if vm._ssh('/usr/bin/xcrun --find swiftc', check=False).returncode:
             raise RuntimeError('Pinned GUI base image lacks Swift command-line tools')
+        self._save_boot_log()
+
+    def _save_boot_log(self):
+        import json
+        stable = self.cache / 'guests' / (self.vm.name + '.vnc.log')
+        if self.log_path != stable:
+            vnc_endpoint(self.log_path.read_text())
+            descriptor = os.open(stable, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            with os.fdopen(descriptor, 'wb') as sink, self.log_path.open('rb') as source:
+                os.fchmod(sink.fileno(), 0o600)
+                shutil.copyfileobj(source, sink)
+            self.log_path = stable
+        marker = self.cache / 'guests' / (self.vm.name + '.json')
+        state = json.loads(marker.read_text())
+        state['boot_log'] = str(stable)
+        marker.write_text(json.dumps(state))
 
     def _configure_display(self):
         import json

@@ -1,6 +1,8 @@
 # Pancake-conformance
 
-Behavior contract version 2. A standalone reference conformance suite for focus-stacking software. The suite
+Behavior contract version 2.
+
+A standalone reference conformance suite for focus-stacking software. The suite
 owns observable contracts, synthetic fixtures, independent image validators,
 immutable baselines, and reports. Targets can use any language or UI framework.
 No application is selected by default. The contract preserves features and
@@ -36,14 +38,12 @@ uv run --locked ruff check src tests
 ```
 
 Live native smoke tests require both `pytest --target PATH` and `--gui-vm`;
-otherwise they skip. Add `--gui-vm-persist` after provisioning a
-[dedicated guest](docs/gui-vm-setup.md). CLI, algorithm, and physical-device cases
+otherwise they skip. `--gui-vm` [bootstraps a missing dedicated guest](docs/gui-vm-bootstrap.md)
+automatically on Apple Silicon macOS. Add `--gui-vm-persist` to keep it running.
+Existing custom guests use the [manual setup guide](docs/gui-vm-setup.md). CLI, algorithm, and physical-device cases
 stay on the host; interface cases run in the guest. Adapter tests live beneath
 adapters and are selected explicitly with their runtime environment.
 
 See [conformance](docs/conformance.md), [numerical contracts](docs/algorithm-contract.md),
 [component protocol](docs/component-protocol.md), [UI protocol](docs/ui-protocol.md),
 [diagnostics](docs/diagnostics.md), and [coverage](docs/coverage.md).
-
-`--gui-vm` can [bootstrap a missing dedicated guest](docs/gui-vm-bootstrap.md).
-It never falls back to host input.

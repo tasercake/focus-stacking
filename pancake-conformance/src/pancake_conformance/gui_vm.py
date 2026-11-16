@@ -1,6 +1,6 @@
 """One persistent Tart macOS guest for native conformance, isolated from host input.
 
-This module only transports the unchanged suite and target into a configured VM.
+This module provisions an isolated guest and transports the suite and target.
 Native control, image assertions and source coverage remain in their own layers.
 There is no host GUI fallback on any provisioning or execution failure.
 """

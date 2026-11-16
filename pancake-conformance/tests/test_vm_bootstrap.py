@@ -288,3 +288,23 @@ def test_failed_vm_boot_stops_before_ssh_provisioning(tmp_path):
     vm._execute = lambda *a, **kw: pytest.fail('Provisioning ran after Tart exited')
     with pytest.raises(RuntimeError, match='Tart exited'):
         vm._bootstrap.prepare_guest()
+
+
+def test_vnc_boot_log_survives_run_directory_cleanup(tmp_path):
+    from pancake_conformance.vm_bootstrap import Bootstrap
+    from types import SimpleNamespace
+    import json
+    run = tmp_path / 'run'
+    run.mkdir()
+    source = run / 'tart.log'
+    source.write_text('VNC server: vnc://:secret@127.0.0.1:5901')
+    bootstrap = Bootstrap(SimpleNamespace(name='fresh'), cache=tmp_path / 'cache')
+    marker = bootstrap.cache / 'guests/fresh.json'
+    marker.parent.mkdir(parents=True)
+    marker.write_text('{"complete":true}')
+    bootstrap.log_path = source
+    bootstrap._save_boot_log()
+    source.unlink()
+    assert bootstrap.log_path.is_file()
+    assert bootstrap.log_path.stat().st_mode & 0o777 == 0o600
+    assert json.loads(marker.read_text())['boot_log'] == str(bootstrap.log_path)
