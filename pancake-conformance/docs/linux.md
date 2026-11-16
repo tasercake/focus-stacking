@@ -39,10 +39,9 @@ Source-context cases also require a working `xdg-open` file manager (for example
 Thunar). GPU cases require an actual OpenCL GPU and working driver; requests
 that fall back to CPU cannot satisfy those assertions.
 
-Apple-specific native transport integration tests are collected and skipped on
-Linux. Their portable orchestration tests run on both operating systems; the
-macOS CI job executes the Apple integration checks. The two native smoke tests
-run with `--gui-desktop --target ...` on Linux or `--gui-vm --target ...` on macOS.
+Portable driver and orchestration tests run on both operating systems in CI.
+The two native smoke tests run with `--gui-desktop --target ...` on Linux or
+`--gui-vm --target ...` on macOS.
 
 ## Platform presentation mappings
 

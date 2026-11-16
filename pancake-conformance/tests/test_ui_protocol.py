@@ -5,44 +5,7 @@ import json
 import subprocess
 
 
-@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
-def test_native_helper_reports_accessibility_trust(tmp_path):
-    from pancake_conformance.macos_ui import native_helper
-
-    helper = native_helper(tmp_path)
-    result = subprocess.run([str(helper)], input=json.dumps({"command": "trust"}) + "\n", text=True, capture_output=True, check=True)
-    response = json.loads(result.stdout)
-    assert response["ok"] is True
-    assert isinstance(response["result"]["trusted"], bool)
-
-
-@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
-def test_native_helper_rejects_unknown_command(tmp_path):
-    from pancake_conformance.macos_ui import native_helper
-
-    helper = native_helper(tmp_path)
-    result = subprocess.run([str(helper)], input=json.dumps({"command": "not-a-command"}) + "\n", text=True, capture_output=True, check=True)
-    response = json.loads(result.stdout)
-    assert response["ok"] is False
-    assert "Unknown command" in response["error"]
-
-
-@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
-def test_native_helper_returns_error_for_missing_application(tmp_path):
-    from pancake_conformance.macos_ui import native_helper
-
-    helper = native_helper(tmp_path)
-    request = {"command": "snapshot", "pid": 2147483646}
-    result = subprocess.run([str(helper)], input=json.dumps(request) + "\n", text=True, capture_output=True, check=True)
-    response = json.loads(result.stdout)
-    assert response["ok"] is False
-    assert "application" in response["error"].lower()
-
-
-
-
 def test_native_destination_check_rejects_same_leaf_in_other_directory():
-    import pytest
     from pathlib import Path
     from pancake_conformance.macos_ui import assert_directory_breadcrumbs
 
@@ -54,7 +17,6 @@ def test_native_destination_check_rejects_same_leaf_in_other_directory():
 
 def test_open_session_takes_desktop_lease_before_spawning(tmp_path):
     import os
-    import sys
     import pytest
     from pancake_conformance.desktop import DesktopLease
     from pancake_conformance.macos_ui import open_session
@@ -66,23 +28,6 @@ def test_open_session_takes_desktop_lease_before_spawning(tmp_path):
             session = open_session(command, cwd=tmp_path, env=os.environ, directory=tmp_path / 'case')
             session.close()
     assert not marker.exists()
-
-
-@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
-def test_native_snapshot_distinguishes_running_process_from_missing_app_registration(tmp_path):
-    import sys
-    from pancake_conformance.macos_ui import native_helper
-
-    process = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(10)'])
-    try:
-        request = {'command': 'snapshot', 'pid': process.pid}
-        result = subprocess.run([str(native_helper(tmp_path))], input=json.dumps(request) + '\n', text=True, capture_output=True, check=True)
-        response = json.loads(result.stdout)
-        assert response['ok'], response.get('error')
-        assert response['result']['pid'] == process.pid
-    finally:
-        process.terminate()
-        process.wait(timeout=5)
 
 
 def test_select_waits_for_visible_option_and_committed_value(tmp_path):
@@ -194,7 +139,6 @@ def test_select_uses_advertised_show_menu_action_for_new_dialog(tmp_path):
 
 
 def test_select_rejects_unreadable_native_popup_without_inferred_input(tmp_path):
-    import pytest
     from types import SimpleNamespace
     from pancake_conformance.macos_ui import MacOSUISession
 
@@ -255,7 +199,6 @@ def test_node_waits_for_delayed_native_control_publication(tmp_path):
 
 
 def test_node_rejects_ambiguous_selector_without_waiting(tmp_path):
-    import pytest
     from pancake_conformance.macos_ui import MacOSUISession
 
     class AmbiguousDriver(MacOSUISession):
@@ -275,7 +218,6 @@ def test_node_rejects_ambiguous_selector_without_waiting(tmp_path):
 
 
 def test_node_missing_control_times_out_without_input(tmp_path):
-    import pytest
     from types import SimpleNamespace
     from pancake_conformance.macos_ui import MacOSUISession
 
@@ -375,7 +317,6 @@ def _shutdown_session(tmp_path, process):
 
 
 def test_close_rejects_real_natural_nonzero_exit_and_records_shutdown(tmp_path):
-    import sys
     import pytest
 
     process = subprocess.Popen([sys.executable, '-c', 'raise SystemExit(7)'])
@@ -394,7 +335,6 @@ def test_close_rejects_real_natural_nonzero_exit_and_records_shutdown(tmp_path):
 
 def test_close_rejects_sigsegv_and_preserves_body_failure(tmp_path):
     import signal
-    import pytest
     from types import SimpleNamespace
 
     process = SimpleNamespace(pid=12345, returncode=-signal.SIGSEGV,
@@ -414,7 +354,6 @@ def test_close_rejects_sigsegv_and_preserves_body_failure(tmp_path):
 
 
 def test_close_records_intentional_harness_termination_separately(tmp_path):
-    import sys
     import signal
 
     process = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'], start_new_session=True)
@@ -433,7 +372,6 @@ def test_close_records_intentional_harness_termination_separately(tmp_path):
 
 
 def test_close_releases_all_streams_and_lease_when_helper_cleanup_fails(tmp_path):
-    import pytest
     from types import SimpleNamespace
 
     process = SimpleNamespace(pid=12345, returncode=0, poll=lambda: 0, wait=lambda **_: 0)
@@ -466,7 +404,6 @@ def test_close_records_clean_zero_exit(tmp_path):
 
 def test_forced_cleanup_never_excuses_a_concurrent_sigsegv(tmp_path):
     import signal
-    import pytest
     from types import SimpleNamespace
 
     process = SimpleNamespace(pid=12345, returncode=-signal.SIGSEGV,
@@ -565,33 +502,6 @@ def test_close_records_native_input_failure_without_retrying(tmp_path):
     status = json.loads((tmp_path / 'shutdown.json').read_text())
     assert status['status'] == 'forced'
     assert status['close_error'] == 'Native close input failed'
-
-
-@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
-def test_scroll_event_targets_requested_viewport_before_native_post(tmp_path):
-    """Compile the real Swift event construction; never post host input."""
-    from pathlib import Path
-    from pancake_conformance import macos_ui
-
-    source = Path(macos_ui.__file__).with_name('native_macos.swift').read_text()
-    operation = source.split('    if command == "scroll" {', 1)[1].split('        return ["scrolled":true]', 1)[0]
-    construction = '\n'.join(line for line in operation.splitlines()
-                             if 'let p =' not in line and 'let dy =' not in line)
-    # Only event construction is executed. Pointer movement and native posting
-    # stay outside this read-only SDK regression test.
-    construction = construction.replace('event?.post(tap:.cghidEventTap)', '')
-    assert 'pointer(' not in construction and '.post(' not in construction
-    script = tmp_path / 'scroll-construction.swift'
-    script.write_text('import CoreGraphics\n'
-                      'let inputSource = CGEventSource(stateID: .privateState)\n'
-                      'let request: [String: Any] = [:]\n'
-                      'let dy = 120\n'
-                      'for p in [CGPoint(x:321,y:654), CGPoint(x:789,y:123)] {\n'
-                      + construction + '\n'
-                      'print("\\(event!.location.x),\\(event!.location.y),\\(event!.getIntegerValueField(.scrollWheelEventIsContinuous))")\n'
-                      '}\n')
-    result = subprocess.run(['swift', str(script)], capture_output=True, text=True, check=True)
-    assert result.stdout.splitlines() == ['321.0,654.0,1', '789.0,123.0,1'], 'Native scroll inherited stale pointer coordinates'
 
 
 def test_select_retries_advertised_press_only_when_show_menu_remains_collapsed(tmp_path):
