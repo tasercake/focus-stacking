@@ -37,7 +37,7 @@ def _parser():
         if name == "list":
             command.add_argument("--json", action="store_true")
         else:
-            command.add_argument("--target", type=Path, default=Path(__file__).resolve().parents[2] / "targets/chimpstackr/chimpstackr.toml")
+            command.add_argument("--target", type=Path, required=True, help="Target descriptor; no application is selected by default")
             command.add_argument("--output", type=Path)
             command.add_argument("--fail-fast", action="store_true", help="Stop after first failed case; reports remain explicitly incomplete")
             command.add_argument("--gui-vm", action=argparse.BooleanOptionalAction, default=False,
@@ -57,12 +57,13 @@ def _parser():
 
 
 def _provenance(target, cases):
+    from .source_files import source_files
     def git(args, cwd):
         result = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
         return result.stdout.strip() if result.returncode == 0 else None
     project = Path(__file__).resolve().parents[2]
     lock = project / "uv.lock"
-    sources = sorted((project / "src/pancake_conformance").rglob("*.py")) + sorted((project / "src/pancake_conformance").rglob("*.swift"))
+    sources = sorted(path for path in source_files(project / "src/pancake_conformance") if path.suffix in (".py", ".swift"))
     suite_hash = hashlib.sha256()
     for path in sources:
         suite_hash.update(str(path.relative_to(project)).encode() + b"\0" + path.read_bytes())
@@ -78,9 +79,9 @@ def _provenance(target, cases):
             "python": sys.version, "platform": platform.platform(),
             "uv_lock_sha256": hashlib.sha256(lock.read_bytes()).hexdigest() if lock.exists() else None,
             "cases": [c.id for c in cases]}
-    if target.adapter == "chimpstackr-python":
-        from .adapters.chimpstackr import runtime_info
-        record["reference_runtime"] = runtime_info()
+    hooks = target.adapter_hooks()
+    if hooks is not None and hasattr(hooks, "runtime_info"):
+        record["reference_runtime"] = hooks.runtime_info()
     return record
 
 
@@ -138,11 +139,11 @@ def main(argv=None):
         environment = dict(os.environ)
         coverage = None
         scope_profile = None
-        if args.coverage is True or (args.coverage is None and target.adapter == "chimpstackr-python"):
-            if target.adapter != "chimpstackr-python":
-                raise ValueError("coverage requires a target-specific coverage adapter")
+        if args.coverage is True or (args.coverage is None and target.coverage_source is not None):
+            if target.coverage_source is None:
+                raise ValueError("coverage requires instrumentation.source in the target descriptor")
             from .coverage import CoverageSession
-            coverage = CoverageSession(target.root / "src", output / "coverage")
+            coverage = CoverageSession(target.coverage_source, output / "coverage")
             environment = coverage.environment(environment)
             if target.coverage_scope and not args.raw_coverage:
                 content = target.coverage_scope.read_bytes()
@@ -174,7 +175,7 @@ def main(argv=None):
             if scope_profile is not None:
                 from .coverage_scope import scoped_summary
                 summary["scope"] = scoped_summary(json.loads((output / "coverage/coverage.json").read_text()),
-                                                   target.root / "src", scope_profile)
+                                                   target.coverage_source, scope_profile)
                 (output / "coverage/scoped.json").write_text(json.dumps(summary["scope"], indent=2) + "\n")
                 (output / "coverage/summary.json").write_text(json.dumps(summary, indent=2) + "\n")
             print(f"Coverage: lines {summary['line_percent']:.2f}% ({summary['line_covered']}/{summary['line_total']}), "

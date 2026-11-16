@@ -1,5 +1,8 @@
 # Reachable macOS coverage scope audit
 
+> Historical adapter record. Commands and paths describe the prior layout.
+> See [current setup](../README.md) for this adapter.
+
 This audit concerns ChimpStackr commit `046266223945cc1cbf8eacd295c00ee08d42d095`.
 The execution roots are `python -m src.cli` and `src.run.main()` through the
 native GUI launcher. It audits every Python file under `src/`. The existing
@@ -42,7 +45,7 @@ compiled execution.
 
 ## Pinned exclusion manifest
 
-The reviewed ranges now live in [the target manifest](../targets/chimpstackr/chimpstackr-coverage.json).
+The reviewed ranges now live in [the target manifest](../chimpstackr-coverage.json).
 It contains exact source intervals, reasons, evidence, source hash and target pin.
 The native compiled bodies are listed separately as measurement limits and stay
 in the scoped denominator. The manifest is the authoritative machine-readable

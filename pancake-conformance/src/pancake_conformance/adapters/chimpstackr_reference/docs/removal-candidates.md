@@ -1,5 +1,8 @@
 # Uncovered-code removal review
 
+> Historical adapter record. Commands and paths describe the prior layout.
+> See [current setup](../README.md) for this adapter.
+
 Target: ChimpStackr `046266223945cc1cbf8eacd295c00ee08d42d095`. No application
 code changed. Recommendations predict conformance impact; deletion was not
 experimentally tested.

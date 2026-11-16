@@ -1,5 +1,6 @@
 """Declarative target boundary; no application imports or toolkit assumptions."""
 from dataclasses import dataclass, field, replace
+import importlib
 from pathlib import Path
 import sys
 import tomllib
@@ -21,6 +22,9 @@ class TargetSpec:
     probe: tuple[str, ...] = ()
     services: dict = field(default_factory=dict)
     coverage_scope: Path | None = None
+    instrumentation: dict = field(default_factory=dict)
+    runtime: dict = field(default_factory=dict)
+    fixtures: dict = field(default_factory=dict)
     ui: dict = field(default_factory=dict)
 
     @classmethod
@@ -43,7 +47,31 @@ class TargetSpec:
                    data.get("adapter", ""), data.get("env", {}), data.get("stack", {}),
                    tuple(data.get("capabilities", [])), path, data.get("gui_vm", {}),
                    data.get("state", {}), tuple(data.get("probe", [])), data.get("services", {}),
-                   (path.parent / data["coverage_scope"]).resolve() if data.get("coverage_scope") else None, data.get("ui", {}))
+                   (path.parent / data["coverage_scope"]).resolve() if data.get("coverage_scope") else None,
+                   data.get("instrumentation", {}), data.get("runtime", {}), data.get("fixtures", {}), data.get("ui", {}))
+
+    @property
+    def coverage_source(self):
+        source = self.instrumentation.get("source")
+        return (self.root / source).resolve() if source else None
+
+    @property
+    def runtime_project(self):
+        project = self.runtime.get("project")
+        if project is None:
+            return None
+        if self.descriptor is None:
+            raise ValueError("runtime.project requires a target descriptor")
+        return (self.descriptor.parent / project).resolve()
+
+    def adapter_hooks(self):
+        """Load only the explicitly declared adapter module."""
+        if not self.adapter:
+            return None
+        try:
+            return importlib.import_module(self.adapter)
+        except ImportError as exc:
+            raise RuntimeError(f"Cannot load adapter {self.adapter}: {exc}") from exc
 
     def with_commands(self, *, cli=None, gui=None):
         for command in (cli, gui):

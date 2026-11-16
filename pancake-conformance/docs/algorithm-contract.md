@@ -1,7 +1,7 @@
 # Numerical conformance contract
 
 The algorithm suite executes target CLI processes. It never imports application
-modules, calls algorithm classes, mocks their internals, or runs ChimpStackr's
+modules, calls algorithm classes, mocks their internals, or runs the target's
 internal unit tests. Target argument syntax belongs to the target descriptor.
 Generated fixtures and image validators are shared across implementations.
 
@@ -29,7 +29,7 @@ Pillow generates 8-bit images and EXIF data; tifffile writes uncompressed TIFF;
 OpenEXR writes float EXR. PNG decoding uses pypng so RGB16 is never silently
 reduced to eight bits. TIFF decoding uses tifffile and imagecodecs. Float export
 is decoded through OpenEXR. Validators use RGB channel order, independent of
-ChimpStackr's OpenCV BGR arrays.
+any target's internal channel order.
 
 Tests check structure before numerical error. Focus quality is measured in both
 focus planes, not only over the full image. Each region must retain at least 65%
@@ -106,7 +106,7 @@ cannot establish that the reference behavior is desirable.
 
 Passing these cases establishes tested external behavior for the generated
 corpus. It does not establish 100% source line or branch coverage. Coverage is
-measured by the separate ChimpStackr adapter and must retain unexecuted code in
+measured by optional target instrumentation and must retain unexecuted code in
 its denominator. Platform-specific branches, network updater behavior, defensive
 failure handlers, unexposed low-level helpers, RAW camera variants, and compiled
 OpenCL/Numba bodies are not proven by these numerical scenarios alone.

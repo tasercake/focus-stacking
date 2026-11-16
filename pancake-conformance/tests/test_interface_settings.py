@@ -30,7 +30,7 @@ def test_checkbox_contract_rejects_missing_or_unobservable_state():
 def test_about_selection_is_case_independent_and_rejects_ambiguity():
     from pancake_conformance.cases.interface_settings import about_item
 
-    node = {'role': 'AXMenuItem', 'title': 'About chimpstackr', 'path': [0, 1]}
+    node = {'role': 'AXMenuItem', 'title': 'About example', 'path': [0, 1]}
     assert about_item({'nodes': [node]}) is node
     with pytest.raises(AssertionError, match='one application About'):
         about_item({'nodes': [node, {**node, 'path': [0, 2]}]})

@@ -179,8 +179,8 @@ def run_vm_cases(cases, *, target, output, workspace, environment=None, progress
                 validate_execution_provenance(provenance, guest_provenance)
                 provenance["guest"] = guest_provenance
                 (output / "provenance.json").write_text(json.dumps(provenance, indent=2))
-            if target.adapter == "chimpstackr-python":
-                validate_source_provenance(target.root / "src", remote.source_provenance,
+            if target.coverage_source is not None:
+                validate_source_provenance(target.coverage_source, remote.source_provenance,
                                            (provenance or {}).get("target_commit"))
             actual_ids = [record["id"] for record in remote.report["cases"]]
             expected_ids = [case.id for case in supported]

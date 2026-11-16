@@ -128,7 +128,7 @@ def test_launchagent_job_uses_guest_cli_and_never_host_gui(tmp_path, monkeypatch
     from pancake_conformance.gui_vm import TartGuiVM
     monkeypatch.setattr("pancake_conformance.gui_vm.shutil.which", lambda name: "/usr/bin/" + name)
     vm = TartGuiVM(config(), tmp_path, tmp_path / "run")
-    argv = vm._guest_command(["interface.stack.hybrid"], "targets/chimpstackr/chimpstackr.toml", coverage=True, fail_fast=True)
+    argv = vm._guest_command(["interface.stack.hybrid"], "targets/example/example.toml", coverage=True, fail_fast=True)
     assert argv[0] == "/Users/admin/pancake-conformance/.venv/bin/pancake-conformance"
     assert "--no-gui-vm" in argv
     assert "--coverage" in argv
@@ -150,7 +150,7 @@ def test_artifact_hardlinks_must_point_to_declared_regular_files(tmp_path):
 def test_source_transport_preserves_git_pin_and_excludes_host_credentials(tmp_path, monkeypatch):
     from pancake_conformance.gui_vm import TartGuiVM, safe_extract_artifacts
     workspace = tmp_path / "workspace"
-    target = workspace / "submodules/ChimpStackr"
+    target = workspace / "submodules/ExampleStacker"
     (target / "src").mkdir(parents=True)
     (target / "src/__init__.py").write_text("value = 1\n")
     def git(*args):
@@ -161,26 +161,30 @@ def test_source_transport_preserves_git_pin_and_excludes_host_credentials(tmp_pa
     git("tag", "v0.1")
     (target / "src/__init__.py").write_text("value = 2\n")
     git("commit", "--quiet", "-am", "second")
-    descriptor = workspace / "targets/chimpstackr/chimpstackr.toml"
+    descriptor = workspace / "targets/example/example.toml"
     descriptor.parent.mkdir(parents=True)
-    descriptor.write_text('root = "../../submodules/ChimpStackr"\n')
+    descriptor.write_text('root = "../../submodules/ExampleStacker"\n')
     for name in ("pyproject.toml", "uv.lock", "README.md", ".python-version"):
         (workspace / name).write_text("" if name == "pyproject.toml" else "fixture\n")
     package = workspace / "src/pancake_conformance"
     package.mkdir(parents=True)
     (package / "__init__.py").write_text("")
+    runtime = package / "adapters/runtime/.venv/lib"
+    runtime.mkdir(parents=True)
+    (runtime / "installed.py").write_text("never copy an installed dependency")
     private = workspace / ".ssh"
     private.mkdir()
     (private / "secret_key").write_text("never copy credentials")
     vm = TartGuiVM(config(), workspace, tmp_path / "run")
     archive, relative, target_relative, pin, digest = vm._source_archive(descriptor)
-    assert relative == "targets/chimpstackr/chimpstackr.toml"
-    assert target_relative == "submodules/ChimpStackr"
+    assert relative == "targets/example/example.toml"
+    assert target_relative == "submodules/ExampleStacker"
     assert pin == git("rev-parse", "HEAD") and len(digest) == 64
     guest = tmp_path / "guest"
     safe_extract_artifacts(archive, guest)
     assert not (guest / ".ssh").exists()
-    clone = guest / "submodules/ChimpStackr/.git"
+    assert not (guest / "src/pancake_conformance/adapters/runtime/.venv").exists()
+    clone = guest / "submodules/ExampleStacker/.git"
     subprocess.run(["git", "clone", "--bare", "--quiet", str(guest / ".pancake-conformance-target.bundle"), str(clone)], check=True)
     description = subprocess.run(["git", "--git-dir", str(clone), "describe", "--tags", "--always"], capture_output=True, check=True, text=True).stdout.strip()
     assert description == git("describe", "--tags", "--always")
@@ -191,34 +195,34 @@ def test_nested_project_transport_preserves_external_reference_paths(tmp_path, m
     from pancake_conformance.gui_vm import TartGuiVM, safe_extract_artifacts
     workspace = tmp_path / "workspace"
     project = workspace / project_path
-    target = workspace / "submodules/ChimpStackr"
+    target = workspace / "submodules/ExampleStacker"
     (target / "src").mkdir(parents=True)
     (target / "src/__init__.py").write_text("value = 1\n")
     for arguments in (("init", "--quiet"), ("add", "."), ("commit", "--quiet", "-m", "initial")):
         subprocess.run(["git", "-C", str(target), "-c", "user.name=Fixture",
                         "-c", "user.email=fixture@example.test", *arguments], check=True)
-    descriptor = project / "targets/chimpstackr/chimpstackr.toml"
+    descriptor = project / "targets/example/example.toml"
     descriptor.parent.mkdir(parents=True)
-    descriptor.write_text(f'root = "{os.path.relpath(target, descriptor.parent)}"\nadapter = "chimpstackr-python"\n')
+    descriptor.write_text(f'root = "{os.path.relpath(target, descriptor.parent)}"\nadapter = "example-adapter"\n')
     for name in ("pyproject.toml", "uv.lock", "README.md", ".python-version"):
         (project / name).write_text("" if name == "pyproject.toml" else "fixture\n")
     package = project / "src/pancake_conformance"
     package.mkdir(parents=True)
     (package / "__init__.py").write_text("")
     (workspace / "unrelated-secret").write_text("never copy")
-    rewrite = workspace / "pancake/pancake"
+    rewrite = workspace / "pancake"
     rewrite.mkdir(parents=True)
     (rewrite / "app.py").write_text("never copy the application rewrite\n")
     vm = TartGuiVM(config(), workspace, tmp_path / "run", project=project)
     archive, relative, target_relative, _, _ = vm._source_archive(descriptor)
-    assert relative == f"{project_path}/targets/chimpstackr/chimpstackr.toml"
-    assert target_relative == "submodules/ChimpStackr"
+    assert relative == f"{project_path}/targets/example/example.toml"
+    assert target_relative == "submodules/ExampleStacker"
     guest = tmp_path / "guest"
     safe_extract_artifacts(archive, guest)
     assert (guest / project_path / "src/pancake_conformance/__init__.py").is_file()
-    assert (guest / "submodules/ChimpStackr/src/__init__.py").is_file()
+    assert (guest / "submodules/ExampleStacker/src/__init__.py").is_file()
     assert not (guest / "unrelated-secret").exists()
-    assert not (guest / "pancake/pancake").exists()
+    assert not (guest / "pancake").exists()
     commands = []
     monkeypatch.setattr(vm, "_ssh", lambda command, **kwargs: commands.append(command) or SimpleNamespace(returncode=0))
     vm._sync_workspace(descriptor)
@@ -226,7 +230,7 @@ def test_nested_project_transport_preserves_external_reference_paths(tmp_path, m
     command = vm._guest_command(["interface.case"], relative, coverage=False, fail_fast=False,
                                 gui_command=[str(target / "bin/gui")])
     assert command[0] == f"/Users/admin/pancake-conformance/{project_path}/.venv/bin/pancake-conformance"
-    assert json.loads(command[command.index("--gui-command") + 1]) == ["/Users/admin/pancake-conformance/submodules/ChimpStackr/bin/gui"]
+    assert json.loads(command[command.index("--gui-command") + 1]) == ["/Users/admin/pancake-conformance/submodules/ExampleStacker/bin/gui"]
 
 
 def test_prepare_rejects_missing_aqua_before_dispatch(tmp_path, monkeypatch):
@@ -256,11 +260,12 @@ def test_effective_command_overrides_are_forwarded_with_guest_paths(tmp_path):
     assert json.loads(command[command.index("--gui-command") + 1]) == ["{python}", "-m", "custom.gui"]
 
 
-@pytest.mark.parametrize("adapter,requires_extra", [("chimpstackr-python", True), ("", False)])
-def test_guest_dependency_setup_is_reference_specific(tmp_path, monkeypatch, adapter, requires_extra):
+@pytest.mark.parametrize("runtime", ["", "adapter-runtime"])
+def test_guest_uses_declared_runtime_project(tmp_path, monkeypatch, runtime):
     from pancake_conformance.gui_vm import TartGuiVM
     descriptor = tmp_path / "target.toml"
-    descriptor.write_text(f'adapter = "{adapter}"\n')
+    descriptor.write_text(f'[runtime]\nproject = "{runtime or "."}"\n')
+    (tmp_path / (runtime or ".")).mkdir(exist_ok=True)
     archive = tmp_path / "workspace.tar"
     archive.write_bytes(b"archive")
     vm = TartGuiVM(config(), tmp_path, tmp_path / "run")
@@ -268,8 +273,27 @@ def test_guest_dependency_setup_is_reference_specific(tmp_path, monkeypatch, ada
     commands = []
     monkeypatch.setattr(vm, "_ssh", lambda command, **kwargs: commands.append(command) or SimpleNamespace(returncode=0, stdout="", stderr=""))
     vm._sync_workspace(descriptor)
+    guest_runtime = "/Users/admin/pancake-conformance" + ("/" + runtime if runtime else "")
     sync = next(command for command in commands if "uv sync" in command)
-    assert ("--extra chimpstackr" in sync) is requires_extra
+    assert f"cd {guest_runtime} &&" in sync
+    assert "--extra" not in sync
+    command = vm._guest_command(["interface.case"], "target.toml", coverage=False, fail_fast=False)
+    assert command[0] == guest_runtime + "/.venv/bin/pancake-conformance"
+
+
+def test_guest_rejects_runtime_outside_workspace(tmp_path, monkeypatch):
+    from pancake_conformance.gui_vm import TartGuiVM
+    descriptor = tmp_path / "target.toml"
+    descriptor.write_text('[runtime]\nproject = ".."\n')
+    archive = tmp_path / "workspace.tar"
+    archive.write_bytes(b"archive")
+    vm = TartGuiVM(config(), tmp_path, tmp_path / "run")
+    monkeypatch.setattr(vm, "_source_archive", lambda path: (archive, "target.toml", "app", "a" * 40, "b" * 64))
+    calls = []
+    monkeypatch.setattr(vm, "_ssh", lambda *args, **kwargs: calls.append(args))
+    with pytest.raises(ValueError, match="runtime.*workspace"):
+        vm._sync_workspace(descriptor)
+    assert calls == []
 
 
 def test_guest_interpreter_pin_overrides_host_python_version_file(tmp_path, monkeypatch):

@@ -20,13 +20,18 @@ _VALUE_OPTIONS = (
 _FLAG_OPTIONS = ('align', 'max_precision', 'quality_report', 'auto', 'auto_crop', 'measure', 'rotation_scale')
 
 
+def environment(target, base, events_path):
+    """Translate the suite's optional diagnostics hook for this target."""
+    return ChimpStackrAdapter(target.root).environment(base, events_path)
+
+
 def runtime_info():
     """Report loaded reference libraries without creating a GUI application."""
     try:
         import PySide6
         from PySide6 import QtCore
     except ImportError as exc:
-        raise RuntimeError('Reference dependencies missing; run uv sync --extra chimpstackr --locked') from exc
+        raise RuntimeError('Reference dependencies missing; run uv sync --locked --project src/pancake_conformance/adapters/chimpstackr_reference') from exc
     return {'pyside': PySide6.__version__, 'qt': QtCore.qVersion(),
             'qt_build': QtCore.QLibraryInfo.build()}
 

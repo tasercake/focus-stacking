@@ -4,17 +4,6 @@ from pathlib import Path
 import pytest
 
 
-def test_default_reference_descriptor_uses_app_subdirectory():
-    from pancake_conformance.cli import _parser
-    from pancake_conformance.target import TargetSpec
-    project = Path(__file__).resolve().parents[1]
-    descriptor_path = _parser().parse_args(["run"]).target
-    assert descriptor_path == project / "targets/chimpstackr/chimpstackr.toml"
-    target = TargetSpec.load(descriptor_path)
-    assert target.root == project.parent / "submodules/ChimpStackr"
-    assert target.coverage_scope == descriptor_path.parent / "chimpstackr-coverage.json"
-    assert target.coverage_scope.is_file()
-
 
 def descriptor(tmp_path, extra=""):
     path = tmp_path / "target.toml"
@@ -75,3 +64,10 @@ def test_coverage_scope_path_is_relative_to_descriptor(tmp_path):
     path.write_text(path.read_text().replace('name = "example"', 'name = "example"\ncoverage_scope = "scope.json"'))
     (tmp_path / "scope.json").write_text('{}')
     assert TargetSpec.load(path).coverage_scope == tmp_path / "scope.json"
+
+
+def test_descriptor_preserves_target_fixture_names(tmp_path):
+    from pancake_conformance.target import TargetSpec
+    path = descriptor(tmp_path)
+    path.write_text(path.read_text() + '\n[fixtures]\nnative_update_asset="MyApp-macOS.dmg"\n')
+    assert TargetSpec.load(path).fixtures == {"native_update_asset": "MyApp-macOS.dmg"}
