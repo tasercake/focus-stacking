@@ -195,7 +195,7 @@ VM startup. Do not run host-native GUI smoke tests while using the host desktop.
 ## Provisioned reference guest
 
 The following records the guest provisioned before the project move. The current
-descriptor uses VM name `pancake-conformance` and SSH identity `~/.ssh/pancake-conformance`. Moving the
+descriptor reuses provisioned VM name `chimpstackr-conformance` and SSH identity `~/.ssh/chimpstackr-conformance`. The creation examples above use a new `pancake-conformance` VM; set those two descriptor fields to that new name/key when provisioning a fresh guest. Moving the
 project does not rename an existing Tart VM or SSH key. To reuse a provisioned
 guest, set `gui_vm.name` and `gui_vm.ssh_identity` to its existing values; its
 new suite directory can require fresh native-helper permission grants.
