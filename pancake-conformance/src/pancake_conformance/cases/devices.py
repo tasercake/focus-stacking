@@ -99,6 +99,25 @@ def _exposure_precision(ctx, count):
     ctx.note('identity_parity', assert_pixels_close(cpu.output, gpu.output, mean_limit=1, max_limit=1))
 
 
+def _exposure_mixed_dimensions(ctx):
+    import numpy as np
+    import tifffile
+    fixture = ctx.fixture('precision16')
+    source = read_image(fixture.truth_path)
+    paths = []
+    for i in range(4):
+        image = np.rint(source.astype(float)/257).astype(np.uint8) if i == 0 else source[1:-1, 1:-1]
+        path = ctx.directory / f'mixed-{i}.tif'
+        tifffile.imwrite(path, image, photometric='rgb', metadata=None)
+        paths.append(path)
+    cpu = ctx.stack(paths, method='exposure_fusion', align=True, alignment_mode='translation', device='cpu', bit_depth=16, output_format='tif')
+    gpu = ctx.stack(paths, method='exposure_fusion', align=True, alignment_mode='translation', device='gpu', bit_depth=16, output_format='tif')
+    require_backend(cpu, 'cpu')
+    require_backend(gpu, 'gpu')
+    validate_image(gpu.output, shape=fixture.shape, dtype='uint16', genuine_16bit=True)
+    ctx.note('mixed_source_precision_parity', assert_pixels_close(gpu.output, cpu.output, mean_limit=1, max_limit=2))
+
+
 def device_cases():
     cases = []
     for method in METHODS:
@@ -142,6 +161,8 @@ def device_cases():
         for mode in ('stack', 'translation', 'euclidean', 'similarity', 'affine', 'breathing'):
             cases.append(Case(f'devices.gpu.corrupt.{method}.{mode}', 'devices', partial(_corrupt_matrix, method=method, mode=mode),
                               'Corrupt requested input rejects complete job and retains existing export'))
+    cases.append(Case('devices.gpu.exposure_mixed_dimensions', 'devices', _exposure_mixed_dimensions,
+                      'Later sixteen-bit sources retain precision when resized or padded against an eight-bit first frame'))
     from dataclasses import replace
     return [replace(case, required_capabilities=("backend_evidence", "gpu" if ".gpu." in case.id else "cpu"))
             if ".auto." not in case.id else case for case in cases]
