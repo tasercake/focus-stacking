@@ -337,7 +337,7 @@ def test_lifecycle_uses_public_menu_state_when_progress_children_are_unreadable(
 
     ui = NativeMenuUI()
     context = SimpleNamespace(fixture=lambda _: SimpleNamespace(paths=()), open_ui=lambda **_: ui)
-    monkeypatch.setattr(interface, '_prepare', lambda *args: None)
+    monkeypatch.setattr(interface, '_prepare_lifecycle', lambda *args: None)
     interface._lifecycle(context)
     assert [action for action in ui.actions if action != 'stack.start'] == ['stack.pause', 'stack.resume', 'stack.stop']
     assert ui.starts == 2
@@ -621,3 +621,29 @@ def test_select_retries_advertised_press_only_when_show_menu_remains_collapsed(t
     driver.select('alignment', 'Focus breathing', timeout=.01)
     assert driver.actions == ['AXShowMenu', 'AXPress']
     assert driver.chosen
+
+
+def test_lifecycle_configures_motion_before_bulk_native_import(monkeypatch):
+    from pathlib import Path
+    from types import SimpleNamespace
+    from pancake_conformance.cases import interface
+    calls = []
+    class UI:
+        def select(self, key, value):
+            calls.append(('select', key, value))
+        def action(self, name):
+            assert calls == [('select', 'alignment', 'breathing')]
+            calls.append(('action', name))
+        def wait(self, predicate, **kwargs):
+            assert predicate({'nodes': [{'id': 'open-panel'}]})
+        def navigate_folder(self, path):
+            calls.append(('folder', path))
+        def click(self, name, **kwargs):
+            calls.append(('click', name))
+        def observe(self, name, snapshot=None):
+            return 64
+    monkeypatch.setattr(interface, '_prepare', lambda ui, method, mode: calls.append(('prepare', method, mode)))
+    fixture = SimpleNamespace(paths=[Path('/fixture/frame.png')]*64)
+    interface._prepare_lifecycle(UI(), fixture)
+    assert calls[-1] == ('prepare', 'laplacian', 'breathing')
+    assert ('folder', Path('/fixture')) in calls

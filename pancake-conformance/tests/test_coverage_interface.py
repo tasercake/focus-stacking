@@ -116,7 +116,7 @@ def test_recent_clear_checks_observed_empty_state():
     def wait(predicate, **kwargs):
         tree = {"nodes": [{"id": "recent.open", "role": "AXMenuItem", "size": [100, 20]},
                           {"id": "recent.clear", "role": "AXMenuItem", "size": [100, 20], "enabled": True},
-                          {"id": "recent.empty", "role": "AXMenuItem", "size": [100, 20], "enabled": not state["empty"]}]}
+                          {"id": "recent.empty", "role": "AXMenuItem", "size": [0, 0], "enabled": not state["empty"]}]}
         value = predicate(tree)
         assert value
         return value

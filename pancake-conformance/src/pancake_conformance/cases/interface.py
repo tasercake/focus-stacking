@@ -291,10 +291,22 @@ def _unsaved(ctx):
         ui.wait(lambda snap: not _node(snap, "stack.start")["enabled"] and not _node(snap, "export.start")["enabled"], description="new stack after explicit discard")
 
 
+def _prepare_lifecycle(ui, fixture):
+    # Bulk imports can leave native popup proxies stale. Select the same
+    # requested motion mode on the empty UI, then import the real workload.
+    ui.select("alignment", "breathing")
+    _menu(ui, "import.folder")
+    ui.wait(lambda snap: _has(snap, "open-panel"), description="lifecycle folder import")
+    ui.navigate_folder(fixture.paths[0].parent)
+    ui.click("OKButton", physical=False)
+    ui.wait(lambda snap: ui.observe("frame_count", snap) == len(fixture.paths), description="lifecycle inputs imported")
+    _prepare(ui, "laplacian", "breathing")
+
+
 def _lifecycle(ctx):
     fixture = ctx.fixture("lifecycle")
-    with ctx.open_ui(paths=fixture.paths) as ui:
-        _prepare(ui, "laplacian", "breathing")
+    with ctx.open_ui() as ui:
+        _prepare_lifecycle(ui, fixture)
         ui.click("stack.start", position=(0.3, 0.5))
         def menu_enabled(snapshot, title):
             return bool(find_node(snapshot, title).get("enabled"))

@@ -76,8 +76,8 @@ progress = '\[[0-9]+/[0-9]+\]'
 "open-panel" = { "id" = "open-panel" }
 "save-panel" = { "id" = "save-panel" }
 "about.open" = { role = "AXMenuItem", title = "About chimpstackr" }
-"about.window" = { id = "about.window" }
-"dialog.error" = { role = "AXSheet" }
+"about.window" = { role = "AXWindow", title = "About ChimpStackr" }
+"dialog.error" = { any_of = [{ role = "AXSheet" }, { role = "AXWindow", subrole = "AXDialog" }] }
 
 "import.folder" = { "role" = "AXMenuItem", "title" = "Add Folder\u2026" }
 "settings.open" = { "role" = "AXMenuItem", "title" = "Settings\u2026" }

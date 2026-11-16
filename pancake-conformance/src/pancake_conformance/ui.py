@@ -10,6 +10,13 @@ import re
 from .macos_ui import find_node
 
 
+def _matches_selector(node, selector):
+    if 'any_of' in selector:
+        return any(_matches_selector(node, option) for option in selector['any_of'])
+    return all(node.get(key) == value or (key == 'id' and node.get('_native_id') == value)
+               for key, value in selector.items())
+
+
 class SemanticUI:
     """A native UI session with target-declared presentation details."""
 
@@ -22,6 +29,10 @@ class SemanticUI:
 
     def selector(self, value):
         selector = self.contract.get('controls', {}).get(value, {'id': value}) if isinstance(value, str) else value
+        if 'any_of' in selector:
+            matches = [node for node in self.native.snapshot()['nodes'] if _matches_selector(node, selector)]
+            assert len(matches) == 1, f'Expected one native control: {selector}'
+            return {'path': matches[0]['path']}
         if 'within' in selector or 'text_pattern' in selector:
             tree = self.native.snapshot()
             within = find_node(tree, selector['within'])['path'] if 'within' in selector else []
@@ -45,12 +56,12 @@ class SemanticUI:
         controls = self.contract.get('controls', {})
         for node in snapshot['nodes']:
             raw_id = node.get('id')
-            if raw_id in controls and not all(node.get(key) == value for key, value in controls[raw_id].items()):
+            if raw_id in controls and not _matches_selector(node, controls[raw_id]):
                 node['_native_id'] = raw_id
                 node['id'] = 'native:' + raw_id
             # Specific identities take precedence over broad role selectors.
             for identifier, selector in sorted(controls.items(), key=lambda item: ('id' not in item[1], -len(item[1]))):
-                if all(node.get(key) == value for key, value in selector.items()):
+                if _matches_selector(node, selector):
                     node['_native_id'] = node.get('id')
                     node['id'] = identifier
                     break
@@ -111,9 +122,7 @@ class SemanticUI:
 
     @staticmethod
     def _observed_node(snapshot, selector):
-        matches = [node for node in snapshot['nodes'] if all(
-            node.get(key) == value or (key == 'id' and node.get('_native_id') == value)
-            for key, value in selector.items())]
+        matches = [node for node in snapshot['nodes'] if _matches_selector(node, selector)]
         assert len(matches) == 1, f'Expected one observed UI element: {selector}'
         return matches[0]
 

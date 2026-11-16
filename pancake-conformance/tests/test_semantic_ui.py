@@ -202,3 +202,17 @@ def test_count_zero_requires_observed_empty_state_when_container_is_absent():
     assert ui.observe('frame_count', {'nodes': [{'role': 'AXStaticText', 'value': 'No images'}]}) == 0
     with pytest.raises(AssertionError):
         ui.observe('frame_count', {'nodes': []})
+
+
+def test_dialog_selector_accepts_native_sheet_or_window_without_masking_about():
+    from types import SimpleNamespace
+    from pancake_conformance.ui import SemanticUI
+    controls = {'dialog.error': {'any_of': [{'role': 'AXSheet'}, {'role': 'AXWindow', 'subrole': 'AXDialog'}]},
+                'about.window': {'role': 'AXWindow', 'title': 'About'}}
+    for node in ({'role': 'AXSheet'}, {'role': 'AXWindow', 'subrole': 'AXDialog'}):
+        snapshot = {'nodes': [dict(node, path=[0])]}
+        ui = SemanticUI(SimpleNamespace(snapshot=lambda: snapshot), {'controls': controls})
+        assert ui.normalize(snapshot)['nodes'][0]['id'] == 'dialog.error'
+        assert ui.selector('dialog.error') == {'path': [0]}
+    ui = SemanticUI(None, {'controls': controls})
+    assert ui.normalize({'nodes': [{'role': 'AXWindow', 'subrole': 'AXDialog', 'title': 'About'}]})['nodes'][0]['id'] == 'about.window'
