@@ -18,10 +18,11 @@ project = "."
 native_update_asset = "ChimpStackr-macOS.dmg"
 
 [gui_vm]
-name = "pancake-conformance"
+# Reuse the provisioned reference VM/key; moving the suite does not rename them.
+name = "chimpstackr-conformance"
 ssh_user = "admin"
 guest_root = "/Users/admin/pancake-conformance"
-ssh_identity = "~/.ssh/pancake-conformance"
+ssh_identity = "~/.ssh/chimpstackr-conformance"
 python = "3.12.16"
 
 [state]

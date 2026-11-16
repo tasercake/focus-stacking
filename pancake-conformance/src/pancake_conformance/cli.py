@@ -24,8 +24,9 @@ def catalog():
     from .cases.interface_updates import update_cases
     from .cases.services import service_cases
     from .cases.coverage_sprint import sprint_cases
+    from .cases.recovery import recovery_cases
     return [*cli_cases(), *coverage_cli_cases(), *service_cases(), *algorithm_cases(), *coverage_algorithm_cases(), *device_cases(),
-            *interface_cases(), *settings_cases(), *portability_cases(), *coverage_interface_cases(), *update_cases(), *sprint_cases()]
+            *interface_cases(), *settings_cases(), *portability_cases(), *coverage_interface_cases(), *update_cases(), *sprint_cases(), *recovery_cases()]
 
 
 def _parser():
