@@ -5,5 +5,5 @@ Implementation has not started; no language, framework, or build system is chose
 here.
 
 The independent conformance suite lives in
-[`../pancake-conformance`](../pancake-conformance/README.md). A thin adapter will
+[`../../pancake-conformance`](../../pancake-conformance/README.md). A thin adapter will
 connect the rewrite to that harness when the application is implemented.
