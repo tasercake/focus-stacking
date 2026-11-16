@@ -94,8 +94,38 @@ def _close_recent_window(ui):
     assert ui.process.wait(timeout=5) == 0, "File menu must close the window cleanly"
 
 
+def _visible_menu_item(snapshot, title, role="AXMenuItem"):
+    return next((node for node in snapshot["nodes"]
+                 if node.get("role") == role and node.get("title") == title
+                 and len(node.get("size", [])) == 2 and all(n > 0 for n in node["size"])), None)
+
+
 def _recent_menu(ui):
-    _menu(ui, "Open Recent")
+    # Cached submenu entries can accept AXPress without dispatching their action.
+    def ready(snapshot):
+        file_menu = _visible_menu_item(snapshot, "File", "AXMenuBarItem")
+        return (file_menu and not file_menu.get("selected", False)
+                and not any(node.get("subrole") == "AXDialog" for node in snapshot["nodes"])
+                and _visible_menu_item(snapshot, "Open Recent") is None)
+
+    ui.wait(ready, description="File menu ready after confirmation and previous menu close")
+    ui.click({"role": "AXMenuBarItem", "title": "File"})
+    recent = ui.wait(lambda snap: _visible_menu_item(snap, "Open Recent"),
+                     description="visible Open Recent submenu")
+    assert recent.get("enabled", True), "Open Recent is disabled"
+    ui.click({"role": "AXMenuItem", "title": "Open Recent"})
+
+
+def _recent_item(ui, title):
+    _recent_menu(ui)
+    return ui.wait(lambda snap: _visible_menu_item(snap, title), description=f"visible {title}")
+
+
+def _clear_recent_folders(ui):
+    clear = _recent_item(ui, "Clear Menu")
+    assert clear.get("enabled"), "Clear Menu is disabled"
+    ui.click({"role": "AXMenuItem", "title": "Clear Menu"})
+    assert not _recent_item(ui, "No Recent Folders")["enabled"], "Recent history was not cleared"
 
 
 def _recent_folders(ctx):
@@ -104,26 +134,21 @@ def _recent_folders(ctx):
     folder_name = paths[0].parent.name
     with ctx.open_ui(paths=paths[:2], settings_id="recent") as ui:
         ui.wait(lambda snap: len(_frame_rows(snap)) == 2, description="initial two-frame partial folder stack")
-        _recent_menu(ui)
-        ui.node({"role": "AXMenuItem", "title": folder_name})
-        _menu(ui, folder_name)
+        _recent_item(ui, folder_name)
+        ui.click({"role": "AXMenuItem", "title": folder_name})
         ui.wait(lambda snap: any(node.get("role") == "AXButton" and node.get("title") == "Replace" for node in snap["nodes"]), description="replace existing frames prompt")
         ui.click({"role": "AXButton", "title": "Cancel"}, physical=False)
         assert len(_frame_rows(ui.snapshot())) == 2
-        _recent_menu(ui)
-        ui.node({"role": "AXMenuItem", "title": folder_name})
-        _menu(ui, folder_name)
+        _recent_item(ui, folder_name)
+        ui.click({"role": "AXMenuItem", "title": folder_name})
         ui.node({"role": "AXButton", "title": "Replace"})
         ui.click({"role": "AXButton", "title": "Replace"}, physical=False)
         ui.wait(lambda snap: len(_frame_rows(snap)) == len(fixture.paths) and _node(snap, "stack.start").get("enabled"), description="recent folder replaced frames")
         assert not ui.node("export.start")["enabled"]
-        _recent_menu(ui)
-        ui.node({"role": "AXMenuItem", "title": "Clear Menu"})
-        _menu(ui, "Clear Menu")
+        _clear_recent_folders(ui)
         _close_recent_window(ui)
     with ctx.open_ui(settings_id="recent") as ui:
-        _recent_menu(ui)
-        assert not ui.node({"role": "AXMenuItem", "title": "No Recent Folders"})["enabled"]
+        assert not _recent_item(ui, "No Recent Folders")["enabled"]
         assert not ui.node("stack.start")["enabled"]
         _close_recent_window(ui)
 

@@ -95,3 +95,111 @@ def test_native_folder_inputs_exclude_fixture_truth_and_metadata(tmp_path):
     assert {p.name for p in paths} == {p.name for p in fixture.paths}
     assert set(paths) == set((tmp_path / "native-inputs").iterdir())
     assert all(p.read_bytes() == original.read_bytes() for p, original in zip(paths, fixture.paths, strict=True))
+
+
+class RecentMenuUI:
+    """Closed native menus expose cached entries whose AXPress is a no-op."""
+    def __init__(self, *, clear_works=True):
+        self.stage = "closed"
+        self.empty = False
+        self.clear_works = clear_works
+
+    def snapshot(self):
+        return {"nodes": [
+            {"role": "AXMenuBarItem", "title": "File", "path": [0], "size": [30, 20],
+             "enabled": True, "selected": self.stage != "closed"},
+            {"role": "AXMenuItem", "title": "Open Recent", "path": [0, 0],
+             "size": [160, 20] if self.stage == "file" else [0, 0], "enabled": True},
+            {"role": "AXMenuItem", "title": "No Recent Folders" if self.empty else "Clear Menu",
+             "path": [0, 0, 0], "size": [150, 20] if self.stage == "recent" else [0, 0],
+             "enabled": self.stage == "recent" and not self.empty},
+        ]}
+
+    def click(self, selector, *, physical=True):
+        if not physical:
+            return  # Mirrors the successful AXPress response on the hidden host entry.
+        node = next(n for n in self.snapshot()["nodes"]
+                    if all(n.get(k) == v for k, v in selector.items()))
+        assert all(node["size"]) and node["enabled"], "Hidden/disabled entry was clicked"
+        if node["title"] == "File":
+            self.stage = "file"
+        elif node["title"] == "Open Recent":
+            self.stage = "recent"
+        else:
+            self.empty = self.clear_works
+            self.stage = "closed"
+
+    def wait(self, condition, **kwargs):
+        result = condition(self.snapshot())
+        if not result:
+            raise TimeoutError(kwargs.get("description", "native menu state"))
+        return result
+
+
+def test_recent_menu_opens_native_hierarchy_instead_of_pressing_hidden_cache():
+    from stack_conformance.cases.coverage_interface import _recent_menu
+    ui = RecentMenuUI()
+    _recent_menu(ui)
+    assert ui.stage == "recent", "Recent submenu remained hidden after successful AXPress"
+
+
+def test_recent_menu_waits_for_pending_confirmation_to_close():
+    from stack_conformance.cases.coverage_interface import _recent_menu
+
+    class ClosingPromptUI(RecentMenuUI):
+        closing_prompt = True
+
+        def wait(self, condition, **kwargs):
+            if self.closing_prompt:
+                pending = self.snapshot()
+                pending["nodes"].append({"role": "AXWindow", "subrole": "AXDialog"})
+                result = condition(pending)
+                if result:
+                    return result
+                self.closing_prompt = False
+            return super().wait(condition, **kwargs)
+
+        def click(self, selector, **kwargs):
+            assert not self.closing_prompt, "File menu was clicked before confirmation closed"
+            super().click(selector, **kwargs)
+
+    ui = ClosingPromptUI()
+    _recent_menu(ui)
+    assert ui.stage == "recent"
+
+
+def test_recent_clear_requires_visible_empty_state_before_restart():
+    from stack_conformance.cases import coverage_interface
+    ui = RecentMenuUI()
+    coverage_interface._clear_recent_folders(ui)
+    assert ui.empty and ui.stage == "recent"
+    assert not ui.snapshot()["nodes"][-1]["enabled"]
+    with pytest.raises(TimeoutError, match="No Recent Folders"):
+        coverage_interface._clear_recent_folders(RecentMenuUI(clear_works=False))
+
+
+def test_recent_clear_waits_for_native_menu_close_before_reopening():
+    from stack_conformance.cases.coverage_interface import _clear_recent_folders
+
+    class ClosingMenuUI(RecentMenuUI):
+        closing_menu = False
+
+        def click(self, selector, **kwargs):
+            assert not self.closing_menu, "Menu was clicked before previous selection closed it"
+            super().click(selector, **kwargs)
+            if selector.get("title") == "Clear Menu":
+                self.closing_menu = True
+                self.stage = "recent"
+
+        def wait(self, condition, **kwargs):
+            if self.closing_menu:
+                result = condition(self.snapshot())
+                if result:
+                    return result
+                self.closing_menu = False
+                self.stage = "closed"
+            return super().wait(condition, **kwargs)
+
+    ui = ClosingMenuUI()
+    _clear_recent_folders(ui)
+    assert ui.empty and ui.stage == "recent"
