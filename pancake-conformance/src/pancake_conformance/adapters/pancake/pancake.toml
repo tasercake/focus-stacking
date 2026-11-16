@@ -1,0 +1,59 @@
+# Planned full contract-v2 target. No Pancake executable exists yet.
+# Unfinished requirements must fail, not disappear as unsupported capabilities.
+# Add UI mappings only after observing the actual Slint accessibility tree.
+schema_version = 1
+name = "pancake-rust"
+root = "../../../../../pancake"
+cli = ["./target/release/pancake-cli"]
+gui = ["./target/release/pancake-gui"]
+capabilities = [
+  "cli", "cpu", "gpu", "physical_gpu", "native_gui",
+  "backend_evidence", "alignment_evidence", "cli_reports", "exclusive_device_flags",
+  "png", "jpeg", "tiff", "exr", "preferences", "about", "lightroom",
+  "layout_panels", "advanced_controls", "recent_folders", "batch_export",
+  "source_context", "viewport_export", "retained_results", "manual_crop",
+  "pause_resume", "gpu_preference",
+]
+
+[state]
+compute_cache = "{home}/device-cache"
+
+[env]
+PANCAKE_STATE_DIR = "{home}"
+PANCAKE_COMPUTE_CACHE_DIR = "{home}/device-cache"
+PANCAKE_DEFAULT_DEVICE = "cpu"
+
+[stack]
+input = ["--input", "{inputs}"]
+output = ["--output", "{output}"]
+
+[stack.defaults]
+device = "cpu"
+kernel_size = 3
+pyramid_levels = 4
+scale_factor = 6
+
+[stack.options]
+method = "--method"
+align = "--align"
+alignment_mode = "--alignment-mode"
+alignment_reference = "--alignment-ref"
+kernel_size = "--kernel-size"
+pyramid_levels = "--pyramid-levels"
+scale_factor = "--scale-factor"
+max_scale_step = "--max-scale-step"
+max_precision = "--max-precision"
+slab_size = "--slab-size"
+slab_overlap = "--slab-overlap"
+auto = "--auto"
+auto_crop = "--auto-crop"
+quality = "--quality"
+quality_report = "--quality-report"
+bit_depth = "--bit-depth"
+gpu_id = "--gpu-id"
+rotation_scale = "--rotation-scale"
+device = { cpu = ["--cpu"], gpu = ["--gpu"], auto = ["--device", "auto"] }
+
+[stack.observations]
+progress = '(?im)^progress\s+[0-9]+/[0-9]+'
+quality_report = '(?im)^sharpness\s+[0-9]+(?:\.[0-9]+)?'
