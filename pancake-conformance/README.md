@@ -37,18 +37,15 @@ automatically on Apple Silicon macOS. Existing custom guests use the
 Guest transport preserves the repository paths `pancake-conformance/`
 and `submodules/ChimpStackr/` without copying other projects or host environments.
 
-From this directory, check the harness without native GUI workflows:
+Run the harness with native GUI smoke tests inside the VM:
 
 ```sh
-uv run --frozen --extra chimpstackr pytest \
-  --deselect=tests/test_interface_cases.py::test_native_method_and_alignment_controls \
-  --deselect=tests/test_interface_cases.py::test_native_export_round_trip
-uv run --frozen ruff check src tests
+uv run --locked --extra chimpstackr pytest --gui-vm --gui-vm-persist
+uv run --locked ruff check src tests
 ```
 
-For the complete harness, use `uv run --frozen --extra chimpstackr pytest
---gui-vm --gui-vm-persist`. A different target needs no ChimpStackr extra: supply
-its descriptor with `pancake-conformance run --target targets/replacement.toml`.
+A different target needs no ChimpStackr extra: supply its descriptor with
+`pancake-conformance run --target targets/replacement.toml --gui-vm`.
 
 See the [conformance guide](docs/conformance.md) for contracts, case selection,
 reference capture, reports, and coverage. The [verification record](docs/verification.md)

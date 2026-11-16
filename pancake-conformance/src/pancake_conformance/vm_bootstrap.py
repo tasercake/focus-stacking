@@ -89,12 +89,18 @@ class Bootstrap:
             vm._execute([vm._tart, 'set', vm.name, '--cpu', '4', '--memory', '8192', '--display', '1440x1000', '--no-display-refit', '--disk-size', '80'])
 
 
+    def _check_boot(self):
+        process = self.vm._process
+        if process is not None and process.poll() is not None:
+            raise RuntimeError(f'Tart exited while provisioning {self.vm.name}; inspect private Tart log')
+
     def prepare_guest(self):
         import json
         import time
         import shlex
         import paramiko
         vm = self.vm
+        self._check_boot()
         marker = self.cache / 'guests' / (vm.name + '.json')
         state = json.loads(marker.read_text())
         if not vm._started and not state.get('complete'):
@@ -110,6 +116,7 @@ class Bootstrap:
         vm.config['ssh_identity'] = str(key)
         deadline = time.monotonic() + 240
         while time.monotonic() < deadline:
+            self._check_boot()
             address = vm._execute([vm._tart, 'ip', vm.name], check=False, timeout=10)
             try:
                 vm._ip = str(ipaddress.ip_address(address.stdout.strip()))

@@ -273,3 +273,18 @@ def test_display_is_verified_after_configuring_process_exits(tmp_path):
     vm = SimpleNamespace(output=tmp_path, _ssh=lambda *a, **kw: SimpleNamespace(stdout=next(responses)))
     with pytest.raises(RuntimeError, match='1440'):
         Bootstrap(vm, cache=tmp_path)._configure_display()
+
+
+def test_failed_vm_boot_stops_before_ssh_provisioning(tmp_path):
+    from pancake_conformance.gui_vm import TartGuiVM
+    from types import SimpleNamespace
+    vm = TartGuiVM({}, tmp_path, tmp_path / 'out')
+    vm._process = SimpleNamespace(poll=lambda: 1)
+    vm._started = True
+    vm._bootstrap.cache = tmp_path / 'cache'
+    state = vm._bootstrap.cache / 'guests' / (vm.name + '.json')
+    state.parent.mkdir(parents=True)
+    state.write_text('{}')
+    vm._execute = lambda *a, **kw: pytest.fail('Provisioning ran after Tart exited')
+    with pytest.raises(RuntimeError, match='Tart exited'):
+        vm._bootstrap.prepare_guest()
