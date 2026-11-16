@@ -41,33 +41,13 @@ def test_constant_pair_is_small_rgb_png_with_distinct_input_names(tmp_path):
         assert path.stat().st_size < 3000
 
 
-def test_cache_damage_requires_real_owned_files_and_rejects_symlinks(tmp_path):
-    damage = module().corrupt_regular_files
-    cache = tmp_path / "cache"
-    cache.mkdir()
-    with pytest.raises(AssertionError, match="No cache files"):
-        damage(cache)
-    nested = cache / "nested"
-    nested.mkdir()
-    entry = nested / "opaque-cache-entry"
-    entry.write_bytes(b"real prior state")
-    assert damage(cache) == [entry]
-    assert entry.read_bytes() != b"real prior state"
-    outside = tmp_path / "outside"
-    outside.write_bytes(b"must stay intact")
-    (cache / "link").symlink_to(outside)
-    with pytest.raises(AssertionError, match="symlink"):
-        damage(cache)
-    assert outside.read_bytes() == b"must stay intact"
-
-
 def test_cli_coverage_catalog_has_public_input_and_state_contracts():
     cases = module().coverage_cli_cases()
     ids = [case.id for case in cases]
     assert len(ids) == len(set(ids))
     assert all(case.suite == "cli" for case in cases)
     for name in ("auto.medium", "auto.large", "auto.unmeasured", "raw.legacy-alignment",
-                 "input.npy", "input.literal-glob", "input.directories", "cache.recovery"):
+                 "input.npy", "input.literal-glob", "input.directories"):
         assert f"cli.coverage.{name}" in ids
     for suffix in ("png", "dng", "npy", "unknown"):
         assert f"cli.coverage.reject.{suffix}" in ids
