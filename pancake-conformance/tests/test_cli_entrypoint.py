@@ -74,3 +74,20 @@ def test_explicit_suite_order_can_put_desktop_work_first(capsys):
 def test_typo_in_one_requested_suite_cannot_silently_drop_it(capsys):
     assert main(["list", "--suite", "cli", "--suite", "algorihms", "--json"]) == 2
     assert "unknown suite" in capsys.readouterr().err
+
+
+def test_full_vm_run_groups_interleaved_gui_cases(tmp_path, monkeypatch):
+    from pancake_conformance import cli
+    from pancake_conformance.model import Case
+    cases = [Case('cli.first', 'cli', None), Case('interface.first', 'interface', None),
+             Case('cli.second', 'cli', None), Case('interface.second', 'interface', None)]
+    descriptor = tmp_path / 'target.toml'
+    descriptor.write_text('schema_version=1\nname="example"\nroot="."\ncli=["unused"]\n')
+    seen = []
+    monkeypatch.setattr(cli, 'catalog', lambda: cases)
+    def run(cases, **kwargs):
+        seen.extend(case.id for case in cases)
+        return []
+    monkeypatch.setattr('pancake_conformance.runner.run_vm_cases', run)
+    assert main(['run', '--target', str(descriptor), '--gui-vm', '--output', str(tmp_path / 'run')]) == 0
+    assert seen == ['cli.first', 'cli.second', 'interface.first', 'interface.second']

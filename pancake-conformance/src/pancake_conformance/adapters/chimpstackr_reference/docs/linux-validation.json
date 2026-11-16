@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "contract_version": 2,
+  "date": "2026-11-16",
+  "application_commit": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "platform": "Linux x86_64",
+  "runtime": {
+    "python": "3.12.3",
+    "opencv": "4.14.0",
+    "pyside": "6.12.0"
+  },
+  "reference_conformance": {
+    "selected": 376,
+    "passed": 376,
+    "failed": 0,
+    "unsupported": 0,
+    "gui_passed": 35,
+    "physical_gpu": "NVIDIA GeForce RTX 3090"
+  },
+  "runs": {
+    "linux-host-verified": {
+      "selected": 341,
+      "counts": {
+        "passed": 341,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "sha256": "aad70b8d7a08aaa4acfadfa9f16b0101335229e0fbfccd5da5b17d8f5f224d59"
+    },
+    "linux-interface-complete": {
+      "selected": 35,
+      "counts": {
+        "passed": 35,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "sha256": "3ed331eb5d9d95d1b1bbc0a1a491398a74c55b621bd801a703a311cfc0265ca0"
+    }
+  },
+  "suite_self_tests": {
+    "passed": 328,
+    "failed": 0,
+    "skipped": 7,
+    "skip_reason": "Apple-native transport integration tests; both Linux GUI smoke wrappers executed and passed."
+  },
+  "lint": "passed",
+  "macos": {
+    "runtime_preserved": true,
+    "native_gui_replay": "Not run locally; host is Linux x86_64.",
+    "ci": "Linux/macOS regression matrix added in .github/workflows/pancake-conformance.yml"
+  },
+  "notes": [
+    "All default catalog IDs were covered exactly once across the two complete conformance runs.",
+    "The full Linux GUI replay includes actual physical-GPU preference verification.",
+    "OpenCV 4.x supplies Linux EXR codecs; the existing macOS OpenCV 5.x and Apple Silicon Qt snapshot are retained.",
+    "GUI/CLI recovery parity uses the observed execution backend; independent CPU/GPU contracts retain their numerical thresholds."
+  ]
+}

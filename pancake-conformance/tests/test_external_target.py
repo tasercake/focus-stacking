@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 }
 ''')
     executable = tmp_path / "target"
-    subprocess.run(["xcrun", "cc", str(source), "-o", str(executable)], check=True,
+    subprocess.run(["cc", str(source), "-o", str(executable)], check=True,
                    capture_output=True, text=True, timeout=30)
     descriptor = tmp_path / "target.toml"
     descriptor.write_text('schema_version=1\nname="compiled-example"\nroot="."\ncli=["./target"]\n'

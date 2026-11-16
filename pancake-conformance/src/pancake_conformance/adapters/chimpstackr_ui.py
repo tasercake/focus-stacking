@@ -86,7 +86,8 @@ def install_identifiers(application):
         if not hasattr(window, "inspector"):
             return
         identify(window.toolbar.widgetForAction(window.act_add), "import.files")
-        identify(window.viewer.viewport(), "viewer")
+        if sys.platform == "darwin":
+            identify(window.viewer.viewport(), "viewer")
         window.viewer.viewport().setAccessibleName("Image viewer")
         identify(window.sidebar.frames, "frames")
         identify(window.sidebar.results, "results")

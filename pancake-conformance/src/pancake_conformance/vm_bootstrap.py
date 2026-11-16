@@ -396,11 +396,11 @@ class GuestScreen:
             return False
 
     def labels(self):
+        if not self._capture():
+            return [], (1, 1)
         import Foundation
         import Vision
         from PIL import Image
-        if not self._capture():
-            return [], (1, 1)
         handler = Vision.VNImageRequestHandler.alloc().initWithURL_options_(
             Foundation.NSURL.fileURLWithPath_(str(self.path.resolve())), {})
         request = Vision.VNRecognizeTextRequest.alloc().init()

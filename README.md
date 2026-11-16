@@ -28,11 +28,11 @@ remains the reference target at `submodules/ChimpStackr`.
 
 ```sh
 git submodule update --init submodules/ChimpStackr
-uv sync --project pancake-conformance --frozen --extra chimpstackr
-uv run --project pancake-conformance --frozen --extra chimpstackr pancake-conformance list
+uv sync --locked --project pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference
+uv run --locked --project pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference pancake-conformance list
 ```
 
-Configure the [dedicated headless macOS guest](pancake-conformance/docs/gui-vm-setup.md) once. GUI
+On Linux, use the [isolated native desktop](pancake-conformance/docs/linux.md). On macOS, configure the [dedicated headless macOS guest](pancake-conformance/docs/gui-vm-setup.md) once. GUI
 cases then leave the host desktop untouched; CLI, algorithms and physical-device
 cases stay on the host. Pancake-conformance's pytest suite includes native smoke cases,
 so pass `--gui-vm --gui-vm-persist` while using the host desktop.

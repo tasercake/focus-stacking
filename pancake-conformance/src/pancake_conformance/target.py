@@ -31,6 +31,13 @@ class TargetSpec:
     def load(cls, path):
         path = Path(path).resolve()
         data = tomllib.loads(path.read_text())
+        def merge(base, override):
+            for key, value in override.items():
+                if isinstance(value, dict) and isinstance(base.get(key), dict):
+                    merge(base[key], value)
+                else:
+                    base[key] = value
+        merge(data, data.pop("platforms", {}).get(sys.platform, {}))
         if data.get("schema_version") != 1:
             raise ValueError("unsupported target schema_version (expected 1)")
         for key in ("name", "root", "cli"):

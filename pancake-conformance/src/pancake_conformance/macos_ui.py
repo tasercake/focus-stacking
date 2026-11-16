@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import selectors
 import signal
+import sys
 import subprocess
 import tempfile
 import time
@@ -409,6 +410,8 @@ def open_session(command, *, cwd, env, directory, paths=(), settings_id="default
     lease = DesktopLease().acquire()
     stdout = stderr = process = None
     try:
+        if sys.platform == "linux" and env.get("PANCAKE_CONFORMANCE_LINUX_DESKTOP") != "1":
+            raise RuntimeError("Linux UI requires an isolated desktop; use pancake-conformance run")
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         environment = dict(env)
@@ -417,7 +420,11 @@ def open_session(command, *, cwd, env, directory, paths=(), settings_id="default
         stderr = (directory / "target.stderr").open("w")
         process = subprocess.Popen([*map(str, command), *map(str, paths)], cwd=cwd, env=environment,
                                    stdout=stdout, stderr=stderr, start_new_session=True)
-        session = MacOSUISession(process, directory)
+        if sys.platform == "linux":
+            from .linux_ui import LinuxUISession
+            session = LinuxUISession(process, directory, environment)
+        else:
+            session = MacOSUISession(process, directory)
         session._target_logs = (stdout, stderr)
         session._desktop_lease = lease
         return session

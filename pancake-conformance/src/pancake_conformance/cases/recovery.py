@@ -128,8 +128,10 @@ def _device_request(ctx):
         ctx.record_output(output, "device-request")
         ctx.note("execution", event)
         ctx.note("gpu_hardware_exercised", event.get("actual_backend") == "gpu")
+    # Compare UI/CLI delivery on the observed backend. CPU/GPU numerical
+    # agreement is independently checked by the device cases.
     ctx.assert_cli_parity(output, fixture, mean_limit=1, max_limit=257,
-                          method="hybrid", bit_depth=16, output_format="tif")
+                          device=event.get("actual_backend", "gpu"), method="hybrid", bit_depth=16, output_format="tif")
 
 
 def _folder_import(ctx):

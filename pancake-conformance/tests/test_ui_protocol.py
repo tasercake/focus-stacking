@@ -1,8 +1,11 @@
 """Checks for the external macOS accessibility transport."""
+import pytest
+import sys
 import json
 import subprocess
 
 
+@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
 def test_native_helper_reports_accessibility_trust(tmp_path):
     from pancake_conformance.macos_ui import native_helper
 
@@ -13,6 +16,7 @@ def test_native_helper_reports_accessibility_trust(tmp_path):
     assert isinstance(response["result"]["trusted"], bool)
 
 
+@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
 def test_native_helper_rejects_unknown_command(tmp_path):
     from pancake_conformance.macos_ui import native_helper
 
@@ -23,6 +27,7 @@ def test_native_helper_rejects_unknown_command(tmp_path):
     assert "Unknown command" in response["error"]
 
 
+@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
 def test_native_helper_returns_error_for_missing_application(tmp_path):
     from pancake_conformance.macos_ui import native_helper
 
@@ -63,6 +68,7 @@ def test_open_session_takes_desktop_lease_before_spawning(tmp_path):
     assert not marker.exists()
 
 
+@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
 def test_native_snapshot_distinguishes_running_process_from_missing_app_registration(tmp_path):
     import sys
     from pancake_conformance.macos_ui import native_helper
@@ -561,6 +567,7 @@ def test_close_records_native_input_failure_without_retrying(tmp_path):
     assert status['close_error'] == 'Native close input failed'
 
 
+@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
 def test_scroll_event_targets_requested_viewport_before_native_post(tmp_path):
     """Compile the real Swift event construction; never post host input."""
     from pathlib import Path

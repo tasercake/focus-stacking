@@ -139,6 +139,10 @@ def main(argv=None):
                     print(f"{record['id']:<65} {record['description']}")
                 print(f"{len(records)} cases")
             return 0
+        if args.gui_vm and not args.suite:
+            # The catalog interleaves feature groups; VM transport needs one GUI batch.
+            order = {suite: i for i, suite in enumerate(dict.fromkeys(case.suite for case in cases))}
+            cases.sort(key=lambda case: order[case.suite])
         from .baseline import Baseline
         from .runner import run_cases, run_vm_cases, record_coverage
         from .target import TargetSpec
@@ -188,7 +192,12 @@ def main(argv=None):
                                    coverage=coverage, provenance=provenance,
                                    cli_command=overrides.get("cli"), gui_command=overrides.get("gui"))
         else:
-            results = run_cases(cases, **common)
+            if sys.platform == "linux" and any(case.suite == "interface" for case in cases):
+                from .linux_ui import isolated_desktop
+                with isolated_desktop(output / "linux-desktop", environment) as desktop_env:
+                    results = run_cases(cases, **{**common, "environment": desktop_env})
+            else:
+                results = run_cases(cases, **common)
         failed = sum(r.status == "failed" for r in results)
         if coverage:
             summary = coverage.finalize(allow_empty=bool(results) and all(result.status == "unsupported" for result in results))

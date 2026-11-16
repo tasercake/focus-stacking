@@ -61,7 +61,9 @@ class Widget:
         return self.content
 
 
-def test_identifier_installer_hooks_only_completed_window_constructors(monkeypatch):
+@pytest.mark.parametrize("platform", ["darwin", "linux"])
+def test_identifier_installer_hooks_only_completed_window_constructors(monkeypatch, platform):
+    monkeypatch.setattr(sys, "platform", platform)
     from pancake_conformance.adapters.chimpstackr_ui import install_identifiers
     calls, filters, factories = [], [], []
     accessible = SimpleNamespace(installFactory=factories.append)
@@ -142,7 +144,7 @@ def test_identifier_installer_hooks_only_completed_window_constructors(monkeypat
     update = UpdateDialog(release='v3')
     assert calls == [('window', 'original'), ('settings', window), ('export', (129, 193, 3), window), ('update', 'v3')]
     assert window.identifier == 'main.window'
-    assert window.viewport_widget.identifier == 'viewer'
+    assert window.viewport_widget.identifier == ('viewer' if platform == 'darwin' else None)
     assert window.viewer.identifier == 'viewer'
     assert window.import_button.identifier == 'import.files'
     assert window.sidebar.frames.identifier == window.sidebar.frames.name == 'frames'

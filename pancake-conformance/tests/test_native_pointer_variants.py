@@ -1,4 +1,5 @@
 """Native pointer variants construct events without sending host input."""
+import sys
 from pathlib import Path
 import subprocess
 
@@ -22,6 +23,7 @@ def test_click_and_wheel_variants_are_explicit_native_requests():
         driver.click("viewer", count=3)
 
 
+@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
 def test_native_pointer_constructor_preserves_click_count_and_button(tmp_path):
     from pancake_conformance import macos_ui
     source = Path(macos_ui.__file__).with_name("native_macos.swift").read_text()
@@ -41,6 +43,7 @@ print("pointer variants preserved")
     assert result.stdout.strip() == "pointer variants preserved"
 
 
+@pytest.mark.skipif(sys.platform != "darwin", reason="Tests Apple native APIs; Linux driver has separate coverage")
 def test_focus_guard_polls_fresh_os_attribute_instead_of_cached_workspace(tmp_path):
     from pancake_conformance import macos_ui
     source = Path(macos_ui.__file__).with_name("native_macos.swift").read_text()

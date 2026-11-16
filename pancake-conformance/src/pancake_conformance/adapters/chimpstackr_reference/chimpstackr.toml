@@ -6,7 +6,7 @@ coverage_scope = "chimpstackr-coverage-v2.json"
 cli = ["{python}", "-m", "src.cli"]
 gui = ["{python}", "-m", "pancake_conformance.adapters.chimpstackr_ui"]
 probe = ["{python}", "-m", "pancake_conformance.adapters.chimpstackr_probe"]
-capabilities = ["cli", "native_gui", "cpu", "gpu", "backend_evidence", "alignment_evidence", "png", "jpeg", "tiff", "exr", "cli_reports", "exclusive_device_flags", "preferences", "about", "lightroom", "layout_panels", "advanced_controls", "recent_folders", "batch_export", "source_context", "viewport_export", "retained_results", "manual_crop", "pause_resume", "gpu_preference"]
+capabilities = ["cli", "native_gui", "cpu", "gpu", "physical_gpu", "backend_evidence", "alignment_evidence", "png", "jpeg", "tiff", "exr", "cli_reports", "exclusive_device_flags", "preferences", "about", "lightroom", "layout_panels", "advanced_controls", "recent_folders", "batch_export", "source_context", "viewport_export", "retained_results", "manual_crop", "pause_resume", "gpu_preference"]
 
 [instrumentation]
 source = "src"
@@ -32,7 +32,6 @@ OPENBLAS_NUM_THREADS = "1"
 NUMBA_CACHE_DIR = "{run}/compiler-cache"
 PYTHONUNBUFFERED = "1"
 OPENCV_IO_ENABLE_OPENEXR = "1"
-QT_QPA_PLATFORM = "cocoa"
 CHIMPSTACKR_CACHE_DIR = "{home}/device-cache"
 CF_UI_INITIAL_SETTINGS = '{"computing/gpu_mode":"cpu","computing/use_gpu":0,"computing/gpu_default_on":1,"updates/auto_check":0,"ui/last_dir":"{home}"}'
 
@@ -180,3 +179,19 @@ progress = '\[[0-9]+/[0-9]+\]'
 [ui.settings_choices]
 "settings.theme" = ["dark", "light", "system", "dark"]
 "settings.device_mode" = ["gpu", "auto", "cpu"]
+
+# Only presentation differences belong in platform overrides. Behavior cases stay shared.
+[platforms.linux.ui.controls]
+"about.open" = { role = "AXMenuItem", title = "About ChimpStackr" }
+"frames.reveal" = { role = "AXMenuItem", title = "Show in File Manager" }
+"dialog.discard_close" = { role = "AXButton", title = "Discard", dialog_message = "Quit without exporting the result?" }
+
+[platforms.linux.ui.actions]
+# The activity controls expose the same actions without reopening menus during
+# a time-sensitive worker lifecycle. Select native identifiers, not callbacks.
+"stack.pause" = [{ click = { id = "stack.pause" } }]
+"stack.resume" = [{ click = { id = "stack.pause" } }]
+"stack.stop" = [{ click = { id = "stack.stop" } }]
+
+[platforms.darwin.env]
+QT_QPA_PLATFORM = "cocoa"

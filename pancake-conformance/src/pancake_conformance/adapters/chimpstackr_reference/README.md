@@ -27,6 +27,12 @@ source coverage directory, coverage scope, observations, isolated preferences,
 service endpoints, and VM settings. CLI, algorithms, and physical-device cases
 run on the host. Native interface cases require the configured macOS guest.
 
+On Linux, omit `--gui-vm --gui-vm-persist`: GUI cases automatically use an
+isolated X11/AT-SPI desktop. See [Linux setup](../../../../docs/linux.md).
+The lock retains the Qt snapshot on Apple Silicon macOS and selects the released
+Qt build elsewhere. OpenCV is constrained below 5 on Linux because its 5.x wheels
+omit EXR codecs; EXR remains a required behavior.
+
 ## Check the adapter
 
 ```sh

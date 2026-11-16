@@ -34,6 +34,8 @@ def test_config_rejects_shell_options_and_unowned_guest_root(tmp_path):
 
 
 def test_headless_boot_has_no_clipboard_or_audio_passthrough(tmp_path, monkeypatch):
+    monkeypatch.setattr("pancake_conformance.gui_vm.platform.system", lambda: "Darwin")
+    monkeypatch.setattr("pancake_conformance.gui_vm.platform.machine", lambda: "arm64")
     from pancake_conformance.gui_vm import TartGuiVM
     calls = []
     monkeypatch.setattr("pancake_conformance.gui_vm.shutil.which", lambda name: "/usr/local/bin/" + name)
@@ -49,6 +51,8 @@ def test_headless_boot_has_no_clipboard_or_audio_passthrough(tmp_path, monkeypat
 
 
 def test_running_vm_is_reused_then_stopped_without_persist(tmp_path, monkeypatch):
+    monkeypatch.setattr("pancake_conformance.gui_vm.platform.system", lambda: "Darwin")
+    monkeypatch.setattr("pancake_conformance.gui_vm.platform.machine", lambda: "arm64")
     from pancake_conformance.gui_vm import TartGuiVM
     calls = []
     monkeypatch.setattr("pancake_conformance.gui_vm.shutil.which", lambda name: "/usr/local/bin/" + name)

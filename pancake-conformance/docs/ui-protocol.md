@@ -10,7 +10,7 @@ cases are reported as `unsupported`, not passed.
 
 ## Native boundary
 
-`CaseContext.open_ui()` wraps the native macOS session in `SemanticUI`. The
+`CaseContext.open_ui()` wraps the native macOS or Linux session in `SemanticUI`. The
 wrapper maps declarative selectors and input sequences to operating-system
 Accessibility, keyboard, and pointer operations. It does not call target
 business methods. Action completion is not evidence of application success:
@@ -63,7 +63,10 @@ flat list can expose the same count and selection behavior.
 are `click`, `select` with `value`, or `key` with optional `modifiers`. Clicks
 use native Accessibility activation by default; `physical = true` requests
 pointer input and can include `button`, `count`, and relative `position`.
-Unmapped actions activate their semantic identifier directly.
+Unmapped actions activate their semantic identifier directly. Linux uses XTest
+pointer clicks for visible controls because synchronous AT-SPI actions can block
+inside modal Qt dialogs. Both paths still require separately observed results.
+See [Linux setup](linux.md) for desktop isolation and platform overrides.
 
 `[ui.choices]` maps canonical option values to displayed strings. The wrapper
 maps actual observed choices back to their canonical values. It never assumes
