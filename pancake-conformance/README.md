@@ -44,3 +44,6 @@ adapters and are selected explicitly with their runtime environment.
 See [conformance](docs/conformance.md), [numerical contracts](docs/algorithm-contract.md),
 [component protocol](docs/component-protocol.md), [UI protocol](docs/ui-protocol.md),
 [diagnostics](docs/diagnostics.md), and [coverage](docs/coverage.md).
+
+`--gui-vm` can [bootstrap a missing dedicated guest](docs/gui-vm-bootstrap.md).
+It never falls back to host input.

@@ -4,6 +4,11 @@ Use a dedicated Tart macOS VM to keep interface input away from the host desktop
 The same native Accessibility driver runs in its logged-in Aqua session.
 CLI, algorithms, and physical-device tests stay on the host.
 
+## Automatic setup
+
+`--gui-vm` can provision a missing dedicated guest. See [bootstrap](gui-vm-bootstrap.md).
+The steps below also support existing custom guests.
+
 ## Provision once
 
 1. Install Tart on a native Apple Silicon macOS host. Create a dedicated arm64

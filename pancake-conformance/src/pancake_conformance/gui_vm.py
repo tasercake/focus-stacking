@@ -134,7 +134,7 @@ finally:
 class TartGuiVM:
     def __init__(self, config, workspace, output, visible=False, persist=False, *, project=None):
         self.config = dict(config)
-        self.name = str(self.config.get("name", ""))
+        self.name = str(self.config.get("name", "pancake-conformance"))
         self.user = str(self.config.get("ssh_user", "admin"))
         self.guest_root = str(self.config.get("guest_root", f"/Users/{self.user}/pancake-conformance"))
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", self.name):
@@ -156,6 +156,8 @@ class TartGuiVM:
         self.output.mkdir(parents=True, exist_ok=True)
         self.visible, self.persist = bool(visible), bool(persist)
         self._tart = shutil.which("tart")
+        from .vm_bootstrap import Bootstrap
+        self._bootstrap = Bootstrap(self)
         self._ssh_binary = shutil.which("ssh") or "/usr/bin/ssh"
         self._ip = None
         self._started = False
@@ -299,8 +301,7 @@ class TartGuiVM:
             raise
 
     def _prepare(self):
-        if not self._tart:
-            raise RuntimeError("Tart is required for --gui-vm; no host GUI fallback is allowed")
+        self._bootstrap.ensure_host_and_vm()
         state = self._execute([self._tart, "get", self.name, "--format", "json"], timeout=20)
         try:
             running = json.loads(state.stdout)["Running"]
@@ -308,14 +309,19 @@ class TartGuiVM:
             raise RuntimeError("Tart did not return a valid VM state") from exc
         if not running:
             self._boot_log = (self.output / "tart.log").open("w")
+            os.chmod(self.output / "tart.log", 0o600)
             argv = [self._tart, "run", self.name]
             if not self.visible:
                 argv.append("--no-graphics")
             argv.extend(("--no-clipboard", "--no-audio"))
+            if self._bootstrap.managed:
+                argv.append("--vnc-experimental")
             self._process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=self._boot_log,
                                              stderr=subprocess.STDOUT, start_new_session=True)
             self._started = True
         print(f"GUI VM: {'starting' if self._started else 'reusing'} {self.name}", flush=True)
+        if self._bootstrap.managed:
+            self._bootstrap.prepare_guest()
         self._wait_for_ssh()
         self._preflight()
         self._prepared = True
@@ -507,6 +513,9 @@ class TartGuiVM:
         self.prepare()
         print("GUI VM: syncing pinned source and locked dependencies", flush=True)
         descriptor, target, pin = self._sync_workspace(target_path)
+        if self._bootstrap.managed:
+            self._bootstrap.ensure_permissions()
+            self._bootstrap._configure_display()
         command = self._guest_command(case_ids, descriptor, coverage=coverage, fail_fast=fail_fast,
                                       cli_command=cli_command, gui_command=gui_command)
         job = self._launch(command, target, pin)
