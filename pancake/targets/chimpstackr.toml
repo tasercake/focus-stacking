@@ -1,0 +1,59 @@
+schema_version = 1
+name = "chimpstackr-python-reference"
+root = "../../submodules/ChimpStackr"
+adapter = "chimpstackr-python"
+coverage_scope = "chimpstackr-coverage.json"
+cli = ["{python}", "-m", "src.cli"]
+gui = ["{python}", "-m", "pancake.adapters.chimpstackr_ui"]
+probe = ["{python}", "-m", "pancake.adapters.chimpstackr_probe"]
+capabilities = ["cli", "gui", "cpu", "opencl", "png", "jpeg", "tiff", "exr"]
+
+[gui_vm]
+name = "pancake"
+ssh_user = "admin"
+guest_root = "/Users/admin/pancake"
+ssh_identity = "~/.ssh/pancake"
+python = "3.12.16"
+
+[state]
+compute_cache = "{home}/device-cache"
+
+[services]
+updates = "CF_UI_UPDATE_FEED"
+
+[env]
+NUMBA_NUM_THREADS = "2"
+OMP_NUM_THREADS = "2"
+OPENBLAS_NUM_THREADS = "1"
+NUMBA_CACHE_DIR = "{run}/compiler-cache"
+PYTHONUNBUFFERED = "1"
+OPENCV_IO_ENABLE_OPENEXR = "1"
+QT_QPA_PLATFORM = "cocoa"
+CHIMPSTACKR_CACHE_DIR = "{home}/device-cache"
+CF_UI_INITIAL_SETTINGS = '{"computing/gpu_mode":"cpu","computing/use_gpu":0,"computing/gpu_default_on":1,"updates/auto_check":0,"ui/last_dir":"{home}"}'
+
+[stack]
+input = ["--input", "{inputs}"]
+output = ["--output", "{output}"]
+
+[stack.options]
+method = "--method"
+align = "--align"
+alignment_mode = "--alignment-mode"
+alignment_reference = "--alignment-ref"
+kernel_size = "--kernel-size"
+pyramid_levels = "--pyramid-levels"
+scale_factor = "--scale-factor"
+max_scale_step = "--max-scale-step"
+max_precision = "--max-precision"
+slab_size = "--slab-size"
+slab_overlap = "--slab-overlap"
+auto = "--auto"
+auto_crop = "--auto-crop"
+quality = "--quality"
+quality_report = "--quality-report"
+bit_depth = "--bit-depth"
+gpu_id = "--gpu-id"
+measure = "--measure"
+rotation_scale = "--rotation-scale"
+device = { cpu = ["--cpu"], gpu = ["--gpu"], auto = [] }
