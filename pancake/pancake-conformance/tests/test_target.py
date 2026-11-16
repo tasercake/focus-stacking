@@ -4,6 +4,18 @@ from pathlib import Path
 import pytest
 
 
+def test_default_reference_descriptor_uses_app_subdirectory():
+    from pancake.cli import _parser
+    from pancake.target import TargetSpec
+    project = Path(__file__).resolve().parents[1]
+    descriptor_path = _parser().parse_args(["run"]).target
+    assert descriptor_path == project / "targets/chimpstackr/chimpstackr.toml"
+    target = TargetSpec.load(descriptor_path)
+    assert target.root == project.parents[1] / "submodules/ChimpStackr"
+    assert target.coverage_scope == descriptor_path.parent / "chimpstackr-coverage.json"
+    assert target.coverage_scope.is_file()
+
+
 def descriptor(tmp_path, extra=""):
     path = tmp_path / "target.toml"
     path.write_text('schema_version = 1\nname = "example"\nroot = "."\ncli = ["{python}", "-m", "example"]\n'

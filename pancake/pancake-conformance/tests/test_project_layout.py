@@ -9,14 +9,13 @@ import tomllib
 
 
 def project_root():
-    root = Path(__file__).resolve().parents[1]
-    return root if root.name == "pancake" else root / "pancake"
+    return Path(__file__).resolve().parents[1]
 
 
 def test_cli_lists_cases_without_parent_repository(tmp_path):
     project = project_root()
     assert (project / "pyproject.toml").is_file(), "pancake must own its project metadata"
-    checkout = tmp_path / "pancake"
+    checkout = tmp_path / "pancake-conformance"
     shutil.copytree(project, checkout, ignore=shutil.ignore_patterns(
         ".venv", "__pycache__", ".pytest_cache", ".ruff_cache", "artifacts", "dist", "build"))
     environment = dict(os.environ, PYTHONPATH=str(checkout / "src"))
@@ -36,5 +35,5 @@ def test_chimpstackr_is_an_optional_external_reference():
     assert metadata["project"]["scripts"] == {"pancake": "pancake:main"}
     assert "workspace" not in metadata["tool"]["uv"]
     source = metadata["tool"]["uv"]["sources"]["chimpstackr"]
-    assert (project / source["path"]).resolve() == project.parent / "submodules/ChimpStackr"
+    assert (project / source["path"]).resolve() == project.parents[1] / "submodules/ChimpStackr"
     assert "chimpstackr" in metadata["project"]["optional-dependencies"]

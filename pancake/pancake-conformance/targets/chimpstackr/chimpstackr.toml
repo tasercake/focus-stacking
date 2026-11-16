@@ -1,6 +1,6 @@
 schema_version = 1
 name = "chimpstackr-python-reference"
-root = "../../submodules/ChimpStackr"
+root = "../../../../submodules/ChimpStackr"
 adapter = "chimpstackr-python"
 coverage_scope = "chimpstackr-coverage.json"
 cli = ["{python}", "-m", "src.cli"]

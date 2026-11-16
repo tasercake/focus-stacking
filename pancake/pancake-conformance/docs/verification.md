@@ -1,12 +1,13 @@
 # Historical conformance reference
 
-This record predates the move into `pancake/`. Counts, hashes, runtime state,
-and artifact paths below describe the archived commits, not the current project.
-The current catalog contains 308 cases. After the move, 252 harness tests passed
-with two live GUI tests excluded; lint, frozen lock validation, and package build
-passed. A copied project installed and listed all 308 cases without the parent
-repository, ChimpStackr checkout, or Qt extra. No full native VM replay was made
-after the move.
+This record predates the split into `pancake/pancake-conformance/` and
+`pancake/pancake/`. Counts, hashes, runtime state, and artifact paths below
+describe the archived commits, not the current project. The current catalog
+contains 308 cases. At the earlier `pancake/` location, 252 harness tests passed
+with two live GUI tests excluded; lint, frozen lock validation, and package
+build passed. A copied project installed and listed all 308 cases without the
+parent repository, ChimpStackr checkout, or Qt extra. No full native VM replay
+was made after that earlier move.
 
 Verified implementation commit: `08b05f2f6e1c9f3b67367c34d20bfdd49221faaf`.
 The final replay completed all 295 selected cases: **294 passed, zero failed,
@@ -39,7 +40,7 @@ and evidence. It does not count them as executed. There are still **667 missing
 scoped lines and 418 missing scoped branch exits**. Recoverable failures, dynamic
 UI paths and native JIT tracing limits remain gaps. This does not claim 100%.
 See [coverage rules](coverage.md), [scope audit](coverage-scope-audit.md) and
-[the pinned scope](../targets/chimpstackr-coverage.json).
+[the pinned scope](../targets/chimpstackr/chimpstackr-coverage.json).
 
 Host/guest raw data normalize to exactly **31 unique source files**. No guest
 path remains in the merged database; measured contexts are only `[""]`, with
@@ -83,7 +84,7 @@ Local generated evidence remains under `artifacts/` and is not committed:
 - `coverage-scope-negative-final/`: expected failing 100% gate control.
 - `vm-setup/host-focus-expanded-full-gui.json`: read-only host focus observation.
 
-Replay from `pancake/` after restoring the archived baseline under its
+Replay from `pancake/pancake-conformance/` after restoring the archived baseline under its
 `artifacts/` directory and configuring the dedicated guest:
 
 ```sh

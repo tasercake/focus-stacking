@@ -2,8 +2,36 @@ import json
 import os
 import subprocess
 import sys
+from pathlib import Path
+
+import pytest
 
 from pancake import main
+
+
+@pytest.mark.parametrize("project_path", [".", "pancake", "pancake/pancake-conformance"])
+def test_vm_dispatch_preserves_workspace_for_nested_suite(tmp_path, monkeypatch, project_path):
+    from pancake import cli
+
+    workspace = tmp_path / "workspace"
+    project = workspace / project_path
+    (workspace / "submodules/ChimpStackr").mkdir(parents=True)
+    (project / "src/pancake").mkdir(parents=True)
+    descriptor = project / "target.toml"
+    descriptor.write_text('schema_version=1\nname="example"\nroot="."\ncli=["unused"]\n')
+    monkeypatch.setattr(cli, "__file__", str(project / "src/pancake/cli.py"))
+    monkeypatch.setattr(cli, "_provenance", lambda *args: {})
+    dispatched = {}
+
+    def run_vm_cases(cases, **kwargs):
+        dispatched.update(kwargs)
+        return []
+
+    monkeypatch.setattr("pancake.runner.run_vm_cases", run_vm_cases)
+    assert main(["run", "--target", str(descriptor), "--output", str(tmp_path / "run"),
+                 "--no-coverage", "--gui-vm", "--case", "interface.compute.gpu"]) == 0
+    assert Path(dispatched["project"]) == project.resolve()
+    assert Path(dispatched["workspace"]) == workspace
 
 
 def test_single_entrypoint_lists_machine_readable_cases(capsys):

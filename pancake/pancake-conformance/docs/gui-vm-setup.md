@@ -106,9 +106,10 @@ Install `uv` and Python 3.12 inside the guest:
 
 See the official [uv installation instructions](https://docs.astral.sh/uv/getting-started/installation/)
 and [managed Python guide](https://docs.astral.sh/uv/guides/install-python/).
-The VM transport copies the project to `/Users/admin/pancake/pancake` and the
-initialized ChimpStackr submodule to `/Users/admin/pancake/submodules/ChimpStackr`,
-preserving their relative paths. It runs
+The VM transport copies the project to
+`/Users/admin/pancake/pancake/pancake-conformance` and the initialized ChimpStackr
+submodule to `/Users/admin/pancake/submodules/ChimpStackr`, preserving their
+relative paths. It runs
 `uv sync --locked --python 3.12.16 --extra chimpstackr` from the guest project
 directory. The optional
 `gui_vm.python` pin preserves the guest interpreter that received desktop
@@ -257,8 +258,9 @@ normal runner.
 
 The current transport requires the suite project, target descriptor, and Git
 source checkout to be inside a common workspace. In this repository that is the
-repository root, containing `pancake/` and `submodules/`. It copies the suite, descriptors,
-lockfile, and tracked target files, plus a Git bundle for target provenance.
+repository root, containing `pancake/pancake-conformance/` and `submodules/`.
+It copies the suite, descriptors, lockfile, and tracked target files, plus a Git
+bundle for target provenance.
 It does not copy host virtual environments, SSH credentials, or arbitrary build
 outputs.
 

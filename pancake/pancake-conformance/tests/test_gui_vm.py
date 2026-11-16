@@ -1,6 +1,7 @@
 """VM boundary safety and orchestration checks; never boot a VM in unit tests."""
 import io
 import json
+import os
 import subprocess
 import tarfile
 from types import SimpleNamespace
@@ -127,7 +128,7 @@ def test_launchagent_job_uses_guest_cli_and_never_host_gui(tmp_path, monkeypatch
     from pancake.gui_vm import TartGuiVM
     monkeypatch.setattr("pancake.gui_vm.shutil.which", lambda name: "/usr/bin/" + name)
     vm = TartGuiVM(config(), tmp_path, tmp_path / "run")
-    argv = vm._guest_command(["interface.stack.hybrid"], "targets/chimpstackr.toml", coverage=True, fail_fast=True)
+    argv = vm._guest_command(["interface.stack.hybrid"], "targets/chimpstackr/chimpstackr.toml", coverage=True, fail_fast=True)
     assert argv[0] == "/Users/admin/pancake/.venv/bin/pancake"
     assert "--no-gui-vm" in argv
     assert "--coverage" in argv
@@ -160,9 +161,9 @@ def test_source_transport_preserves_git_pin_and_excludes_host_credentials(tmp_pa
     git("tag", "v0.1")
     (target / "src/__init__.py").write_text("value = 2\n")
     git("commit", "--quiet", "-am", "second")
-    descriptor = workspace / "targets/chimpstackr.toml"
-    descriptor.parent.mkdir()
-    descriptor.write_text('root = "../submodules/ChimpStackr"\n')
+    descriptor = workspace / "targets/chimpstackr/chimpstackr.toml"
+    descriptor.parent.mkdir(parents=True)
+    descriptor.write_text('root = "../../submodules/ChimpStackr"\n')
     for name in ("pyproject.toml", "uv.lock", "README.md", ".python-version"):
         (workspace / name).write_text("" if name == "pyproject.toml" else "fixture\n")
     package = workspace / "src/pancake"
@@ -173,7 +174,7 @@ def test_source_transport_preserves_git_pin_and_excludes_host_credentials(tmp_pa
     (private / "secret_key").write_text("never copy credentials")
     vm = TartGuiVM(config(), workspace, tmp_path / "run")
     archive, relative, target_relative, pin, digest = vm._source_archive(descriptor)
-    assert relative == "targets/chimpstackr.toml"
+    assert relative == "targets/chimpstackr/chimpstackr.toml"
     assert target_relative == "submodules/ChimpStackr"
     assert pin == git("rev-parse", "HEAD") and len(digest) == 64
     guest = tmp_path / "guest"
@@ -185,41 +186,46 @@ def test_source_transport_preserves_git_pin_and_excludes_host_credentials(tmp_pa
     assert description == git("describe", "--tags", "--always")
 
 
-def test_nested_project_transport_preserves_external_reference_paths(tmp_path, monkeypatch):
+@pytest.mark.parametrize("project_path", ["pancake", "pancake/pancake-conformance"])
+def test_nested_project_transport_preserves_external_reference_paths(tmp_path, monkeypatch, project_path):
     from pancake.gui_vm import TartGuiVM, safe_extract_artifacts
     workspace = tmp_path / "workspace"
-    project = workspace / "pancake"
+    project = workspace / project_path
     target = workspace / "submodules/ChimpStackr"
     (target / "src").mkdir(parents=True)
     (target / "src/__init__.py").write_text("value = 1\n")
     for arguments in (("init", "--quiet"), ("add", "."), ("commit", "--quiet", "-m", "initial")):
         subprocess.run(["git", "-C", str(target), "-c", "user.name=Fixture",
                         "-c", "user.email=fixture@example.test", *arguments], check=True)
-    descriptor = project / "targets/chimpstackr.toml"
+    descriptor = project / "targets/chimpstackr/chimpstackr.toml"
     descriptor.parent.mkdir(parents=True)
-    descriptor.write_text('root = "../../submodules/ChimpStackr"\nadapter = "chimpstackr-python"\n')
+    descriptor.write_text(f'root = "{os.path.relpath(target, descriptor.parent)}"\nadapter = "chimpstackr-python"\n')
     for name in ("pyproject.toml", "uv.lock", "README.md", ".python-version"):
         (project / name).write_text("" if name == "pyproject.toml" else "fixture\n")
     package = project / "src/pancake"
     package.mkdir(parents=True)
     (package / "__init__.py").write_text("")
     (workspace / "unrelated-secret").write_text("never copy")
+    rewrite = workspace / "pancake/pancake"
+    rewrite.mkdir(parents=True)
+    (rewrite / "app.py").write_text("never copy the application rewrite\n")
     vm = TartGuiVM(config(), workspace, tmp_path / "run", project=project)
     archive, relative, target_relative, _, _ = vm._source_archive(descriptor)
-    assert relative == "pancake/targets/chimpstackr.toml"
+    assert relative == f"{project_path}/targets/chimpstackr/chimpstackr.toml"
     assert target_relative == "submodules/ChimpStackr"
     guest = tmp_path / "guest"
     safe_extract_artifacts(archive, guest)
-    assert (guest / "pancake/src/pancake/__init__.py").is_file()
+    assert (guest / project_path / "src/pancake/__init__.py").is_file()
     assert (guest / "submodules/ChimpStackr/src/__init__.py").is_file()
     assert not (guest / "unrelated-secret").exists()
+    assert not (guest / "pancake/pancake").exists()
     commands = []
     monkeypatch.setattr(vm, "_ssh", lambda command, **kwargs: commands.append(command) or SimpleNamespace(returncode=0))
     vm._sync_workspace(descriptor)
-    assert "cd /Users/admin/pancake/pancake &&" in next(command for command in commands if "uv sync" in command)
+    assert f"cd /Users/admin/pancake/{project_path} &&" in next(command for command in commands if "uv sync" in command)
     command = vm._guest_command(["interface.case"], relative, coverage=False, fail_fast=False,
                                 gui_command=[str(target / "bin/gui")])
-    assert command[0] == "/Users/admin/pancake/pancake/.venv/bin/pancake"
+    assert command[0] == f"/Users/admin/pancake/{project_path}/.venv/bin/pancake"
     assert json.loads(command[command.index("--gui-command") + 1]) == ["/Users/admin/pancake/submodules/ChimpStackr/bin/gui"]
 
 

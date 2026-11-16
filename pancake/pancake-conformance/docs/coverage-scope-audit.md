@@ -42,7 +42,7 @@ compiled execution.
 
 ## Pinned exclusion manifest
 
-The reviewed ranges now live in [the target manifest](../targets/chimpstackr-coverage.json).
+The reviewed ranges now live in [the target manifest](../targets/chimpstackr/chimpstackr-coverage.json).
 It contains exact source intervals, reasons, evidence, source hash and target pin.
 The native compiled bodies are listed separately as measurement limits and stay
 in the scoped denominator. The manifest is the authoritative machine-readable

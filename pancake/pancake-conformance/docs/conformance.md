@@ -26,10 +26,10 @@ From this repository root:
 
 ```sh
 git submodule update --init submodules/ChimpStackr
-cd pancake
+cd pancake/pancake-conformance
 uv sync --extra chimpstackr
 uv run --extra chimpstackr pancake list
-uv run --extra chimpstackr pancake run --target targets/chimpstackr.toml --gui-vm
+uv run --extra chimpstackr pancake run --target targets/chimpstackr/chimpstackr.toml --gui-vm
 ```
 
 Configure the dedicated Tart macOS VM once using [guest setup](gui-vm-setup.md).
@@ -150,7 +150,7 @@ do not certify them as correct image processing. See
 
 ```sh
 uv run --extra chimpstackr pancake run \
-  --target targets/chimpstackr.toml --gui-vm \
+  --target targets/chimpstackr/chimpstackr.toml --gui-vm \
   --record-baseline artifacts/reference-0462662
 
 uv run --extra chimpstackr pancake run \
@@ -180,7 +180,7 @@ error 0.5/255 and peak error 3/255. Exposure fusion retains its documented 8-bit
 precision and one-level repeat variation. Each frozen output stores its actual
 limits; changing them requires an explicit baseline review.
 
-Copy `targets/chimpstackr.toml` for another implementation. Set `root`, `cli`,
+Copy `targets/chimpstackr/chimpstackr.toml` for another implementation. Set `root`, `cli`,
 `gui` and `probe` to its executables, remove `adapter = "chimpstackr-python"`
 and the reference-only `coverage_scope`, update
 the declarative argument mapping and target-specific environment. Shells are
@@ -237,8 +237,8 @@ uv run --extra chimpstackr pytest --gui-vm --gui-vm-persist
 uv run --extra chimpstackr ruff check src/pancake tests
 ```
 
-These checks cover the Pancake project. Bokehforge has its own environment and
-test suite in `../bokehforge`.
+These checks cover the conformance suite. Bokehforge has its own environment and
+test suite in `../../bokehforge`.
 
 Harness tests exercise negative controls: wrong pixels, missing outputs,
 invalid configuration, process timeout, missing coverage evidence and silent

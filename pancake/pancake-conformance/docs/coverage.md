@@ -37,7 +37,7 @@ These values are observations from coverage.py on CPython 3.12, not a selected
 ## Reviewed application scope
 
 The revised coverage goal is 100% of used, reachable code for this macOS source
-target. Raw measurements remain unchanged. `targets/chimpstackr-coverage.json`
+target. Raw measurements remain unchanged. `targets/chimpstackr/chimpstackr-coverage.json`
 defines the separate `macos-source-application` scope, pinned to the complete
 source SHA256. Every exclusion names exact ranges, category, reason and evidence.
 See [scope audit](coverage-scope-audit.md) and [goal](goal.md).

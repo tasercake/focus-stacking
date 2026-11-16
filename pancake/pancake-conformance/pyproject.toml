@@ -39,7 +39,7 @@ build-backend = "uv_build"
 module-name = ["pancake"]
 
 [tool.uv.sources]
-chimpstackr = { path = "../submodules/ChimpStackr", editable = true }
+chimpstackr = { path = "../../submodules/ChimpStackr", editable = true }
 
 [dependency-groups]
 dev = [

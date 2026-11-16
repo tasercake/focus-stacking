@@ -50,7 +50,7 @@ def test_download_check_rejects_wrong_content_and_incomplete_progress(tmp_path):
 def test_service_adapter_preserves_real_semver_and_display_semantics():
     assert importlib.util.find_spec("pancake.adapters.chimpstackr_services") is not None, "Service adapter missing"
     from pancake.adapters.chimpstackr_services import dispatch
-    root = Path(__file__).resolve().parents[2] / "submodules/ChimpStackr"
+    root = Path(__file__).resolve().parents[3] / "submodules/ChimpStackr"
     sys.path.insert(0, str(root))
     try:
         arrays, values = dispatch("service.updates.version", {}, {"versions": ["v1.2.3", "2.0.0-rc1", "bad"]})

@@ -67,7 +67,7 @@ wheels = [
 
 [[package]]
 name = "chimpstackr"
-source = { editable = "../submodules/ChimpStackr" }
+source = { editable = "../../submodules/ChimpStackr" }
 dependencies = [
     { name = "imageio" },
     { name = "numba" },
@@ -324,7 +324,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13,<5" },
-    { name = "chimpstackr", marker = "extra == 'chimpstackr'", editable = "../submodules/ChimpStackr" },
+    { name = "chimpstackr", marker = "extra == 'chimpstackr'", editable = "../../submodules/ChimpStackr" },
     { name = "coverage", specifier = ">=7.17.3" },
     { name = "imagecodecs", specifier = ">=2025.3.30" },
     { name = "libarchive-c", specifier = ">=5.1,<6" },

@@ -38,7 +38,7 @@ def _parser():
         if name == "list":
             command.add_argument("--json", action="store_true")
         else:
-            command.add_argument("--target", type=Path, default=Path(__file__).resolve().parents[2] / "targets/chimpstackr.toml")
+            command.add_argument("--target", type=Path, default=Path(__file__).resolve().parents[2] / "targets/chimpstackr/chimpstackr.toml")
             command.add_argument("--output", type=Path)
             command.add_argument("--fail-fast", action="store_true", help="Stop after first failed case; reports remain explicitly incomplete")
             command.add_argument("--gui-vm", action=argparse.BooleanOptionalAction, default=False,
@@ -162,7 +162,7 @@ def main(argv=None):
                       baseline=baseline, fail_fast=args.fail_fast)
         if args.gui_vm:
             project = Path(__file__).resolve().parents[2]
-            workspace = project.parent if (project.parent / "submodules").is_dir() else project
+            workspace = next((parent for parent in project.parents if (parent / "submodules").is_dir()), project)
             results = run_vm_cases(cases, **common, workspace=workspace, project=project,
                                    visible=args.gui_vm_visible, persist=args.gui_vm_persist,
                                    coverage=coverage, provenance=provenance,
