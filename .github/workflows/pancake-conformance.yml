@@ -21,7 +21,7 @@ jobs:
         with:
           version: '0.13.8'
       - if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y xvfb openbox xdotool x11-utils dbus-x11 python3-gi gir1.2-atspi-2.0 gir1.2-gtk-3.0 at-spi2-core libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0
+        run: sudo apt-get update && sudo apt-get install -y xvfb openbox xdotool x11-utils dbus-x11 python3-gi gir1.2-atspi-2.0 gir1.2-gtk-3.0 at-spi2-core ocl-icd-libopencl1 libegl1 libopengl0 libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0
       - name: Locked runtime
         run: uv sync --locked --project pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference
       - name: Unit and adapter regressions
@@ -33,4 +33,11 @@ jobs:
       - name: Linux native GUI smoke
         if: runner.os == 'Linux'
         working-directory: pancake-conformance
-        run: uv run --locked --project src/pancake_conformance/adapters/chimpstackr_reference pytest tests/test_interface_cases.py --gui-desktop --target src/pancake_conformance/adapters/chimpstackr_reference/chimpstackr.toml
+        run: uv run --locked --project src/pancake_conformance/adapters/chimpstackr_reference pytest tests/test_interface_cases.py --basetemp artifacts/ci-smoke --gui-desktop --target src/pancake_conformance/adapters/chimpstackr_reference/chimpstackr.toml
+      - name: Retain failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance-${{ runner.os }}-diagnostics
+          path: pancake-conformance/artifacts/ci-smoke
+          if-no-files-found: ignore

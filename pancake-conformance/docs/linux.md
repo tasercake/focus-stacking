@@ -12,7 +12,7 @@ Install native desktop dependencies once:
 
 ```sh
 sudo apt-get install xvfb openbox xdotool x11-utils dbus-x11 python3-gi \
-  gir1.2-atspi-2.0 gir1.2-gtk-3.0 at-spi2-core \
+  gir1.2-atspi-2.0 gir1.2-gtk-3.0 at-spi2-core ocl-icd-libopencl1 libegl1 libopengl0 \
   libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-render-util0 libxcb-xinerama0
 ```
 

@@ -20,5 +20,17 @@ def native_case_runner(request, tmp_path):
             arguments.append("--gui-vm")
             if request.config.getoption("--gui-vm-persist"):
                 arguments.append("--gui-vm-persist")
-        assert main(arguments) == 0
+        code = main(arguments)
+        if code:
+            # CI must expose target startup errors, not just the wrapper assertion.
+            from pathlib import Path
+            import json
+            report = tmp_path / "run" / "report.json"
+            if report.exists():
+                for case in json.loads(report.read_text())["cases"]:
+                    if case.get("error"):
+                        print(case["error"])
+            for log in (tmp_path / "run").rglob("target.stderr"):
+                print(f"{Path(log).name}:\n{log.read_text()}")
+        assert code == 0
     return run
