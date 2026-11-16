@@ -4,7 +4,13 @@ Use a dedicated Tart macOS VM to keep interface input away from the host desktop
 The same native Accessibility driver runs in its logged-in Aqua session.
 CLI, algorithms, and physical-device tests stay on the host.
 
-## Provision once
+## Automatic setup
+
+`--gui-vm` provisions a missing dedicated guest automatically. See the
+[bootstrap guide](gui-vm-bootstrap.md) for installation, permissions, version
+pins, and verification. Existing custom guests retain manual configuration.
+
+## Provision a custom guest
 
 1. Install Tart on a native Apple Silicon macOS host. Create a dedicated arm64
    macOS guest; record its name in `[gui_vm]`.
@@ -22,7 +28,7 @@ name = "focus-conformance"
 ssh_user = "admin"
 guest_root = "/Users/admin/focus-conformance"
 ssh_identity = "~/.ssh/focus-conformance"
-python = "3.12.16"
+python = "3.12.14"
 ```
 
 `guest_root` must be a dedicated directory beneath that user's home. Transport

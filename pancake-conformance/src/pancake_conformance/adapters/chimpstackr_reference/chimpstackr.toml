@@ -15,12 +15,12 @@ source = "src"
 project = "."
 
 [gui_vm]
-# Reuse the provisioned reference VM/key; moving the suite does not rename them.
-name = "chimpstackr-conformance"
+# Bootstrap a dedicated managed guest; existing custom VM names remain configurable.
+name = "pancake-conformance"
 ssh_user = "admin"
 guest_root = "/Users/admin/pancake-conformance"
-ssh_identity = "~/.ssh/chimpstackr-conformance"
-python = "3.12.16"
+ssh_identity = "~/.ssh/pancake-conformance"
+python = "3.12.14"
 
 [state]
 compute_cache = "{home}/device-cache"

@@ -36,8 +36,9 @@ uv run --locked ruff check src tests
 ```
 
 Live native smoke tests require both `pytest --target PATH` and `--gui-vm`;
-otherwise they skip. Add `--gui-vm-persist` after provisioning a
-[dedicated guest](docs/gui-vm-setup.md). CLI, algorithm, and physical-device cases
+otherwise they skip. `--gui-vm` [bootstraps a missing dedicated guest](docs/gui-vm-bootstrap.md)
+automatically on Apple Silicon macOS. Add `--gui-vm-persist` to keep it running.
+Existing custom guests use the [manual setup guide](docs/gui-vm-setup.md). CLI, algorithm, and physical-device cases
 stay on the host; interface cases run in the guest. Adapter tests live beneath
 adapters and are selected explicitly with their runtime environment.
 
