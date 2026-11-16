@@ -33,19 +33,27 @@ def run_cases(cases, *, target, output, environment=None, progress=None, baselin
             start = time.monotonic()
             error = ""
             try:
-                case.run(context)
-                if baseline:
+                missing = set(case.required_capabilities) - set(target.capabilities)
+                if missing:
+                    context.note("unsupported_capabilities", sorted(missing))
+                else:
+                    case.run(context)
+                if baseline and not missing:
                     baseline.check(case.id, context.outputs, suite=case.suite,
                                    contract={key: context.notes[key] for key in ("fixtures", "requests") if key in context.notes})
             except Exception:
                 error = traceback.format_exc()
                 (context.directory / "failure.txt").write_text(error)
             context.note("artifact_directory", str(context.directory.resolve()))
-            status = "failed" if error else "pending" if context.notes.get("host_verification_pending") else "passed"
+            missing = context.notes.get("unsupported_capabilities", [])
+            reason = "Target lacks capability: " + ", ".join(missing) if missing else ""
+            status = "failed" if error else "unsupported" if missing else "pending" if context.notes.get("host_verification_pending") else "passed"
+            if missing and baseline:
+                baseline.note_unsupported(case.id, reason, suite=case.suite)
             result = CaseResult(case.id, case.suite, status,
                                 time.monotonic() - start, error, context.notes,
                                 {name: str(Path(path).resolve().relative_to(context.directory.resolve()))
-                                 for name, path in context.outputs.items()})
+                                 for name, path in context.outputs.items()}, reason=reason)
             results.append(result)
             (context.directory / "result.json").write_text(json.dumps(asdict(result), indent=2, default=str))
             write_reports(results, output, target=target, complete=False, selected_count=len(cases), status="running")

@@ -35,24 +35,18 @@ def result_row(snapshot, method_label):
 
 
 def _wait_for_result(ui, method_label):
-    ui.wait(lambda snap: f'{method_label} result' in str(_node(snap, 'status').get('value', ''))
+    ui.wait(lambda snap: ui.observe('selected_result_method', snap) == method_label
             and _node(snap, 'export.start').get('enabled'),
             description=f'retained {method_label} result selected')
 
 
 def _select_result(ui, method_label):
-    row = result_row(ui.snapshot(), method_label)
-    ui.click({'path': row['path']})
+    ui.action('results.select.' + method_label)
     _wait_for_result(ui, method_label)
 
 
 def _select_older_result(ui, current_label, older_label):
-    # An Accessibility provider can retain an unreadable proxy after row insertion.
-    # Focus the readable current row and use normal list keyboard navigation;
-    # the selected method and exact exported pixels remain the postconditions.
-    _select_result(ui, current_label)
-    ui.key('down')
-    _wait_for_result(ui, older_label)
+    _select_result(ui, older_label)
 
 
 def validate_retained_exports(first, second, restored, expected_shape):
@@ -70,21 +64,21 @@ def validate_retained_exports(first, second, restored, expected_shape):
 def _retained_results(ctx):
     fixture = ctx.fixture('translation')
     with ctx.open_ui(paths=fixture.paths) as ui:
-        _prepare(ui, 'weighted_average', 'Shift + rotation')
+        _prepare(ui, 'weighted_average', 'euclidean')
         ui.click('autocrop', physical=False)
         ui.wait(lambda snap: _node(snap, 'autocrop').get('value') == 1,
                 description='first-result crop enabled')
         _stack(ui)
-        ui.wait(lambda snap: len(result_rows(snap)) == 1, description='first retained result')
+        ui.wait(lambda snap: ui.observe("result_count", snap) == 1, description='first retained result')
         first = _export(ui, ctx.directory / 'retained-before.tif')
         ctx.record_output(first, 'retained-before')
-        _prepare(ui, 'hybrid', 'Off')
+        _prepare(ui, 'hybrid', 'off')
         _stack(ui)
-        _wait_for_result(ui, 'Hybrid')
-        _select_result(ui, 'Hybrid')
+        _wait_for_result(ui, 'hybrid')
+        _select_result(ui, 'hybrid')
         second = _export(ui, ctx.directory / 'replacement.tif')
         ctx.record_output(second, 'replacement')
-        _select_older_result(ui, 'Hybrid', 'Weighted Average')
+        _select_older_result(ui, 'hybrid', 'weighted_average')
         restored = _export(ui, ctx.directory / 'retained-after.tif')
         ctx.record_output(restored, 'retained-after')
         ctx.note('retained_results', validate_retained_exports(first, second, restored, fixture.shape))
@@ -104,16 +98,16 @@ def _unicode_paths(ctx):
     with ctx.open_ui() as ui:
         # Establish alignment before native file panels can leave stale AX row proxies.
         # _prepare still verifies this selection after import, before stacking.
-        ui.select('alignment', 'Off')
+        ui.select('alignment', 'off')
         ui.click('import.files')
         ui.wait(lambda snap: _has(snap, 'open-panel'), description='native Unicode file import')
         ui.choose_file(paths[0])
-        ui.wait(lambda snap: len(_frame_rows(snap)) == 1, description='Unicode-named source imported')
-        _menu(ui, 'Add Folder…')
+        ui.wait(lambda snap: ui.observe("frame_count", snap) == 1, description='Unicode-named source imported')
+        _menu(ui, 'import.folder')
         ui.wait(lambda snap: _has(snap, 'open-panel'), description='native Unicode folder import')
         ui.navigate_folder(folder)
         ui.click('OKButton', physical=False)
-        ui.wait(lambda snap: len(_frame_rows(snap)) == len(paths), description='Unicode folder deduplicated and imported')
+        ui.wait(lambda snap: ui.observe("frame_count", snap) == len(paths), description='Unicode folder deduplicated and imported')
         _prepare(ui, 'hybrid')
         _stack(ui)
         output = _export(ui, ctx.directory / UNICODE_EXPORT_NAME)

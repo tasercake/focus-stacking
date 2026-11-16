@@ -401,7 +401,7 @@ def open_session(command, *, cwd, env, directory, paths=(), settings_id="default
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         environment = dict(env)
-        environment["CF_UI_SETTINGS_DIR"] = str(directory.parent / "ui-settings" / settings_id)
+        environment["CONFORMANCE_UI_SETTINGS_DIR"] = str(directory.parent / "ui-settings" / settings_id)
         stdout = (directory / "target.stdout").open("w")
         stderr = (directory / "target.stderr").open("w")
         process = subprocess.Popen([*map(str, command), *map(str, paths)], cwd=cwd, env=environment,

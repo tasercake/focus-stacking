@@ -21,6 +21,7 @@ class TargetSpec:
     probe: tuple[str, ...] = ()
     services: dict = field(default_factory=dict)
     coverage_scope: Path | None = None
+    ui: dict = field(default_factory=dict)
 
     @classmethod
     def load(cls, path):
@@ -42,7 +43,7 @@ class TargetSpec:
                    data.get("adapter", ""), data.get("env", {}), data.get("stack", {}),
                    tuple(data.get("capabilities", [])), path, data.get("gui_vm", {}),
                    data.get("state", {}), tuple(data.get("probe", [])), data.get("services", {}),
-                   (path.parent / data["coverage_scope"]).resolve() if data.get("coverage_scope") else None)
+                   (path.parent / data["coverage_scope"]).resolve() if data.get("coverage_scope") else None, data.get("ui", {}))
 
     def with_commands(self, *, cli=None, gui=None):
         for command in (cli, gui):

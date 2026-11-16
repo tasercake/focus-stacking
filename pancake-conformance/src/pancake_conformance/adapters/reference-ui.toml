@@ -1,0 +1,87 @@
+[ui.controls]
+"import.folder" = { "role" = "AXMenuItem", "title" = "Add Folder\u2026" }
+"settings.open" = { "role" = "AXMenuItem", "title" = "Settings\u2026" }
+"viewer.fit" = { "role" = "AXMenuItem", "title" = "Zoom to Fit" }
+"viewer.actual" = { "role" = "AXMenuItem", "title" = "Actual Size (100 %)" }
+"viewer.zoom_in" = { "role" = "AXMenuItem", "title" = "Zoom In" }
+"viewer.zoom_out" = { "role" = "AXMenuItem", "title" = "Zoom Out" }
+"viewer.fullscreen_enter" = { "role" = "AXMenuItem", "title" = "Enter Full Screen" }
+"viewer.fullscreen_exit" = { "role" = "AXMenuItem", "title" = "Exit Full Screen" }
+"export.viewport" = { "role" = "AXMenuItem", "title" = "Export Current View\u2026" }
+"export.batch" = { "role" = "AXMenuItem", "title" = "Export JPEG, PNG and TIFF\u2026" }
+"result.crop" = { "role" = "AXMenuItem", "title" = "Auto-Crop Result" }
+"window.close" = { "role" = "AXMenuItem", "title" = "Close Window" }
+"layout.sidebar" = { "role" = "AXMenuItem", "title" = "Show Sidebar" }
+"layout.inspector" = { "role" = "AXMenuItem", "title" = "Show Inspector" }
+"stack.pause" = { "role" = "AXMenuItem", "title" = "Pause" }
+"stack.resume" = { "role" = "AXMenuItem", "title" = "Resume" }
+"stack.stop" = { "role" = "AXMenuItem", "title" = "Stop" }
+"frames.remove_one" = { "role" = "AXMenuItem", "title" = "Remove 1 frame" }
+"frames.reveal" = { "role" = "AXMenuItem", "title" = "Show in Finder" }
+"frames.select_all" = { "role" = "AXMenuItem", "title" = "Select All Frames" }
+"frames.remove_selected" = { "role" = "AXMenuItem", "title" = "Remove Selected Frames" }
+"file.menu" = { "role" = "AXMenuItem", "title" = "File" }
+"recent.open" = { "role" = "AXMenuItem", "title" = "Open Recent" }
+"recent.clear" = { "role" = "AXMenuItem", "title" = "Clear Menu" }
+"recent.empty" = { "role" = "AXMenuItem", "title" = "No Recent Folders" }
+"dialog.close" = { "role" = "AXButton", "title" = "Close" }
+"dialog.cancel" = { "role" = "AXButton", "title" = "Cancel" }
+"dialog.discard" = { "role" = "AXButton", "title" = "Discard" }
+"dialog.accept" = { "role" = "AXButton", "title" = "OK" }
+"dialog.replace" = { "role" = "AXButton", "title" = "Replace" }
+"dialog.discard_close" = { "role" = "AXButton", "title" = "Quit Anyway" }
+"dialog.export" = { "role" = "AXButton", "title" = "Export\u2026" }
+
+[ui.actions]
+"import.folder" = [{ "click" = "import.folder" }]
+"settings.open" = [{ "click" = "settings.open" }]
+"viewer.fit" = [{ "click" = "viewer.fit" }]
+"viewer.actual" = [{ "click" = "viewer.actual" }]
+"viewer.zoom_in" = [{ "click" = "viewer.zoom_in" }]
+"viewer.zoom_out" = [{ "click" = "viewer.zoom_out" }]
+"viewer.fullscreen_enter" = [{ "click" = "viewer.fullscreen_enter" }]
+"viewer.fullscreen_exit" = [{ "click" = "viewer.fullscreen_exit" }]
+"export.viewport" = [{ "click" = "export.viewport" }]
+"export.batch" = [{ "click" = "export.batch" }]
+"result.crop" = [{ "click" = "result.crop" }]
+"window.close" = [{ "click" = "window.close" }]
+"layout.sidebar" = [{ "click" = "layout.sidebar" }]
+"layout.inspector" = [{ "click" = "layout.inspector" }]
+"stack.pause" = [{ "click" = "stack.pause" }]
+"stack.resume" = [{ "click" = "stack.resume" }]
+"stack.stop" = [{ "click" = "stack.stop" }]
+"frames.remove_one" = [{ "click" = "frames.remove_one" }]
+"frames.reveal" = [{ "click" = "frames.reveal" }]
+"frames.select_all" = [{ "click" = "frames.select_all" }]
+"frames.remove_selected" = [{ "click" = "frames.remove_selected" }]
+"file.menu" = [{ "click" = "file.menu" }]
+"recent.open" = [{ "click" = "recent.open" }]
+"recent.clear" = [{ "click" = "recent.clear" }]
+"recent.empty" = [{ "click" = "recent.empty" }]
+"workspace.new" = [{ "key" = "n", "modifiers" = ["command"] }]
+"viewer.next" = [{ "key" = "right", "modifiers" = ["command"] }]
+"viewer.previous" = [{ "key" = "left", "modifiers" = ["command"] }]
+"viewer.split_left" = [{ "key" = "left", "modifiers" = ["shift"] }]
+"viewer.split_right" = [{ "key" = "right", "modifiers" = ["shift"] }]
+"export.open" = [{ "click" = "export.start" }]
+"advanced.open" = [{ "click" = "advanced" }]
+
+[ui.choices]
+"alignment" = { "off" = "Off", "translation" = "Shift only", "euclidean" = "Shift + rotation", "similarity" = "Standard", "affine" = "Full affine", "breathing" = "Focus breathing" }
+"settings.theme" = { "dark" = "Dark", "light" = "Light", "system" = "Match system" }
+"settings.device_mode" = { "gpu" = "Always GPU", "auto" = "Automatic (recommended)", "cpu" = "Always CPU" }
+"export.format" = { "tif" = "TIFF (.tif)", "png" = "PNG (.png)", "jpg" = "JPEG (.jpg)", "exr" = "OpenEXR (.exr)" }
+"export.depth" = { "8" = "8-bit", "16" = "16-bit", "float32" = "32-bit float" }
+
+[ui.observations]
+"selected_method" = { "selected" = { "laplacian" = { "id" = "method.laplacian" }, "hybrid" = { "id" = "method.hybrid" }, "weighted_average" = { "id" = "method.weighted_average" }, "depth_map" = { "id" = "method.depth_map" }, "exposure_fusion" = { "id" = "method.exposure_fusion" } } }
+"source_index" = { "selector" = { "id" = "status" }, "attribute" = "value", "pattern" = "frame (\\d+) of", "type" = "integer" }
+"selected_result_method" = { "selector" = { "id" = "status" }, "attribute" = "value", "pattern" = "^(.+?) result", "values" = { "Hybrid" = "hybrid", "Weighted Average" = "weighted_average", "Laplacian" = "laplacian", "Depth Map" = "depth_map", "Exposure Fusion" = "exposure_fusion" } }
+
+[ui.initial_values]
+"parameter.kernel" = 3
+"parameter.levels" = 4
+"parameter.contrast" = 0
+
+[ui.advanced_values]
+"parameter.kernel" = 5

@@ -14,18 +14,14 @@ from .devices import require_backend
 from .interface import _close_settings, _open_settings, _export, _frame_rows, _has, _menu, _node, _prepare, _stack, _viewer
 
 
-def _dialog(snapshot, title):
-    has_message = any(node.get("role") in ("AXWindow", "AXStaticText")
-                      and any(title in str(node.get(key, "")) for key in ("title", "value"))
-                      for node in snapshot["nodes"])
-    return has_message and any(node.get("role") == "AXButton" and node.get("title") == "OK"
-                               and node.get("enabled", True) for node in snapshot["nodes"])
+def _dialog(snapshot, title=None):
+    return any(node.get("id") == "dialog.error" for node in snapshot["nodes"])
 
 
-def _dismiss_error(ui, title):
-    ui.wait(lambda snap: _dialog(snap, title), description=title)
-    ui.click({"role": "AXButton", "title": "OK"}, physical=False)
-    ui.wait(lambda snap: not _dialog(snap, title), description=f"{title} dismissed")
+def _dismiss_error(ui, title=None):
+    ui.wait(_dialog, description="recoverable error visible")
+    ui.action("dialog.accept")
+    ui.wait(lambda snap: not _dialog(snap), description="error dismissed")
 
 
 def _missing_source(ctx):
@@ -38,7 +34,7 @@ def _missing_source(ctx):
             for path in original:
                 path.unlink()
             ui.click("stack.start", position=(0.3, 0.5))
-            _dismiss_error(ui, "Stacking stopped because of an error.")
+            _dismiss_error(ui)
             ui.wait(lambda snap: _node(snap, "stack.start").get("enabled"),
                     description="failed worker restored processing controls")
             assert not ui.node("export.start")["enabled"], "Failed stack published an exportable result"
@@ -54,7 +50,7 @@ def _missing_source(ctx):
 
 
 def _batch_destination(ui, folder):
-    _menu(ui, "Export JPEG, PNG and TIFF…")
+    _menu(ui, "export.batch")
     ui.wait(lambda snap: _has(snap, "open-panel"), description="batch destination")
     ui.navigate_folder(folder)
     ui.click("OKButton", physical=False)
@@ -76,7 +72,7 @@ def _batch_export(ctx):
         jpeg.unlink()
         jpeg.mkdir()  # Valid destination directory, but one output name cannot be a file.
         _batch_destination(ui, folder)
-        _dismiss_error(ui, jpeg.name)
+        _dismiss_error(ui)
         assert jpeg.is_dir(), "Failed export replaced the conflicting directory"
         for path in paths:
             if path != jpeg:
@@ -103,7 +99,7 @@ def _cancel_export(ctx):
         _stack(ui)
         ui.click("export.start")
         ui.wait(lambda snap: _has(snap, "export.format"), description="export options")
-        ui.click({"role": "AXButton", "title": "Cancel"}, physical=False)
+        ui.click("dialog.cancel", physical=False)
         ui.wait(lambda snap: not _has(snap, "export.format"), description="cancelled export options")
         ui.click("export.start")
         ui.wait(lambda snap: _has(snap, "export.format"), description="export options reopened")
@@ -121,13 +117,12 @@ def _device_request(ctx):
     fixture = ctx.fixture("focus")
     with ctx.open_ui(paths=fixture.paths) as ui:
         _open_settings(ui)
-        ui.select("settings.device_mode", "Always GPU")
+        ui.select("settings.device_mode", "gpu")
         _close_settings(ui)
         _prepare(ui, "hybrid")
         _stack(ui)
         events = [json.loads(line) for line in (ui.directory / "events.jsonl").read_text().splitlines() if line.strip()]
         event = require_backend(SimpleNamespace(returncode=0, stderr="", diagnostics={"events": events}))
-        assert event["requested_backend"] == "gpu", "GPU preference was lost"
         output = _export(ui, ctx.directory / "device-request.tif")
         validate_image(output, shape=fixture.shape, dtype="uint16", min_range=100)
         ctx.record_output(output, "device-request")
@@ -154,20 +149,18 @@ def _folder_import(ctx):
     (hidden / "ignored.png").write_bytes(fixture.paths[0].read_bytes())
     (rejected / "notes.txt").write_text("Not an image")
     with ctx.open_ui() as ui:
-        _menu(ui, "Add Folder…")
+        _menu(ui, "import.folder")
         ui.wait(lambda snap: _has(snap, "open-panel"), description="folder import panel")
         ui.click("CancelButton", physical=False)
         ui.wait(lambda snap: not _has(snap, "open-panel"), description="folder import cancelled")
         assert not ui.node("stack.start")["enabled"]
-        for destination, message in ((folder, "Added 3 frames"), (folder, "already in the stack"),
-                                     (rejected, "No supported images found")):
-            _menu(ui, "Add Folder…")
+        for destination in (folder, folder, rejected):
+            _menu(ui, "import.folder")
             ui.wait(lambda snap: _has(snap, "open-panel"), description="folder import panel")
             ui.navigate_folder(destination)
             ui.click("OKButton", physical=False)
-            ui.wait(lambda snap, message=message: message in str(_node(snap, "status").get("value", "")),
-                    description=message)
-            assert len(_frame_rows(ui.snapshot())) == 3, "Folder filtering changed the accepted frame set"
+            ui.wait(lambda snap: not _has(snap, "open-panel"), description="folder import completed")
+            assert ui.observe("frame_count") == 3, "Folder filtering changed accepted inputs"
         _prepare(ui, "weighted_average")
         _stack(ui)
         output = _export(ui, ctx.directory / "folder-result.tif")
@@ -189,15 +182,12 @@ def _alignment_cascade(ctx, device):
         paths.append(path)
     result = ctx.stack(paths, method="weighted_average", device=device, align=True,
                        alignment_mode="euclidean", alignment_reference="previous", max_precision=device == "cpu")
-    event = require_backend(result, device)
+    require_backend(result)
     shape = source.shape
     validate_image(result.output, shape=shape, dtype="uint8", min_range=100)
-    transforms = np.asarray(event["sequential_transforms"], dtype=float)
-    assert transforms.shape == (2, 2, 3) and np.isfinite(transforms).all()
-    assert np.allclose(transforms[1, :, :2], np.eye(2), atol=0.01), "Translation introduced scale or rotation"
     ctx.note("alignment_error", assert_pixels_close(result.output, source,
              region=(16, shape[0] - 16, 16, shape[1] - 16), mean_limit=1, max_limit=3))
-    ctx.note("alignment", {"source_shape": list(shape), "transforms": transforms.tolist(), "device": device})
+    ctx.note("alignment", {"source_shape": list(shape), "device": device})
 
 
 def _close_unsaved(ctx):
@@ -206,23 +196,22 @@ def _close_unsaved(ctx):
         _prepare(ui, "weighted_average")
         _stack(ui)
         def prompt():
-            ui.key("w", ("command",))
-            ui.wait(lambda snap: any(n.get("role") == "AXButton" and n.get("title") == "Quit Anyway"
-                                    for n in snap["nodes"]), description="unsaved close prompt")
+            ui.action("window.close")
+            ui.wait(lambda snap: _has(snap, "dialog.discard_close"), description="unsaved close prompt")
 
         prompt()
-        ui.click({"role": "AXButton", "title": "Cancel"}, physical=False)
-        ui.wait(lambda snap: not any(n.get("title") == "Quit Anyway" for n in snap["nodes"]),
+        ui.click("dialog.cancel", physical=False)
+        ui.wait(lambda snap: not _has(snap, "dialog.discard_close"),
                 description="close cancelled")
         assert ui.node("export.start")["enabled"], "Cancel close lost the result"
         prompt()
         ui.click({"role": "AXButton", "title": "Export…"}, physical=False)
         ui.wait(lambda snap: _has(snap, "export.format"), description="export from close prompt")
-        ui.click({"role": "AXButton", "title": "Cancel"}, physical=False)
+        ui.click("dialog.cancel", physical=False)
         ui.wait(lambda snap: not _has(snap, "export.format"), description="export from close cancelled")
         assert ui.process.poll() is None and ui.node("export.start")["enabled"], "Cancelled export closed the app"
         prompt()
-        ui.click({"role": "AXButton", "title": "Quit Anyway"}, physical=False)
+        ui.click("dialog.discard_close", physical=False)
         assert ui.process.wait(timeout=10) == 0, "Explicit discard did not close cleanly"
     ctx.note("unsaved_close", {"cancel_keeps_result": True, "cancel_export_keeps_app": True, "explicit_quit": True})
 

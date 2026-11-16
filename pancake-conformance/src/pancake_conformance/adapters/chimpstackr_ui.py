@@ -181,7 +181,7 @@ def install_worker_observers():
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target-root", type=Path, default=os.environ.get("CHIMPSTACKR_CONFORMANCE_TARGET_ROOT"), required=not bool(os.environ.get("CHIMPSTACKR_CONFORMANCE_TARGET_ROOT")))
-    parser.add_argument("--settings-root", type=Path, default=os.environ.get("CF_UI_SETTINGS_DIR"), required=not bool(os.environ.get("CF_UI_SETTINGS_DIR")))
+    parser.add_argument("--settings-root", type=Path, default=os.environ.get("CONFORMANCE_UI_SETTINGS_DIR") or os.environ.get("CF_UI_SETTINGS_DIR"), required=not bool(os.environ.get("CONFORMANCE_UI_SETTINGS_DIR") or os.environ.get("CF_UI_SETTINGS_DIR")))
     parser.add_argument("--initial-settings", default=os.environ.get("CF_UI_INITIAL_SETTINGS", "{}"), help="Initial user preference JSON; existing values persist")
     parser.add_argument("paths", nargs="*")
     args = parser.parse_args(argv)

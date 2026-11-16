@@ -150,7 +150,7 @@ class CaseContext:
         paths = fixture_or_paths.paths if hasattr(fixture_or_paths, "paths") else fixture_or_paths
         output_format = options.pop("output_format", "png")
         output = self.directory / f"output-{self._calls + 1:02d}.{output_format}"
-        defaults = {"device": "cpu", "kernel_size": 3, "pyramid_levels": 4, "scale_factor": 6}
+        defaults = dict(self.target.stack.get("defaults", {}))
         defaults.update(options)
         inputs = []
         for path in paths:
@@ -170,11 +170,13 @@ class CaseContext:
 
     def open_ui(self, paths=(), settings_id="default", service_endpoints=None):
         from .macos_ui import open_session
+        from .ui import SemanticUI
         directory = self._call_dir()
         env = self.environment(directory)
         for name, endpoint in (service_endpoints or {}).items():
             if name not in self.target.services:
                 raise ValueError(f"target has no configured service endpoint: {name}")
             env[self.target.services[name]] = str(endpoint)
-        return open_session(self.target.command("gui"), cwd=self.target.root, env=env,
-                            directory=directory, paths=paths, settings_id=settings_id)
+        native = open_session(self.target.command("gui"), cwd=self.target.root, env=env,
+                              directory=directory, paths=paths, settings_id=settings_id)
+        return SemanticUI(native, self.target.ui)
