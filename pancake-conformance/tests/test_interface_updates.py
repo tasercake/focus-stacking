@@ -17,5 +17,5 @@ def test_release_fixture_uses_canonical_http_payload_and_future_version():
 def test_native_dialog_contract_accepts_window_title_and_rendered_message():
     from pancake_conformance.cases.interface_updates import dialog_present, current_message
     assert dialog_present({"nodes": [{"role": "AXWindow", "title": "Software Update"}]})
-    assert current_message({"nodes": [{"role": "AXStaticText", "value": "ChimpStackr 1.2.3 is the newest version."}]})
+    assert current_message({"nodes": [{"role": "AXStaticText", "value": "ExampleStacker 1.2.3 is the newest version."}]})
     assert not current_message({"nodes": [{"role": "AXStaticText", "value": "Checking for updates…"}]})

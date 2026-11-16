@@ -105,12 +105,13 @@ def _check(ctx, server, **options):
 
 
 def _release_policy(ctx):
+    asset_name = ctx.target.fixtures.get("native_update_asset", "FocusStacker-macOS.dmg")
     feeds = [
         _release("v10.0.0", draft=True),
         _release("v3.0.0-rc1", prerelease=True, name="Preview", body="Preview notes"),
         _release("unparseable"),
         _release("v2.0.0", name="Stable", body="Release notes", html_url="https://example.invalid/release",
-                 assets=[{"name": "ChimpStackr-macOS.dmg", "browser_download_url": "https://example.invalid/mac", "size": 17,
+                 assets=[{"name": asset_name, "browser_download_url": "https://example.invalid/mac", "size": 17,
                           "digest": "sha256:" + "a" * 64},
                          {"name": "readme.txt", "browser_download_url": "https://example.invalid/readme", "digest": "md5:abc"}]),
     ]

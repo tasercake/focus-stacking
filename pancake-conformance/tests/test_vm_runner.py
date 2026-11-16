@@ -74,9 +74,9 @@ def test_missing_vm_fails_before_any_host_case(tmp_path):
 
 def test_gui_vm_flags_have_safe_defaults():
     from pancake_conformance.cli import _parser
-    args = _parser().parse_args(["run", "--gui-vm"])
+    args = _parser().parse_args(["run", "--target", "target.toml", "--gui-vm"])
     assert args.gui_vm is True and args.gui_vm_visible is False and args.gui_vm_persist is False
-    assert _parser().parse_args(["run", "--no-gui-vm"]).gui_vm is False
+    assert _parser().parse_args(["run", "--target", "target.toml", "--no-gui-vm"]).gui_vm is False
 
 
 def test_unsupported_only_cli_reports_zero_coverage_without_running_target(tmp_path, monkeypatch):
@@ -85,7 +85,7 @@ def test_unsupported_only_cli_reports_zero_coverage_without_running_target(tmp_p
     (tmp_path / "src/app.py").write_text("value = 1\n")
     descriptor = tmp_path / "target.toml"
     descriptor.write_text('schema_version=1\nname="example"\nroot="."\ncli=["unused"]\n'
-                          'gui=["unused"]\nadapter="chimpstackr-python"\n[gui_vm]\nname="test"\n')
+                          'gui=["unused"]\n[instrumentation]\nsource="src"\n[gui_vm]\nname="test"\n')
     class VM:
         def __init__(self, *args, **kwargs):
             pass

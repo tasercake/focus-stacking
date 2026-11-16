@@ -15,7 +15,7 @@ def test_vm_dispatch_preserves_workspace_for_nested_suite(tmp_path, monkeypatch,
 
     workspace = tmp_path / "workspace"
     project = workspace / project_path
-    (workspace / "submodules/ChimpStackr").mkdir(parents=True)
+    (workspace / "submodules/ExampleStacker").mkdir(parents=True)
     (project / "src/pancake_conformance").mkdir(parents=True)
     descriptor = project / "target.toml"
     descriptor.write_text('schema_version=1\nname="example"\nroot="."\ncli=["unused"]\n')
@@ -43,7 +43,7 @@ def test_single_entrypoint_lists_machine_readable_cases(capsys):
 
 
 def test_entrypoint_rejects_empty_selection(tmp_path, capsys):
-    assert main(["run", "--case", "does-not-exist", "--output", str(tmp_path / "run")]) == 2
+    assert main(["run", "--target", "unused.toml", "--case", "does-not-exist", "--output", str(tmp_path / "run")]) == 2
     assert "no cases" in capsys.readouterr().err
 
 

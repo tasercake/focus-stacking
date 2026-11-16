@@ -1,8 +1,6 @@
 """Service fixture and adapter contracts use real files and local HTTP."""
 import hashlib
 import importlib.util
-import sys
-from pathlib import Path
 from types import SimpleNamespace
 import urllib.error
 import urllib.request
@@ -47,21 +45,6 @@ def test_download_check_rejects_wrong_content_and_incomplete_progress(tmp_path):
         services().assert_download(result, payload)
 
 
-def test_service_adapter_preserves_real_semver_and_display_semantics():
-    assert importlib.util.find_spec("pancake_conformance.adapters.chimpstackr_services") is not None, "Service adapter missing"
-    from pancake_conformance.adapters.chimpstackr_services import dispatch
-    root = Path(__file__).resolve().parents[3] / "submodules/ChimpStackr"
-    sys.path.insert(0, str(root))
-    try:
-        arrays, values = dispatch("service.updates.version", {}, {"versions": ["v1.2.3", "2.0.0-rc1", "bad"]})
-    finally:
-        sys.path.remove(str(root))
-    assert arrays == {}
-    versions = values["versions"]
-    assert versions[0]["version"] == {"major": 1, "minor": 2, "patch": 3, "prerelease": False, "commits": 0}
-    assert versions[1]["version"]["prerelease"] is True
-    assert versions[2]["version"] is None
-    assert versions[0]["display"] == "1.2.3"
 
 
 def test_service_catalog_covers_policy_network_integrity_and_source_install():

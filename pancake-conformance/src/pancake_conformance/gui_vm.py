@@ -111,9 +111,9 @@ finally:
             child.wait()
     output.mkdir(parents=True, exist_ok=True)
     try:
-        if payload.get("adapter") == "chimpstackr-python":
+        if payload.get("coverage_source"):
             from pancake_conformance.coverage import source_provenance
-            manifest = source_provenance(payload["source_root"], target_commit=payload["target_commit"])
+            manifest = source_provenance(payload["coverage_source"], target_commit=payload["target_commit"])
         else:
             manifest = {"schema_version": 1, "target_commit": payload["target_commit"],
                         "source_bundle_sha256": payload["source_bundle_sha256"], "adapter": payload.get("adapter", "")}
@@ -150,6 +150,8 @@ class TartGuiVM:
         if not self.project.is_relative_to(self.workspace):
             raise ValueError("VM suite project must be inside the project workspace")
         self.guest_project = str(guest / self.project.relative_to(self.workspace))
+        self.guest_runtime = self.guest_project
+        self._coverage_source = None
         self.output = Path(output).resolve()
         self.output.mkdir(parents=True, exist_ok=True)
         self.visible, self.persist = bool(visible), bool(persist)
@@ -319,6 +321,7 @@ class TartGuiVM:
         self._prepared = True
 
     def _source_archive(self, target_path):
+        from .source_files import source_files
         target_path = Path(target_path).resolve()
         if not target_path.is_relative_to(self.workspace):
             raise ValueError("VM target descriptor must be inside the project workspace")
@@ -327,16 +330,8 @@ class TartGuiVM:
         if not target_root.is_relative_to(self.workspace):
             raise ValueError("VM target source must be inside the project workspace")
         repositories = [(target_root, "target")]
-        project = tomllib.loads((self.project / "pyproject.toml").read_text())
-        source = project.get("tool", {}).get("uv", {}).get("sources", {}).get("chimpstackr", {})
-        if source.get("path"):
-            reference = (self.project / source["path"]).resolve()
-            if not reference.is_relative_to(self.workspace):
-                raise ValueError("VM reference source must be inside the project workspace")
-            if reference.is_dir() and reference != target_root:
-                repositories.append((reference, "reference"))
         files = [self.project / name for name in ("pyproject.toml", "uv.lock", "README.md", ".python-version")]
-        files.extend(path for path in (self.project / "src").rglob("*") if path.is_file() and "__pycache__" not in path.parts and path.suffix != ".pyc")
+        files.extend(source_files(self.project / "src"))
         files.extend(path for path in (self.project / "targets").rglob("*") if path.is_file())
         self._repositories = []
         for repository, label in repositories:
@@ -354,6 +349,8 @@ class TartGuiVM:
                                        "local_bundle": bundle})
         pin = self._repositories[0]["commit"]
         files.append(target_path)
+        runtime = self._runtime_project(target_path)
+        files.extend(runtime / name for name in ("pyproject.toml", "uv.lock", ".python-version"))
         archive_path = self.output / "workspace.tar"
         digest = hashlib.sha256()
         with tarfile.open(archive_path, "w") as archive:
@@ -377,7 +374,17 @@ class TartGuiVM:
                     archive.addfile(member, source)
         return archive_path, target_path.relative_to(self.workspace).as_posix(), target_root.relative_to(self.workspace).as_posix(), pin, digest.hexdigest()
 
+    def _runtime_project(self, target_path):
+        path = Path(target_path).resolve()
+        data = tomllib.loads(path.read_text())
+        project = (path.parent / data["runtime"]["project"]).resolve() if data.get("runtime", {}).get("project") is not None else self.project
+        if not project.is_relative_to(self.workspace):
+            raise ValueError("VM runtime project must be inside the project workspace")
+        return project
+
     def _sync_workspace(self, target_path):
+        runtime = self._runtime_project(target_path)
+        self.guest_runtime = str(PurePosixPath(self.guest_root) / runtime.relative_to(self.workspace))
         archive, descriptor, target_relative, pin, digest = self._source_archive(target_path)
         root = shlex.quote(self.guest_root)
         # Remove only suite-owned source directories; preserve the VM and its venv.
@@ -401,11 +408,19 @@ class TartGuiVM:
             ]
             for command in commands:
                 self._ssh(shlex.join(command), timeout=180)
-        self._adapter = tomllib.loads(Path(target_path).read_text()).get("adapter", "")
+        data = tomllib.loads(Path(target_path).read_text())
+        self._adapter = data.get("adapter", "")
+        source = data.get("instrumentation", {}).get("source")
+        if source:
+            local_source = ((Path(target_path).resolve().parent / data["root"]).resolve() / source).resolve()
+            if not local_source.is_relative_to(self.workspace):
+                raise ValueError("VM instrumentation source must be inside the project workspace")
+            self._coverage_source = str(PurePosixPath(self.guest_root) / local_source.relative_to(self.workspace))
+        else:
+            self._coverage_source = None
         self._bundle_digest = digest
-        extra = " --extra chimpstackr" if self._adapter == "chimpstackr-python" else ""
         interpreter = " --python " + shlex.quote(str(self.config["python"])) if self.config.get("python") else ""
-        self._ssh(f"cd {shlex.quote(self.guest_project)} && PATH={shlex.quote(self.guest_path)} uv sync --locked{interpreter}{extra}", timeout=600)
+        self._ssh(f"cd {shlex.quote(self.guest_runtime)} && PATH={shlex.quote(self.guest_path)} uv sync --locked{interpreter}", timeout=600)
         metadata = {"name": self.name, "guest_root": self.guest_root, "target_commit": pin,
                     "source_bundle_sha256": digest, "visible": self.visible, "persist": self.persist,
                     "python": self.config.get("python")}
@@ -413,7 +428,7 @@ class TartGuiVM:
         return descriptor, target, pin
 
     def _guest_command(self, case_ids, descriptor, *, coverage, fail_fast, cli_command=None, gui_command=None):
-        command = [self.guest_project + "/.venv/bin/pancake-conformance", "run", "--no-gui-vm",
+        command = [self.guest_runtime + "/.venv/bin/pancake-conformance", "run", "--no-gui-vm",
                    "--target", str(PurePosixPath(self.guest_root) / descriptor), "--output", self.guest_output,
                    "--coverage" if coverage else "--no-coverage"]
         if fail_fast:
@@ -446,10 +461,11 @@ class TartGuiVM:
         self._write_guest(job + "/job.py", _GUEST_JOB)
         payload = {"command": command, "workspace": self.guest_project, "output": self.guest_output,
                    "job": job, "source_root": target + "/src", "target_commit": pin, "path": self.guest_path,
-                   "adapter": self._adapter, "source_bundle_sha256": self._bundle_digest}
+                   "adapter": self._adapter, "coverage_source": self._coverage_source,
+                   "source_bundle_sha256": self._bundle_digest}
         self._write_guest(job + "/job.json", json.dumps(payload))
         self._job_label = "me.pancake-conformance." + self.run_id
-        plist = {"Label": self._job_label, "ProgramArguments": [self.guest_project + "/.venv/bin/python", job + "/job.py", job + "/job.json"],
+        plist = {"Label": self._job_label, "ProgramArguments": [self.guest_runtime + "/.venv/bin/python", job + "/job.py", job + "/job.json"],
                  "WorkingDirectory": self.guest_project, "RunAtLoad": True, "KeepAlive": False,
                  "LimitLoadToSessionType": "Aqua", "ProcessType": "Interactive",
                  "EnvironmentVariables": {"PATH": self.guest_path, "PANCAKE_CONFORMANCE_VM_GUEST": "1"},
@@ -519,7 +535,7 @@ class TartGuiVM:
             raise RuntimeError(f"GUI VM suite failed before a valid report; inspect {artifacts}")
         report = json.loads(report_path.read_text())
         manifest = json.loads((artifacts / "vm-source.json").read_text())
-        return VMRun(report, artifacts, int(status["returncode"]), self.guest_output, target + "/src", manifest)
+        return VMRun(report, artifacts, int(status["returncode"]), self.guest_output, (self._coverage_source or target + "/src"), manifest)
 
     def _stop_job(self):
         if self._job_label and self._ip and self._uid:

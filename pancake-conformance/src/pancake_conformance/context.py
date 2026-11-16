@@ -67,10 +67,9 @@ class CaseContext:
             env[key] = value
         env["CONFORMANCE_EVENTS_PATH"] = str(call_dir / "events.jsonl")
         # Observation hooks are reference-specific. Scenarios never depend on Python instrumentation.
-        if self.target.adapter == "chimpstackr-python":
-            from .adapters.chimpstackr import ChimpStackrAdapter
-            adapter = ChimpStackrAdapter(self.target.root, __import__("sys").executable)
-            env = adapter.environment(env, events_path=call_dir / "events.jsonl")
+        hooks = self.target.adapter_hooks()
+        if hooks is not None and hasattr(hooks, "environment"):
+            env = hooks.environment(self.target, env, events_path=call_dir / "events.jsonl")
         return env
 
     def _call_dir(self):

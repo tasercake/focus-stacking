@@ -1,0 +1,46 @@
+# Copy this descriptor and configure commands and mappings for your application.
+schema_version = 1
+name = "example-focus-stacker"
+root = "."
+cli = ["./bin/stacker"]
+# gui = ["./bin/stacker-gui"]
+# probe = ["./bin/stacker-probe"]
+# adapter = "your_package.adapter"
+# coverage_scope = "scope.json"
+
+# Python targets may opt into source coverage:
+# [instrumentation]
+# source = "src"
+
+# Optional isolated uv runtime, relative to this descriptor:
+# [runtime]
+# project = "."
+
+[fixtures]
+native_update_asset = "MyApp-macOS.dmg"
+
+[stack]
+input = ["--input", "{inputs}"]
+output = ["--output", "{output}"]
+
+[stack.options]
+method = "--method"
+align = "--align"
+alignment_mode = "--alignment-mode"
+alignment_reference = "--alignment-ref"
+kernel_size = "--kernel-size"
+pyramid_levels = "--pyramid-levels"
+scale_factor = "--scale-factor"
+max_scale_step = "--max-scale-step"
+max_precision = "--max-precision"
+slab_size = "--slab-size"
+slab_overlap = "--slab-overlap"
+auto = "--auto"
+auto_crop = "--auto-crop"
+quality = "--quality"
+quality_report = "--quality-report"
+bit_depth = "--bit-depth"
+gpu_id = "--gpu-id"
+measure = "--measure"
+rotation_scale = "--rotation-scale"
+device = { cpu = ["--cpu"], gpu = ["--gpu"], auto = [] }

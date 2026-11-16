@@ -1,7 +1,10 @@
 # Historical conformance reference
 
+> Historical adapter record. Commands and paths describe the prior layout.
+> See [current setup](../README.md) for this adapter.
+
 This record predates the split into `pancake-conformance/` and
-`pancake/pancake/`. Counts, hashes, runtime state, and artifact paths below
+`pancake/`. Counts, hashes, runtime state, and artifact paths below
 describe the archived commits, not the current project. The current catalog
 contains 308 cases. Before the project moves, 252 harness tests passed
 with two live GUI tests excluded; lint, frozen lock validation, and package
@@ -40,7 +43,7 @@ and evidence. It does not count them as executed. There are still **667 missing
 scoped lines and 418 missing scoped branch exits**. Recoverable failures, dynamic
 UI paths and native JIT tracing limits remain gaps. This does not claim 100%.
 See [coverage rules](coverage.md), [scope audit](coverage-scope-audit.md) and
-[the pinned scope](../targets/chimpstackr/chimpstackr-coverage.json).
+[the pinned scope](../chimpstackr-coverage.json).
 
 Host/guest raw data normalize to exactly **31 unique source files**. No guest
 path remains in the merged database; measured contexts are only `[""]`, with

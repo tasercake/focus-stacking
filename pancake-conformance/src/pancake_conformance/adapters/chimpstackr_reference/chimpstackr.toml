@@ -1,12 +1,21 @@
 schema_version = 1
 name = "chimpstackr-python-reference"
-root = "../../../submodules/ChimpStackr"
-adapter = "chimpstackr-python"
+root = "../../../../../submodules/ChimpStackr"
+adapter = "pancake_conformance.adapters.chimpstackr"
 coverage_scope = "chimpstackr-coverage.json"
 cli = ["{python}", "-m", "src.cli"]
 gui = ["{python}", "-m", "pancake_conformance.adapters.chimpstackr_ui"]
 probe = ["{python}", "-m", "pancake_conformance.adapters.chimpstackr_probe"]
 capabilities = ["cli", "gui", "cpu", "opencl", "png", "jpeg", "tiff", "exr"]
+
+[instrumentation]
+source = "src"
+
+[runtime]
+project = "."
+
+[fixtures]
+native_update_asset = "ChimpStackr-macOS.dmg"
 
 [gui_vm]
 name = "pancake-conformance"

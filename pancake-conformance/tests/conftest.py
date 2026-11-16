@@ -3,6 +3,7 @@ import pytest
 
 
 def pytest_addoption(parser):
+    parser.addoption("--target", help="Target descriptor for native smoke tests")
     parser.addoption("--gui-vm", action="store_true", help="Run native smoke cases in configured macOS VM")
     parser.addoption("--gui-vm-persist", action="store_true", help="Keep test VM running")
 
@@ -10,8 +11,11 @@ def pytest_addoption(parser):
 @pytest.fixture
 def native_case_runner(request, tmp_path):
     from pancake_conformance.cli import main
+    target = request.config.getoption("--target")
+    if not target:
+        pytest.skip("Native target not selected; pass --target PATH")
     def run(case_id):
-        arguments = ["run", "--case", case_id, "--output", str(tmp_path / "run")]
+        arguments = ["run", "--target", target, "--case", case_id, "--output", str(tmp_path / "run")]
         if request.config.getoption("--gui-vm"):
             arguments.append("--gui-vm")
             if request.config.getoption("--gui-vm-persist"):

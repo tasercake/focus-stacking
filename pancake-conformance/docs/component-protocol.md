@@ -38,7 +38,7 @@ payloads, routes, query strings and semantic options stay fixed. Full requests
 and responses remain artifacts. No public update service or installed app is
 modified. Native cases use the same local service through `services.updates`.
 
-The reference launcher delegates service operations to the original ChimpStackr
+An adapter delegates service operations to the target application's original
 functions. Endpoint substitution is an opt-in configuration hook. Parsing,
 network requests, cancellation, integrity checks, exceptions, worker signals,
 dialogs and preferences execute unchanged. No staging helper is launched and
