@@ -173,7 +173,7 @@ def _zoom_for_pan(ui, fitted_zoom):
         if previous > fitted_zoom * 1.25:
             return
         ui.action("viewer.zoom_in")
-        ui.wait(lambda snap: _viewer(ui)["zoom"] > previous, description="zoom reaches pannable scale")
+        ui.wait(lambda snap, previous=previous: _viewer(ui)["zoom"] > previous, description="zoom reaches pannable scale")
     raise AssertionError("Viewer did not reach pannable zoom")
 
 
