@@ -86,7 +86,8 @@ def _provenance(target, cases):
     suite_hash = hashlib.sha256()
     for path in sources:
         suite_hash.update(str(path.relative_to(project)).encode() + b"\0" + path.read_bytes())
-    record = {"target": target.name, "target_root": str(target.root),
+    from . import CONTRACT_VERSION
+    record = {"contract_version": CONTRACT_VERSION, "target": target.name, "target_root": str(target.root),
             "target_commit": git(["rev-parse", "HEAD"], target.root),
             "target_dirty": git(["status", "--porcelain"], target.root),
             "suite_commit": git(["rev-parse", "HEAD"], project),

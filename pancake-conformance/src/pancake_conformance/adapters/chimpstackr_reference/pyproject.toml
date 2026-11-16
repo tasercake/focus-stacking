@@ -19,4 +19,4 @@ pancake-conformance = { path = "../../../..", editable = true }
 chimpstackr = { path = "../../../../../submodules/ChimpStackr", editable = true }
 
 [dependency-groups]
-dev = ["pytest>=9.2.0,<10", "ruff>=0.17.5"]
+dev = ["pytest>=9.2.0,<10", "ruff>=0.17.5", "lupa>=2.0"]

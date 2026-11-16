@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source_sha256": "f855ca9749dfb734bec5b20e77036f3da44cd4954ccf01bf0a894a9c8a8a1dce",
+  "files": {
+    "ImageLoadingHandler.py": "12ef7c827059643e657a8d0143532cf5ca99254e0925b51d522cb2bc13cc2bf3",
+    "MainWindow/ImageSavingDialog.py": "46d6b9e945ab126a1315ea9c62f9f3e8e727e7703ccd09dce94853ca30b44aec",
+    "MainWindow/LightroomSetup.py": "ed1ae57b8301a403f487bb8d90434dd30a40101d1b17fc82742356ba14b270c3",
+    "MainWindow/MainLayout/ImageViewers/__init__.py": "f88cf791dfa7fdc4979f6c93a933bc3dcaf0acb506291ed41ea7b89ecbc05a7c",
+    "MainWindow/MainLayout/ImageWidgets.py": "5b61fd3d28f28ff1911d8d703280b0a6b4933d8820a17cbb01920837fdbd894d",
+    "MainWindow/MainLayout/__init__.py": "70e941b271dba2f0dd9b29af05ba4919a87525453d78b6174254f053660faa0c",
+    "MainWindow/Preview.py": "995f860b04d0e172a58fa88362310bfec43e3d5e45f8f40f0d17ddd32a7ffe24",
+    "MainWindow/SettingsWidget.py": "175d724e45af5ce58499f0aaf90890ca9c54e0f7445b494698059ac24daf2d78",
+    "MainWindow/Threading.py": "344c50748d87b9e022684a9959393517e2a88bc292dc30aba049bb059f238d41",
+    "MainWindow/TimeRemainingHandler.py": "45bc0925e9c9751b3d15bb9066193fb31902a9b2a53df7e450e0113a05c178d9",
+    "MainWindow/UpdateDialog.py": "7c7862db811d6046e448b2a493df28fc7b757e6e75084c4e4f5f6a4189600f4a",
+    "MainWindow/__init__.py": "4203224721385a4a1817c3cac56556097e446ea77c8947365903717e46ac7e60",
+    "MainWindow/icons.py": "3e224e3056bbaacc7436252026aa52f9b347b5bb1d5b7df35d5b64a23d4fd12d",
+    "MainWindow/theme.py": "2969600eb7ea8a4590e09a8409578c53cc92f278bf4e59e9b9ba34c3d16b5723",
+    "__init__.py": "c8f095a29cc7944131a9757de8072ca5eb4c0d5f41b45e656ad4b92b75e38ee0",
+    "_version.py": "a908411a4bbc87311768d773373103dee692dc2d7408a0db49b01b722173fd3a",
+    "algorithms/API.py": "5fb259931398ed9e624721511f0069a0647ca061ee170f6c77afc779bf618899",
+    "algorithms/ProgressLoggingHandler.py": "f4932bd878df16ee26386d4dd24489a9a71805282b4bb113d09c0d89265d6f26",
+    "algorithms/__init__.py": "f7b8e929a859e631f4f22039b5eefc50ba564f6a71f395e9246bd45ef53a20ab",
+    "algorithms/dft_imreg.py": "3aa214ee9f13e050d30cb9e5789fe523e778ad0680809a485391276f8d56cd26",
+    "algorithms/stacking_algorithms/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "algorithms/stacking_algorithms/cpu.py": "64feafb14cdfa82e359215dc73487e42b9c331c0727a31e3cbec7143e3b9562f",
+    "algorithms/stacking_algorithms/ocl.py": "e7e9cc5d085b2d4f658c6ca9856c2d11844a291449bc1d31a7ecaa02f3c440e8",
+    "cli.py": "c5444ba8e6bd4308b2c9e08fc494fdc5392c4a393a07a0bf36b729596d411384",
+    "compute.py": "bba2d47edb26e7cb6d8af9e784ce0a5ad0ef35ae2f8da61597e34462d1aff1a5",
+    "config.py": "3b3d67d52d7e5efd6f4818052cef45bdc7054db1571311af6a4e2bae59e381a6",
+    "lightroom.py": "bb3f35fa7d74365fde8d9e6304f347ef6234672e0fe01f4d3d40074ad82cc9a0",
+    "run.py": "4e815a229b26629e70ee78639fa0bfe10436b3ea0228c0201832724baf34d30d",
+    "settings.py": "22c354922c29dd67efd66087b74ae43ef6ac08d8598383c2b43dd2a040a4fb63",
+    "updater.py": "dc66b4fd626d514f4187c6ce608ebe9b9d2b5f180280681975b183659d2920ee",
+    "utilities.py": "c04e67b7c897e6b86bd92fdcf782102e807e7ef1d96e936e64d9e1508d7f3b10"
+  },
+  "name": "contract-v2-raw-source",
+  "target_commit": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "exclusions": [],
+  "assumptions": [
+    "Full raw Python source denominator; no inherited exclusions after numerical corrections."
+  ]
+}

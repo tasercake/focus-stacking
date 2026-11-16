@@ -337,7 +337,7 @@ def test_lifecycle_uses_public_menu_state_when_progress_children_are_unreadable(
 
     ui = NativeMenuUI()
     context = SimpleNamespace(fixture=lambda _: SimpleNamespace(paths=()), open_ui=lambda **_: ui)
-    monkeypatch.setattr(interface, '_prepare', lambda *args: None)
+    monkeypatch.setattr(interface, '_prepare_lifecycle', lambda *args: None)
     interface._lifecycle(context)
     assert [action for action in ui.actions if action != 'stack.start'] == ['stack.pause', 'stack.resume', 'stack.stop']
     assert ui.starts == 2
@@ -585,3 +585,66 @@ def test_scroll_event_targets_requested_viewport_before_native_post(tmp_path):
                       '}\n')
     result = subprocess.run(['swift', str(script)], capture_output=True, text=True, check=True)
     assert result.stdout.splitlines() == ['321.0,654.0,1', '789.0,123.0,1'], 'Native scroll inherited stale pointer coordinates'
+
+
+def test_select_retries_advertised_press_only_when_show_menu_remains_collapsed(tmp_path):
+    from types import SimpleNamespace
+    from pancake_conformance.macos_ui import MacOSUISession
+
+    class CollapsedDriver(MacOSUISession):
+        def __init__(self):
+            self.directory = tmp_path
+            self.process = SimpleNamespace(poll=lambda: None)
+            self.expanded = self.chosen = False
+            self.actions = []
+        def _request(self, command, **values):
+            if command == 'snapshot':
+                nodes = [{'id': 'alignment', 'role': 'AXMenuButton', 'title': 'Focus breathing' if self.chosen else 'Standard',
+                          'path': [0], 'size': [200, 30]}]
+                if self.expanded:
+                    nodes.append({'role': 'AXMenuItem', 'title': 'Focus breathing', 'path': [1], 'size': [200, 30]})
+                return {'nodes': nodes}
+            if command == 'attributes':
+                return {'_AXActions': ['AXShowMenu', 'AXPress'], 'AXExpanded': self.expanded}
+            if command == 'action':
+                self.actions.append(values['action'])
+                self.expanded = values['action'] == 'AXPress'
+                return {'performed': values['action']}
+            if command == 'click':
+                assert self.expanded and values['selector'] == {'path': [1]}
+                self.chosen, self.expanded = True, False
+                return {}
+            if command == 'screenshot':
+                return {}
+            raise AssertionError(command)
+    driver = CollapsedDriver()
+    driver.select('alignment', 'Focus breathing', timeout=.01)
+    assert driver.actions == ['AXShowMenu', 'AXPress']
+    assert driver.chosen
+
+
+def test_lifecycle_configures_motion_before_bulk_native_import(monkeypatch):
+    from pathlib import Path
+    from types import SimpleNamespace
+    from pancake_conformance.cases import interface
+    calls = []
+    class UI:
+        def select(self, key, value):
+            calls.append(('select', key, value))
+        def action(self, name):
+            assert calls == [('select', 'alignment', 'breathing')]
+            calls.append(('action', name))
+        def wait(self, predicate, **kwargs):
+            assert predicate({'nodes': [{'id': 'open-panel'}]})
+        def navigate_folder(self, path):
+            calls.append(('folder', path))
+        def click(self, name, **kwargs):
+            calls.append(('click', name))
+        def observe(self, name, snapshot=None):
+            assert name == 'source_total', 'Virtualized AX rows are not the imported image count'
+            return 64
+    monkeypatch.setattr(interface, '_prepare', lambda ui, method, mode: calls.append(('prepare', method, mode)))
+    fixture = SimpleNamespace(paths=[Path('/fixture/frame.png')]*64)
+    interface._prepare_lifecycle(UI(), fixture)
+    assert calls[-1] == ('prepare', 'laplacian', 'breathing')
+    assert ('folder', Path('/fixture')) in calls

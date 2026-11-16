@@ -16,12 +16,12 @@ from PIL import Image
 from scipy.ndimage import affine_transform, gaussian_filter
 import tifffile
 
-GENERATOR_VERSION = 1
+GENERATOR_VERSION = 2
 GEOMETRY_FIXTURES = ("translation", "rotation", "similarity", "affine", "breathing")
-FIXTURE_NAMES = ("focus", "flat", "odd", "precision16", *GEOMETRY_FIXTURES,
-                 "exposure", "grayscale", "rgba", "formats", "unicode", "deep", "identity",
+FIXTURE_NAMES = ("focus", "flat", "zero_regions", "odd", "precision16", *GEOMETRY_FIXTURES,
+                 "exposure", "grayscale", "rgba", "formats", "unicode", "deep", "deep_nonrepeating", "identity",
                  "float01", "float255", "exr", "grayscale16", "bayer_dng", "mixed_dimensions", "lifecycle",
-                 *[f"orientation{i}" for i in range(2, 9)])
+                 *[f"orientation{i}" for i in range(1, 9)])
 
 
 @dataclass(frozen=True)
@@ -153,11 +153,11 @@ def generate_fixture(name: str, root: str | Path) -> Fixture:
             source = np.rint(source.mean(axis=2) * 257).astype(np.uint16)
             truth = np.repeat((source / 257).astype(np.uint8)[..., None], 3, axis=2)
         elif name.startswith("orientation"):
-            transform = {2: Image.Transpose.FLIP_LEFT_RIGHT, 3: Image.Transpose.ROTATE_180,
+            transform = {1: None, 2: Image.Transpose.FLIP_LEFT_RIGHT, 3: Image.Transpose.ROTATE_180,
                          4: Image.Transpose.FLIP_TOP_BOTTOM, 5: Image.Transpose.TRANSPOSE,
                          6: Image.Transpose.ROTATE_270, 7: Image.Transpose.TRANSVERSE,
                          8: Image.Transpose.ROTATE_90}[int(name[-1])]
-            truth = np.asarray(Image.fromarray(source).transpose(transform))
+            truth = np.asarray(Image.fromarray(source).transpose(transform)) if transform is not None else source.copy()
         frames = [source.copy() for _ in range(3)]
     elif name == "identity":
         truth = _texture(257, 321)
@@ -167,6 +167,10 @@ def generate_fixture(name: str, root: str | Path) -> Fixture:
         base = ((xx * 347 + yy * 151) % 52000 + 6000).astype(np.uint16)
         truth = np.stack((base, (base.astype(np.uint32) * 3 // 4 + 5000).astype(np.uint16),
                           (base.astype(np.uint32) // 2 + 9000).astype(np.uint16)), axis=-1)
+        frames = [truth.copy() for _ in range(3)]
+    elif name == "zero_regions":
+        truth = np.full((65, 99, 3), (83, 127, 173), np.uint8)
+        truth[5:25, 5:25] = _texture(20, 20)
         frames = [truth.copy() for _ in range(3)]
     elif name == "flat":
         truth = np.empty((65, 99, 3), np.uint8)
@@ -180,10 +184,17 @@ def generate_fixture(name: str, root: str | Path) -> Fixture:
                   for gain in (0.4, 0.7, 1.0, 1.5, 2.0)]
         truth = np.clip(scene, 0, 255).astype(np.uint8)
     else:
-        height, width = (65, 99) if name in ("odd", "deep") else (129, 193)
+        height, width = (65, 99) if name in ("odd", "deep", "deep_nonrepeating") else (129, 193)
         frames, truth, details = _focus(height, width)
         metadata.update(details)
-        if name == "deep":
+        if name == "deep_nonrepeating":
+            truth = _texture(height, width)
+            blurred = gaussian_filter(truth.astype(float), (2.5, 2.5, 0)).astype(np.uint8)
+            a, b = blurred.copy(), blurred.copy()
+            a[:, :width//2] = truth[:, :width//2]
+            b[:, width//2:] = truth[:, width//2:]
+            frames = [a, b, blurred]
+        if name in ("deep", "deep_nonrepeating"):
             frames = frames * 3
         if name == "grayscale":
             frames = [np.rint(f.mean(axis=2)).astype(np.uint8) for f in frames]

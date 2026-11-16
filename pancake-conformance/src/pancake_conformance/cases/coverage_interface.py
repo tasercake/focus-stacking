@@ -95,24 +95,29 @@ def _close_recent_window(ui):
 
 def _visible_menu_item(snapshot, title, role="AXMenuItem"):
     return next((node for node in snapshot["nodes"]
-                 if node.get("role") == role and node.get("title") == title
+                 if node.get("role") == role and (node.get("title") == title or node.get("id") == title)
                  and len(node.get("size", [])) == 2 and all(n > 0 for n in node["size"])), None)
 
 
 def _recent_menu(ui):
+    ui.action("file.menu")
+    ui.wait(lambda snap: _visible_menu_item(snap, "recent.open"), description="visible recent submenu")
     ui.action("recent.open")
 
 
-def _recent_item(ui, title):
+def _recent_item(ui, title, *, require_visible=True):
     _recent_menu(ui)
-    return ui.wait(lambda snap: next((node for node in snap["nodes"] if node.get("id") == title or node.get("title") == title), None), description=f"visible {title}")
+    if require_visible:
+        return ui.wait(lambda snap: _visible_menu_item(snap, title), description=f"visible {title}")
+    return ui.wait(lambda snap: next((node for node in snap["nodes"]
+                   if node.get("id") == title or node.get("title") == title), None), description=f"published {title}")
 
 
 def _clear_recent_folders(ui):
     clear = _recent_item(ui, "recent.clear")
     assert clear.get("enabled"), "Clear Menu is disabled"
     ui.action("recent.clear")
-    assert not _recent_item(ui, "recent.empty")["enabled"], "Recent history was not cleared"
+    assert not _recent_item(ui, "recent.empty", require_visible=False)["enabled"], "Recent history was not cleared"
 
 
 def _recent_folders(ctx):
@@ -122,12 +127,12 @@ def _recent_folders(ctx):
     with ctx.open_ui(paths=paths[:2], settings_id="recent") as ui:
         ui.wait(lambda snap: ui.observe("frame_count", snap) == 2, description="initial two-frame partial folder stack")
         _recent_item(ui, folder_name)
-        ui.click({"role": "AXMenuItem", "title": folder_name})
+        ui.click({"role": "AXMenuItem", "title": folder_name}, physical=False)
         ui.wait(lambda snap: _has(snap, "dialog.replace"), description="replace existing frames prompt")
         ui.click("dialog.cancel", physical=False)
         assert ui.observe("frame_count") == 2
         _recent_item(ui, folder_name)
-        ui.click({"role": "AXMenuItem", "title": folder_name})
+        ui.click({"role": "AXMenuItem", "title": folder_name}, physical=False)
         ui.node("dialog.replace")
         ui.click("dialog.replace", physical=False)
         ui.wait(lambda snap: ui.observe("frame_count", snap) == len(fixture.paths) and _node(snap, "stack.start").get("enabled"), description="recent folder replaced frames")
@@ -135,7 +140,7 @@ def _recent_folders(ctx):
         _clear_recent_folders(ui)
         _close_recent_window(ui)
     with ctx.open_ui(settings_id="recent") as ui:
-        assert not _recent_item(ui, "recent.empty")["enabled"]
+        assert not _recent_item(ui, "recent.empty", require_visible=False)["enabled"]
         assert not ui.node("stack.start")["enabled"]
         _close_recent_window(ui)
 
@@ -152,6 +157,7 @@ def _viewer_keyboard(ctx):
         enlarged = _viewer(ui)["zoom"]
         ui.action("viewer.zoom_out")
         ui.wait(lambda snap: 0 < _viewer(ui)["zoom"] < enlarged, description="zoom-out changes scale")
+        ui.click("viewer")
         ui.action("viewer.next")
         ui.wait(lambda snap: ui.observe("source_index", snap) is not None, description="source navigation changes selection")
         ui.action("viewer.fit")

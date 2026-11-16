@@ -71,7 +71,7 @@ def test_identifier_installer_hooks_only_completed_window_constructors(monkeypat
     qt = ModuleType('PySide6')
     qt.QtCore = SimpleNamespace(QObject=QObject)
     qt.QtGui = SimpleNamespace(QAccessible=accessible)
-    qt.QtWidgets = SimpleNamespace(QAccessibleWidget=object, QWidget=Widget)
+    qt.QtWidgets = SimpleNamespace(QAccessibleWidget=object, QWidget=Widget, QLabel=Widget)
     monkeypatch.setitem(sys.modules, 'PySide6', qt)
 
     class Window(Widget):
@@ -118,14 +118,20 @@ def test_identifier_installer_hooks_only_completed_window_constructors(monkeypat
             for attr in ('auto', 'skip_btn', 'later_btn', 'main_btn'):
                 setattr(self, attr, Widget())
 
+    class AboutDialog(Widget):
+        def __init__(self):
+            super().__init__()
+            self.version = Widget('Version v3')
+        def findChildren(self, kind):
+            return [self.version]
+
     for module_name, cls in [('src.MainWindow', Window), ('src.MainWindow.SettingsWidget', SettingsDialog),
                              ('src.MainWindow.ImageSavingDialog', ExportDialog), ('src.MainWindow.UpdateDialog', UpdateDialog)]:
         module = ModuleType(module_name)
         setattr(module, cls.__name__, cls)
+        if module_name == 'src.MainWindow':
+            module.AboutDialog = AboutDialog
         monkeypatch.setitem(sys.modules, module_name, module)
-    class AboutDialog(Widget):
-        pass
-    sys.modules["src.MainWindow"].AboutDialog = AboutDialog
     app = SimpleNamespace(installEventFilter=filters.append)
     install_identifiers(app)
     assert filters == [], 'Application-wide event filters convert unrelated worker QObjects through Python'
@@ -147,3 +153,8 @@ def test_identifier_installer_hooks_only_completed_window_constructors(monkeypat
     assert export.identifier == 'export.window' and export.ok.identifier == 'export.confirm'
     assert update.identifier == 'updates.window' and update.notes.description == 'Final rendered release notes'
     assert app._conformance_accessibility_factory[0] is factories[0]
+
+    about = AboutDialog()
+    assert about.identifier == 'about.window'
+    assert about.version.identifier == 'about.version'
+    assert about.version.description == 'Version v3'

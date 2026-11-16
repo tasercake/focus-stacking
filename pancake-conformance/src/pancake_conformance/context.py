@@ -145,17 +145,19 @@ class CaseContext:
         self.notes.setdefault("host_parity_requests", []).append(request)
         self.notes["host_verification_pending"] = True
 
-    def stack(self, fixture_or_paths, **options):
+    def stack(self, fixture_or_paths, *, output_path=None, **options):
         paths = fixture_or_paths.paths if hasattr(fixture_or_paths, "paths") else fixture_or_paths
         output_format = options.pop("output_format", "png")
-        output = self.directory / f"output-{self._calls + 1:02d}.{output_format}"
+        output = Path(output_path) if output_path is not None else self.directory / f"output-{self._calls + 1:02d}.{output_format}"
         defaults = dict(self.target.stack.get("defaults", {}))
         defaults.update(options)
         inputs = []
+        immutable_inputs = {}
         for path in paths:
             path = Path(path)
             matches = [path] if path.is_file() else [Path(p) for p in sorted(glob.glob(str(path))) if Path(p).is_file()]
             if matches:
+                immutable_inputs.update({p: hashlib.sha256(p.read_bytes()).hexdigest() for p in matches})
                 inputs.extend({"name": p.name, "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in matches)
             else:
                 inputs.append({"name": path.name, "sha256": None})
@@ -163,6 +165,8 @@ class CaseContext:
                                                        "input_names": [Path(path).name for path in paths], "inputs": inputs})
         result = self.command(self.target.stack_arguments(paths, output, defaults))
         result.output = output
+        for path, digest in immutable_inputs.items():
+            assert path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == digest, f"Input modified: {path}"
         if result.returncode == 0 and output.is_file():
             self.record_output(output)
         return result

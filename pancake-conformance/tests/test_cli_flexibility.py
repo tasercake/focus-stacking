@@ -40,8 +40,8 @@ def test_quality_and_progress_use_declared_formats_in_either_stream(tmp_path):
 
 def test_partly_unreadable_inputs_can_be_rejected_cleanly(tmp_path):
     from pancake_conformance.cases.coverage_cli import _partial_malformed
-    results = iter([SimpleNamespace(returncode=0, stderr='', diagnostics={}, output=tmp_path/'reference.png'),
-                    SimpleNamespace(returncode=2, stderr='Cannot read one source', diagnostics={}, output=tmp_path/'output.png')])
+    result = SimpleNamespace(returncode=2, stderr='Cannot decode input: 000-invalid-0.png',
+                             diagnostics={}, output=tmp_path/'output.png')
     context = SimpleNamespace(directory=tmp_path, fixture=lambda name: SimpleNamespace(paths=[]),
-                               stack=lambda *args, **kwargs: next(results))
+                               stack=lambda *args, **kwargs: result)
     _partial_malformed(context, 'png')

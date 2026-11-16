@@ -2,11 +2,11 @@ schema_version = 1
 name = "chimpstackr-python-reference"
 root = "../../../../../submodules/ChimpStackr"
 adapter = "pancake_conformance.adapters.chimpstackr"
-coverage_scope = "chimpstackr-coverage.json"
+coverage_scope = "chimpstackr-coverage-v2.json"
 cli = ["{python}", "-m", "src.cli"]
 gui = ["{python}", "-m", "pancake_conformance.adapters.chimpstackr_ui"]
 probe = ["{python}", "-m", "pancake_conformance.adapters.chimpstackr_probe"]
-capabilities = ["cli", "native_gui", "cpu", "gpu", "backend_evidence", "png", "jpeg", "tiff", "exr", "cli_reports", "exclusive_device_flags", "preferences", "about", "lightroom", "layout_panels", "advanced_controls", "recent_folders", "batch_export", "source_context", "viewport_export", "retained_results", "manual_crop", "pause_resume", "gpu_preference"]
+capabilities = ["cli", "native_gui", "cpu", "gpu", "backend_evidence", "alignment_evidence", "png", "jpeg", "tiff", "exr", "cli_reports", "exclusive_device_flags", "preferences", "about", "lightroom", "layout_panels", "advanced_controls", "recent_folders", "batch_export", "source_context", "viewport_export", "retained_results", "manual_crop", "pause_resume", "gpu_preference"]
 
 [instrumentation]
 source = "src"
@@ -73,9 +73,11 @@ quality_report = '(?i)sharpness[^\n]*[0-9]'
 progress = '\[[0-9]+/[0-9]+\]'
 
 [ui.controls]
-"about.open" = { role = "AXMenuItem", title = "About ChimpStackr" }
-"about.window" = { id = "about.window" }
-"dialog.error" = { role = "AXWindow", subrole = "AXDialog" }
+"open-panel" = { "id" = "open-panel" }
+"save-panel" = { "id" = "save-panel" }
+"about.open" = { role = "AXMenuItem", title = "About chimpstackr" }
+"about.window" = { role = "AXWindow", title = "About ChimpStackr" }
+"dialog.error" = { any_of = [{ role = "AXSheet" }, { role = "AXWindow", subrole = "AXDialog" }] }
 
 "import.folder" = { "role" = "AXMenuItem", "title" = "Add Folder\u2026" }
 "settings.open" = { "role" = "AXMenuItem", "title" = "Settings\u2026" }
@@ -137,8 +139,8 @@ progress = '\[[0-9]+/[0-9]+\]'
 "frames.reveal" = [{ "click" = "frames.reveal" }]
 "frames.select_all" = [{ "click" = "frames.select_all" }]
 "frames.remove_selected" = [{ "click" = "frames.remove_selected" }]
-"file.menu" = [{ "click" = "file.menu" }]
-"recent.open" = [{ "click" = "file.menu", "physical" = true }, { "click" = "recent.open", "physical" = true }]
+"file.menu" = [{ "click" = "file.menu", "physical" = true }]
+"recent.open" = [{ "click" = "recent.open", "physical" = true }]
 "recent.clear" = [{ "click" = "recent.clear" }]
 "recent.empty" = [{ "click" = "recent.empty" }]
 "workspace.new" = [{ "key" = "n", "modifiers" = ["command"] }]
@@ -157,13 +159,14 @@ progress = '\[[0-9]+/[0-9]+\]'
 "export.depth" = { "8" = "8-bit", "16" = "16-bit", "float32" = "32-bit float" }
 
 [ui.observations]
-"frame_count" = { count = { role = "AXRow" }, within = { id = "frames", role = "AXList" }, direct = true }
+"source_total" = { selector = { id = "status" }, attribute = "value", pattern = 'frame \d+ of (\d+)', type = "integer" }
+"frame_count" = { count = { role = "AXRow" }, within = { id = "frames", role = "AXList" }, direct = true, empty_when = { role = "AXStaticText", value = "No frames yet.\nDrop images or a folder here." } }
 "result_count" = { count = { role = "AXRow" }, within = { id = "results", role = "AXList" }, direct = true }
 "result_cropped" = { selector = { id = "status" }, pattern = 'Cropped the empty borders' }
 "about.version" = { selector = { id = "about.version" }, attribute = "description" }
 
 "selected_method" = { "selected" = { "laplacian" = { "id" = "method.laplacian" }, "hybrid" = { "id" = "method.hybrid" }, "weighted_average" = { "id" = "method.weighted_average" }, "depth_map" = { "id" = "method.depth_map" }, "exposure_fusion" = { "id" = "method.exposure_fusion" } } }
-"source_index" = { "selector" = { "id" = "status" }, "attribute" = "value", "pattern" = "frame (\\d+) of", "type" = "integer" }
+"source_index" = { "selector" = { "id" = "status" }, "attribute" = "value", "pattern" = 'frame (\d+) of', "type" = "integer" }
 "selected_result_method" = { "selector" = { "id" = "status" }, "attribute" = "value", "pattern" = "^(.+?) result", "values" = { "Hybrid" = "hybrid", "Weighted Average" = "weighted_average", "Laplacian" = "laplacian", "Depth Map" = "depth_map", "Exposure Fusion" = "exposure_fusion" } }
 
 [ui.initial_values]

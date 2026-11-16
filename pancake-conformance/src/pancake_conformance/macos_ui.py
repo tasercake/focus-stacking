@@ -161,7 +161,18 @@ class MacOSUISession:
             self._request("action", selector=control_selector, action="AXShowMenu")
         else:
             self.click(control_selector)
-        item = self.wait(option, timeout=timeout, description=f"visible popup option {value}")
+        try:
+            item = self.wait(option, timeout=timeout, description=f"visible popup option {value}")
+        except TimeoutError:
+            # Some native controls advertise AXShowMenu but acknowledge it
+            # without opening. Retry only a supported native press, and only
+            # when the control explicitly reports that it stayed collapsed.
+            state = self._request("attributes", selector=control_selector)
+            if ("AXShowMenu" not in actions or state.get("AXExpanded") is not False
+                    or "AXPress" not in state.get("_AXActions", [])):
+                raise
+            self._request("action", selector=control_selector, action="AXPress")
+            item = self.wait(option, timeout=timeout, description=f"visible popup option {value}")
         self.click({"path": item["path"]})
         self.wait(lambda snapshot: selected(find_node(snapshot, control_selector)) and option(snapshot) is None,
                   timeout=timeout, description=f"committed popup selection {value}")

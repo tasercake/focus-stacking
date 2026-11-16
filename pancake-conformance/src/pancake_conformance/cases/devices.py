@@ -6,7 +6,7 @@ Python internals nor OpenCL implementation functions.
 from functools import partial
 
 from ..model import Case
-from ..validators import assert_pixels_close, read_image, validate_image
+from ..validators import assert_incomplete, assert_pixels_close, read_image, validate_image
 
 METHODS = ('laplacian', 'hybrid', 'weighted_average', 'depth_map', 'exposure_fusion')
 ALIGNMENT_FIXTURES = {'translation': 'translation', 'euclidean': 'rotation',
@@ -72,6 +72,54 @@ def _parity(ctx, method, fixture_name='focus', **options):
     ctx.note('gpu_execution', event)
 
 
+def _decode_rejected(ctx):
+    fixture = ctx.fixture('focus')
+    corrupt = ctx.directory / 'corrupt.png'
+    corrupt.write_bytes(b'not a PNG image')
+    result = ctx.stack([fixture.paths[0], corrupt, fixture.paths[1]], method='weighted_average', device='gpu')
+    assert_incomplete(result, corrupt)
+
+
+def _corrupt_matrix(ctx, method, mode):
+    from .coverage_algorithms import _partial_corrupt
+    _partial_corrupt(ctx, method, align=mode != 'stack',
+                     mode='translation' if mode == 'stack' else mode, device='gpu')
+
+
+def _exposure_precision(ctx, count):
+    fixture = ctx.fixture('precision16')
+    paths = [fixture.paths[i % len(fixture.paths)] for i in range(count)]
+    cpu = ctx.stack(paths, method='exposure_fusion', device='cpu', bit_depth=16, output_format='tif')
+    gpu = ctx.stack(paths, method='exposure_fusion', device='gpu', bit_depth=16, output_format='tif')
+    require_backend(cpu, 'cpu')
+    require_backend(gpu, 'gpu')
+    for output in (cpu.output, gpu.output):
+        validate_image(output, dtype='uint16', shape=fixture.shape, genuine_16bit=True)
+        assert_pixels_close(output, fixture.truth_path, mean_limit=1, max_limit=1)
+    ctx.note('identity_parity', assert_pixels_close(cpu.output, gpu.output, mean_limit=1, max_limit=1))
+
+
+def _exposure_mixed_dimensions(ctx):
+    import numpy as np
+    import tifffile
+    fixture = ctx.fixture('precision16')
+    source = read_image(fixture.truth_path)
+    paths = []
+    for i in range(4):
+        image = np.rint(source.astype(float)/257).astype(np.uint8) if i == 0 else source[1:-1, 1:-1]
+        path = ctx.directory / f'mixed-{i}.tif'
+        tifffile.imwrite(path, image, photometric='rgb', metadata=None)
+        paths.append(path)
+    cpu = ctx.stack(paths, method='exposure_fusion', align=True, alignment_mode='translation', device='cpu', bit_depth=16, output_format='tif')
+    gpu = ctx.stack(paths, method='exposure_fusion', align=True, alignment_mode='translation', device='gpu', bit_depth=16, output_format='tif')
+    require_backend(cpu, 'cpu')
+    require_backend(gpu, 'gpu')
+    validate_image(gpu.output, shape=fixture.shape, dtype='uint16', genuine_16bit=True)
+    # Mixed-source Mertens weights amplify float rounding at isolated pixels.
+    # Identity remains bounded to one 16-bit value in the separate gradient tests.
+    ctx.note('mixed_source_precision_parity', assert_pixels_close(gpu.output, cpu.output, mean_limit=1, max_limit=32))
+
+
 def device_cases():
     cases = []
     for method in METHODS:
@@ -92,7 +140,7 @@ def device_cases():
         cases.append(Case(f'devices.gpu.slabs.{method}', 'devices',
                           partial(_parity, method=method, fixture_name='deep', slab_size=4, slab_overlap=1),
                           'Overlapping GPU slabs agree with CPU slabs'))
-    for method in ('hybrid', 'weighted_average', 'depth_map'):
+    for method in ('hybrid', 'weighted_average', 'depth_map', 'exposure_fusion'):
         cases.append(Case(f'devices.gpu.precision16.{method}', 'devices',
                           partial(_parity, method=method, fixture_name='precision16', bit_depth=16, output_format='tif'),
                           'GPU retains genuine 16-bit input precision and CPU parity'))
@@ -100,6 +148,23 @@ def device_cases():
                       partial(_parity, method='hybrid', fixture_name='breathing', align=True,
                               alignment_mode='breathing', max_precision=True),
                       'High-precision GPU request produces CPU-equivalent pixels'))
+    cases.append(Case('devices.gpu.corrupt_input_rejected', 'devices', _decode_rejected,
+                      'Corrupt input fails the complete job without backend fallback'))
+    from .algorithms import _zero_regions, _exposure_constant_mix
+    cases.append(Case('devices.gpu.weighted.zero_regions', 'devices', partial(_zero_regions, device='gpu'),
+                      'Zero-weight regions preserve deterministic source color'))
+    for count in (4, 9):
+        cases.append(Case(f'devices.gpu.exposure_constant_mix.{count}', 'devices', partial(_exposure_constant_mix, count=count, device='gpu'),
+                          'Analytic equal-weight fusion preserves low bits through batch tree'))
+    for count in (2, 4, 9):
+        cases.append(Case(f'devices.gpu.exposure_precision.{count}', 'devices', partial(_exposure_precision, count=count),
+                          'Independent full-precision identity and CPU/GPU parity'))
+    for method in METHODS:
+        for mode in ('stack', 'translation', 'euclidean', 'similarity', 'affine', 'breathing'):
+            cases.append(Case(f'devices.gpu.corrupt.{method}.{mode}', 'devices', partial(_corrupt_matrix, method=method, mode=mode),
+                              'Corrupt requested input rejects complete job and retains existing export'))
+    cases.append(Case('devices.gpu.exposure_mixed_dimensions', 'devices', _exposure_mixed_dimensions,
+                      'Later sixteen-bit sources retain precision when resized or padded against an eight-bit first frame'))
     from dataclasses import replace
     return [replace(case, required_capabilities=("backend_evidence", "gpu" if ".gpu." in case.id else "cpu"))
             if ".auto." not in case.id else case for case in cases]

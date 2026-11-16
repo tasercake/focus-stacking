@@ -24,3 +24,16 @@ CPU/GPU parity checks compare decoded RGB geometry and numerical error. They do
 not prescribe which internal stages use a device. Instrumented timings are not
 uninstrumented performance benchmarks. Source coverage remains an optional,
 adapter-specific measurement described in [coverage](coverage.md).
+
+
+The optional `alignment_evidence` capability enables v2 geometry oracles.
+A `stack_complete` record supplies `alignment_transforms`, keyed by input path,
+and `sequential_transforms` in input order when chaining. Every matrix is finite
+2×3, mapping reference x/y coordinates to source x/y coordinates. These fields
+specify observable geometry, not implementation language, estimator or device.
+Targets without this capability report these cases as unsupported; ordinary
+pixel-based alignment tests remain available.
+
+Failed decode records must never claim successful completion or CPU fallback
+from input corruption. Optional telemetry may be absent, but any published
+completion or backend evidence must be truthful.

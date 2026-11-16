@@ -12,7 +12,7 @@ from PIL import Image
 import tifffile
 
 from ..model import Case
-from ..validators import assert_pixels_close, read_image, validate_image
+from ..validators import assert_incomplete, assert_pixels_close, read_image, validate_image
 from .devices import require_backend
 
 
@@ -138,18 +138,18 @@ def _hdr_multibatch(ctx, device):
     ctx.note("batch_input_count", len(paths))
 
 
-def _partial_corrupt(ctx, method, align):
+def _partial_corrupt(ctx, method, align=False, mode="similarity", device="cpu"):
     fixture = ctx.fixture("focus")
-    reference = ctx.stack(fixture.paths[:2], method=method, align=align, alignment_mode="similarity")
-    _successful(reference)
-    corrupt = ctx.directory / "frame_00a-corrupt.png"
+    corrupt = ctx.directory / "frame_99-corrupt.png"
     corrupt.write_bytes(b"not a valid image")
-    result = ctx.stack([*fixture.paths[:2], corrupt], method=method, align=align, alignment_mode="similarity")
-    if result.returncode:
-        assert not result.output.exists() and result.stderr.strip(), "Failed decode must explain failure without publishing output"
-    else:
-        _successful(result)
-        ctx.note("surviving_frames_error", assert_pixels_close(result.output, reference.output, mean_limit=0.01, max_limit=1))
+    paths = [*fixture.paths, corrupt]
+    # A valid existing export must survive even a late failure after a slab.
+    output = ctx.directory / "retained.png"
+    retained = fixture.paths[0].read_bytes()
+    output.write_bytes(retained)
+    result = ctx.stack(paths, method=method, align=align, alignment_mode=mode,
+                       device=device, output_path=output, slab_size=2, slab_overlap=0)
+    assert_incomplete(result, corrupt, retained=retained)
 
 
 def _no_decodable_frames(ctx, method, align=False):
@@ -195,9 +195,10 @@ def coverage_algorithm_cases():
             add(f"mixed_precision.ref{bits}.{'aligned' if align else 'stack'}", _mixed_precision, reference_bits=bits, align=align)
     for device in ("cpu", "gpu"):
         add(f"hdr_multibatch.{device}", _hdr_multibatch, device=device)
-    for method in ("weighted_average", "depth_map", "exposure_fusion"):
-        for align in (False, True):
-            add(f"partial_corrupt.{method}.{'aligned' if align else 'stack'}", _partial_corrupt, method=method, align=align)
+    for method in ("laplacian", "hybrid", "weighted_average", "depth_map", "exposure_fusion"):
+        for mode in ("stack", "translation", "euclidean", "similarity", "affine", "breathing"):
+            add(f"partial_corrupt.{method}.{mode}", _partial_corrupt, method=method,
+                align=mode != "stack", mode="translation" if mode == "stack" else mode)
     for method in ("weighted_average", "depth_map", "exposure_fusion"):
         add(f"no_decodable_frames.{method}", _no_decodable_frames, method=method)
     add("no_decodable_frames.sequential", _no_decodable_frames, method="weighted_average", align=True)

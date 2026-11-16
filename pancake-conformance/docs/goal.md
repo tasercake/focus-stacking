@@ -2,7 +2,7 @@
 
 Provide a reference conformance contract for focus-stacking software through
 external CLI, component, and native UI boundaries. Use synthetic inputs,
-independent image oracles, explicit compatibility cases, immutable baselines,
+independent image oracles, versioned correctness contracts, immutable baselines,
 and reviewable evidence.
 
 Keep application-specific launches, observations, dependencies, source coverage

@@ -99,10 +99,11 @@ pancake-conformance run --target replacement.toml --baseline baselines/reviewed
 ```
 
 Baselines retain pixels, generated inputs, requests, and provenance. Capture
-refuses overwrite. Compare the same selected cases and review known
-`compatibility` characterizations before accepting a baseline. These cases
-preserve explicit legacy outcomes; an intentional change requires a contract
-revision. A passing baseline comparison alone does not establish image quality.
+refuses overwrite. Compare the same selected cases and contract version.
+Version 2 replaces the old defect characterizations with independent correctness
+assertions. Keep version-1 directories immutable and capture a separate v2
+baseline after its cases pass. A passing baseline comparison alone does not
+establish image quality.
 
 Reports retain each case's status, duration, evidence, and outputs. Failed or
 interrupted runs remain incomplete. `--fail-fast` preserves completed evidence.

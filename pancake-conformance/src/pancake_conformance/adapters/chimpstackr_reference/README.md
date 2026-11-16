@@ -1,8 +1,7 @@
 # ChimpStackr reference adapter
 
 This adapter tests the pinned `submodules/ChimpStackr` source through portable
-conformance cases and optional Python source coverage. It does not change the
-upstream source or pin. ChimpStackr module names, Qt hooks, dependencies, and
+conformance cases and optional Python source coverage. Behavior contract v2 corrects the pinned source and updates its submodule pin. ChimpStackr module names, Qt hooks, dependencies, and
 coverage exclusions belong here, outside the core suite contract.
 
 ## Setup and run
@@ -53,7 +52,8 @@ arguments, results, and exceptions remain intact. `../chimpstackr_probe.py` and
 `../chimpstackr_services.py` implement the portable component wire protocol by
 calling original service code.
 
-`chimpstackr-coverage.json` holds reviewed exclusions pinned to source content.
+`chimpstackr-coverage-v2.json` uses the full raw source denominator with no exclusions.
+The historical `chimpstackr-coverage.json` retains the old reviewed scope.
 Raw reports keep all source files and missing branches. The goal is high source
 coverage through this adapter, separate from the portable contract for new
 implementations.
@@ -62,3 +62,5 @@ implementations.
 [coverage goals](docs/goal.md), and other records in `docs/` predate adapter
 isolation. Their commands and paths describe those historical runs. Use the
 commands above for the current layout; no new full native replay is implied.
+
+See [contract v2](docs/contract-v2.md) for source paths, contract migration and validation.
