@@ -205,6 +205,25 @@ Native Linux/Windows builds, Linux sanitizers, custom kernel compilation, and
 CPU/GPU runtime execution were not run. These limits are separate from the
 candidate dependency-policy failure.
 
+## Existing remote hardware access addendum
+
+A short follow-up used the previously authorized SSH hostname `krishna-desktop`
+and independently verified current access. One BatchMode connection with an
+eight-second connection timeout returned exit 0:
+
+```text
+krishna-desktop
+Linux 6.8.0-147-generic x86_64
+NVIDIA GeForce RTX 3090, 580.178.04, 24576 MiB
+```
+
+This establishes reachable x86-64 Linux/NVIDIA hardware, not an absent hardware
+lane. It does not establish CUDA/LLVM toolchain availability, CubeCL CUDA or
+wgpu execution, isolated native GUI access, or conformance. No scan, installation,
+service/session change, remote compilation, or remote test job was performed.
+The exact read-only probe is recorded in `existing_remote_hardware` in the
+evidence JSON. This access result does not clear the dependency-policy gate.
+
 Next decision: choose a dependency version/feature/upstream-fix strategy that
 passes the unchanged duplicate/advisory policies, and review concrete licenses.
 Then execute meaningful test-first safe CPU/wgpu kernels and complete the real
