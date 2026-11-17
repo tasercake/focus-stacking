@@ -1,0 +1,2843 @@
+{
+  "schema_version": 1,
+  "contract_version": 2,
+  "review_date": "2026-11-17",
+  "status": "reviewed_current_contract_snapshot",
+  "scope": "External behavioral conformance only; no Pancake target execution or P0 gate pass inferred.",
+  "source_commit": "00bd1371e1ee8873a90e462d8cef3ef0c5d05e92",
+  "historical_source_commit": "22ef292bb135d69e30801b473736aaf85a646c84",
+  "selection": "Files outside adapters, .venv, caches, artifacts: suffix .py, .swift, .toml, .lock, .md, .json; exclude __pycache__; order by workspace-relative path. Digest concatenates suite-relative POSIX path, NUL byte, and original bytes.",
+  "combined_sha256": "2d17fb4f570dcfae47e355b63e18650c325c586f47620c565b568f4fdcce20b2",
+  "file_count": 90,
+  "files": {
+    "README.md": "ba705d1f50b043bed431b969ef6f5b044685e279af68ab10e71e16691534a609",
+    "docs/algorithm-contract.md": "664e28024eebfcfe3548e0211d3978649c5b002120254d855a6fe78c8f6210c9",
+    "docs/component-protocol.md": "95bdd8076d66d695b299b6e6eca186a3ca03fef19425732c908914fdf6cce314",
+    "docs/conformance.md": "485bdc72a58c0932c00f9180504b1910c2d127c4c1d99a0d97965aab121507ea",
+    "docs/coverage.md": "a48c42a35a9069000ff73ad1e9fc7a7a37ada595dc5d21bb2d75facde85ab326",
+    "docs/diagnostics.md": "e2d2f626597efad2f7da7c7cbc88f0a3240f3e28309d9cfee2d0c6b4aa1b11e9",
+    "docs/goal.md": "875e069f9dbb14039474055588875ccfe0d4d12589c35b53d6378fbad549d55e",
+    "docs/gui-vm-bootstrap.md": "9a1a823a91fc4fedf2c46aae5c8f201e11f31ca4b404d917d9e01e9a5340facc",
+    "docs/gui-vm-setup.md": "3fae8be73e4da0ed96001f735e759be8d9dd483d2c2bf9d2155ce23a1c1ffc4f",
+    "docs/linux.md": "ba92e4f9b559070b9c7e75f4008c5567ba1cc0b4f0ab09f0a796dd4857255383",
+    "docs/ui-protocol.md": "5ed438c373cddd938845102860e6004731a5d66216599eb5f18067803a0b0560",
+    "pyproject.toml": "97326ce1eedc2e8655f5beeb87acae5c5241d4a35d1fef4e53693ec4deb6ba2c",
+    "src/pancake_conformance/__init__.py": "5a854178335ed0198e4e8b3513b482be824ac2e2440046adc518db82e13f5c36",
+    "src/pancake_conformance/__main__.py": "0472e2ffee01c7582c667fb3eb1ef01023e7d584f175cef8cb475e45e6bd1736",
+    "src/pancake_conformance/baseline.py": "a4e232ff6e0f0f7d5eb6df2fb66972f79f3adcef27446c20313c697f10ebfe44",
+    "src/pancake_conformance/cases/algorithms.py": "8436173a473e16468d7d21860057db2935c90fe766d64b17cd07a040ce0a0b62",
+    "src/pancake_conformance/cases/cli.py": "c19a4d47cce1c2c6ba11d5dba7fcb5f22253218de123a84835db4da2549610e6",
+    "src/pancake_conformance/cases/coverage_algorithms.py": "bc2d5d3a20c479c8fc67ea02fc7550e790c79804672f7ba0d04c356ab1b29ea3",
+    "src/pancake_conformance/cases/coverage_cli.py": "83f3331b4fb15990e8451e86062e7887a5b6ae85210b66412ec0971183d48d38",
+    "src/pancake_conformance/cases/coverage_interface.py": "64765c451ed537e20d4e81eb4bd3f79d76c2f1ee0e0c3498d0e45be21a43bc1b",
+    "src/pancake_conformance/cases/coverage_sprint.py": "769bc227e87087984a4258c23cf56ca73f556021407d93bec3ac7f85f918b6a6",
+    "src/pancake_conformance/cases/devices.py": "a08f990cc4c27eea2741f30d663e2b6e9f57f3ed4c9fca6f484b143b1622af6e",
+    "src/pancake_conformance/cases/interface.py": "2f96c6eaf48b32fe52ac5806a3550dac420a61baf5582e1d599a9364fb505c12",
+    "src/pancake_conformance/cases/interface_portability.py": "fee8c30dc9706cca8ac48245f6a78cb655cebbc62f76d5bbd81a55d9b9f40109",
+    "src/pancake_conformance/cases/interface_settings.py": "80ca5535ab9282e56fe088e38fa478436869ce0ab06207ced37fe402d2e6582f",
+    "src/pancake_conformance/cases/recovery.py": "191ff97a1eafb83fff8289b463c91df45b9ede26a8815c4954e1fb104ae83b22",
+    "src/pancake_conformance/cli.py": "fbf86f028e922ece424e5a3da3dd5e364c15f09d9cd62238e9f9248f604b379d",
+    "src/pancake_conformance/context.py": "5051405c54501be34a22988fb65f090eaf3cc52d6396710a7bbff53ed1f2c832",
+    "src/pancake_conformance/coverage.py": "cc9c03f91c98e88a04751b7eec106eb864e9e27c7da1085d6b80e01905749892",
+    "src/pancake_conformance/coverage_scope.py": "e04d3cedadffcacf2c623cb4f657d06a5863c81546f472d556456454674732a9",
+    "src/pancake_conformance/desktop.py": "f73f8d59692dd20c6662c7fb033fd0994d9142adb9f927a594e961a59d340708",
+    "src/pancake_conformance/fixtures.py": "995a0917fa900cd46143ad4a21dca1c3c7101d2c2dc418d2662043fa3ef1cebe",
+    "src/pancake_conformance/guest_display.swift": "e7b4e2653fac1d4e3e3c153a7e872744601eaded78c84ec33fc18a933203e52e",
+    "src/pancake_conformance/gui_vm.py": "11ca6f2a6c0661f6afeaa03627861d1cce5637a6226d8b9b5f8177bd1ffd4974",
+    "src/pancake_conformance/linux_ui.py": "784646099637e8bfe35df280433610a300644d1189a1b874906175ec8082473e",
+    "src/pancake_conformance/macos_ui.py": "263bcfb5170f2d8fc41c2675c0ea672ff5efe4d593ef91dda0844a6d264e92c5",
+    "src/pancake_conformance/model.py": "de5275a01d4cec26c1fed7d53581b5cc6fcf7d8283e5a6ab0e130e2a474edb7d",
+    "src/pancake_conformance/native_linux.py": "33520be5c961644918d7a9f4ed0a9c28d7bf5cd32588ad2b6dfa617e60f875a4",
+    "src/pancake_conformance/native_macos.swift": "7d42bfbbf77ed758f55cdbe4dd614f4f9e43e0bb67462b9a5ae9577538895a46",
+    "src/pancake_conformance/probes.py": "319e534111949f829adc86e4832da9b70e2c533bd8fbb7b0f85e5d42896b9535",
+    "src/pancake_conformance/process.py": "17caf39bd28a99447226c1d06b2906a33994273dfae880434811f3cf9e141b77",
+    "src/pancake_conformance/runner.py": "d6226658c6f51fe6c366ed42e31ad04b78a141fa47d74d1e0532b02c42916649",
+    "src/pancake_conformance/source_files.py": "87bb673645bed7fd6e936720fea149f54f864209d9ceaf080f22b8d199bc349f",
+    "src/pancake_conformance/target.py": "4cbe5b067e5565f0e91390886dfdb2f7ea569efd0aece41fa2a4e73203b7f9c4",
+    "src/pancake_conformance/ui.py": "fa48d7074d577ce64ec526684ae9f48c57fd404ffa50fb75e62384d69d003255",
+    "src/pancake_conformance/validators.py": "737830d600ac7ae35477aae72eda4d102eea0eb03c8c7fd90b89c79f32b6a396",
+    "src/pancake_conformance/vm_bootstrap.py": "ad754b4f721c1c25a70ca58f8370c9aec9793ac289e7595bcdae59bf1796c9fc",
+    "src/pancake_conformance/vm_results.py": "438ca16fe6d8bb23dc20ad0964f80fe0424bb6c802ac4b73991ce40b900cc0a0",
+    "targets/example.toml": "0cb03d8560a0116fb964c8856a9e279ba6c3fee2bb77cfba3522c95b9937c991",
+    "tests/conftest.py": "7b534f6c8e7ed219e74e072a49ea803893a1c9810f58b0808102b18e70722286",
+    "tests/test_adapter_boundary.py": "ae43e15b0c7cab75fb813d6f7854102f118c68033cc35c84a4deac1af5bbcf25",
+    "tests/test_algorithm_cases.py": "7c29d26b9a537494d62c8e9563c652f59e2a1d405679c71d540be5d33d95f243",
+    "tests/test_baseline.py": "2f21acdb9f0c44c9cb92a5b940e67faa57745a6588bcb83cd96e021106173a22",
+    "tests/test_cli_cases.py": "9ed2fb5976372ed94726341579487c7535c010fce94a9753f1b7e418a2884dcb",
+    "tests/test_cli_entrypoint.py": "5afa234da78b6cfb619264682d49fa90dd069f6853f4653c8522ebe11f8f1d34",
+    "tests/test_cli_flexibility.py": "2cab73a000d95ebe7510164868a863fe38fffc7fec2feb4433e6000022a31568",
+    "tests/test_context.py": "80de1b0624b4606941dcf70f3eefac298bb6093d3bee63af9605a7ebeca28f95",
+    "tests/test_coverage_adapter.py": "91413733fc4f7bc858d45696399a51684e01c12dd4768fd6fb40e069a5930cf1",
+    "tests/test_coverage_algorithms.py": "9b149a66157e1934a1baf12be245f46e92258deff0a65b9a0ca93863f6dc678b",
+    "tests/test_coverage_cli.py": "ea9e14e11c93a6951887af7d2f6265b15554573154cc930c12776b5270414c87",
+    "tests/test_coverage_interface.py": "671081f73307f0279aa380c4530d45372be3af6998f0857b00466789578d9fa4",
+    "tests/test_coverage_scope.py": "7d25ff1cdc0e8079b3337db41400317df6456d95f86993128890c98217d5fc03",
+    "tests/test_coverage_sprint.py": "d6b451c2c59828b11082ef1905e3fa7ca3e1feb9122ad1bba97ed47c6e393ac0",
+    "tests/test_desktop.py": "9f2a7065ccae6c60061e0d816df1f06d6dabdb56676001a440ff6757718da0d5",
+    "tests/test_device_cases.py": "38083c509b72aff650df466ab0168df4e52648ad8cd252f1a3e45f97c362ee5f",
+    "tests/test_external_target.py": "731d2e105f4720fd091c5fe45b2ae5c773977118a5ad516ccae51e2db9f3103e",
+    "tests/test_fixtures.py": "88f3d34d56d8a74347fce5d6ae142ff226dbeeae6dc519a538ac6c88689f6229",
+    "tests/test_gui_vm.py": "06e8e23d973bdd3dd7be389dcadc18fa8f4ff90316067627cc96dcb68025c775",
+    "tests/test_host_parity.py": "1764685353f79438c70a6222d51c150f91c481ca5ea1def7085ed12222375737",
+    "tests/test_incomplete_contract.py": "9badd45f2e6951a210f0ec8a08631d8c2ea57af6e3c9d507dda4af4604a96a17",
+    "tests/test_interface_cases.py": "817169ddf9ae23b00102510775aa19c4ffe4e6bca83992b022773f455c1db952",
+    "tests/test_interface_portability.py": "21be1e2aaf5b576a2c869d22b770a8fdc028d1dbeb3349e1d5f8ac34dbe666f9",
+    "tests/test_interface_settings.py": "3aec05554841e1b0b23cc3b7f389cb4caeceea03aab517a9d9670f86c43dd106",
+    "tests/test_linux_ui.py": "892d93b982418d3e0bf823c6a9c016792523914f776b662c63c1d8df8ed747ec",
+    "tests/test_native_pointer_variants.py": "358747e254cc2928d3f39e1cc218e674501a340de94cfead12a15e0ad78993e3",
+    "tests/test_portable_contracts.py": "0b2c805ec69a420ddec238ea3e2e6da8865f82bbd64b7dd43f0fccf22ae45323",
+    "tests/test_probes.py": "19ce78ce19b884aa9930c03cb9c63c160607ff70bc0ef58cb77719f7572b44d2",
+    "tests/test_process.py": "8312333cf7fefa591a91144d65603bee74d37a9c847b3d4876824d548a6deae7",
+    "tests/test_project_layout.py": "c586d1dd3b349232a3f794c7591704f3ea7ade53bfb961858ae02b68e804593c",
+    "tests/test_recovery_cases.py": "cbdfc2e5710fdd84d5015bbd862b4dbf47d3c4b7e82ec912ee9e9d2d3bed7f4e",
+    "tests/test_runner.py": "7afc29c855ac04e09ff95a8099eb489b7109afa8d417ba9c52985d5b584ce5b1",
+    "tests/test_semantic_ui.py": "0e2985b7c1cb94ecd80c6f89b8072099418ee479dedd9c7899375580941aacdb",
+    "tests/test_target.py": "c605c490a3de987f3353e30e360a2d53b76fc2ae81d8af34d45753b1663596e2",
+    "tests/test_ui_protocol.py": "d00f467061a5746eb3fdcbb111a3683aa8b29686393e205dbfeeae2ef065b18e",
+    "tests/test_validators.py": "3e072774bd6f32b50d238a224943497ea912481401b4ca1da6147d8bde33a33d",
+    "tests/test_vm_bootstrap.py": "9443d1c1fa41f149d00dad201f210aa14c7a2cf8aceb008bd9ef2a8c3668ff67",
+    "tests/test_vm_coverage.py": "249301f755f831438536ceb28c8f8a134d48911c6e872d5989c5da8b6f45f7ca",
+    "tests/test_vm_results.py": "210c70018405bd2f450dc34365c92ee96a2ff96b295acf4f34268e3f97cecc23",
+    "tests/test_vm_runner.py": "7a701e7b7f8490d070cadf62d82e3345f191021a7443a372580ca0250040f49e",
+    "uv.lock": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b"
+  },
+  "historical_snapshot": {
+    "preserved_in": "case-roadmap.json:frozen_contract",
+    "combined_sha256": "c976c4d8915c07080f530b06c40a5223928034e142b37e33f223d8c420f7423f",
+    "file_count": 86,
+    "hashes_verified_against_historical_commit": true
+  },
+  "drift": {
+    "changed": [
+      "README.md",
+      "docs/ui-protocol.md",
+      "pyproject.toml",
+      "src/pancake_conformance/cases/recovery.py",
+      "src/pancake_conformance/cli.py",
+      "src/pancake_conformance/macos_ui.py",
+      "src/pancake_conformance/target.py",
+      "src/pancake_conformance/vm_bootstrap.py",
+      "tests/conftest.py",
+      "tests/test_cli_entrypoint.py",
+      "tests/test_external_target.py",
+      "tests/test_gui_vm.py",
+      "tests/test_native_pointer_variants.py",
+      "tests/test_recovery_cases.py",
+      "tests/test_ui_protocol.py",
+      "uv.lock"
+    ],
+    "added": [
+      "docs/linux.md",
+      "src/pancake_conformance/linux_ui.py",
+      "src/pancake_conformance/native_linux.py",
+      "tests/test_linux_ui.py"
+    ],
+    "removed": [],
+    "case_metadata_changed": false
+  },
+  "catalog": {
+    "total_cases": 376,
+    "suite_counts": {
+      "cli": 46,
+      "algorithms": 223,
+      "devices": 72,
+      "interface": 35
+    },
+    "metadata_sha256": "0c287412662c0c47fb50fb90d3058c6dac864ba777275f9e8a9d0195c3a58705",
+    "canonical_encoding": "UTF-8 JSON array, sort_keys=True, separators=(comma,colon), ensure_ascii=False, final LF",
+    "cases": [
+      {
+        "id": "cli.help",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Help describes public CLI surface"
+      },
+      {
+        "id": "cli.reject.no-arguments",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Invalid arguments fail with diagnostic"
+      },
+      {
+        "id": "cli.reject.method",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.alignment",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.reference",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.bit-depth",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.integer",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.missing-input",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.missing-output",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.unknown-option",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.device-conflict",
+        "suite": "cli",
+        "required_capabilities": [
+          "exclusive_device_flags"
+        ],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.scale-zero",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Invalid stack settings fail without output"
+      },
+      {
+        "id": "cli.reject.scale-one",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Invalid stack settings fail without output"
+      },
+      {
+        "id": "cli.reject.scale-negative",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Invalid stack settings fail without output"
+      },
+      {
+        "id": "cli.reject.slab-one",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Invalid stack settings fail without output"
+      },
+      {
+        "id": "cli.reject.slab-negative",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Invalid stack settings fail without output"
+      },
+      {
+        "id": "cli.reject.overlap-negative",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Invalid stack settings fail without output"
+      },
+      {
+        "id": "cli.reject.overlap-too-large",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Invalid stack settings fail without output"
+      },
+      {
+        "id": "cli.reject.no-files",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.one-file",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.duplicate-single",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.corrupt-images",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.reject.output-parent",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.paths.sorted-and-deduplicated",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.paths.glob",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.inputs.unchanged",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.progress-and-quality",
+        "suite": "cli",
+        "required_capabilities": [
+          "cli_reports"
+        ],
+        "description": ""
+      },
+      {
+        "id": "cli.export.jpeg-16bit-warning",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.export.overwrite",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.export.failed-retention",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "cli.coverage.auto.medium",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Auto settings preserve RGB at nine megapixels"
+      },
+      {
+        "id": "cli.coverage.auto.large",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Auto settings preserve RGB above twenty megapixels"
+      },
+      {
+        "id": "cli.coverage.auto.unmeasured",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Automatic execution handles large images without prescribing a strategy"
+      },
+      {
+        "id": "cli.coverage.raw.legacy-alignment",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "RAW auto detection, quality reporting and sequential alignment preserve identity"
+      },
+      {
+        "id": "cli.coverage.input.npy",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Real NumPy image files agree with equivalent PNG inputs"
+      },
+      {
+        "id": "cli.coverage.input.literal-glob",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Existing filenames with glob characters remain literal inputs"
+      },
+      {
+        "id": "cli.coverage.input.directories",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Directories fail image decoding without publishing output"
+      },
+      {
+        "id": "cli.coverage.reject.oversize-png",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Oversized PNG headers fail safely through CPU, GPU and alignment decoders"
+      },
+      {
+        "id": "cli.coverage.reject.png",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Malformed files fail with diagnostics and no partial output"
+      },
+      {
+        "id": "cli.coverage.partial.png",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "An undecodable input rejects the complete job"
+      },
+      {
+        "id": "cli.coverage.reject.dng",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Malformed files fail with diagnostics and no partial output"
+      },
+      {
+        "id": "cli.coverage.partial.dng",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "An undecodable input rejects the complete job"
+      },
+      {
+        "id": "cli.coverage.reject.npy",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Malformed files fail with diagnostics and no partial output"
+      },
+      {
+        "id": "cli.coverage.partial.npy",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "An undecodable input rejects the complete job"
+      },
+      {
+        "id": "cli.coverage.reject.unknown",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "Malformed files fail with diagnostics and no partial output"
+      },
+      {
+        "id": "cli.coverage.partial.unknown",
+        "suite": "cli",
+        "required_capabilities": [],
+        "description": "An undecodable input rejects the complete job"
+      },
+      {
+        "id": "algorithms.stack.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Recover all focus planes through command-line interface"
+      },
+      {
+        "id": "algorithms.odd_dimensions.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.flat.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Constant input retains source color"
+      },
+      {
+        "id": "algorithms.deterministic.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.automatic_parameters.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.translation.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.euclidean.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.similarity.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.affine.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.breathing.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.quality_report.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.bayer_dng.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Decode a generated Bayer DNG without an embedded thumbnail"
+      },
+      {
+        "id": "algorithms.alignment.mixed_dimensions.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Align different input dimensions into first-frame coordinates"
+      },
+      {
+        "id": "algorithms.stack.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Recover all focus planes through command-line interface"
+      },
+      {
+        "id": "algorithms.odd_dimensions.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.flat.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Constant input retains source color"
+      },
+      {
+        "id": "algorithms.deterministic.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.automatic_parameters.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.translation.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.euclidean.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.similarity.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.affine.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.breathing.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.quality_report.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.bayer_dng.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Decode a generated Bayer DNG without an embedded thumbnail"
+      },
+      {
+        "id": "algorithms.alignment.mixed_dimensions.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Align different input dimensions into first-frame coordinates"
+      },
+      {
+        "id": "algorithms.stack.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Recover all focus planes through command-line interface"
+      },
+      {
+        "id": "algorithms.odd_dimensions.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.flat.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Constant input retains source color"
+      },
+      {
+        "id": "algorithms.deterministic.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.automatic_parameters.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.translation.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.euclidean.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.similarity.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.affine.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.breathing.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.quality_report.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.bayer_dng.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Decode a generated Bayer DNG without an embedded thumbnail"
+      },
+      {
+        "id": "algorithms.alignment.mixed_dimensions.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Align different input dimensions into first-frame coordinates"
+      },
+      {
+        "id": "algorithms.stack.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Recover all focus planes through command-line interface"
+      },
+      {
+        "id": "algorithms.odd_dimensions.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.flat.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Constant input retains source color"
+      },
+      {
+        "id": "algorithms.deterministic.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.automatic_parameters.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.translation.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.euclidean.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.similarity.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.affine.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.breathing.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.quality_report.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.bayer_dng.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Decode a generated Bayer DNG without an embedded thumbnail"
+      },
+      {
+        "id": "algorithms.alignment.mixed_dimensions.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Align different input dimensions into first-frame coordinates"
+      },
+      {
+        "id": "algorithms.stack.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Recover all focus planes through command-line interface"
+      },
+      {
+        "id": "algorithms.odd_dimensions.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.flat.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Constant input retains source color"
+      },
+      {
+        "id": "algorithms.deterministic.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.automatic_parameters.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.translation.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.euclidean.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.similarity.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.affine.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.breathing.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.quality_report.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.bayer_dng.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Decode a generated Bayer DNG without an embedded thumbnail"
+      },
+      {
+        "id": "algorithms.alignment.mixed_dimensions.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Align different input dimensions into first-frame coordinates"
+      },
+      {
+        "id": "algorithms.precision16.png.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.tif.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.cross_export.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.2.0.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.3.1.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.4.2.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.9.0.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.breathing.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.repeated_breathing_slabs.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.nonrepeating_slabs.laplacian",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.png.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.tif.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.cross_export.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.2.0.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.3.1.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.4.2.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.9.0.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.breathing.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.repeated_breathing_slabs.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.nonrepeating_slabs.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.png.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.tif.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.cross_export.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.2.0.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.3.1.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.4.2.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.9.0.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.breathing.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.repeated_breathing_slabs.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.nonrepeating_slabs.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.png.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.tif.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.cross_export.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.2.0.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.3.1.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.4.2.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.9.0.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.slabs.breathing.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.repeated_breathing_slabs.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.nonrepeating_slabs.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.png.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.precision16.tif.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.cross_export.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.translation.reference_middle",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.translation.reference_previous",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.euclidean.reference_middle",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.euclidean.reference_previous",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.similarity.reference_middle",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.similarity.reference_previous",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.affine.reference_middle",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.affine.reference_previous",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.breathing.reference_middle",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.breathing.reference_previous",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.grayscale",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.rgba",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.formats",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.unicode",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.float01",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.float255",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.exr",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.grayscale16",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.orientation1",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.orientation2",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.orientation3",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.orientation4",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.orientation5",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.orientation6",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.orientation7",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.input.orientation8",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.export.jpg",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.export.tif",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.export.exr",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.parameters.pyramid_levels_2",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.parameters.pyramid_levels_6",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.parameters.kernel_2",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.parameters.kernel_6",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.parameters.kernel_11",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.breathing.max_precision",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.legacy_rotation_scale",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_constant_mix.4",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_constant_mix.9",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.weighted.zero_regions",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.auto_crop",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.alignment.translation_bounded_crop",
+        "suite": "algorithms",
+        "required_capabilities": [
+          "alignment_evidence"
+        ],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_brackets",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_precision.2.png",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_precision.2.tif",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_precision.4.png",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_precision.4.tif",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_precision.9.png",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.exposure_precision.9.tif",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": ""
+      },
+      {
+        "id": "algorithms.coverage.precision.euclidean",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.precision.affine",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.scale_clamp",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.featureless.similarity",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.featureless.affine",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.implausible.rotation",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.implausible.anisotropy",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.implausible.scale",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.dimensions_resize_over_twofold",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.mixed_precision.ref8.stack",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.mixed_precision.ref8.aligned",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.mixed_precision.ref16.stack",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.mixed_precision.ref16.aligned",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.hdr_multibatch.cpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.hdr_multibatch.gpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.laplacian.stack",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.laplacian.translation",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.laplacian.euclidean",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.laplacian.similarity",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.laplacian.affine",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.laplacian.breathing",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.hybrid.stack",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.hybrid.translation",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.hybrid.euclidean",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.hybrid.similarity",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.hybrid.affine",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.hybrid.breathing",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.weighted_average.stack",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.weighted_average.translation",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.weighted_average.euclidean",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.weighted_average.similarity",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.weighted_average.affine",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.weighted_average.breathing",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.depth_map.stack",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.depth_map.translation",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.depth_map.euclidean",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.depth_map.similarity",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.depth_map.affine",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.depth_map.breathing",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.exposure_fusion.stack",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.exposure_fusion.translation",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.exposure_fusion.euclidean",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.exposure_fusion.similarity",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.exposure_fusion.affine",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.partial_corrupt.exposure_fusion.breathing",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.no_decodable_frames.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.no_decodable_frames.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.no_decodable_frames.exposure_fusion",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.no_decodable_frames.sequential",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.gray_array.hybrid.cpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.gray_array.hybrid.gpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.gray_array.weighted_average.cpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.gray_array.weighted_average.gpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.gray_array.depth_map.cpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "algorithms.coverage.gray_array.depth_map.gpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Generated public-boundary numerical and fallback coverage"
+      },
+      {
+        "id": "devices.cpu.laplacian",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "cpu"
+        ],
+        "description": "Explicit CPU selection completes without GPU fallback"
+      },
+      {
+        "id": "devices.gpu.stack.laplacian",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Strict GPU completion and CPU/GPU fusion equivalence"
+      },
+      {
+        "id": "devices.auto.cold.laplacian",
+        "suite": "devices",
+        "required_capabilities": [],
+        "description": "Automatic execution produces valid output without a prescribed backend"
+      },
+      {
+        "id": "devices.gpu.aligned.laplacian",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Alignment and fusion complete on GPU with CPU-equivalent image"
+      },
+      {
+        "id": "devices.cpu.hybrid",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "cpu"
+        ],
+        "description": "Explicit CPU selection completes without GPU fallback"
+      },
+      {
+        "id": "devices.gpu.stack.hybrid",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Strict GPU completion and CPU/GPU fusion equivalence"
+      },
+      {
+        "id": "devices.auto.cold.hybrid",
+        "suite": "devices",
+        "required_capabilities": [],
+        "description": "Automatic execution produces valid output without a prescribed backend"
+      },
+      {
+        "id": "devices.gpu.aligned.hybrid",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Alignment and fusion complete on GPU with CPU-equivalent image"
+      },
+      {
+        "id": "devices.cpu.weighted_average",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "cpu"
+        ],
+        "description": "Explicit CPU selection completes without GPU fallback"
+      },
+      {
+        "id": "devices.gpu.stack.weighted_average",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Strict GPU completion and CPU/GPU fusion equivalence"
+      },
+      {
+        "id": "devices.auto.cold.weighted_average",
+        "suite": "devices",
+        "required_capabilities": [],
+        "description": "Automatic execution produces valid output without a prescribed backend"
+      },
+      {
+        "id": "devices.gpu.aligned.weighted_average",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Alignment and fusion complete on GPU with CPU-equivalent image"
+      },
+      {
+        "id": "devices.cpu.depth_map",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "cpu"
+        ],
+        "description": "Explicit CPU selection completes without GPU fallback"
+      },
+      {
+        "id": "devices.gpu.stack.depth_map",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Strict GPU completion and CPU/GPU fusion equivalence"
+      },
+      {
+        "id": "devices.auto.cold.depth_map",
+        "suite": "devices",
+        "required_capabilities": [],
+        "description": "Automatic execution produces valid output without a prescribed backend"
+      },
+      {
+        "id": "devices.gpu.aligned.depth_map",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Alignment and fusion complete on GPU with CPU-equivalent image"
+      },
+      {
+        "id": "devices.cpu.exposure_fusion",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "cpu"
+        ],
+        "description": "Explicit CPU selection completes without GPU fallback"
+      },
+      {
+        "id": "devices.gpu.stack.exposure_fusion",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Strict GPU completion and CPU/GPU fusion equivalence"
+      },
+      {
+        "id": "devices.auto.cold.exposure_fusion",
+        "suite": "devices",
+        "required_capabilities": [],
+        "description": "Automatic execution produces valid output without a prescribed backend"
+      },
+      {
+        "id": "devices.gpu.aligned.exposure_fusion",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Alignment and fusion complete on GPU with CPU-equivalent image"
+      },
+      {
+        "id": "devices.gpu.alignment.translation",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU pipeline agrees with CPU for supported transform model"
+      },
+      {
+        "id": "devices.gpu.alignment.euclidean",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU pipeline agrees with CPU for supported transform model"
+      },
+      {
+        "id": "devices.gpu.alignment.similarity",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU pipeline agrees with CPU for supported transform model"
+      },
+      {
+        "id": "devices.gpu.alignment.affine",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU pipeline agrees with CPU for supported transform model"
+      },
+      {
+        "id": "devices.gpu.alignment.breathing",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU pipeline agrees with CPU for supported transform model"
+      },
+      {
+        "id": "devices.gpu.slabs.laplacian",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Overlapping GPU slabs agree with CPU slabs"
+      },
+      {
+        "id": "devices.gpu.slabs.hybrid",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Overlapping GPU slabs agree with CPU slabs"
+      },
+      {
+        "id": "devices.gpu.slabs.weighted_average",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Overlapping GPU slabs agree with CPU slabs"
+      },
+      {
+        "id": "devices.gpu.slabs.depth_map",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Overlapping GPU slabs agree with CPU slabs"
+      },
+      {
+        "id": "devices.gpu.precision16.hybrid",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU retains genuine 16-bit input precision and CPU parity"
+      },
+      {
+        "id": "devices.gpu.precision16.weighted_average",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU retains genuine 16-bit input precision and CPU parity"
+      },
+      {
+        "id": "devices.gpu.precision16.depth_map",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU retains genuine 16-bit input precision and CPU parity"
+      },
+      {
+        "id": "devices.gpu.precision16.exposure_fusion",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "GPU retains genuine 16-bit input precision and CPU parity"
+      },
+      {
+        "id": "devices.gpu.high_precision",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "High-precision GPU request produces CPU-equivalent pixels"
+      },
+      {
+        "id": "devices.gpu.corrupt_input_rejected",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt input fails the complete job without backend fallback"
+      },
+      {
+        "id": "devices.gpu.weighted.zero_regions",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Zero-weight regions preserve deterministic source color"
+      },
+      {
+        "id": "devices.gpu.exposure_constant_mix.4",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Analytic equal-weight fusion preserves low bits through batch tree"
+      },
+      {
+        "id": "devices.gpu.exposure_constant_mix.9",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Analytic equal-weight fusion preserves low bits through batch tree"
+      },
+      {
+        "id": "devices.gpu.exposure_precision.2",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Independent full-precision identity and CPU/GPU parity"
+      },
+      {
+        "id": "devices.gpu.exposure_precision.4",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Independent full-precision identity and CPU/GPU parity"
+      },
+      {
+        "id": "devices.gpu.exposure_precision.9",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Independent full-precision identity and CPU/GPU parity"
+      },
+      {
+        "id": "devices.gpu.corrupt.laplacian.stack",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.laplacian.translation",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.laplacian.euclidean",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.laplacian.similarity",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.laplacian.affine",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.laplacian.breathing",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.hybrid.stack",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.hybrid.translation",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.hybrid.euclidean",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.hybrid.similarity",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.hybrid.affine",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.hybrid.breathing",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.weighted_average.stack",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.weighted_average.translation",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.weighted_average.euclidean",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.weighted_average.similarity",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.weighted_average.affine",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.weighted_average.breathing",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.depth_map.stack",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.depth_map.translation",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.depth_map.euclidean",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.depth_map.similarity",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.depth_map.affine",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.depth_map.breathing",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.exposure_fusion.stack",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.exposure_fusion.translation",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.exposure_fusion.euclidean",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.exposure_fusion.similarity",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.exposure_fusion.affine",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.corrupt.exposure_fusion.breathing",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Corrupt requested input rejects complete job and retains existing export"
+      },
+      {
+        "id": "devices.gpu.exposure_mixed_dimensions",
+        "suite": "devices",
+        "required_capabilities": [
+          "backend_evidence",
+          "gpu"
+        ],
+        "description": "Later sixteen-bit sources retain precision when resized or padded against an eight-bit first frame"
+      },
+      {
+        "id": "interface.controls.method-alignment",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native controls preserve exclusive method selection and all alignment choices"
+      },
+      {
+        "id": "interface.algorithm.laplacian",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native method selection, processing, 16-bit export, and CLI pixel parity"
+      },
+      {
+        "id": "interface.algorithm.hybrid",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native method selection, processing, 16-bit export, and CLI pixel parity"
+      },
+      {
+        "id": "interface.algorithm.weighted_average",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native method selection, processing, 16-bit export, and CLI pixel parity"
+      },
+      {
+        "id": "interface.algorithm.depth_map",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native method selection, processing, 16-bit export, and CLI pixel parity"
+      },
+      {
+        "id": "interface.algorithm.exposure_fusion",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native method selection, processing, 16-bit export, and CLI pixel parity"
+      },
+      {
+        "id": "interface.startup.empty",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Empty workspace disables operations that require images"
+      },
+      {
+        "id": "interface.import.native-dialogs",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Real native file/folder import, cancellation, duplicate suppression, and removal"
+      },
+      {
+        "id": "interface.import.raw",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "RAW preview, processing, and 16-bit native export"
+      },
+      {
+        "id": "interface.export.formats",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native export options and all supported formats and bit depths"
+      },
+      {
+        "id": "interface.viewer.navigation-comparison",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native comparison divider, zoom, pan, and fixed-view source navigation"
+      },
+      {
+        "id": "interface.layout.panels",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "layout_panels"
+        ],
+        "description": "Sidebar and inspector visibility through native menu actions"
+      },
+      {
+        "id": "interface.controls.advanced-visibility",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "advanced_controls"
+        ],
+        "description": "Method-specific advanced controls follow selected algorithm"
+      },
+      {
+        "id": "interface.workflow.unsaved-discard",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Unsaved work can be kept or explicitly discarded"
+      },
+      {
+        "id": "interface.lifecycle.pause-cancel",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "pause_resume"
+        ],
+        "description": "Real worker pause/resume/cancel and successful reuse"
+      },
+      {
+        "id": "interface.compute.gpu",
+        "suite": "interface",
+        "required_capabilities": [
+          "physical_gpu",
+          "native_gui"
+        ],
+        "description": "GUI GPU preference reaches actual GPU completion"
+      },
+      {
+        "id": "interface.alignment.crop",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "GUI alignment and crop agree with CLI pixels"
+      },
+      {
+        "id": "interface.settings.persistence",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "preferences"
+        ],
+        "description": "Theme and processing choices persist across restart; fresh profile remains isolated"
+      },
+      {
+        "id": "interface.settings.lightroom-status",
+        "suite": "interface",
+        "required_capabilities": [
+          "lightroom",
+          "native_gui"
+        ],
+        "description": "Lightroom status and action state are readable without changing installation"
+      },
+      {
+        "id": "interface.about",
+        "suite": "interface",
+        "required_capabilities": [
+          "about",
+          "native_gui"
+        ],
+        "description": "Application information exposes a readable version and closes"
+      },
+      {
+        "id": "interface.portability.retained-results",
+        "suite": "interface",
+        "required_capabilities": [
+          "cpu",
+          "native_gui",
+          "retained_results"
+        ],
+        "description": "Cropped old result retains exact pixels after a different unaligned job and result reselection"
+      },
+      {
+        "id": "interface.portability.unicode-paths",
+        "suite": "interface",
+        "required_capabilities": [
+          "cpu",
+          "native_gui"
+        ],
+        "description": "Native Unicode file/folder import and CJK, accent, space and non-BMP export preserve pixels"
+      },
+      {
+        "id": "interface.export.batch",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "batch_export"
+        ],
+        "description": "Batch export creates JPEG8, PNG16, TIFF16 with exact lossless pixels and CLI parity; cancel writes nothing"
+      },
+      {
+        "id": "interface.result.manual-crop",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "manual_crop"
+        ],
+        "description": "Manual alignment crop preserves a source pixel rectangle, matches automatic CLI crop, and disables repeated crop"
+      },
+      {
+        "id": "interface.import.recent-folders",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "recent_folders"
+        ],
+        "description": "Recent folder reopening can be cancelled or replace frames, and clearing recent history persists"
+      },
+      {
+        "id": "interface.viewer.keyboard-boundaries",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Native view actions change scale and source selection, then restore fit"
+      },
+      {
+        "id": "interface.sprint.viewer-input",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Target-declared native view actions change scale and restore fit"
+      },
+      {
+        "id": "interface.sprint.frame-context",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "source_context"
+        ],
+        "description": "Source context menu reveals a file, removes one frame and removes the selected remainder"
+      },
+      {
+        "id": "interface.sprint.viewport-export",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "viewport_export"
+        ],
+        "description": "Native viewport export preserves displayed RGB channels without freezing UI layout"
+      },
+      {
+        "id": "algorithms.sprint.native-input.grayscale.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.native-input.grayscale.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.native-input.grayscale.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.native-input.grayscale16.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.native-input.grayscale16.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.native-input.grayscale16.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.native-input.rgba.hybrid",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.native-input.rgba.weighted_average",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.native-input.rgba.depth_map",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity"
+      },
+      {
+        "id": "algorithms.sprint.black-translation",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Small zero-valued images remain zero under translation alignment"
+      },
+      {
+        "id": "interface.recovery.close-unsaved",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Close can be cancelled; cancelled close-export preserves the result; explicit discard exits cleanly"
+      },
+      {
+        "id": "algorithms.recovery.cascade.cpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Large narrow frames recover known translation through multiscale CPU/GPU alignment"
+      },
+      {
+        "id": "algorithms.recovery.cascade.gpu",
+        "suite": "algorithms",
+        "required_capabilities": [],
+        "description": "Large narrow frames recover known translation through multiscale CPU/GPU alignment"
+      },
+      {
+        "id": "interface.recovery.folder-import",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Recursive folder import skips hidden/unsupported entries, suppresses duplicates and preserves frames after rejection"
+      },
+      {
+        "id": "interface.recovery.device-request",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "gpu_preference"
+        ],
+        "description": "A GPU preference produces valid output without prescribing internal fallback strategy"
+      },
+      {
+        "id": "interface.recovery.missing-source",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "A source removed after import causes a recoverable worker error; restored inputs can be stacked"
+      },
+      {
+        "id": "interface.recovery.batch-export",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui",
+          "batch_export"
+        ],
+        "description": "A conflicting output directory reports export failure, preserves other files and permits retry"
+      },
+      {
+        "id": "interface.recovery.export-cancel",
+        "suite": "interface",
+        "required_capabilities": [
+          "native_gui"
+        ],
+        "description": "Cancelling options or native Save preserves the result for a later successful export"
+      }
+    ]
+  },
+  "review": {
+    "decision": "Use current committed contract for P0; retain historical fingerprints and all existing reference baselines.",
+    "material_changes": [
+      "Linux private desktop/AT-SPI route permits physical GPU UI tests without macOS VM.",
+      "Device-recovery GUI/CLI comparison selects observed numerical backend; CPU/GPU parity remains independently tested.",
+      "Seven macOS transport self-tests were removed upstream; this is a validation coverage reduction, not deletion of catalog cases."
+    ],
+    "limitations": [
+      "Review is static plus current portable suite self-tests.",
+      "No native Linux/macOS GUI or physical GPU case executed for Pancake.",
+      "Stored ChimpStackr Linux 376/376 record is historical external-target evidence, not a new independent replay."
+    ]
+  },
+  "validation": {
+    "commands": [
+      {
+        "argv": [
+          "uv",
+          "run",
+          "--project",
+          "pancake-conformance",
+          "--frozen",
+          "pytest",
+          "pancake-conformance/tests"
+        ],
+        "returncode": 0,
+        "passed": 307,
+        "skipped": 4,
+        "collected": 311,
+        "duration_seconds": 14.13,
+        "skip_reasons": [
+          "Two native smoke wrappers require explicit target and GUI route.",
+          "Two Linux-only routing/boundary self-tests skipped on Darwin."
+        ]
+      },
+      {
+        "argv": [
+          "uv",
+          "run",
+          "--project",
+          "pancake-conformance",
+          "--frozen",
+          "ruff",
+          "check",
+          "pancake-conformance/src",
+          "pancake-conformance/tests"
+        ],
+        "returncode": 0,
+        "result": "All checks passed"
+      }
+    ],
+    "host": "Darwin arm64",
+    "target_conformance_run": false,
+    "native_input_executed": false,
+    "locked_package_names_versions_unchanged": true
+  }
+}
