@@ -1,0 +1,2445 @@
+{
+  "schema_version": 1,
+  "status": "frozen_real_D150_E9_corpus; T50_R50_unselected",
+  "acquisition_date": "2026-11-17",
+  "bokehforge_lock_sha256": "118ca7954623cb7464fa54c5151edc94afc0c74baccf006b1d6edcd5b879a644",
+  "bokehforge_config_sha256": "35728175d83dbf779f8901fdc8942dde7d75da8ec7cf51d965858c0f1637d21a",
+  "native_download_budget_bytes": 2147483648,
+  "disabled_D01_untouched": true,
+  "sources": [
+    {
+      "id": "D03",
+      "name": "Amber mite optical focal stacks",
+      "primary_url": "https://doi.org/10.6084/m9.figshare.14707077.v1",
+      "rights_evidence": "CC BY 4.0 explicit Figshare record",
+      "revision": "1",
+      "selected_downloads": {
+        "article_id": 14707077,
+        "evaluation_domain": "focus_stacking",
+        "files": [
+          {
+            "md5": "0ce63bd918fbda570df66731c2aa5880",
+            "path": "26E_dorsal_60x.zip",
+            "sha256": "311ca6aab7d3bff03c714fd2d81c741f3847de1d4d3f2f9cfa767b6eb62cf56a",
+            "size": 53459291,
+            "url": "https://ndownloader.figshare.com/files/28246182"
+          },
+          {
+            "md5": "517a106c6f4aae228beda55df12d7b90",
+            "path": "26E_intercalary sclerite_ventral_100x.zip",
+            "sha256": "c0c1b6af26599d9d659069cc12a8ad0702f28a881949725d63e3f06ff110059b",
+            "size": 88780481,
+            "url": "https://ndownloader.figshare.com/files/28246194"
+          },
+          {
+            "md5": "d2b0542525a3f1caa78a886b2aacd268",
+            "path": "scalebars.zip",
+            "sha256": "12693cb29ab3eec8b83bf9f80ca02c30455353c3a71d1a105096ab90200a8924",
+            "size": 31340,
+            "url": "https://ndownloader.figshare.com/files/28394283"
+          }
+        ],
+        "id": "D03",
+        "include_pattern": "\\.zip$",
+        "layout": "archive_stacks",
+        "name": "Amber mite optical focal stacks",
+        "original_split": "none verified",
+        "primary_url": "https://doi.org/10.6084/m9.figshare.14707077.v1",
+        "provider": "figshare",
+        "reference_semantics": "Already fused JPEGs separate from source stacks",
+        "reference_type": "software_pseudo_reference",
+        "revision": "1",
+        "rights_evidence": "CC BY 4.0 explicit Figshare record",
+        "selection": ".bokehforge/state/download-plan.json",
+        "status": "available",
+        "transfer": "srgb_assumed",
+        "version": 1
+      }
+    },
+    {
+      "id": "D05",
+      "name": "Lytro Multi-focus Dataset",
+      "primary_url": "https://doi.org/10.1016/j.inffus.2014.10.004",
+      "rights_evidence": "No explicit image terms located in inspected author tree",
+      "revision": "8e9f62124a78dbca09e37bdecd369c8294223e24",
+      "selected_downloads": {
+        "evaluation_domain": "focus_stacking",
+        "files": [
+          {
+            "git_blob_sha1": "e2c2d246567f50e036f09d7f643f19a7e9ac0c22",
+            "path": "LytroDataset/lytro-01-A.jpg",
+            "sha256": "e2a1acece08828c5a50c96b396af2c20e354ae19b0ce7caac187d6d5ffc77018",
+            "size": 29704,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-01-A.jpg"
+          },
+          {
+            "git_blob_sha1": "60a8194ecc7b9160ab0a0f0237222fad8fe8f735",
+            "path": "LytroDataset/lytro-01-B.jpg",
+            "sha256": "311d21d4a857b50813ccf86fee2bb08bcb72cb3710c8120967ff21d2932292e6",
+            "size": 32513,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-01-B.jpg"
+          },
+          {
+            "git_blob_sha1": "a21f7605b083eb3c7f7de6df2051dcfc0bee47d7",
+            "path": "LytroDataset/lytro-02-A.jpg",
+            "sha256": "babca8a6eb4a8f374160c43a734a2552ab1754aeb71a442e40d6c5fde7f85910",
+            "size": 30851,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-02-A.jpg"
+          },
+          {
+            "git_blob_sha1": "e3219ebf05fb09719a5d30cd855d8099757a6f0d",
+            "path": "LytroDataset/lytro-02-B.jpg",
+            "sha256": "588251b87680579491e7c7c56182bc55e373eefea3b4ed1d05cda0fb423a7308",
+            "size": 30424,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-02-B.jpg"
+          },
+          {
+            "git_blob_sha1": "55e6763bb5be29b683d19cb5ef4c2d3e4abb3b6a",
+            "path": "LytroDataset/lytro-03-A.jpg",
+            "sha256": "0220d2c5b55267dda03840321d3693da8f4e22a772d7dffc7a5fecc5b76b61bc",
+            "size": 31039,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-03-A.jpg"
+          },
+          {
+            "git_blob_sha1": "88cac8c0d814996175aed764c9a51bdd498c1224",
+            "path": "LytroDataset/lytro-03-B.jpg",
+            "sha256": "dab6aeb745b397ba59a3fcd653839823b68ca33245e66ed6deb7bfdd44d99a68",
+            "size": 32801,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-03-B.jpg"
+          },
+          {
+            "git_blob_sha1": "da4f39de50c967372f21716b9e61db6cdd1f2c5d",
+            "path": "LytroDataset/lytro-04-A.jpg",
+            "sha256": "def97cc3abe4169e7479cc6de19d89c39b8d146b5873a8eef79b6db73dd63361",
+            "size": 28778,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-04-A.jpg"
+          },
+          {
+            "git_blob_sha1": "0a7ca306775d4f2f23d982e909d8547e935b65aa",
+            "path": "LytroDataset/lytro-04-B.jpg",
+            "sha256": "9680178192a820801b5c4f8ea337db8d744c6eb0e228caa517b8c6f692f8e450",
+            "size": 29291,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-04-B.jpg"
+          },
+          {
+            "git_blob_sha1": "f75b198749db64f3be1280c8d9416ad43a3a71c9",
+            "path": "LytroDataset/lytro-05-A.jpg",
+            "sha256": "8992c3a42feb4b729bef04a891b0d9e2fcb94333c12440f4467cadccb92712ba",
+            "size": 29022,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-05-A.jpg"
+          },
+          {
+            "git_blob_sha1": "8c4c16bff15aa94ac4bdbfd9f8253906892c3b7f",
+            "path": "LytroDataset/lytro-05-B.jpg",
+            "sha256": "c437fc33638e019f01302d4e705420f2cabb6554d74d786e8be5c6a3d4c4c893",
+            "size": 41387,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-05-B.jpg"
+          },
+          {
+            "git_blob_sha1": "e743a8d1992c445f134612e633e143c43900bd95",
+            "path": "LytroDataset/lytro-06-A.jpg",
+            "sha256": "09528f6dfc7408cc535b0273b420d5bdd64e8a476b65d27e8403ce29b56ba701",
+            "size": 32116,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-06-A.jpg"
+          },
+          {
+            "git_blob_sha1": "b9aec368a07a2f3eff259a565fad70ea59249af6",
+            "path": "LytroDataset/lytro-06-B.jpg",
+            "sha256": "fca680fc66cfdce3ff8d777fa159a37d0c6a4eb1996ac7b3845bd56901a58604",
+            "size": 33603,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-06-B.jpg"
+          },
+          {
+            "git_blob_sha1": "ce11d9eeebd12e7695861b07e859a7e9f2fcf1f3",
+            "path": "LytroDataset/lytro-07-A.jpg",
+            "sha256": "96740f84244aeeac15cddf38f07fd4177578cc8b94b0008032e8a3e231d32156",
+            "size": 66475,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-07-A.jpg"
+          },
+          {
+            "git_blob_sha1": "a47aac534d9de9c85be512ae54c16c0aadebb83c",
+            "path": "LytroDataset/lytro-07-B.jpg",
+            "sha256": "870b61576c84085218fa17700011e4071711f4dc8efb6dbb8d1ead23d045833c",
+            "size": 65997,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-07-B.jpg"
+          },
+          {
+            "git_blob_sha1": "b9e5feda86e282a3a26d9345e4f7ec0157180a1f",
+            "path": "LytroDataset/lytro-08-A.jpg",
+            "sha256": "87ff78a73a203fa63ece66e56967f687dcb83ebe60d64021c0b691d3fbf68855",
+            "size": 48904,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-08-A.jpg"
+          },
+          {
+            "git_blob_sha1": "43f35e50cacbbf97b212e786a2737b846d052264",
+            "path": "LytroDataset/lytro-08-B.jpg",
+            "sha256": "e776710085844355f9c732256c614aab05ab82c9316d631c7cfd6c452b9433c3",
+            "size": 47991,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-08-B.jpg"
+          },
+          {
+            "git_blob_sha1": "fc69aab919fda1f37b90ee2c5e64a3ecbb303317",
+            "path": "LytroDataset/lytro-09-A.jpg",
+            "sha256": "61465f3687d60e734594e383a9bfa218b9c51c876250ba63e5c69e416c3fc151",
+            "size": 38635,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-09-A.jpg"
+          },
+          {
+            "git_blob_sha1": "4297e1e4311a93669387ea1cb2d1126f156036be",
+            "path": "LytroDataset/lytro-09-B.jpg",
+            "sha256": "1b22f487cf0c29be712ba6c1d3872a05ac540269f54013d8670fc78139fb02c1",
+            "size": 37131,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-09-B.jpg"
+          },
+          {
+            "git_blob_sha1": "5bfc80ca2831b59f30fc538273f62d9bd8593f9a",
+            "path": "LytroDataset/lytro-10-A.jpg",
+            "sha256": "f3872c3ee3a188d55f4ef0c0dc28c12af0653ebab8b8bd1b8aa99439ed9a2e60",
+            "size": 65166,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-10-A.jpg"
+          },
+          {
+            "git_blob_sha1": "2b3469ca97239b41623b0b1f32bfa987a3530f55",
+            "path": "LytroDataset/lytro-10-B.jpg",
+            "sha256": "e0c4d7ecad60a3270bd4bcafeb5db24adc54b111c0666b17a0941e51c8bf88ab",
+            "size": 51679,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-10-B.jpg"
+          },
+          {
+            "git_blob_sha1": "0b2179428ff58572e5215c086609387499425a92",
+            "path": "LytroDataset/lytro-11-A.jpg",
+            "sha256": "1eeb60ae25503f7624c58b29c0524a8f1f2e120dd3ed8f4134e17053f7d3660d",
+            "size": 29611,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-11-A.jpg"
+          },
+          {
+            "git_blob_sha1": "9966e4b4fbb3933952f3ea32e95df288ff3aa7ca",
+            "path": "LytroDataset/lytro-11-B.jpg",
+            "sha256": "3cc6acf8d1baf5965ce327351308cd9c99f5d513122862d81af8f818744f4b11",
+            "size": 48041,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-11-B.jpg"
+          },
+          {
+            "git_blob_sha1": "8caf5762d97454597d47d3158b5f43f6665ae66b",
+            "path": "LytroDataset/lytro-12-A.jpg",
+            "sha256": "fb090858d530ef63489742ca47f6f79e75726a6e7da1ed4bee6155c9a62daebe",
+            "size": 31415,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-12-A.jpg"
+          },
+          {
+            "git_blob_sha1": "b88f6c614b530d7013cfbef26256787404b15906",
+            "path": "LytroDataset/lytro-12-B.jpg",
+            "sha256": "d0931944e814d19367dd1486308b628bba4d9857d04ca11e772c3283035a2a69",
+            "size": 42548,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-12-B.jpg"
+          },
+          {
+            "git_blob_sha1": "17a25c13e3aaa17631197068c4d5d90274d920bf",
+            "path": "LytroDataset/lytro-13-A.jpg",
+            "sha256": "089db066b8bb3386a36836703d31ee96940c12bcb6a167abe919bcd2dca2e96e",
+            "size": 34158,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-13-A.jpg"
+          },
+          {
+            "git_blob_sha1": "930f3aaedf03cd7931f7796b7611c28c18fff3ac",
+            "path": "LytroDataset/lytro-13-B.jpg",
+            "sha256": "c46b476026d2d19027a82a7e7b5b876235ca503b7fee92504ab4d15863dcf05b",
+            "size": 60321,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-13-B.jpg"
+          },
+          {
+            "git_blob_sha1": "263be61c970991e0438dfcfdd3b90c1f76e7194b",
+            "path": "LytroDataset/lytro-14-A.jpg",
+            "sha256": "c8c412a2e52d86ba8ecb4787f47581265e95293f5d7427cbffc702259ab37beb",
+            "size": 31407,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-14-A.jpg"
+          },
+          {
+            "git_blob_sha1": "62f0a5565ffa9f397b5bd0c62ce0a7424eb3c9c7",
+            "path": "LytroDataset/lytro-14-B.jpg",
+            "sha256": "e04148af48acd1012024f52e4fed6c9e3d5ac84fb02d04809e3e3e9077a8c5b2",
+            "size": 32479,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-14-B.jpg"
+          },
+          {
+            "git_blob_sha1": "d34f67905604496b38ba5a7ded637134f151cda6",
+            "path": "LytroDataset/lytro-15-A.jpg",
+            "sha256": "57ba0e3e2edf651e36b908c1c6f11415bf840dadd7575ccf22218456ddad2925",
+            "size": 33908,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-15-A.jpg"
+          },
+          {
+            "git_blob_sha1": "f8f83aa27646caf4ca87f7695660159bd458470c",
+            "path": "LytroDataset/lytro-15-B.jpg",
+            "sha256": "c3ac46ab6f0891ac01977700f8b24197537f5a0d30e62001cc5e8c7779a42d7a",
+            "size": 40996,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-15-B.jpg"
+          },
+          {
+            "git_blob_sha1": "32b8fb485bb722a46d84a97a405f494512dc73d3",
+            "path": "LytroDataset/lytro-16-A.jpg",
+            "sha256": "aefc598d9599f7208f9ac7706360fb9cb39c8543b8202d608f7014154e57c54c",
+            "size": 81275,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-16-A.jpg"
+          },
+          {
+            "git_blob_sha1": "149265622d2f31706d37832975e9b0d337cbc435",
+            "path": "LytroDataset/lytro-16-B.jpg",
+            "sha256": "084c8782a19500f1c5ab05ddcb9dffa6e3303d8d5281f75b52e7077d8d544356",
+            "size": 76360,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-16-B.jpg"
+          },
+          {
+            "git_blob_sha1": "a67a9c153502c0afebc06dc1d6f76ff1c801d104",
+            "path": "LytroDataset/lytro-17-A.jpg",
+            "sha256": "457e2879aa6d1593ff444d7bb7f46783820d89352399d080fbb2edcd27766634",
+            "size": 167423,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-17-A.jpg"
+          },
+          {
+            "git_blob_sha1": "b53d3d00df1a3d983c5d0d63c7aa2cb4ea77598e",
+            "path": "LytroDataset/lytro-17-B.jpg",
+            "sha256": "eec9a9b107182ffe73a1c299b792b08e04d5855e106f55a55f6c274a241f33cb",
+            "size": 45100,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-17-B.jpg"
+          },
+          {
+            "git_blob_sha1": "e6c9c6df0e14246abcb2355ba0fa7cb100eafaf5",
+            "path": "LytroDataset/lytro-18-A.jpg",
+            "sha256": "6b476b10c4c0aac61dc1bb07985f6f059e2aff6e1a7764b9b22674a0ac316d15",
+            "size": 25493,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-18-A.jpg"
+          },
+          {
+            "git_blob_sha1": "60c314ea91b1cbc24d50f7a7a8bb55e8d9597d85",
+            "path": "LytroDataset/lytro-18-B.jpg",
+            "sha256": "f5461a86c1d2246cdcc2c26e0632a62115c544875fe67916e7ff4a0c19e8f4b0",
+            "size": 23906,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-18-B.jpg"
+          },
+          {
+            "git_blob_sha1": "099cf3d6fbacb4e4a7deff64e27b5b97074c6802",
+            "path": "LytroDataset/lytro-19-A.jpg",
+            "sha256": "0312fc8ccf5053d771f165d5425b4153cb9133492828de6fd178f4ec7557d0e1",
+            "size": 140925,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-19-A.jpg"
+          },
+          {
+            "git_blob_sha1": "69a69128a6e97c432e84344e6cd03a7ebbf8569d",
+            "path": "LytroDataset/lytro-19-B.jpg",
+            "sha256": "a2cc3e78246dfe288d838af605ee0d98e506a72b5e087edf05d622fb596f5d4b",
+            "size": 30259,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-19-B.jpg"
+          },
+          {
+            "git_blob_sha1": "18e025596ed678ddeae4abf09b16b24b381b2759",
+            "path": "LytroDataset/lytro-20-A.jpg",
+            "sha256": "dffc4a0ac9e2ef2dc1fa7edd939f47ebe574d454a39e266a7c87a70fc206b2e2",
+            "size": 24538,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-20-A.jpg"
+          },
+          {
+            "git_blob_sha1": "38bc618a59d087415ae077021d557b0edcc959f5",
+            "path": "LytroDataset/lytro-20-B.jpg",
+            "sha256": "e245c21a31b75f3b7a4d325a6afe620578105d4fb8f2bd68a6914bfb4ca88d9b",
+            "size": 24214,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/lytro-20-B.jpg"
+          },
+          {
+            "git_blob_sha1": "625d9bd57b693da4150c5fcb523a94128f829b40",
+            "path": "LytroDataset/Readme.txt",
+            "sha256": "93a2952b55975b8488d6bd53ad063c5bdf77061328efe3e3bd290716541b30f8",
+            "size": 604,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Readme.txt"
+          },
+          {
+            "git_blob_sha1": "0ba76924186f8632fc9596b1983630044b728e7d",
+            "path": "LytroDataset/Triple Series/lytro-01-A.jpg",
+            "sha256": "53b14b66d702a0f4c4d6cee0fa751b046f2aef7c656227d1ff77541236e11502",
+            "size": 37772,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-01-A.jpg"
+          },
+          {
+            "git_blob_sha1": "ddde44eaf12845d51587ef44e9aad6f79057073e",
+            "path": "LytroDataset/Triple Series/lytro-01-B.jpg",
+            "sha256": "88354a4e6ab62d30b5115cdb971856bbe01b191d9ed5cdd4cdcd0e2b1e922764",
+            "size": 36068,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-01-B.jpg"
+          },
+          {
+            "git_blob_sha1": "808f27810e01df7e7fce7299481c92f13c64ed46",
+            "path": "LytroDataset/Triple Series/lytro-01-C.jpg",
+            "sha256": "8fecffe1707a9adbbbbb8be4243c123789f27c59ff5b7f6c12ad8da7aa6b7e01",
+            "size": 38621,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-01-C.jpg"
+          },
+          {
+            "git_blob_sha1": "3af7787c394e78ac1125811e0d9c4c3c3b2aa55c",
+            "path": "LytroDataset/Triple Series/lytro-02-A.jpg",
+            "sha256": "a1fd56fd1fd340f38512079b37f323664733043b214eeb38851e1168dee087fc",
+            "size": 40555,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-02-A.jpg"
+          },
+          {
+            "git_blob_sha1": "8495829f8d31c702e53bc10426e056fa3fc42a33",
+            "path": "LytroDataset/Triple Series/lytro-02-B.jpg",
+            "sha256": "9058dca8182a0878ab2ff31d2adce272583cf2ca067964605d54c24f6f5e1c60",
+            "size": 45480,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-02-B.jpg"
+          },
+          {
+            "git_blob_sha1": "e7db60d7f64589d45c8d1bbc2ecf94bcb5fd8991",
+            "path": "LytroDataset/Triple Series/lytro-02-C.jpg",
+            "sha256": "0c6dd53b729bf343afbfa50348b2b8f354743d90cb3e3783332e947952992904",
+            "size": 42329,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-02-C.jpg"
+          },
+          {
+            "git_blob_sha1": "47b302e72bdd32f7e95f42801adb84ad0a7d9c8e",
+            "path": "LytroDataset/Triple Series/lytro-03-A.jpg",
+            "sha256": "09547c3c10bbe0a298a7a4423ac4010a30909fb03f30e502b00978fafdb1829d",
+            "size": 39222,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-03-A.jpg"
+          },
+          {
+            "git_blob_sha1": "02a1d13052b56d0887f7dae46a82eef939f0d244",
+            "path": "LytroDataset/Triple Series/lytro-03-B.jpg",
+            "sha256": "89df35f71b73a7ea76bf677882e2e8f5b48b917d2d2513c25f3e9dc3f5699dfd",
+            "size": 45208,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-03-B.jpg"
+          },
+          {
+            "git_blob_sha1": "533e1480c22f068a508551437e774b5846e74e7d",
+            "path": "LytroDataset/Triple Series/lytro-03-C.jpg",
+            "sha256": "7907399ef8dd41860ab50e838cb3d5b46aea47800a65146fac852f1a4bccf5cb",
+            "size": 41191,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-03-C.jpg"
+          },
+          {
+            "git_blob_sha1": "9d229b3b87aa5d67a1f09e6972ffcacafa2be554",
+            "path": "LytroDataset/Triple Series/lytro-04-A.jpg",
+            "sha256": "b14011f3b3722edea81f57b48502f2297c8224364750c2161095845dd1f69d10",
+            "size": 24185,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-04-A.jpg"
+          },
+          {
+            "git_blob_sha1": "127ef5821cadcffa79d72328ac13b154498b5195",
+            "path": "LytroDataset/Triple Series/lytro-04-B.jpg",
+            "sha256": "49e7ffd8034d74082bbee7e766c118970d1c1f203bdacde8557a047ce0d52c43",
+            "size": 18514,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-04-B.jpg"
+          },
+          {
+            "git_blob_sha1": "b64973740a8637bfbd93db08030c4c15e3181e1f",
+            "path": "LytroDataset/Triple Series/lytro-04-C.jpg",
+            "sha256": "c096fd4546e8d1586d081cd68ea0a9201ba1a595a6dee7c2c6a0ca5871098a9b",
+            "size": 24310,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/lytro-04-C.jpg"
+          },
+          {
+            "git_blob_sha1": "625d9bd57b693da4150c5fcb523a94128f829b40",
+            "path": "LytroDataset/Triple Series/Readme.txt",
+            "sha256": "93a2952b55975b8488d6bd53ad063c5bdf77061328efe3e3bd290716541b30f8",
+            "size": 604,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/LytroDataset/Triple%20Series/Readme.txt"
+          },
+          {
+            "git_blob_sha1": "10211bac42dc338b9527e0c3e8f3a10cb54033a5",
+            "path": "README.md",
+            "sha256": "5679cd25ca81e962face703a6a3fe67faec0bfc6b7b3f6ae22b10892cb8dc305",
+            "size": 1469,
+            "url": "https://raw.githubusercontent.com/mnnejati/LytroDataset/8e9f62124a78dbca09e37bdecd369c8294223e24/README.md"
+          }
+        ],
+        "id": "D05",
+        "include_pattern": "^LytroDataset/|^README",
+        "layout": "lytro",
+        "name": "Lytro Multi-focus Dataset",
+        "original_split": "legacy public evaluation set",
+        "primary_url": "https://doi.org/10.1016/j.inffus.2014.10.004",
+        "provider": "github",
+        "reference_semantics": "No exact all-focus reference provided",
+        "reference_type": "none",
+        "repository": "mnnejati/LytroDataset",
+        "revision": "8e9f62124a78dbca09e37bdecd369c8294223e24",
+        "rights_evidence": "No explicit image terms located in inspected author tree",
+        "selection": ".bokehforge/state/download-plan.json",
+        "status": "available",
+        "transfer": "srgb_assumed"
+      }
+    },
+    {
+      "id": "D28",
+      "name": "Waterloo MEF subjective database",
+      "primary_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+      "rights_evidence": "Explicit creator reuse/attribution terms",
+      "revision": null,
+      "selected_downloads": {
+        "evaluation_domain": "exposure_fusion_only",
+        "files": [
+          {
+            "path": "MEFDatabase.rar",
+            "sha256": "02939e5eb63d0536793e467848c9381e41c71ca1642b9f0291e2fc0843744242",
+            "size": 69869523,
+            "url": "https://ivc.uwaterloo.ca/database/MEF/MEFDatabase.rar"
+          }
+        ],
+        "id": "D28",
+        "layout": "exposure_stacks",
+        "link_pattern": "(?i)\\.(zip|rar|mat)(\\?|$)",
+        "name": "Waterloo MEF subjective database",
+        "original_split": "No original independent split verified",
+        "page_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+        "primary_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+        "provider": "files",
+        "reference_semantics": "MOS 1 to 10; exposure quality only",
+        "reference_type": "human_MOS",
+        "rights_evidence": "Explicit creator reuse/attribution terms",
+        "selection": ".bokehforge/state/download-plan.json",
+        "status": "available",
+        "transfer": "srgb_assumed"
+      }
+    }
+  ],
+  "workloads": [
+    {
+      "id": "D150-native-dorsal",
+      "dataset_id": "D03",
+      "status": "acquired",
+      "frame_count": 150,
+      "encoding": "Native photographic 8-bit images; no resize, replication, or precision promotion",
+      "frames": [
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160516_d2.jpg",
+          "sha256": "8ef1cc7c1bda23b9e19950e95decceaed563997315d56a11523c2ac37ba24fb3",
+          "bytes": 288578,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160517_d2.jpg",
+          "sha256": "d861c75af96cd2eaf516b40ac9c6845b3ab543a17ee22735dd3ed76d1ed0fd24",
+          "bytes": 293365,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160518_d2.jpg",
+          "sha256": "31da708beb68661abd4fd65b91f12816772f2f7ee2a565c24be177b63497260b",
+          "bytes": 300386,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160519_d2.jpg",
+          "sha256": "f9f2eae499157d9f6f2a0223998042d0dfd6d7bf7337d8ea860237d7973228eb",
+          "bytes": 304148,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160520_d2.jpg",
+          "sha256": "460dd7929b303a7a7c92c4688fe405408ed87be2e0e543970d4a7e09a444c115",
+          "bytes": 307165,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160521_d2.jpg",
+          "sha256": "d6c62c258526122a0c1ebeca00f7a41ec9542c8c8f475d71a5f6c10b4a284042",
+          "bytes": 309914,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160522_d2.jpg",
+          "sha256": "b35d57a5f8d4a109aed5865df4eb0d6c5cc332cc0070ff1a02feb9a9f65df435",
+          "bytes": 313063,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160523_d2.jpg",
+          "sha256": "b58c59335adbc1d645364d0015715dc78047898357e6167792c3998d9342b722",
+          "bytes": 316012,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160524_d2.jpg",
+          "sha256": "69995853bf34c4aa30ff44e807ce0c23adcbb417515ddc9c7a8652a84ae490de",
+          "bytes": 318401,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160525_d2.jpg",
+          "sha256": "4e5ec98272e0acde7f489353ce924d997c312b16c847ea3d282dabe83a4f71af",
+          "bytes": 321562,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160526_d2.jpg",
+          "sha256": "0b07d655c4c1cf8f679dc4968fc825769f7ae4b7a45a02fbbd81930598ce5c33",
+          "bytes": 323743,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160527_d2.jpg",
+          "sha256": "abfdf3882854ddde21ba6448314ffeb5ac00bd16400bf2cfce18270f5f197258",
+          "bytes": 327123,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160528_d2.jpg",
+          "sha256": "4388b334e8fc80a7cf29df0672b7ab9b0533a994571a25f397655907f86b60d6",
+          "bytes": 329099,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160529_d2.jpg",
+          "sha256": "267dfddf0dec4b48ae737ea5f445da7c22291d9c707b0fef47ab40ea290ad8a3",
+          "bytes": 331375,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160530_d2.jpg",
+          "sha256": "e870fa1626a4f5d24939dd8507b4c031e20b8d05433ba4b0882931b1bae0556a",
+          "bytes": 333500,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160531_d2.jpg",
+          "sha256": "238e3d61ab150d0e789884471091a6c192f746b30d18f37cb631abb34dd3af79",
+          "bytes": 336004,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160532_d2.jpg",
+          "sha256": "217b18776f13e7ea9b412d10ab51b792dd597a64fd2e2dc64b4cc13f44199434",
+          "bytes": 337859,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160533_d2.jpg",
+          "sha256": "1a3c341f512996d8849832d309f152ad77b60441521959ed4f63b9b0345c2151",
+          "bytes": 339972,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160534_d2.jpg",
+          "sha256": "4c066122e95e401ac3bb7c2ef4b35b4ef5e6a66908cd0afbedd4f17efd49f34e",
+          "bytes": 342016,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160535_d2.jpg",
+          "sha256": "cf3aeb01a32a907ceeaf89986d1a976d70827d9baa71073e783575e15c572f69",
+          "bytes": 343871,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160536_d2.jpg",
+          "sha256": "5b12066797a75722eaca76aca7f580c75ebf62066bc4716d5d0a8872a561da95",
+          "bytes": 345799,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160537_d2.jpg",
+          "sha256": "b0576bafcb6d1a0696d42e3f39ee171bbbe99fc38ae71903c77cb426e221b10a",
+          "bytes": 347081,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160538_d2.jpg",
+          "sha256": "249ebf70ac72aee251e33045a444e97ee631ecac575b7d7b9a9e79d969a0e695",
+          "bytes": 349170,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160539_d2.jpg",
+          "sha256": "3c0a5f30bbd647ffa35e538801a367d366dcc94854dcda7a075a3de50db4d1fd",
+          "bytes": 351859,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160540_d2.jpg",
+          "sha256": "4dca557fc4c554d9f34738aeaaa6d0624a32b05360f03d758e528ddf41704562",
+          "bytes": 354145,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160541_d2.jpg",
+          "sha256": "522f8a1495ba9cca4bebf27ed33d84579c314aa46084eeb79c1060fb14dda269",
+          "bytes": 356993,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160542_d2.jpg",
+          "sha256": "9edf6eb60e45cde517681cbbc8d4a48383e9d3575740fa664cd24d3fecca3aaa",
+          "bytes": 358527,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160543_d2.jpg",
+          "sha256": "6c441d33329a4be460b0bb315e6a99e22c823f3c2a4a1d6aa5673c3ea139c28f",
+          "bytes": 360297,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160544_d2.jpg",
+          "sha256": "5b66ffff280e27da1ce89c27c763b23e93934131b95b8975cd89fe8b270c6318",
+          "bytes": 362260,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160545_d2.jpg",
+          "sha256": "856153c7570ac955856fe4b38d1a14198e7e465a97def1b6418fc44586e88568",
+          "bytes": 364523,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160546_d2.jpg",
+          "sha256": "cfd5d9c4c6a6e9759111b739c55fc7ba04453ffe1e73a01f0a67fff79c6f9d0c",
+          "bytes": 365591,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160547_d2.jpg",
+          "sha256": "2eb69b8c174e8b7e838992641d88e7a0ab5d1d2051a3c4766e2e9ebee1a50377",
+          "bytes": 367828,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160548_d2.jpg",
+          "sha256": "4eda93b35f0a2bc64969b5e801aa130bf0f8daba0258ae56d4bfc7753353d66c",
+          "bytes": 368758,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160549_d2.jpg",
+          "sha256": "d33da685be8e28d2a87538e7afe1bfbf47f326cd6c12f4ed606e694dd07c2556",
+          "bytes": 370651,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160550_d2.jpg",
+          "sha256": "5fa0aecad0ff9efc0befc63875d42d0541164d6011d4a0a61bf1aba7f01f7642",
+          "bytes": 372149,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160551_d2.jpg",
+          "sha256": "8239bcb18fcde3e99fb0de55e3ac48387af220abaa764dd5c845572a31093507",
+          "bytes": 373451,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160552_d2.jpg",
+          "sha256": "6aeb6753ba9a262fd8b7df22f59d1a88d89f3287ce0cb569752ec2a117da7f6f",
+          "bytes": 375004,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160553_d2.jpg",
+          "sha256": "3baa190b8fe56abe3c6870a3066a00cfa85ff69cf21fd21a673fb0ad9706f77f",
+          "bytes": 376410,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160554_d2.jpg",
+          "sha256": "52d24711706f200c965965618ef835e740d0893b991a584fb6d5e2ecb087c1fb",
+          "bytes": 377997,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160555_d2.jpg",
+          "sha256": "78ba3f42a300efce3726674bf51451c1814519a63d4a5620474a10a0114619f4",
+          "bytes": 379140,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160556_d2.jpg",
+          "sha256": "b8fdd9a170bd4d3d4fb289e5260d9e9bce49e589ab45f4335553a8cf5048a176",
+          "bytes": 379666,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160557_d2.jpg",
+          "sha256": "cd6f6918a7c204cc295a6c8cee5406b0c209e28579a9d56188f66694bb07fae8",
+          "bytes": 380621,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160558_d2.jpg",
+          "sha256": "62fb7f124b5d0bd78fba78f3579e896271d8bdd06b6e55a1a8a2fc59408cdc09",
+          "bytes": 381480,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160559_d2.jpg",
+          "sha256": "2b8b7d4f931ae5d57b7888eaa34c610edb0fae87230b81f366c670b3433011b9",
+          "bytes": 382607,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160560_d2.jpg",
+          "sha256": "c29d4cc61dd4887a6c7ce4715505d12a70eff29330b6c182c472d75904c98908",
+          "bytes": 383322,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160561_d2.jpg",
+          "sha256": "26acf4526b51983ebb740758f050611650b79b9b5671f315decba36ab41fc3fd",
+          "bytes": 384299,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160562_d2.jpg",
+          "sha256": "8a3bcb4dae2e6dd46eaf529433fa935b80d0561f1b678b4d05cd513c5f7f19d0",
+          "bytes": 384541,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160563_d2.jpg",
+          "sha256": "137c3612f3a6ac8bc70de902d74609a05bdc66b7796ae0fb53db8e58f9d5cdc4",
+          "bytes": 385495,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160564_d2.jpg",
+          "sha256": "78596a154fb8a0c0259602a696d88ecb36205aef0a43a94a298887c10391ea1c",
+          "bytes": 385986,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160565_d2.jpg",
+          "sha256": "32ea1d226d78e937d43579e87dd43501d19a506d8972d89463fdc95cb0c595a8",
+          "bytes": 386294,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160566_d2.jpg",
+          "sha256": "f8e461c7bee263fd1a5defe07358c750351a2e0f2ae8b419af3e6ddb164ffb75",
+          "bytes": 386150,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160567_d2.jpg",
+          "sha256": "77d38d2d1e59f95e06ef2b4098edcf9eea1d3b28cab3da4ca3ec2cee8a5634e5",
+          "bytes": 386404,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160568_d2.jpg",
+          "sha256": "94d44a0f6e43534cf42313ada4f9edf899e57a5306eb0b31a94822305f36ea35",
+          "bytes": 386696,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160569_d2.jpg",
+          "sha256": "e60562f7b140f6e9cf2155dc03745ca53d3f238d4cd868f86b31ec508ff74559",
+          "bytes": 386723,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160570_d2.jpg",
+          "sha256": "7eca0ab0dd5c716efabdfd5696b80f9c151701a25bd697c8817b8d80ad2e9657",
+          "bytes": 386149,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160571_d2.jpg",
+          "sha256": "71c3a3782b7c742802a5e96c6b4237e3a7be22a133e9df66d1175f4222586bec",
+          "bytes": 386872,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160572_d2.jpg",
+          "sha256": "402c62182ff26107a30dd6ad5c088b0451a1ce9284ed71fc80ca413dc786ad72",
+          "bytes": 386773,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160573_d2.jpg",
+          "sha256": "cc6939027761ce652bd9cce844e6cec1b300a2fe4d10153f723195d8f93107a1",
+          "bytes": 387109,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160574_d2.jpg",
+          "sha256": "4562faf13e37f2f098f5b8bd8e82f62c21db41f921dd6cdf7b26d5a78ef91977",
+          "bytes": 387704,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160575_d2.jpg",
+          "sha256": "21ac6d7ac8aa986e95709688261bbaa1d12c180373aa1d591928d74b5cfa95e1",
+          "bytes": 388479,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160576_d2.jpg",
+          "sha256": "aba7dbb848222941e2f4f29fce2c0c151b1778fedc5bac0ce6f77e4d1d6595af",
+          "bytes": 389018,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160577_d2.jpg",
+          "sha256": "52aac2c29d4ad066b027a1a0db60942cb3b8c5c775688ec69d3ef1356ac921d4",
+          "bytes": 389469,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160578_d2.jpg",
+          "sha256": "c7cd0d714ead26eef7189728bcde4aa68960f3261399fe1f8210a4e213009f2a",
+          "bytes": 389572,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160579_d2.jpg",
+          "sha256": "7f13161b5e0d8b4bc1639fc5addb189fe7445f14454762a6873b35c6079cb998",
+          "bytes": 390311,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160580_d2.jpg",
+          "sha256": "c7bf1931c5138961fdcc0bb5973a8eadf38a6b14d5f671930c2b8ec9d94e58d7",
+          "bytes": 391289,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160581_d2.jpg",
+          "sha256": "69438cf33d6b0455bb388b83cf9edca2c1f286ee6fb6212b9a1df8c3e959efcd",
+          "bytes": 392173,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160582_d2.jpg",
+          "sha256": "f24f62583b249dcc335eb80d74faf23f6457998321d5fb54112dcef4c50d354a",
+          "bytes": 392504,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160583_d2.jpg",
+          "sha256": "58a86c64c2c4576c384abbf6db535616e2f162a8b3536a4c6598e0c90f0fdb23",
+          "bytes": 393001,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160584_d2.jpg",
+          "sha256": "bd76fa9cea24e732b62afc4840149670be004a0d48d4fb3e75ec480e84643060",
+          "bytes": 393746,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160585_d2.jpg",
+          "sha256": "15eb4558cfbb88550c7f1e928e110177a023b112d391104ff91e2a8e2875aebc",
+          "bytes": 394458,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160586_d2.jpg",
+          "sha256": "7244a61272309bb65a6b7bc586b3ec01aae3b86f6d933e3fb89ce83fcfca9e7c",
+          "bytes": 394771,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160587_d2.jpg",
+          "sha256": "c4551b3cbce4d2dbff5a43a57e55a270073af5daa8d2fefe85b2e9da307abbcd",
+          "bytes": 395125,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160588_d2.jpg",
+          "sha256": "d75113a33c94abb7280698544866191f71bb733ac4cfdeb0962333a942a2db1d",
+          "bytes": 396133,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160589_d2.jpg",
+          "sha256": "4444eec89cec4a4f0a898c22dee56ca00748f0236eb435f866790d841c537def",
+          "bytes": 395745,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160590_d2.jpg",
+          "sha256": "074bd2ce955e989ca2926afcdf780ee6f8675269fde39d6832b9df78f1977ecc",
+          "bytes": 395744,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160591_d2.jpg",
+          "sha256": "30191435b5ca546a7ed2b425e610538bfb6b4942e34f42e9adc88819548bf6f7",
+          "bytes": 395958,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160592_d2.jpg",
+          "sha256": "ef6f661154e5b599d7c286f805be9ceaafc5f3487c54a276e009a105d51cc263",
+          "bytes": 396177,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160593_d2.jpg",
+          "sha256": "9ade6f8c165cebc59757df9b054b2d0ee64c33cee8dc36e3b7ab07b9ffd886c1",
+          "bytes": 396457,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160594_d2.jpg",
+          "sha256": "937865c6e16a29e36f6dc71cefd764471f3224ea7caa6a46333ce4499fa60428",
+          "bytes": 397144,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160595_d2.jpg",
+          "sha256": "1b2dc00936889b2068d3b59616072d70904a01d4478a3d751e79476dae41b994",
+          "bytes": 397817,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160596_d2.jpg",
+          "sha256": "96e1bd41ef583d8d7e2a88c8570a0c17521b591da2203c4fefce40c6a021a6ae",
+          "bytes": 397706,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160597_d2.jpg",
+          "sha256": "ef87d20853ee057143851bc338711551defc1d6ed6f778053d96b7221ec14fec",
+          "bytes": 397802,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160598_d2.jpg",
+          "sha256": "ab514c1a05e16e424e53b6044ff80f70987f1ca881350bd41cfc8057169e5beb",
+          "bytes": 397675,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160599_d2.jpg",
+          "sha256": "351fdea0a344ccae35ed7bd7cb96c8a9ce0186d0a2be5d44341fd58700f357f0",
+          "bytes": 397928,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160600_d2.jpg",
+          "sha256": "19ac97cc7e30da39f4240cfa38a00512f1baa169d3bc3f8e69fad1d7205787e3",
+          "bytes": 397808,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160601_d2.jpg",
+          "sha256": "7f7fb9e55ca1839baebfeec811403c34a99fbbae3d57ff113e122a20ff73c705",
+          "bytes": 397571,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160602_d2.jpg",
+          "sha256": "e6143d937775eb73bf0a12900cd40ca2c2de2d3bf1f1d2051eafca7cbedb3820",
+          "bytes": 398110,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160603_d2.jpg",
+          "sha256": "e26aa0d0b6eef785a04196f696cf73ecc55340f7414818c22e7a46d6f7bc20e2",
+          "bytes": 396913,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160604_d2.jpg",
+          "sha256": "924fd5a270fb23c757bf70edac2c1be23b60ea1738a5d1fce4633acbf3dff8d2",
+          "bytes": 396503,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160605_d2.jpg",
+          "sha256": "91ffd5fa01ec410923c57c4dd7ba781e73a1d4111cc3864f31582ca918e37499",
+          "bytes": 395827,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160606_d2.jpg",
+          "sha256": "09c48d01aa7470e286fb5b4c5aa116b032dbcdeac2b55a69f4104104a8275a28",
+          "bytes": 394838,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160607_d2.jpg",
+          "sha256": "7d41aaf6c86cffd804928528b553f10e6b6d7480d05ed24a185ca5e04939da8d",
+          "bytes": 393684,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160608_d2.jpg",
+          "sha256": "43304a81a8f67146419bea70738ee891cedab468b8a870fcc4d565d468723d9f",
+          "bytes": 392461,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160609_d2.jpg",
+          "sha256": "7931f2573af4b175a358d0459161fbb0a9a78adc309935294b3039d09ceafb08",
+          "bytes": 390729,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160610_d2.jpg",
+          "sha256": "8217dd90af196993fd994e21c1b414c45aafa23176f2fcd74b51878cd1462e95",
+          "bytes": 388958,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160611_d2.jpg",
+          "sha256": "33e9ff1a14c4f808aa6cc1df3e14a05d46f200f28118163a888888da49f8046a",
+          "bytes": 388027,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160612_d2.jpg",
+          "sha256": "43e79633c314780d8fdaa69131307f00ac6c6c75de8b674dd0bb9c2569425b08",
+          "bytes": 386365,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160613_d2.jpg",
+          "sha256": "b8f49930ffabf94c31bd059c56edb6831dc910b616d6db96003af893794f7aa7",
+          "bytes": 384302,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160614_d2.jpg",
+          "sha256": "60a125d4e0267be15a9f9a8e53ea3b9960f962eafe8bfad00e0950c1035b711a",
+          "bytes": 381837,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160615_d2.jpg",
+          "sha256": "4616420972cb9019a675bad31c37b9c39225247186274ac4abe71145345d0a32",
+          "bytes": 380318,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160616_d2.jpg",
+          "sha256": "a04cba8615d98c6cf0b71b4e232f49e248d6608eaeee661952cc1322edbe30a3",
+          "bytes": 378399,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160617_d2.jpg",
+          "sha256": "35e4f53158655fb14a916d548fa2199cee29acc58e30f429cf1815d194a71201",
+          "bytes": 375269,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160618_d2.jpg",
+          "sha256": "3a76f2358d364f6ef118632eec3a52ff1ef2a90b6c25ec4a887b42db71fe6361",
+          "bytes": 373809,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160619_d2.jpg",
+          "sha256": "ec19925b8e0ee2e4c5c94454e184854ab1498a152ad0d8a453ba4bb5b111ee66",
+          "bytes": 370528,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160620_d2.jpg",
+          "sha256": "951192fd1b22a1e70244670bbf4efb2605860f406053350baffa784142b5d1ca",
+          "bytes": 367751,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160621_d2.jpg",
+          "sha256": "06394ec859e6061467fe046ba2590310ef40576555b2c498dd5f753493b39193",
+          "bytes": 364881,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160622_d2.jpg",
+          "sha256": "65dc7a400011155fbccd0616b04a10aa0e1325d331a71eb4322deb7d3a858611",
+          "bytes": 361990,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160623_d2.jpg",
+          "sha256": "e871a61fd57fc31f06fd47fc4cae2e7dba226837ee5fe97ca56c55733e7d8fc0",
+          "bytes": 359911,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160624_d2.jpg",
+          "sha256": "ee48a8b9079091503199aa4b821ee526ed17c75d2c8d93cff9210d357cfdbff2",
+          "bytes": 355203,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160625_d2.jpg",
+          "sha256": "083c9cd0bea4d7714f5dc2b710d5375f012ff293aa9ba91bf60975458ea1c0df",
+          "bytes": 352827,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160626_d2.jpg",
+          "sha256": "614a99b4508ff45f30c3b28f3e9d8e2289f172ceca12bf557f937b21cb89b818",
+          "bytes": 348965,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160627_d2.jpg",
+          "sha256": "cedfe12ab852568b8c2de3dff524d2dd55e356a10177272bc9779a1f1a66f0c9",
+          "bytes": 345829,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160628_d2.jpg",
+          "sha256": "0412383eba52191067c6f0f164ec6436eea1facaabcf61c1e3c04e67d7364fd0",
+          "bytes": 342566,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160629_d2.jpg",
+          "sha256": "bf15566ac9a33e0e40eac53272327fdb99f82f22d71ca68f3f67e6b3f1a2609c",
+          "bytes": 338580,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160630_d2.jpg",
+          "sha256": "a3206904808007073735d4424276014cd107185783534c53243831b419c5bdcb",
+          "bytes": 336214,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160631_d2.jpg",
+          "sha256": "b34c6571a8f231bbb4f345285bab413e0752c328344657628f8a93d40af47dd8",
+          "bytes": 334167,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160632_d2.jpg",
+          "sha256": "8e0216fe89f2a336c67a9fe405c7cd90bb65e127fcc283b54a530a55cb658291",
+          "bytes": 331531,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160633_d2.jpg",
+          "sha256": "4072566eb6273215c9c139a57de56a37db79bd8d677d2057c1c8564b185b2445",
+          "bytes": 328618,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160634_d2.jpg",
+          "sha256": "74a42abef8690f1d429ce41341ba1e4e1b08587379c471177496cc143210f731",
+          "bytes": 327209,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160635_d2.jpg",
+          "sha256": "c6347af88958e38c304ed55bdc7ae91a7c1987e1c062d7825b1785d489695a43",
+          "bytes": 324849,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160636_d2.jpg",
+          "sha256": "956c5fea9dc7e7f5d795b072b709334dddc2dc247c055ae450c26a0b731d176d",
+          "bytes": 322546,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160637_d2.jpg",
+          "sha256": "333c067bf539d010db3acdc9f1e06d83c7a6dbf0ee42f6538c61b6bd50e556e4",
+          "bytes": 320307,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160638_d2.jpg",
+          "sha256": "b575bed5403a07eccccc649e0d9b8ccd309477c49670c63f09d9167dc7efaed2",
+          "bytes": 318692,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160639_d2.jpg",
+          "sha256": "1232eda770d80c4790e4ab071789eb6093a41a404257071685bc681fa8fd7ce9",
+          "bytes": 316780,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160640_d2.jpg",
+          "sha256": "9089e78a45d0457e2925f399d76ec374dcf34e42e04cf54567f937ae5afb6d50",
+          "bytes": 313977,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160641_d2.jpg",
+          "sha256": "f8449c8102844ce1ddb35ffc350ed1802d9b24756ff8542989aa3bd55d9f5172",
+          "bytes": 312260,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160642_d2.jpg",
+          "sha256": "9cb3dee038af667450023986deb0431f255e1b88292fd9590e4848a5cf623360",
+          "bytes": 309511,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160643_d2.jpg",
+          "sha256": "36043209d7c3de5a917390d07b2792d1fa8d3eb642c34639e91cdba1be490dd9",
+          "bytes": 307794,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160644_d2.jpg",
+          "sha256": "f0e0c011724370204bc953eab4918903667a6be1873eafde5e2e842c4b4b3d00",
+          "bytes": 305888,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160645_d2.jpg",
+          "sha256": "b051d0cdbd49d86fd585eec539b5ced8d050229d70fe418865d89319df47f33b",
+          "bytes": 303369,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160646_d2.jpg",
+          "sha256": "3f08b3912fcee40dc7a05da0e3acecc447059f2620df48ce07eaf074f75a9bf6",
+          "bytes": 301935,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160647_d2.jpg",
+          "sha256": "c27eb90a40cc70c396e6e53156f6894a7571664e813c0d57a09653e8859bf09d",
+          "bytes": 299061,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160648_d2.jpg",
+          "sha256": "cf6ceec6ec1ae82146683ee5d6877e036b0f1ec2de1bcea58384a17942ca8939",
+          "bytes": 297218,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160649_d2.jpg",
+          "sha256": "abc67d9ade7f132c7a691f4c401690c9b18617effa5e04c6bde1198be716fc0a",
+          "bytes": 294855,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160650_d2.jpg",
+          "sha256": "d6c569ffa675b0ff570360141548d4b6f3a7b9dbb57c2e56e286b196f14e0d75",
+          "bytes": 292181,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160651_d2.jpg",
+          "sha256": "76048448b7ab6a8d76b3aada995fc7c75a61b1cda2ae67ac83bb6f33e57082e6",
+          "bytes": 290017,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160652_d2.jpg",
+          "sha256": "fa3cef550066d3aae7d7cc860762c62f139b3732bdd72f7c025f76276ec07d1c",
+          "bytes": 288722,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160653_d2.jpg",
+          "sha256": "87f53c2c86589fa343dd5620affcc0db9b22fa5c8ddd8b779ccce9d1961f2fb3",
+          "bytes": 286373,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160654_d2.jpg",
+          "sha256": "555061eb4be42e928b365dc883daa73137a950bbd9faa994cba6b97a7f17b5fd",
+          "bytes": 284774,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160655_d2.jpg",
+          "sha256": "6117cb6e01e3b2e9c5ecccd651a839035fb7e851f37ec9eaa91235147e95fd97",
+          "bytes": 282411,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160656_d2.jpg",
+          "sha256": "5b5dfaec21e2956715a64bfdf1e61e4ec05d05a9fdbd135a4ce22e74e9f77b6e",
+          "bytes": 280654,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160657_d2.jpg",
+          "sha256": "8c5350fa12ec89f69569f1f11fe31c8d2d5a68a362d85a58cef40a0f0832f667",
+          "bytes": 278167,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160658_d2.jpg",
+          "sha256": "be0eb14375eb4f5819e145e04fdee9d73b84e56591f54139a53b537c4f5f5cef",
+          "bytes": 276347,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160659_d2.jpg",
+          "sha256": "ed5d522631252c59cd1e3767900fbd2123f8857938df2fda77ee781587207577",
+          "bytes": 274182,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160660_d2.jpg",
+          "sha256": "6ced07c726d451ac02a231d7d31ab8397d0e05311bf8af5fbd169e55ca5d7267",
+          "bytes": 272108,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160661_d2.jpg",
+          "sha256": "11c93537e2235cc53e16201962309ef9aeb978365aafaee5a596eb690d640e4d",
+          "bytes": 269581,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160662_d2.jpg",
+          "sha256": "e6b423b46729824da50a012510448acbbe545bb329541e5c314eb66b9739904b",
+          "bytes": 267984,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160663_d2.jpg",
+          "sha256": "d23d0cf080102e05e476f33ce59bfbfb3d1ed1e05fe73fd5c3907149c4a28a1d",
+          "bytes": 266198,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160664_d2.jpg",
+          "sha256": "d0a56830ff7803f1a468fb61b3380515edb657d5a51701295ffed48838e61c98",
+          "bytes": 264690,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D03/26E_dorsal_60x-311ca6aab7d3/26E_dorsal_60x/P9160665_d2.jpg",
+          "sha256": "4de97098a7f7da74f76897fe914b182a1b11adc9ace88567c39db0fe3ac1c488",
+          "bytes": 263337,
+          "shape": [
+            1728,
+            2304,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        }
+      ]
+    },
+    {
+      "id": "E9-native-balloons",
+      "dataset_id": "D28",
+      "status": "acquired",
+      "frame_count": 9,
+      "encoding": "Native photographic 8-bit images; no resize, replication, or precision promotion",
+      "frames": [
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0163.png",
+          "sha256": "65bef59ae2cffaac5a0401780c884fc1f0cb87c3fb6ba7057213bbb03b775f9d",
+          "bytes": 112938,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0164.png",
+          "sha256": "37094f4247a7e5cac3af1876137f42c88263ace0d075d99daec7b1e796e33ad0",
+          "bytes": 133941,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0165.png",
+          "sha256": "8582dc34b2035c4daafc5784a9f7191a6aff3161a7fd54b4d493c45145d6a8e6",
+          "bytes": 154601,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0166.png",
+          "sha256": "5fc9ade7715c0110ec5b4d18777ce2718c2f70946fa23833222b98b425b2ca7c",
+          "bytes": 175787,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0167.png",
+          "sha256": "530a91ac82e4406acc23913088efb0ab0d056e686345088e41f60e4fc6176f60",
+          "bytes": 191648,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0168.png",
+          "sha256": "5c7ed4b5bba42b52c93eeaaf462b1531717d1abd43938445a1e6bea9c19c1ae3",
+          "bytes": 211350,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0169.png",
+          "sha256": "4f26850b1aee4fe40ab0f060fc24568f54e637d9b5158b74c4a99a865c991e35",
+          "bytes": 228010,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0170.png",
+          "sha256": "e20b37e52a492042647c15edb5e9f45990e5bd585f38d1fc14282e95752597da",
+          "bytes": 214462,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        },
+        {
+          "path": "datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0171.png",
+          "sha256": "029ae94dfcc2d105a2ee2f91e5d535820c00e9e73c6b4bdf7b0ba690df670c32",
+          "bytes": 202755,
+          "shape": [
+            339,
+            512,
+            3
+          ],
+          "native_mode": "RGB",
+          "native_sample_precision_bits": 8
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    "T50 real 50x6000x4000 genuine RGB16 ZIP TIFF not selected",
+    "R50 real 50 native RAW not selected"
+  ],
+  "input_root": "datasets in this worktree; generated and ignored",
+  "native_downloaded_bytes": 214404651,
+  "selection_notes": [
+    "D150 selects first150 native source-filename-sorted JPEG frames from152 original dorsal frames.",
+    "E9 uses all9 original Balloons photographic exposure-bracket PNGs in frozen Bokehforge scene order.",
+    "No scalar duplication, upscale, precision promotion, synthetic reference, or pseudotruth is used.",
+    "Bokehforge standardized TIFFs were generated for provenance verification but are not the baseline inputs.",
+    "No independent all-in-focus truth or calibrated HDR radiance target is supplied for these scenes."
+  ]
+}

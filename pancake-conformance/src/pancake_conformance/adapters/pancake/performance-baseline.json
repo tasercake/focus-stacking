@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-17",
+  "status": "preliminary_diagnostic_only",
+  "reference_commit": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "reference_runtime_lock_sha256": "fda57ac5eea063aebcc278eb57a90228e6da32fe2d8f67d7025ac367f4b51036",
+  "python": "3.12.12",
+  "hardware": {
+    "cpu": "Apple M4 Pro,14cores",
+    "gpu": "Apple M4 Pro,20cores; unused in these CPU-only jobs",
+    "memory_bytes": 51539607552,
+    "os": "macOS26.2,build25C56",
+    "architecture": "arm64"
+  },
+  "completed_work_definition": "External process wall time includes interpreter startup,JIT/cache work,per-frame decode,alignment when requested,fusion,and complete TIFF export. No enqueue-only or CLI numerical-only time is substituted.",
+  "rss_definition": "macOS /usr/bin/time -l maximum resident set size,bytes; no GPU memory measurement or sum with unified memory.",
+  "qualification_gaps": [
+    "Only1 CPU diagnostic process per selected method/workload; no2warmup+10warm or5cold qualification.",
+    "Laplacian,weighted_average,depth_map CPU and allGPU runs not measured.",
+    "No same-quality Pancake output comparison or independent real-scene geometry/detail truth.",
+    "No presentation latency or pause/cancel latency measured.",
+    "No thermal/OS background-load controls or statistical confidence estimates.",
+    "T50genuine24MPRGB16ZIP andR50nativeRAW still unselected."
+  ],
+  "jobs": [
+    {
+      "id": "D150-hybrid-cpu-once",
+      "workload": "D150-native-dorsal",
+      "cwd": "submodules/ChimpStackr",
+      "requested_device": "cpu",
+      "method": "hybrid",
+      "protocol": "single fresh process, includes Python startup and cache/JIT; diagnostic only",
+      "elapsed_seconds": 30.584727707784623,
+      "returncode": 0,
+      "timed_out": false,
+      "output_exists": true,
+      "output_sha256": "62e732ecf7188771a41c07bdc628b831812b30d4527da0a23aa6da5ebcd30040",
+      "input_hashes_preserved": true,
+      "sample_count": 1,
+      "warmup_jobs": 0,
+      "cpu_thread_budget": {
+        "NUMBA_NUM_THREADS": 14,
+        "OMP_NUM_THREADS": 14,
+        "OPENBLAS_NUM_THREADS": 1
+      },
+      "peak_process_rss_bytes": 2897117184,
+      "time_real_seconds": 30.54,
+      "output_validation": {
+        "shape": [
+          1728,
+          2304,
+          3
+        ],
+        "dtype": "uint16",
+        "finite": true,
+        "min": 0,
+        "max": 65407,
+        "independent_truth_quality": "not_evaluated",
+        "cpu_gpu_parity": "not_run"
+      },
+      "command_template": [
+        "{reference_runtime_python}",
+        "-m",
+        "src.cli",
+        "--input",
+        "{all_manifest_workload_frame_paths_in_order}",
+        "--output",
+        "{case_output}/output.tif",
+        "--cpu",
+        "--method",
+        "hybrid",
+        "--kernel-size",
+        "3",
+        "--pyramid-levels",
+        "4",
+        "--scale-factor",
+        "6",
+        "--bit-depth",
+        "16",
+        "--align",
+        "--alignment-mode",
+        "breathing",
+        "--slab-size",
+        "40",
+        "--slab-overlap",
+        "4"
+      ],
+      "reported_alignment_fallback_steps": 145,
+      "cache_policy": "New worktree-local Numba/device-cache directories initially; Hybrid ran first, E9 reuses populated Numba cache. No OS file-cache clearing.",
+      "evidence": {
+        "stdout.txt": {
+          "path": "performance-evidence/D150-hybrid-cpu-once/stdout.txt",
+          "sha256": "ca28e9ae5d50eea0e0bc0b2f2051eaf73bb09cf7ca56416a7ff7dfc85680cfec"
+        },
+        "resource.txt": {
+          "path": "performance-evidence/D150-hybrid-cpu-once/resource.txt",
+          "sha256": "d5dc08cbc0f79875f599d49368ab204e2087b2ee34e466af02516c8e94666b30"
+        },
+        "stderr.txt.gz": {
+          "path": "performance-evidence/D150-hybrid-cpu-once/stderr.txt.gz",
+          "sha256": "94e214ee757cfa6659f693703f7b990a6d25d742cf2a812063ba3367cb3ef8a4",
+          "uncompressed_sha256": "bf5376d97a35368447890c0dcf88b623824c936316344625003474c494614cab"
+        }
+      },
+      "approximate_execution_interval_from_filesystem": {
+        "directory_created_utc": "2026-11-17T00:25:15.080454+00:00",
+        "result_saved_utc": "2026-11-17T00:25:45.702800+00:00",
+        "precision_note": "Filesystem interval bounds, not independently sampled process-start/end timestamps."
+      }
+    },
+    {
+      "id": "E9-exposure-cpu-once",
+      "workload": "E9-native-balloons",
+      "cwd": "submodules/ChimpStackr",
+      "requested_device": "cpu",
+      "method": "exposure_fusion",
+      "protocol": "single fresh process, includes Python startup and cache/JIT; diagnostic only",
+      "elapsed_seconds": 0.8773493748158216,
+      "returncode": 0,
+      "timed_out": false,
+      "output_exists": true,
+      "output_sha256": "111a05644bbcc022979c3467ce53250aaa132f9d265c848eedb8529d7e453fc5",
+      "input_hashes_preserved": true,
+      "sample_count": 1,
+      "warmup_jobs": 0,
+      "cpu_thread_budget": {
+        "NUMBA_NUM_THREADS": 14,
+        "OMP_NUM_THREADS": 14,
+        "OPENBLAS_NUM_THREADS": 1
+      },
+      "peak_process_rss_bytes": 237469696,
+      "time_real_seconds": 0.83,
+      "output_validation": {
+        "shape": [
+          339,
+          512,
+          3
+        ],
+        "dtype": "uint16",
+        "finite": true,
+        "min": 0,
+        "max": 65535,
+        "independent_truth_quality": "not_evaluated",
+        "cpu_gpu_parity": "not_run"
+      },
+      "command_template": [
+        "{reference_runtime_python}",
+        "-m",
+        "src.cli",
+        "--input",
+        "{all_manifest_workload_frame_paths_in_order}",
+        "--output",
+        "{case_output}/output.tif",
+        "--cpu",
+        "--method",
+        "exposure_fusion",
+        "--kernel-size",
+        "3",
+        "--pyramid-levels",
+        "4",
+        "--scale-factor",
+        "6",
+        "--bit-depth",
+        "16"
+      ],
+      "cache_policy": "New worktree-local Numba/device-cache directories initially; Hybrid ran first, E9 reuses populated Numba cache. No OS file-cache clearing.",
+      "evidence": {
+        "stdout.txt": {
+          "path": "performance-evidence/E9-exposure-cpu-once/stdout.txt",
+          "sha256": "de4350ea49cdca155a7596b2d76ee9b215662085f2204a7b1e7dc9b23dbb96ff"
+        },
+        "resource.txt": {
+          "path": "performance-evidence/E9-exposure-cpu-once/resource.txt",
+          "sha256": "00daf989a4808e63e9b7adfe25d4a116b3f9ea02009546519b81c40b7cf0ac9b"
+        },
+        "stderr.txt.gz": {
+          "path": "performance-evidence/E9-exposure-cpu-once/stderr.txt.gz",
+          "sha256": "85579d1c3a320616b57b00adb5b2d9c97a2c8b24319501b1b03bccf63ab38b5f",
+          "uncompressed_sha256": "c83003bca60e125dd947184ba3062485d23b1af37d5fa2a7cdd536c2a050c829"
+        }
+      },
+      "approximate_execution_interval_from_filesystem": {
+        "directory_created_utc": "2026-11-17T00:25:45.702896+00:00",
+        "result_saved_utc": "2026-11-17T00:25:46.582003+00:00",
+        "precision_note": "Filesystem interval bounds, not independently sampled process-start/end timestamps."
+      }
+    }
+  ]
+}

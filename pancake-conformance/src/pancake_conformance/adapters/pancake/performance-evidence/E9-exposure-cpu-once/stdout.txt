@@ -1,0 +1,11 @@
+ChimpStackr CLI - Focus Stacking
+  Input: 9 images
+  Output: /Users/krishna/Documents/focus-stacking/.worktrees/p0-performance/artifacts/p0-performance/E9-exposure-cpu-once/output.tif
+  Mode: Stack only
+  Method: exposure_fusion
+  Kernel size: 3, Pyramid levels: 4
+  Device: CPU
+
+  Output saved: /Users/krishna/Documents/focus-stacking/.worktrees/p0-performance/artifacts/p0-performance/E9-exposure-cpu-once/output.tif (16-bit, 1003 KB)
+  Total time: 0.13s
+  Output shape: (339, 512, 3)

@@ -1,0 +1,13 @@
+ChimpStackr CLI - Focus Stacking
+  Input: 150 images
+  Output: /Users/krishna/Documents/focus-stacking/.worktrees/p0-performance/artifacts/p0-performance/D150-hybrid-cpu-once/output.tif
+  Mode: Align + Stack
+  Method: hybrid
+  Kernel size: 3, Pyramid levels: 4
+  Alignment: ref=first, scale=6, mode=breathing, sequential (breathing compensation)
+  Device: CPU
+
+  Output saved: /Users/krishna/Documents/focus-stacking/.worktrees/p0-performance/artifacts/p0-performance/D150-hybrid-cpu-once/output.tif (16-bit, 25603 KB)
+  Total time: 26.62s
+  Output shape: (1728, 2304, 3)
+  Breathing compensation: cumulative scale 1.0000 – 1.0003 across 150 frames, 145 fallback step(s)
