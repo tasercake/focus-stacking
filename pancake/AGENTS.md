@@ -1,7 +1,8 @@
 # Pancake engineering rules
 
-Keep this a scaffold until implementation is requested. Do not add application
-behavior, GUI/GPU dependencies, fake tests, or speculative abstractions.
+P0 now contains a real image-kernel library and qualified foundation dependencies.
+The product CLI and GUI remain unimplemented. Add product behavior only within
+the requested milestone; do not add fake tests or speculative abstractions.
 The independent conformance suite lives at `../pancake-conformance`.
 
 ## Code
@@ -24,9 +25,9 @@ Run `bash scripts/check.sh all` here before completing changes. All local gates 
 CI also checks native Linux/macOS/Windows builds and Linux address/thread
 sanitizers. Report remote/platform checks that were not run locally.
 
-There is no executable code yet: no application tests and no coverage percentage
-to claim. Only the exact documentation-only, single-target scaffold is exempt
-from coverage reporting. Executable code must have zero uncovered lines,
+The executable P0 library is subject to all assurance gates. Only the exact
+documentation-only, single-target scaffold is exempt from coverage reporting.
+Executable code must have zero uncovered lines,
 functions, regions, and branches. Surviving mutations fail; equivalent mutations
 need evidence and a narrow reviewed exception. Coverage does not prove behavior.
 
