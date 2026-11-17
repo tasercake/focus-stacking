@@ -1,8 +1,7 @@
 # P0 work log and evidence register
 
 Updated: 2026-11-17. Owning plan: [implementation-plan.md](implementation-plan.md).
-Scope: Slint + CubeCL + wgpu architectural qualification. **Final verification
-in progress.** Full application, 376-case conformance, camera parity and final
+Scope: Slint + CubeCL + wgpu architectural qualification. **P0 architectural minima complete.** Full application, 376-case conformance, camera parity and final
 performance are not claimed here.
 
 This document consolidates earlier P0 work and the closure work. Historical
@@ -20,11 +19,12 @@ caches remain ignored; their manifests identify retained locations and hashes.
 | Contract and testing scope | 376 cases retained; reviewed 90-file snapshot. Apple/NVIDIA runtime tests required. AMD/Intel GPU and Windows runtime tests best effort; builds retained. | Every phase; final exact accounting P9/P10. |
 | Dependency and safe API choices | Slint 1.19.0, CubeCL 0.11.4, wgpu 30.0.2; safe TensorHandle kernels; Rawler 0.8.0 plus image/tiff/exr/lcms2. License gate removed. Exact expiring dependency reviews enforced. | Actual integrated consumers must build and pass policy; new architectural choices reopen P0. |
 | Numerical / UI proofs | Blur, stable f32 variance, checked budgets and repeated ownership; native Slint controls, actual pixels and cancellable reusable worker. Final required-profile receipts below. | Full numerical methods P3–P5; job/UI/lifecycle P6–P8. |
-| Assurance / builds | Local aggregate, Linux CPU ASan/TSan and Windows build receipts pass; hosted CI setup corrections remain under validation. GPU-ASan failure remains an explicit external-runtime follow-up. | Complete application assurance and packages P9. |
+| Assurance / builds | Local aggregate and every required hosted job pass, including Linux CPU ASan/TSan, Mac Miri/layout/branches and Windows build/link. GPU-ASan failure remains an explicit external-runtime follow-up. | Complete application assurance and packages P9. |
 | Full product / performance | **Not run.** No Pancake CLI/GUI application or complete stacking job yet. Targets frozen; three real corpora retained; generated T50 passes qualification and is deleted after explicit user authorization. | P1–P10, with T50 before matched comparisons. |
 
 All work used independent Git worktrees. Relevant source, policies, qualification
-probes and bounded evidence will merge into main after normal hooks and checks.
+probes and bounded evidence are retained in Git and integrated locally into main
+after normal hooks and checks; source equivalence matches the green CI revision.
 No user desktop input, host driver/package change, photograph rewrite or
 conformance-source change outside the permitted adapter directory is authorized
 by, or needed for, these proofs.
@@ -488,7 +488,10 @@ arguments and full outcomes; this is controlled routing proof, not a driver-faul
 or application conformance claim. Native GPU mutation/test gates remain intact.
 
 All production Rust and Cargo bytes remain unchanged by these infrastructure
-fixes. Final hosted workflow validation is still required before P0 closure.
+fixes. [Final hosted run 44104336768](https://github.com/tasercake/focus-stacking/actions/runs/44104336768)
+checks source `bc67159a3d4569c8f4cc789eaee41a3d877f35a1`; **all eight required jobs pass**.
+[Latest complete local aggregate](p0-close-evidence/closure-local-aggregate.json)
+already passes with the corrected host policy and cold-index tests.
 
 ## 12. Final execution receipts and closure
 
@@ -508,7 +511,7 @@ checks the same application/lock/script/workflow snapshot on the isolated
 Windows device/UI tests. Other jobs in that first run fail runner setup: missing
 fontconfig headers, absent Go on macOS and Go-built actionlint's `v1.7.12`
 version field. These are not passing CI results. Shared native-package setup,
-checksum-pinned release actionlint and hosted CPU mutation routing are being fixed. Subsequent evidence-only integration must retain exact
+checksum-pinned release actionlint and hosted CPU mutation routing were fixed before the final green run. Subsequent evidence-only integration must retain exact
 production-source/lock equivalence rather than pretending CI tested new code.
 
 Reproduction entry points, from repository root:
@@ -536,3 +539,46 @@ subprocess. Full application case execution begins as real P1/P2 consumers exist
 Later acceptance remains required: P2 files/cameras/T50; P3–P5 methods/geometry;
 P6–P8 jobs/UI/lifecycle; P9 packages/full accounting/tool follow-up; P10 final
 376-ID, required-build/assurance and frozen performance acceptance.
+
+### Final closure verdict
+
+**P0 architectural minima are complete; P1 may start.** The final required
+[CI run](https://github.com/tasercake/focus-stacking/actions/runs/44104336768)
+passes all eight jobs: Linux/macOS platforms, Windows MSVC build/link, macOS
+Miri/layout/branch, Linux address/thread sanitizers, full Linux assurance and
+aggregate gate. [Complete CI logs/receipt](p0-close-evidence/ci-final/receipt.json)
+are retained losslessly. This records actual execution, not workflow syntax.
+
+Local [closure aggregate](p0-close-evidence/closure-local-aggregate.json) passes
+all gates: root CPU/native 139/139 lines, 14/14 functions, 143/143 regions,
+14/14 branches; 79/79 native mutations; five strict Miri tests; 11 native tests
+per debug/release/layout profile; ten guardrail outcomes. Separate CPU-only
+mutation proof catches 79/79 under blocked GPU setup. Hosted Linux ASan and
+TSan each run nine tests successfully. Six physical CPU/GPU runtime proofs,
+HIP build/link, full native DNG development and real native UI/clean shutdown
+proofs remain linked above. Standalone UI/codec/generator code does not inherit
+a root-library coverage or sanitizer percentage.
+
+[Closure ledger](p0-close-evidence/closure.json) marks 13 active minima passed
+and four full acceptance gates transferred to their named phases.
+[Source equivalence](p0-close-evidence/tested-source-equivalence.json) verifies
+all selected runtime/test/qualification/tool/vendor/workflow bytes against the
+green CI revision; later integration contains documentation/evidence only.
+The [hash index](p0-work-log-evidence.json) covers retained source and evidence,
+including earlier failures. Plan/work-log/self are excluded to avoid recursion.
+The 90 frozen contract files and all 376 catalog records remain unchanged.
+No complete Pancake application case or performance target is claimed.
+
+Generated T50 images and duplicate TSan staging are deleted; original real
+corpora stay intact. Owned Linux test container is stopped with source/cache
+retained; no other container or host setting changed. Idle task compiler objects
+were reclaimed when disk reserve reached 15 GiB; source, logs, datasets, LLVM
+bundles and original viewer executable were preserved. Unrelated main-worktree
+Bokehforge lock edits are outside this change and preserved during the local
+fast-forward merge.
+
+Known later conditions remain explicit in the plan: dependency-review expiry,
+source-host review after new code, full feature/64-frame lifecycle acceptance,
+P9 interpreter/Rowan release trust and integrated GPU-ASan investigation, and
+P10 frozen numeric/quality targets. None is relabelled as a completed product
+requirement by this P0 closure.

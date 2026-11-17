@@ -13,7 +13,7 @@ Date: 2026-11-17. Integration worktree: `codex/p0-unblock`.
 
 **The foundation fixes are implemented. P0 is not complete.** No application
 conformance or completed-job performance pass is claimed. The
-[plan ledger](implementation-plan.md#execution-progress--2026-11-17) remains the
+[plan ledger](implementation-plan.md#3-ordered-p0-gates-and-progress) remains the
 acceptance authority; it keeps unfinished conditions visible.
 
 ## Applied fixes
