@@ -349,7 +349,7 @@ Borrows retag; that model is experimental. Native success is not a proof of
 soundness. No upstream ARC
 rewrite, Miri exclusion or claim of full UI Miri coverage was introduced. P0
 records trusted repository-owned embedded-source use only. P9 must explicitly
-review/record the release interpreter/Rowan boundary or adopt reviewed generated
+review and record the release interpreter/Rowan boundary or adopt reviewed generated
 bindings; this is a visible release condition, not a deferred P0 proof.
 
 Actual proof: NVIDIA RTX 3090/Vulkan/DiscreteGpu; same device/queue handles;
@@ -451,6 +451,44 @@ always verifies/deletes one image at a time; future timed full-set preparation
 must materialize this exact recipe under full-set disk preflight and clean up
 again. No complete stack, relative speed/memory, focus-quality or conformance
 acceptance is inferred. Generated scale evidence stays labelled GENERATED.
+
+### Further hosted assurance findings and resolutions
+
+Run [44096988927](https://github.com/tasercake/focus-stacking/actions/runs/44096988927)
+actually passes Linux ASan, TSan, Linux/macOS platform tests and Windows MSVC
+build/link. Those complete successful-job logs are retained under
+`p0-close-evidence/ci-second/`. The **whole workflow still fails** two independent
+assurance checks; those passes are not promoted to workflow success.
+
+Linux Miri stops before tests in tiny-xlib 0.2.5's eager Xlib constructor:
+`dlopen` is unsupported by Miri. This is distinct from Rowan's ARC Miri report.
+The [explicit source-pinned host contract](p0-miri-host-boundary.md) requires all
+five current OS-neutral pure-host Miri tests on macOS, where actual strict Miri
+passes. Linux retains both native layout seeds, branch coverage and real ASan/TSan.
+Its local `all` reports Miri NOT RUN with required canonical Mac CI obligation;
+no constructor, feature, ignored test, source exclusion or suppression is added.
+New/changed source, dependencies or nightly pin forces review. Current helpers
+use 64-bit little-endian checked shapes/budgets/bytes, not OS services.
+
+Offline macro fixtures previously copied only core/macros overrides alongside
+the root lock. A warm local index hid missing metadata for optional HIP. A clean
+index reproduces all three failures before any compile contract runs. Fixtures
+now inherit **all root patch tables**, with absolute escaped paths. In the same
+isolated index without the HIP entry, all three real compile contracts, all seven
+vendor tests and actual dependency gate pass. Global index remains untouched;
+temporary copies are removed. [Cold-index proof](p0-macro-cold-index.md) retains
+red/green logs, commands and unchanged Cargo/kernel hashes. No network fallback.
+
+Hosted mutation routing is also proved independently: under the exact invalid
+wgpu configuration that makes native GPU setup fail (`tasks_max must be greater
+than zero`, expected exit101), CPU-only baseline runs nine tests and catches
+**79/79** mutants with zero misses/timeouts/unviable. Source is restored exactly.
+[Complete receipt/logs](p0-ci-evidence/cpu-mutants-receipt.json) retain the actual
+arguments and full outcomes; this is controlled routing proof, not a driver-fault
+or application conformance claim. Native GPU mutation/test gates remain intact.
+
+All production Rust and Cargo bytes remain unchanged by these infrastructure
+fixes. Final hosted workflow validation is still required before P0 closure.
 
 ## 12. Final execution receipts and closure
 
