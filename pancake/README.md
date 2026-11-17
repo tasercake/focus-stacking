@@ -2,7 +2,8 @@
 
 Rust 2024 foundation and P0 image-kernel qualification for Pancake. Slint 1.19,
 CubeCL 0.11.4 and wgpu 30 share one dependency graph. One safe CubeCL kernel
-applies a full-precision u16 horizontal blur on CPU LLVM JIT and GPU runtimes.
+applies a full-precision u16 horizontal blur; a second computes stable f32 row
+variance. Both use checked logical byte budgets on CPU LLVM JIT and GPU runtimes.
 The application and conformance operations remain to be implemented.
 
 From this directory:
@@ -73,4 +74,6 @@ uv run --project pancake-conformance --frozen pancake-conformance list
 
 The [implementation plan](docs/implementation-plan.md) selects Slint, CubeCL,
 and wgpu, defines the thin adapter, and maps all 376 contract-v2 cases to ordered
-implementation milestones. P0 qualification does not establish conformance parity.
+implementation milestones. The [P0 work log](docs/p0-work-log.md) consolidates
+current and historical proofs, failures and later acceptance owners.
+P0 qualification does not establish conformance parity.
