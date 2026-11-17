@@ -23,10 +23,10 @@ they do not claim every full case has already run or passed. This is planning
 data, not a passing result or test oracle.
 
 P0.01 snapshot review is resolved by explicit adoption of the current committed
-contract. [Drift review](drift-review.md) covers16modified and4added core files;
-[reviewed snapshot](contract-current.json) pins all90. Historical fingerprints
-and all376case records remain intact. Numeric engineering targets are fixed;
-real corpus/baseline and complete support-matrix qualification remain pending.
+contract. [Drift review](drift-review.md) covers 16 modified and four added core files;
+[reviewed snapshot](contract-current.json) pins all 90. Historical fingerprints
+and all 376 case records remain intact. Numeric engineering targets are fixed;
+real D150/E9 inputs and diagnostic CPU jobs are pinned separately; T50/R50, matched baseline protocol and complete support-matrix qualification remain pending.
 
 The application will support `CONFORMANCE_EVENTS_PATH` for truthful diagnostics
 and `CONFORMANCE_UI_SETTINGS_DIR` for isolated profiles. `PANCAKE_*` settings in

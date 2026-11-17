@@ -3878,7 +3878,7 @@
         "id": "P0.01",
         "name": "acceptance and measurable targets",
         "status": "blocked",
-        "reason": "Drift review resolved; numeric targets frozen; real benchmark corpus, matched baselines and complete support-matrix qualification pending.",
+        "reason": "Drift review resolved; targets frozen; real D150/E9 pinned with single reference CPU diagnostics. T50/R50, complete support matrix and qualification baseline protocol remain pending.",
         "subchecks": {
           "snapshot_review": {
             "status": "passed",
@@ -3890,10 +3890,13 @@
           },
           "real_corpus_qualification": {
             "status": "blocked",
-            "reason": "T50/R50real inputs unselected; D150/E9bounded acquisition evidence forthcoming."
+            "reason": "D150/E9 real input manifests pinned; T50/R50 unselected.",
+            "evidence": "performance-corpus.json"
           },
           "matched_reference_baseline": {
-            "status": "not_run"
+            "status": "not_run",
+            "reason": "Two diagnostic CPU jobs exist but do not meet frozen profile or sampling protocol.",
+            "evidence": "performance-baseline.json"
           },
           "full_support_matrix": {
             "status": "blocked",
@@ -3905,7 +3908,7 @@
         "id": "P0.02",
         "name": "hardware and test access",
         "status": "blocked",
-        "reason": "Local M4Pro identified; current x86-64/NVIDIA/AMD/Intel/Windows access and guestlogin notqualified."
+        "reason": "Local M4 Pro and reachable existing Linux x86-64 RTX 3090 host identified; native runtime/GUI qualification pending. AMD/Intel/Windows and guest login unresolved."
       },
       {
         "id": "P0.03",
@@ -3990,7 +3993,7 @@
         "id": "P0.16",
         "name": "performance feasibility",
         "status": "not_run",
-        "reason": "Real application/runtime qualification not executed."
+        "reason": "Targets fixed and two single reference CPU diagnostic jobs available; no matched candidate, quality-equivalence or frozen-protocol performance qualification."
       },
       {
         "id": "P0.17",
@@ -4002,7 +4005,7 @@
     "contract_snapshot_review": {
       "detected_date": "2026-11-17",
       "status": "resolved_by_explicit_current_contract_adoption",
-      "reason": "All16modifications and4additions reviewed; catalog metadata unchanged; runtime routing/recovery request and removedMacselftests documented. Historical snapshot is preserved rather than silently overwritten.",
+      "reason": "All 16 modifications and four additions reviewed; catalog metadata unchanged. Runtime routing, recovery request and removed macOS self-tests documented. Historical snapshot preserved.",
       "case_ids_unchanged": true,
       "required_capability_changes": [],
       "changed_files": [
@@ -4106,7 +4109,7 @@
       "review_date": "2026-11-17",
       "review_report": "drift-review.md",
       "current_snapshot": "contract-current.json",
-      "decision": "Use reviewed committed00bd137 contract; retain original frozen_contract fingerprints/case records and reference baselines.",
+      "decision": "Use reviewed committed 00bd137 contract; retain original frozen_contract fingerprints/case records and reference baselines.",
       "added_core_files": [
         "docs/linux.md",
         "src/pancake_conformance/linux_ui.py",
@@ -4126,7 +4129,7 @@
       "version": "p0-initial-1",
       "status": "frozen_initial_engineering_targets",
       "performance_pass": false,
-      "corpus_and_baselines": "pending"
+      "corpus_and_baselines": "D150/E9 inputs pinned; two single CPU diagnostics; T50/R50 and full matched protocol pending"
     }
   }
 }

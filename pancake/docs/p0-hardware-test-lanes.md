@@ -6,8 +6,9 @@ baseline over `00bd137`). Audit worktree: `codex/p0-hardware`.
 ## Verdict
 
 **P0.02 is blocked on access qualification for the complete promised hardware
-matrix.** Local Apple hardware is identified; other physical hardware is not
-currently reachable through the configuration inspected here. This is an access
+matrix.** Local Apple hardware is identified. A later read-only probe verified
+the existing Linux x86-64 RTX 3090 host is reachable; its runtime/GUI tools remain
+unqualified, and AMD/Intel/Windows access remains unresolved. This is an access
 inventory, not a CubeCL runtime pass or an application conformance run.
 
 The plan's previous assertion that the final physical-GPU GUI case requires a
@@ -52,6 +53,13 @@ The inspected `~/.ssh/config` contains an OrbStack include, and the included
 configuration declares only the `orb` host. No external x86-64/GPU SSH alias was
 found. This is not proof that no remote workstation exists; it means this audit
 did not establish its current authorized endpoint or access method.
+
+That initial configuration-only inventory is superseded for NVIDIA access by
+the [runtime audit's remote addendum](p0-runtime-feasibility.md): the existing
+authorized hostname `krishna-desktop` responded to a BatchMode SSH probe with
+Linux 6.8.0-147-generic x86-64, NVIDIA GeForce RTX 3090, driver 580.178.04,
+24576 MiB. No installation, compilation, runtime kernel or GUI job was executed.
+An absent SSH-config alias was not proof that this host was inaccessible.
 
 **Inventory command side effect:** `orb list` unexpectedly attempted to start
 OrbStack's VM and returned `start VM: timed out waiting for VM to start`.
@@ -116,7 +124,7 @@ NVIDIA/AMD/Intel physical-GPU runner is configured there.
 | Lane | Available now | Remaining requirement |
 |---|---|---|
 | Apple ARM64 CPU/wgpu/native Metal | Local physical host identified | Execute shared kernel battery and qualify native runtime/JIT/package behavior. Use dedicated isolation for native input. |
-| Native x86-64 + NVIDIA CUDA/wgpu | Historical RTX 3090 run only | Establish authorized current access and physical device/driver identity; install/verify native desktop/runtime tools and run kernels plus physical-GPU GUI case. |
+| Native x86-64 + NVIDIA CUDA/wgpu | Existing remote RTX 3090 host reachable; Linux x86-64/device/driver read-only probe passed | Verify native CPU/CUDA/wgpu toolchains, isolated desktop/runtime tools, real kernels and physical-GPU GUI completion. Access alone does not qualify execution. |
 | AMD HIP/wgpu | Not established | Physical supported AMD device, ROCm/HIP and wgpu driver, native execution and required desktop access. |
 | Intel wgpu | Not established | Physical Intel GPU and supported Vulkan/D3D12 driver, actual kernel execution and package validation. |
 | macOS GUI VM | Named guests exist; one unrelated guest is running | Dedicated guest ownership/lease, valid key/login, permissions, native compiler/runtime installation, and reproducible binary preparation. |
