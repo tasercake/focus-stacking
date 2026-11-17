@@ -159,3 +159,39 @@ are unchanged. Verification completed:
 The scaffold has zero application tests and no application coverage percentage.
 Its passing local gates are not runtime, hardware, or application conformance
 evidence. Guardrail fixtures passed their expected rejection checks.
+
+## Execution update: isolated Linux/NVIDIA lane
+
+The earlier inventory-only status is superseded for the available Linux host.
+No host desktop input or host package/driver installation was used. Passwordless
+sudo is unavailable; Docker group access and the installed NVIDIA container
+runtime provide an isolated qualification route instead.
+
+A task-owned container, `pancake-p0-linux-20261117`, uses existing
+`node:22.23.4-bookworm`, image
+`sha256:a62a6676db6b68fd1aa959a36ce361a002b74f0936d3e38db544420d9b164990`.
+It exposes GPU compute/utility/graphics, with no host display, home, credential or
+project mount and no published port. Source copies come from independent P0
+worktrees. Existing unrelated containers, applications and VMs remain untouched.
+
+| Qualification | Observed result |
+|---|---|
+| Native build tools | Isolated Rust 1.100.0 installed; NVIDIA driver 580.178.04 and CUDA 12.5 already exist on host. |
+| Private desktop | Xvfb 21.1.7, Openbox 3.6.1, xdotool, private D-Bus, AT-SPI 2.46.0 installed inside container. |
+| Actual suite boundary | Unchanged `isolated_desktop` allocated 1440x1000 display, private service home and accessibility bus; all owned desktop processes reaped on exit. Same private environment sees physical RTX 3090 Vulkan. |
+| Suite self-tests | 309 passed, two explicit live-GUI smoke skips. These test the harness, not Pancake. |
+| Shared blur: native x86-64 CPU | Exact-value/tail/border tests pass using LLVM CPU JIT; identity AMD Ryzen 9 7950X3D, `cpu_x86_64_load-512_f16-chain`. |
+| Shared blur: wgpu Vulkan | Same tests pass; adapter NVIDIA GeForce RTX 3090, `DiscreteGpu`, Vulkan. Software fallback is explicitly rejected. |
+| Shared blur: native CUDA | Same image definition passes exact-value/border/tail qualification with CUDA runtime enabled. Identity RTX 3090, `ptx_sm86`; existing NVRTC 12.5 libraries copied into container. No driver install. |
+| Shared blur: Apple native Metal | Same image definition passes on local M4 Pro through `cubecl/metal-native`, separate from Metal through wgpu. Identity `msl_Apple M4 Pro`. |
+
+Kernel-source/lock revisions and the final post-integration reruns belong to the
+[P0 fix report](p0-unblock-report.md). First successful runtime probes are useful
+qualification evidence; they do not establish five-method, memory-budget,
+Slint-native-input, full-conformance or performance acceptance.
+
+Host PCI inventory exposes one GPU: NVIDIA RTX 3090. Vulkan also reports a
+software llvmpipe adapter; it is not AMD/Intel GPU evidence. Existing libvirt
+inventory has no VM. No AMD GPU, Intel GPU, Windows or macOS guest login lane has
+been established. User confirmed no AMD/Intel/Windows test hosts or runners while independent
+work continued; P0.02 remains blocked. These conditions cannot be removed by dependency exceptions.
