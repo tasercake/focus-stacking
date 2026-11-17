@@ -3878,93 +3878,131 @@
         "id": "P0.01",
         "name": "acceptance and measurable targets",
         "status": "blocked",
-        "reason": "Review historical/current committed conformance snapshot differences and freeze acceptance/targets before P1."
+        "reason": "Drift review resolved; numeric targets frozen; real benchmark corpus, matched baselines and complete support-matrix qualification pending.",
+        "subchecks": {
+          "snapshot_review": {
+            "status": "passed",
+            "evidence": "drift-review.md and contract-current.json"
+          },
+          "numeric_target_freeze": {
+            "status": "passed",
+            "evidence": "pancake/docs/performance-targets.json; initial engineering targets, not measuredperformance"
+          },
+          "real_corpus_qualification": {
+            "status": "blocked",
+            "reason": "T50/R50real inputs unselected; D150/E9bounded acquisition evidence forthcoming."
+          },
+          "matched_reference_baseline": {
+            "status": "not_run"
+          },
+          "full_support_matrix": {
+            "status": "blocked",
+            "evidence": "pancake/docs/p0-hardware-test-lanes.md"
+          }
+        }
       },
       {
         "id": "P0.02",
         "name": "hardware and test access",
-        "status": "not_run"
+        "status": "blocked",
+        "reason": "Local M4Pro identified; current x86-64/NVIDIA/AMD/Intel/Windows access and guestlogin notqualified."
       },
       {
         "id": "P0.03",
         "name": "complete dependency/build graph",
-        "status": "not_run"
+        "status": "blocked",
+        "reason": "Three bounded candidate graphs failed cargo-deny. Final minimal patch-refreshed graph retains 30 duplicate groups and six unmaintained advisories; no candidate application dependencies adopted.",
+        "evidence": "pancake/docs/p0-runtime-feasibility.md and p0-runtime-evidence.json"
       },
       {
         "id": "P0.04",
         "name": "safe resource and launch boundary",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Safe tensor-backed API route identified statically; no custom kernel compiled/executed."
       },
       {
         "id": "P0.05",
         "name": "real assurance compatibility",
-        "status": "not_run"
+        "status": "blocked",
+        "reason": "All empty-scaffold checks passed; real Slint/JIT assurance design unqualified."
       },
       {
         "id": "P0.06",
         "name": "shared kernels on every runtime",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Blocked prerequisites: viable adopted graph and required hardware; no runtimekernel battery."
       },
       {
         "id": "P0.07",
         "name": "display interop and bounded resources",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.08",
         "name": "codecs, RAW, color, and files",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.09",
         "name": "numerical precision and determinism",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.10",
         "name": "five-method and slab feasibility",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.11",
         "name": "registration and crop feasibility",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.12",
         "name": "job/error/device mechanisms",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.13",
         "name": "native UI contract mechanisms",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.14",
         "name": "lifecycle timing",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.15",
         "name": "deployment and complete evidence route",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.16",
         "name": "performance feasibility",
-        "status": "not_run"
+        "status": "not_run",
+        "reason": "Real application/runtime qualification not executed."
       },
       {
         "id": "P0.17",
         "name": "closure review",
-        "status": "not_run"
+        "status": "blocked",
+        "reason": "No P0 closure or P1 authorization inferred from documentation/scaffold evidence."
       }
     ],
     "contract_snapshot_review": {
       "detected_date": "2026-11-17",
-      "status": "blocked",
-      "reason": "Historical planning fingerprints differ from current committed suite files. Review acceptance changes in P0.01; preserve historical snapshot. This plan edit did not change these files.",
+      "status": "resolved_by_explicit_current_contract_adoption",
+      "reason": "All16modifications and4additions reviewed; catalog metadata unchanged; runtime routing/recovery request and removedMacselftests documented. Historical snapshot is preserved rather than silently overwritten.",
       "case_ids_unchanged": true,
       "required_capability_changes": [],
       "changed_files": [
@@ -4064,7 +4102,31 @@
           "current_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
           "current_matches_committed_head": true
         }
+      ],
+      "review_date": "2026-11-17",
+      "review_report": "drift-review.md",
+      "current_snapshot": "contract-current.json",
+      "decision": "Use reviewed committed00bd137 contract; retain original frozen_contract fingerprints/case records and reference baselines.",
+      "added_core_files": [
+        "docs/linux.md",
+        "src/pancake_conformance/linux_ui.py",
+        "src/pancake_conformance/native_linux.py",
+        "tests/test_linux_ui.py"
       ]
+    },
+    "reviewed_current_contract": {
+      "path": "contract-current.json",
+      "source_commit": "00bd1371e1ee8873a90e462d8cef3ef0c5d05e92",
+      "file_count": 90,
+      "combined_sha256": "2d17fb4f570dcfae47e355b63e18650c325c586f47620c565b568f4fdcce20b2",
+      "adopted_date": "2026-11-17"
+    },
+    "performance_targets": {
+      "path": "../../../../../pancake/docs/performance-targets.json",
+      "version": "p0-initial-1",
+      "status": "frozen_initial_engineering_targets",
+      "performance_pass": false,
+      "corpus_and_baselines": "pending"
     }
   }
 }

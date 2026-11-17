@@ -22,9 +22,11 @@ pass before P1 starts. Case-to-gate links identify feasibility responsibility;
 they do not claim every full case has already run or passed. This is planning
 data, not a passing result or test oracle.
 
-P0.01 currently records a review block: 16 current committed suite files differ
-from the historical planning fingerprints. Case IDs remain unchanged. The
-roadmap retains both hashes for review; this plan update changes no suite source.
+P0.01 snapshot review is resolved by explicit adoption of the current committed
+contract. [Drift review](drift-review.md) covers16modified and4added core files;
+[reviewed snapshot](contract-current.json) pins all90. Historical fingerprints
+and all376case records remain intact. Numeric engineering targets are fixed;
+real corpus/baseline and complete support-matrix qualification remain pending.
 
 The application will support `CONFORMANCE_EVENTS_PATH` for truthful diagnostics
 and `CONFORMANCE_UI_SETTINGS_DIR` for isolated profiles. `PANCAKE_*` settings in

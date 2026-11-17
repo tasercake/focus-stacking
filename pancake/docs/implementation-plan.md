@@ -1,8 +1,9 @@
 # Pancake implementation plan
 
 Updated: 2026-11-17. Foundation: **Slint + CubeCL + wgpu**.
-Status: implementation plan and declarative adapter; application implementation
-has not started. No conformance pass or performance improvement is claimed.
+Status: P0 execution started; drift review and initial performance-target freeze
+completed. Hardware and dependency qualification have identified blockers.
+No Pancake application conformance pass or performance improvement is claimed.
 
 ## 1. Objective and acceptance boundary
 
@@ -45,13 +46,18 @@ files. Its combined SHA-256 is
 The roadmap records its selection rule. This is distinct from the suite's own
 provenance hash, which also includes adapter sources.
 
-The 2026-11-17 plan audit found **16 files in the current committed suite differ
-from that historical snapshot**, while all 376 case IDs remain present. These
-files were not changed by this plan edit. Differences are recorded under
-`p0_policy.contract_snapshot_review` in the roadmap; original fingerprints and
-case records remain intact. **P0.01 is blocked pending review of that drift and
-acceptance/target freeze.** Do not silently refresh hashes or infer unchanged
-behavior from unchanged case IDs.
+P0 execution reviewed all 16 modified historical files and four added Linux
+files. **Adopt current committed suite `00bd137`**, explicitly preserving the
+historical snapshot, case records and reference baselines. The reviewed
+[current snapshot](../../pancake-conformance/src/pancake_conformance/adapters/pancake/contract-current.json)
+pins 90 files with combined SHA-256
+`2d17fb4f570dcfae47e355b63e18650c325c586f47620c565b568f4fdcce20b2`.
+All 376 catalog records, descriptions and capabilities match the historical
+catalog. The [drift review](../../pancake-conformance/src/pancake_conformance/adapters/pancake/drift-review.md)
+records the changed recovery comparison, Linux execution route and seven
+upstream-removed macOS transport self-tests. No frozen suite source changed in
+this P0 work. Snapshot review is resolved; **P0.01 remains blocked on real-corpus
+and support-matrix qualification**, not on unexplained hash drift.
 
 Primary acceptance is the unchanged independent contract. Existing ChimpStackr
 v2 frozen baselines are optional, stricter regression evidence. Exact frozen
@@ -122,9 +128,36 @@ It includes bounded, real numerical and native-UI vertical slices, including
 enough worker/engine behavior to test lifecycle timing. Reuse qualified code
 in later phases. Do not use placeholder kernels, fake executables, injected
 successful diagnostics, or artificial waits as evidence. This document update
-does not execute those spikes or mark any gate passed.
-The planning audit has identified a blocking snapshot-review condition for
-P0.01; the remaining gate experiments are not run.
+does not make a documentation-only statement into a passing execution result.
+The following progress ledger distinguishes completed reviews from unexecuted
+application/kernel work.
+
+### Execution progress — 2026-11-17
+
+| Gate | Current marker | Evidence and remaining condition |
+|---|---|---|
+| P0.01 | **BLOCKED; two subtasks complete** | Snapshot drift reviewed/adopted; concrete [performance targets](p0-performance-targets.md) frozen. Exact real benchmark corpus and full supported matrix remain unqualified; baseline not measured to the required protocol. |
+| P0.02 | **BLOCKED** | [Hardware audit](p0-hardware-test-lanes.md): local M4 Pro identified; current x86-64/NVIDIA/AMD/Intel/Windows access unqualified; guest identity/login unverified. Linux private desktop is a valid physical-GPU route. |
+| P0.03 | **BLOCKED; candidate graph rejected** | [Runtime audit](p0-runtime-feasibility.md): three actual cargo-deny candidate failures: the minimal patch-refreshed graph still has 30 duplicate-version groups and six unmaintained advisories; narrowing removed the original missing-license error. GPL-only allowlist additions need routine concrete license review; they do not resolve the independent graph blockers. No candidate dependencies adopted. |
+| P0.04 | **NOT RUN; static API route identified** | Safe tensor-backed launch APIs found in installed source; no policy-compliant custom kernel compiled or executed. |
+| P0.05 | **BLOCKED / NOT QUALIFIED** | All local empty-scaffold gates pass; real executable Slint/JIT coverage/Miri/sanitizer design remains unproven. Empty-source success does not qualify this gate. |
+| P0.06 | **NOT RUN; prerequisites blocked** | No shared kernel battery executed under an adopted policy-compliant graph; promised hardware access also incomplete. |
+| P0.07 | **NOT RUN** | Historical viewer interop experiment exists; production-safe bounded cache/ownership design and its measurements are unqualified. |
+| P0.08 | **NOT RUN** | Actual safe RAW/codec/color qualification remains pending. |
+| P0.09 | **NOT RUN** | Precision/determinism/FFT kernel qualification requires a viable graph and real execution. |
+| P0.10 | **NOT RUN** | No five-method/slab numerical slice implemented or qualified. |
+| P0.11 | **NOT RUN** | Registration/crop numerical feasibility not executed. |
+| P0.12 | **NOT RUN** | Real job/device/error mechanisms not implemented or qualified. |
+| P0.13 | **NOT RUN** | No actual Slint accessibility replay through current native driver. |
+| P0.14 | **NOT RUN** | No actual worker lifecycle replay; no artificial timing substitute introduced. |
+| P0.15 | **NOT RUN; routes reviewed** | Existing Linux native route and macOS VM constraints inspected; Pancake binary/GUI deployment and physical-GPU completion not executed. |
+| P0.16 | **NOT RUN** | Numeric targets fixed; matched real-corpus reference/candidate performance not qualified. |
+| P0.17 | **BLOCKED** | P0 is not complete; P1 cannot start with these open gates. |
+
+Executable audit evidence and qualifications are separate from portable suite
+self-tests. The drift worktree ran 307 self-tests with four explained skips and
+Ruff successfully; that is not 307 Pancake passes. Hardware/runtime reports list
+their actual commands, platform limits and source/artifact provenance.
 
 Finite prototypes cannot prove all future implementation details. Full-case
 acceptance and regressions remain checked throughout P1-P10. The purpose of
@@ -143,7 +176,7 @@ not qualify as execution evidence.
 | Gate | Feasibility question and required exit evidence |
 |---|---|
 | **P0.01 — acceptance and measurable targets** | Verify all 376 IDs, immutable suite scope, adapter-only change boundary, and exact runtime/OS/hardware support matrix. Select real RAW/TIFF benchmark inputs and freeze numeric warm/cold job-time, peak-memory, and viewer-latency limits before measuring candidates. Record methods, alignment, device, job parameters, baseline revision, and measurement rules. Unset targets or undefined accelerator promises block P0. |
-| **P0.02 — hardware and test access** | Secure actual ARM64/x86-64 CPU, Apple, NVIDIA, AMD, and Intel test access for every promised combination, including native CUDA/HIP/Metal. Provision the macOS GUI VM and an isolated physical-GPU macOS test session, permissions, native tools, and repeatable access for later regression runs. No inaccessible hardware may be deferred to P9. |
+| **P0.02 — hardware and test access** | Secure actual ARM64/x86-64 CPU, Apple, NVIDIA, AMD, and Intel test access for every promised combination, including native CUDA/HIP/Metal. Provision supported native lanes and a physical-GPU GUI route: private Linux desktop on a GPU host or isolated physical macOS session; retain the macOS VM lane for that platform's own coverage. Verify permissions, tools and repeatable access. No inaccessible hardware may be deferred to P9. |
 | **P0.03 — complete dependency/build graph** | Resolve compatible Slint/CubeCL/wgpu, codec, RAW, color, and host-math dependencies on every promised target. Build/link real runtime profiles; verify LLVM/JIT and native-library distribution, licenses, advisories, duplicate policy, and all-features/feature-powerset compatibility. Resolve package-launch/signing/tool access requirements. No unselected critical dependency remains for P2 or P9. |
 | **P0.04 — safe resource and launch boundary** | Test safe `TensorHandle` allocation/`into_arg()` with checked shape, dtype, capacity, aliasing, and lifetimes; test macro-expanded code under `unsafe_code = forbid`. Include decoder, texture, and native integration boundaries. Never copy the experiment's unsafe `BufferArg::from_raw_parts` statements. If safe APIs are insufficient, resolve the upstream API or reviewed policy decision here. |
 | **P0.05 — real assurance compatibility** | Run the existing local gates and relevant platform/sanitizer checks against executable qualification code, not only the empty scaffold. Demonstrate full application-owned source coverage, mutation resistance, and a valid Miri/native-JIT/GUI verification design. Miri cannot run a real GPU driver or LLVM JIT; any necessary policy/design decision must be resolved now without silent exclusions. |
@@ -160,13 +193,17 @@ not qualify as execution evidence.
 | **P0.16 — performance feasibility** | Measure the real numerical/worker/viewer slices against P0.01's frozen targets on agreed workloads/hardware. Include all five methods, representative registration/slabs, RAW/TIFF decode/export, cold JIT, warm completed jobs, memory pressure/cache eviction, and input-to-present latency. An exposure-only kernel or enqueue timing is insufficient. Show the chosen design can meet targets before committing to the main port. |
 | **P0.17 — closure review** | Produce the P0 evidence ledger: every gate PASS, reproducible commands, source/lock/contract/device provenance, artifacts, resolved policy/dependency choices, and locked performance targets. No required hardware, unresolved numerical failure, accepted-later risk, missing numeric threshold, or untested launch/verification mechanism remains. P1 starts only after this closure condition is met. |
 
-P0.01 must turn the qualitative goal of lower overhead and greater speed into
-numeric acceptance limits. This edit does not invent user-approved speed or
-memory figures. The target record must include maximum warm/cold job time or
-minimum baseline speedup, peak process/device-memory limits, viewer latency and
-pause/cancel response limits, measured hardware, and statistical/run conditions.
-If those values cannot be fixed from agreed requirements, P0 stays open; P10
-cannot supply or change them retrospectively.
+P0.01 has fixed initial engineering limits in
+[performance-targets.json](performance-targets.json): at least 2x warm
+completed-job speed, at most 50% peak memory, no cold-job median regression,
+viewer P95 at most 33 ms, and pause/cancel acknowledgement at most 250 ms.
+These are targets defined during authorized P0 work, not prior user-supplied
+figures or measured achievements. The [measurement contract](p0-performance-targets.md)
+defines same-device/quality comparisons, separate unified/discrete memory
+accounting, ten measured warm jobs after two warm-ups, five fresh-cache jobs,
+200 viewer events and 30 lifecycle requests per operation. Real corpus and
+matched baseline selection remain pending; P10 cannot change thresholds after
+seeing results.
 
 ### Evidence ledger and stop rule
 
@@ -347,18 +384,19 @@ feasibility caveat.
 |---|---|
 | Host numerical | 341 IDs: 46 CLI + 223 algorithms + 72 devices. Real CPU/physical GPU, outputs and diagnostics. |
 | Dedicated macOS GUI VM | 34 interface IDs. Software presentation/native CubeCL CPU as needed; real native input, AX/screenshot traces, exports, completed host CLI parity. |
-| Isolated physical macOS GUI | `interface.compute.gpu`: real preference selection and GPU numerical completion. VM explicitly removes physical GPU capability. |
+| Isolated physical-GPU GUI | `interface.compute.gpu`: private Linux Xvfb/AT-SPI desktop on a physical GPU host, or isolated native macOS test session. Real preference and numerical completion required. macOS VM removes physical GPU capability. |
 | Runtime/OS matrix | ARM64/x86-64 CPU; Apple wgpu/Metal; NVIDIA wgpu/CUDA; AMD wgpu/HIP; Intel wgpu, for supported combinations. Record actual OS/driver/runtime versions. |
 | Application assurance | Existing full source coverage, mutation, Miri, sanitizer, native and dependency gates, separately from conformance/JIT/GPU kernel evidence. |
 
-Normal VM run can reach **375 passed + 1 unsupported**, which is not 100%.
-Do not modify the suite or relabel a virtual adapter as physical GPU. The
-unmodified non-VM runner can execute the last case on a dedicated physical Mac
-with an isolated test session. Provision access in P0.02 and prove actual GPU GUI
-execution in P0.15; never send native test input to the user's active desktop
-during routine CI. If all GUI input must stay in the current VM, 376/376 is not
-attainable under that restriction and P0 cannot close. Do not leave this access
-or permission question unresolved until P9.
+A macOS VM run can reach **375 passed + 1 unsupported**, which is not 100%.
+That restriction is not universal: the reviewed current suite can execute all
+35 GUI cases, including physical GPU, on a private Linux desktop. No suite
+change is needed. The reference adapter records a historical Linux RTX 3090
+376/376 run; this work has not replayed it or qualified Pancake on that hardware.
+Provision a valid Linux GPU or isolated native macOS route in P0.02 and prove
+actual Pancake GPU GUI execution in P0.15. Never send routine test input to the
+user's active desktop, treat Xvfb as a physical GPU, or leave access questions
+until P9. If only the present macOS VM is available, P0 cannot close.
 
 An adapter-owned release verifier may combine IDs from lanes only with matching
 source/descriptor/lock/contract provenance. Preserve every raw report/status;
@@ -398,7 +436,18 @@ uv run --project pancake-conformance --frozen pancake-conformance run \
   --output artifacts/pancake-conformance/gui-REPLACE_WITH_UNIQUE_RUN_ID
 ```
 
-On a separately provisioned isolated physical macOS test session only:
+On a provisioned physical-GPU Linux host, the unchanged runner creates a private
+desktop automatically; do not pass `--gui-vm`:
+
+```sh
+uv run --project pancake-conformance --frozen pancake-conformance run \
+  --target pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml \
+  --suite interface --no-coverage \
+  --output artifacts/pancake-conformance/linux-gui-REPLACE_WITH_UNIQUE_RUN_ID
+```
+
+The alternative below is for a separately provisioned isolated native macOS test
+session only; never execute it against the user's active desktop:
 
 ```sh
 uv run --project pancake-conformance --frozen pancake-conformance run \
