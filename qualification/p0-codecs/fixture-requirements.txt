@@ -1,0 +1,6 @@
+# Exact versions from the frozen conformance uv.lock used by its fixture module.
+imagecodecs==2026.11.11
+numpy==2.5.4
+pillow==12.3.0
+scipy==1.18.1
+tifffile==2026.11.12

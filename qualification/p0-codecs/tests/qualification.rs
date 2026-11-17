@@ -5,6 +5,7 @@ use std::error::Error;
 use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::Path;
+use std::sync::LazyLock;
 
 use image::{ColorType, ImageBuffer, ImageFormat, Rgb};
 use rawler::formats::tiff::reader::TiffReader;
@@ -13,6 +14,22 @@ use tiff::encoder::{Compression, DeflateLevel, TiffEncoder, colortype};
 
 /// Probe result with recoverable dependency and I/O errors.
 type ProbeResult = Result<(), Box<dyn Error>>;
+
+/// One process-wide bounded pool owns every RAW decode/development operation.
+static RAW_POOL: LazyLock<Result<rayon::ThreadPool, String>> = LazyLock::new(|| {
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(2)
+        .thread_name(|index| format!("pancake-raw-{index}"))
+        .build()
+        .map_err(|error| error.to_string())
+});
+
+/// Obtain the shared RAW pool without building another or mutating Rayon globals.
+fn raw_pool() -> Result<&'static rayon::ThreadPool, io::Error> {
+    RAW_POOL
+        .as_ref()
+        .map_err(|message| io::Error::other(message.clone()))
+}
 
 /// RGB16 values include low bits that an eight-bit intermediate cannot preserve.
 const RGB16: [u16; 12] = [
@@ -39,7 +56,8 @@ const FLOAT: [f32; 12] = [
 fn decode_sensor(path: &Path, output: &Path) -> ProbeResult {
     let bytes = fs::read(path)?;
     let source = rawler::rawsource::RawSource::new_from_shared_vec(std::sync::Arc::new(bytes));
-    let raw = rawler::decode(&source, &rawler::decoders::RawDecodeParams::default())?;
+    let raw = raw_pool()?
+        .install(|| rawler::decode(&source, &rawler::decoders::RawDecodeParams::default()))?;
     let rawler::RawImageData::Integer(samples) = &raw.data else {
         return Err(io::Error::other("expected integer sensor data").into());
     };
@@ -264,7 +282,8 @@ fn generated_bayer_dng_retains_all_sensor_samples() -> ProbeResult {
     let output = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/qualification");
     let bytes = fs::read(output.join("bayer.dng"))?;
     let source = rawler::rawsource::RawSource::new_from_shared_vec(std::sync::Arc::new(bytes));
-    let raw = rawler::decode(&source, &rawler::decoders::RawDecodeParams::default())?;
+    let raw = raw_pool()?
+        .install(|| rawler::decode(&source, &rawler::decoders::RawDecodeParams::default()))?;
     let rawler::RawImageData::Integer(samples) = &raw.data else {
         return Err(io::Error::other("Bayer DNG returned non-integer sensor data").into());
     };
@@ -280,5 +299,70 @@ fn generated_bayer_dng_retains_all_sensor_samples() -> ProbeResult {
         return Err(io::Error::other("Bayer DNG changed shape or sensor samples").into());
     }
     fs::write(output.join("bayer-rust.u16"), bytes)?;
+    Ok(())
+}
+
+/// Fully develop the unchanged conformance Bayer DNG into genuine RGB16 output.
+#[test]
+fn conformance_bayer_dng_develops_rgb16_in_one_bounded_pool() -> ProbeResult {
+    let output = Path::new(env!("CARGO_MANIFEST_DIR")).join("target/conformance-raw");
+    let bytes = fs::read(output.join("fixtures/bayer_dng/frame_00.dng"))?;
+    let source = rawler::rawsource::RawSource::new_from_shared_vec(std::sync::Arc::new(bytes));
+    let pool = raw_pool()?;
+    let workers = pool.broadcast(|_| {
+        (
+            rayon::current_num_threads(),
+            std::thread::current().name().map(str::to_owned),
+        )
+    });
+    if workers.len() != 2
+        || workers
+            .iter()
+            .any(|(count, name)| *count != 2 || name.is_none())
+    {
+        return Err(io::Error::other("RAW worker pool is not exactly two named workers").into());
+    }
+    let developed = pool.install(|| {
+        let raw = rawler::decode(&source, &rawler::decoders::RawDecodeParams::default())
+            .map_err(|error| error.to_string())?;
+        rawler::imgop::develop::RawDevelop::default()
+            .develop_intermediate(&raw)
+            .map_err(|error| error.to_string())?
+            .to_dynamic_image()
+            .ok_or_else(|| "RAW development did not produce an image".to_owned())
+    })?;
+    if developed.color() != ColorType::Rgb16
+        || developed.width() != 160
+        || developed.height() != 112
+    {
+        return Err(
+            io::Error::other("complete RAW development changed RGB16 shape or precision").into(),
+        );
+    }
+    let samples = developed
+        .as_rgb16()
+        .ok_or_else(|| io::Error::other("missing RGB16 buffer"))?
+        .as_raw();
+    let low = samples
+        .iter()
+        .min()
+        .ok_or_else(|| io::Error::other("empty developed RAW"))?;
+    let high = samples
+        .iter()
+        .max()
+        .ok_or_else(|| io::Error::other("empty developed RAW"))?;
+    if high.checked_sub(*low).is_none_or(|range| range < 10_000)
+        || !samples.iter().any(|value| value % 257 != 0)
+    {
+        return Err(io::Error::other("RAW development lost range or low-bit precision").into());
+    }
+    developed.save_with_format(output.join("conformance-developed.tiff"), ImageFormat::Tiff)?;
+    let names: Vec<String> = workers.into_iter().filter_map(|(_, name)| name).collect();
+    fs::write(
+        output.join("worker-budget.json"),
+        format!(
+            "{{\"raw_pool_count\":1,\"raw_worker_limit\":2,\"observed_worker_names\":{names:?},\"global_rayon_pool_configured\":false}}\n"
+        ),
+    )?;
     Ok(())
 }
