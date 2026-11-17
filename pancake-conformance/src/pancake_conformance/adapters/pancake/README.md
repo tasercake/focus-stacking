@@ -16,8 +16,15 @@ Expected binaries: `pancake/target/release/pancake-cli` and
 launcher only if platform executable/package behavior requires it; never build
 inside each invocation or synthesize application output.
 
-`case-roadmap.json` snapshots all 376 contract-v2 IDs, required capabilities, and
-primary milestones. It is planning data, not a passing result or test oracle.
+`case-roadmap.json` snapshots all 376 contract-v2 IDs, required capabilities,
+primary integration milestones, and P0 feasibility gates. All 17 P0 gates must
+pass before P1 starts. Case-to-gate links identify feasibility responsibility;
+they do not claim every full case has already run or passed. This is planning
+data, not a passing result or test oracle.
+
+P0.01 currently records a review block: 16 current committed suite files differ
+from the historical planning fingerprints. Case IDs remain unchanged. The
+roadmap retains both hashes for review; this plan update changes no suite source.
 
 The application will support `CONFORMANCE_EVENTS_PATH` for truthful diagnostics
 and `CONFORMANCE_UI_SETTINGS_DIR` for isolated profiles. `PANCAKE_*` settings in
@@ -35,8 +42,10 @@ uv run --project pancake-conformance --frozen pancake-conformance run \
   --output artifacts/pancake-conformance/adapter-initial-REPLACE_WITH_UNIQUE_RUN_ID
 ```
 
-Until P1 creates the executable, this must fail with a missing-binary diagnostic.
-Do not add a mock executable to turn it green.
+Until real P0 qualification or P1 integration supplies the mapped executable,
+this must fail with a missing-binary diagnostic. Do not add a mock executable
+to turn it green.
 
 See [implementation plan](../../../../../pancake/docs/implementation-plan.md)
-for phases, runtime qualification, acceptance, and the physical-GPU GUI lane.
+for all P0 blocker gates, later regression phases, runtime qualification,
+acceptance, and the physical-GPU GUI lane that must be proven during P0.

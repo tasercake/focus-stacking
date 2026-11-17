@@ -109,7 +109,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Help describes public CLI surface",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.no-arguments",
@@ -117,7 +118,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Invalid arguments fail with diagnostic",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.method",
@@ -125,7 +127,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.alignment",
@@ -133,7 +136,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.reference",
@@ -141,7 +145,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.bit-depth",
@@ -149,7 +154,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.integer",
@@ -157,7 +163,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.missing-input",
@@ -165,7 +172,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.missing-output",
@@ -173,7 +181,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.unknown-option",
@@ -181,7 +190,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.device-conflict",
@@ -191,7 +201,8 @@
         "exclusive_device_flags"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.scale-zero",
@@ -199,7 +210,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Invalid stack settings fail without output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.scale-one",
@@ -207,7 +219,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Invalid stack settings fail without output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.scale-negative",
@@ -215,7 +228,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Invalid stack settings fail without output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.slab-one",
@@ -223,7 +237,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Invalid stack settings fail without output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.slab-negative",
@@ -231,7 +246,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Invalid stack settings fail without output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.overlap-negative",
@@ -239,7 +255,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Invalid stack settings fail without output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.overlap-too-large",
@@ -247,7 +264,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Invalid stack settings fail without output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.no-files",
@@ -255,7 +273,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.one-file",
@@ -263,7 +282,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.duplicate-single",
@@ -271,7 +291,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.corrupt-images",
@@ -279,7 +300,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.reject.output-parent",
@@ -287,7 +309,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.paths.sorted-and-deduplicated",
@@ -295,7 +318,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.paths.glob",
@@ -303,7 +327,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.inputs.unchanged",
@@ -311,7 +336,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.progress-and-quality",
@@ -321,7 +347,8 @@
         "cli_reports"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "cli.export.jpeg-16bit-warning",
@@ -329,7 +356,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.export.overwrite",
@@ -337,7 +365,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.export.failed-retention",
@@ -345,7 +374,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.coverage.auto.medium",
@@ -353,7 +383,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Auto settings preserve RGB at nine megapixels",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "cli.coverage.auto.large",
@@ -361,7 +392,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Auto settings preserve RGB above twenty megapixels",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "cli.coverage.auto.unmeasured",
@@ -369,7 +401,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Automatic execution handles large images without prescribing a strategy",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "cli.coverage.raw.legacy-alignment",
@@ -377,7 +410,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "RAW auto detection, quality reporting and sequential alignment preserve identity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.coverage.input.npy",
@@ -385,7 +419,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Real NumPy image files agree with equivalent PNG inputs",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.coverage.input.literal-glob",
@@ -393,7 +428,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Existing filenames with glob characters remain literal inputs",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.coverage.input.directories",
@@ -401,7 +437,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Directories fail image decoding without publishing output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "cli.coverage.reject.oversize-png",
@@ -409,7 +446,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Oversized PNG headers fail safely through CPU, GPU and alignment decoders",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.coverage.reject.png",
@@ -417,7 +455,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Malformed files fail with diagnostics and no partial output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.coverage.partial.png",
@@ -425,7 +464,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "An undecodable input rejects the complete job",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "cli.coverage.reject.dng",
@@ -433,7 +473,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Malformed files fail with diagnostics and no partial output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.coverage.partial.dng",
@@ -441,7 +482,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "An undecodable input rejects the complete job",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "cli.coverage.reject.npy",
@@ -449,7 +491,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Malformed files fail with diagnostics and no partial output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.coverage.partial.npy",
@@ -457,7 +500,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "An undecodable input rejects the complete job",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "cli.coverage.reject.unknown",
@@ -465,7 +509,8 @@
       "primary_milestone": "P1",
       "required_capabilities": [],
       "description": "Malformed files fail with diagnostics and no partial output",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "cli.coverage.partial.unknown",
@@ -473,7 +518,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "An undecodable input rejects the complete job",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.stack.laplacian",
@@ -481,7 +527,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Recover all focus planes through command-line interface",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.odd_dimensions.laplacian",
@@ -489,7 +536,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.flat.laplacian",
@@ -497,7 +545,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Constant input retains source color",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.deterministic.laplacian",
@@ -505,7 +554,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.automatic_parameters.laplacian",
@@ -513,7 +563,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.alignment.translation.laplacian",
@@ -523,7 +574,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.euclidean.laplacian",
@@ -533,7 +585,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.similarity.laplacian",
@@ -543,7 +596,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.affine.laplacian",
@@ -553,7 +607,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.breathing.laplacian",
@@ -563,7 +618,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.quality_report.laplacian",
@@ -571,7 +627,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.input.bayer_dng.laplacian",
@@ -579,7 +636,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Decode a generated Bayer DNG without an embedded thumbnail",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.alignment.mixed_dimensions.laplacian",
@@ -587,7 +645,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Align different input dimensions into first-frame coordinates",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.stack.hybrid",
@@ -595,7 +654,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Recover all focus planes through command-line interface",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.odd_dimensions.hybrid",
@@ -603,7 +663,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.flat.hybrid",
@@ -611,7 +672,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Constant input retains source color",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.deterministic.hybrid",
@@ -619,7 +681,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.automatic_parameters.hybrid",
@@ -627,7 +690,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.alignment.translation.hybrid",
@@ -637,7 +701,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.euclidean.hybrid",
@@ -647,7 +712,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.similarity.hybrid",
@@ -657,7 +723,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.affine.hybrid",
@@ -667,7 +734,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.breathing.hybrid",
@@ -677,7 +745,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.quality_report.hybrid",
@@ -685,7 +754,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.input.bayer_dng.hybrid",
@@ -693,7 +763,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Decode a generated Bayer DNG without an embedded thumbnail",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.alignment.mixed_dimensions.hybrid",
@@ -701,7 +772,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Align different input dimensions into first-frame coordinates",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.stack.weighted_average",
@@ -709,7 +781,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "Recover all focus planes through command-line interface",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.odd_dimensions.weighted_average",
@@ -717,7 +790,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.flat.weighted_average",
@@ -725,7 +799,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "Constant input retains source color",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.deterministic.weighted_average",
@@ -733,7 +808,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.automatic_parameters.weighted_average",
@@ -741,7 +817,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.alignment.translation.weighted_average",
@@ -751,7 +828,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.euclidean.weighted_average",
@@ -761,7 +839,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.similarity.weighted_average",
@@ -771,7 +850,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.affine.weighted_average",
@@ -781,7 +861,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.breathing.weighted_average",
@@ -791,7 +872,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.quality_report.weighted_average",
@@ -799,7 +881,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.input.bayer_dng.weighted_average",
@@ -807,7 +890,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Decode a generated Bayer DNG without an embedded thumbnail",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.alignment.mixed_dimensions.weighted_average",
@@ -815,7 +899,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Align different input dimensions into first-frame coordinates",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.stack.depth_map",
@@ -823,7 +908,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "Recover all focus planes through command-line interface",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.odd_dimensions.depth_map",
@@ -831,7 +917,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.flat.depth_map",
@@ -839,7 +926,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "Constant input retains source color",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.deterministic.depth_map",
@@ -847,7 +935,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.automatic_parameters.depth_map",
@@ -855,7 +944,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.alignment.translation.depth_map",
@@ -865,7 +955,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.euclidean.depth_map",
@@ -875,7 +966,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.similarity.depth_map",
@@ -885,7 +977,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.affine.depth_map",
@@ -895,7 +988,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.breathing.depth_map",
@@ -905,7 +999,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.quality_report.depth_map",
@@ -913,7 +1008,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.input.bayer_dng.depth_map",
@@ -921,7 +1017,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Decode a generated Bayer DNG without an embedded thumbnail",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.alignment.mixed_dimensions.depth_map",
@@ -929,7 +1026,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Align different input dimensions into first-frame coordinates",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.stack.exposure_fusion",
@@ -937,7 +1035,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Recover all focus planes through command-line interface",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.odd_dimensions.exposure_fusion",
@@ -945,7 +1044,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.flat.exposure_fusion",
@@ -953,7 +1053,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Constant input retains source color",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.deterministic.exposure_fusion",
@@ -961,7 +1062,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.automatic_parameters.exposure_fusion",
@@ -969,7 +1071,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.alignment.translation.exposure_fusion",
@@ -979,7 +1082,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.euclidean.exposure_fusion",
@@ -989,7 +1093,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.similarity.exposure_fusion",
@@ -999,7 +1104,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.affine.exposure_fusion",
@@ -1009,7 +1115,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.breathing.exposure_fusion",
@@ -1019,7 +1126,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.quality_report.exposure_fusion",
@@ -1027,7 +1135,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.input.bayer_dng.exposure_fusion",
@@ -1035,7 +1144,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Decode a generated Bayer DNG without an embedded thumbnail",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.alignment.mixed_dimensions.exposure_fusion",
@@ -1043,7 +1153,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Align different input dimensions into first-frame coordinates",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.precision16.png.laplacian",
@@ -1051,7 +1162,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.precision16.tif.laplacian",
@@ -1059,7 +1171,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.cross_export.laplacian",
@@ -1067,7 +1180,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.slabs.2.0.laplacian",
@@ -1075,7 +1189,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.3.1.laplacian",
@@ -1083,7 +1198,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.4.2.laplacian",
@@ -1091,7 +1207,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.9.0.laplacian",
@@ -1099,7 +1216,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.breathing.laplacian",
@@ -1107,7 +1225,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.repeated_breathing_slabs.laplacian",
@@ -1117,7 +1236,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.nonrepeating_slabs.laplacian",
@@ -1127,7 +1247,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.precision16.png.hybrid",
@@ -1135,7 +1256,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.precision16.tif.hybrid",
@@ -1143,7 +1265,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.cross_export.hybrid",
@@ -1151,7 +1274,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.slabs.2.0.hybrid",
@@ -1159,7 +1283,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.3.1.hybrid",
@@ -1167,7 +1292,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.4.2.hybrid",
@@ -1175,7 +1301,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.9.0.hybrid",
@@ -1183,7 +1310,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.breathing.hybrid",
@@ -1191,7 +1319,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.repeated_breathing_slabs.hybrid",
@@ -1201,7 +1330,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.nonrepeating_slabs.hybrid",
@@ -1211,7 +1341,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.precision16.png.weighted_average",
@@ -1219,7 +1350,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.precision16.tif.weighted_average",
@@ -1227,7 +1359,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.cross_export.weighted_average",
@@ -1235,7 +1368,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.slabs.2.0.weighted_average",
@@ -1243,7 +1377,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.3.1.weighted_average",
@@ -1251,7 +1386,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.4.2.weighted_average",
@@ -1259,7 +1395,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.9.0.weighted_average",
@@ -1267,7 +1404,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.breathing.weighted_average",
@@ -1275,7 +1413,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.repeated_breathing_slabs.weighted_average",
@@ -1285,7 +1424,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.nonrepeating_slabs.weighted_average",
@@ -1295,7 +1435,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.precision16.png.depth_map",
@@ -1303,7 +1444,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.precision16.tif.depth_map",
@@ -1311,7 +1453,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.cross_export.depth_map",
@@ -1319,7 +1462,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.slabs.2.0.depth_map",
@@ -1327,7 +1471,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.3.1.depth_map",
@@ -1335,7 +1480,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.4.2.depth_map",
@@ -1343,7 +1489,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.9.0.depth_map",
@@ -1351,7 +1498,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.slabs.breathing.depth_map",
@@ -1359,7 +1507,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.repeated_breathing_slabs.depth_map",
@@ -1369,7 +1518,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.nonrepeating_slabs.depth_map",
@@ -1379,7 +1529,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.precision16.png.exposure_fusion",
@@ -1387,7 +1538,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.precision16.tif.exposure_fusion",
@@ -1395,7 +1547,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.cross_export.exposure_fusion",
@@ -1403,7 +1556,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.alignment.translation.reference_middle",
@@ -1413,7 +1567,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.translation.reference_previous",
@@ -1423,7 +1578,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.euclidean.reference_middle",
@@ -1433,7 +1589,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.euclidean.reference_previous",
@@ -1443,7 +1600,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.similarity.reference_middle",
@@ -1453,7 +1611,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.similarity.reference_previous",
@@ -1463,7 +1622,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.affine.reference_middle",
@@ -1473,7 +1633,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.affine.reference_previous",
@@ -1483,7 +1644,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.breathing.reference_middle",
@@ -1493,7 +1655,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.breathing.reference_previous",
@@ -1503,7 +1666,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.input.grayscale",
@@ -1511,7 +1675,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.rgba",
@@ -1519,7 +1684,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.formats",
@@ -1527,7 +1693,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.unicode",
@@ -1535,7 +1702,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.float01",
@@ -1543,7 +1711,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.float255",
@@ -1551,7 +1720,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.exr",
@@ -1559,7 +1729,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.grayscale16",
@@ -1567,7 +1738,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.orientation1",
@@ -1575,7 +1747,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.orientation2",
@@ -1583,7 +1756,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.orientation3",
@@ -1591,7 +1765,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.orientation4",
@@ -1599,7 +1774,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.orientation5",
@@ -1607,7 +1783,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.orientation6",
@@ -1615,7 +1792,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.orientation7",
@@ -1623,7 +1801,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.input.orientation8",
@@ -1631,7 +1810,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.export.jpg",
@@ -1639,7 +1819,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.export.tif",
@@ -1647,7 +1828,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.export.exr",
@@ -1655,7 +1837,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.parameters.pyramid_levels_2",
@@ -1663,7 +1846,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.parameters.pyramid_levels_6",
@@ -1671,7 +1855,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.parameters.kernel_2",
@@ -1679,7 +1864,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.parameters.kernel_6",
@@ -1687,7 +1873,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.parameters.kernel_11",
@@ -1695,7 +1882,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.alignment.breathing.max_precision",
@@ -1703,7 +1891,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.legacy_rotation_scale",
@@ -1711,7 +1900,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.exposure_constant_mix.4",
@@ -1719,7 +1909,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.exposure_constant_mix.9",
@@ -1727,7 +1918,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.weighted.zero_regions",
@@ -1735,7 +1927,8 @@
       "primary_milestone": "P3",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.alignment.auto_crop",
@@ -1743,7 +1936,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.alignment.translation_bounded_crop",
@@ -1753,7 +1947,8 @@
         "alignment_evidence"
       ],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.exposure_brackets",
@@ -1761,7 +1956,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.exposure_precision.2.png",
@@ -1769,7 +1965,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.exposure_precision.2.tif",
@@ -1777,7 +1974,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.exposure_precision.4.png",
@@ -1785,7 +1983,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.exposure_precision.4.tif",
@@ -1793,7 +1992,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.exposure_precision.9.png",
@@ -1801,7 +2001,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.exposure_precision.9.tif",
@@ -1809,7 +2010,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.coverage.precision.euclidean",
@@ -1817,7 +2019,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.coverage.precision.affine",
@@ -1825,7 +2028,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.coverage.scale_clamp",
@@ -1833,7 +2037,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.coverage.featureless.similarity",
@@ -1841,7 +2046,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.coverage.featureless.affine",
@@ -1849,7 +2055,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.coverage.implausible.rotation",
@@ -1857,7 +2064,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.coverage.implausible.anisotropy",
@@ -1865,7 +2073,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.coverage.implausible.scale",
@@ -1873,7 +2082,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.coverage.dimensions_resize_over_twofold",
@@ -1881,7 +2091,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.coverage.mixed_precision.ref8.stack",
@@ -1889,7 +2100,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.coverage.mixed_precision.ref8.aligned",
@@ -1897,7 +2109,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.coverage.mixed_precision.ref16.stack",
@@ -1905,7 +2118,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.coverage.mixed_precision.ref16.aligned",
@@ -1913,7 +2127,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "algorithms.coverage.hdr_multibatch.cpu",
@@ -1921,7 +2136,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.coverage.hdr_multibatch.gpu",
@@ -1929,7 +2145,8 @@
       "primary_milestone": "P4",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.laplacian.stack",
@@ -1937,7 +2154,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.laplacian.translation",
@@ -1945,7 +2163,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.laplacian.euclidean",
@@ -1953,7 +2172,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.laplacian.similarity",
@@ -1961,7 +2181,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.laplacian.affine",
@@ -1969,7 +2190,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.laplacian.breathing",
@@ -1977,7 +2199,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.hybrid.stack",
@@ -1985,7 +2208,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.hybrid.translation",
@@ -1993,7 +2217,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.hybrid.euclidean",
@@ -2001,7 +2226,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.hybrid.similarity",
@@ -2009,7 +2235,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.hybrid.affine",
@@ -2017,7 +2244,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.hybrid.breathing",
@@ -2025,7 +2253,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.weighted_average.stack",
@@ -2033,7 +2262,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.weighted_average.translation",
@@ -2041,7 +2271,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.weighted_average.euclidean",
@@ -2049,7 +2280,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.weighted_average.similarity",
@@ -2057,7 +2289,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.weighted_average.affine",
@@ -2065,7 +2298,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.weighted_average.breathing",
@@ -2073,7 +2307,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.depth_map.stack",
@@ -2081,7 +2316,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.depth_map.translation",
@@ -2089,7 +2325,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.depth_map.euclidean",
@@ -2097,7 +2334,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.depth_map.similarity",
@@ -2105,7 +2343,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.depth_map.affine",
@@ -2113,7 +2352,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.depth_map.breathing",
@@ -2121,7 +2361,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.exposure_fusion.stack",
@@ -2129,7 +2370,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.exposure_fusion.translation",
@@ -2137,7 +2379,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.exposure_fusion.euclidean",
@@ -2145,7 +2388,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.exposure_fusion.similarity",
@@ -2153,7 +2397,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.exposure_fusion.affine",
@@ -2161,7 +2406,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.partial_corrupt.exposure_fusion.breathing",
@@ -2169,7 +2415,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.no_decodable_frames.weighted_average",
@@ -2177,7 +2424,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.no_decodable_frames.depth_map",
@@ -2185,7 +2433,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.no_decodable_frames.exposure_fusion",
@@ -2193,7 +2442,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.no_decodable_frames.sequential",
@@ -2201,7 +2451,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "algorithms.coverage.gray_array.hybrid.cpu",
@@ -2209,7 +2460,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.coverage.gray_array.hybrid.gpu",
@@ -2217,7 +2469,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.coverage.gray_array.weighted_average.cpu",
@@ -2225,7 +2478,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.coverage.gray_array.weighted_average.gpu",
@@ -2233,7 +2487,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.coverage.gray_array.depth_map.cpu",
@@ -2241,7 +2496,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.coverage.gray_array.depth_map.gpu",
@@ -2249,7 +2505,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Generated public-boundary numerical and fallback coverage",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "devices.cpu.laplacian",
@@ -2260,7 +2517,8 @@
         "cpu"
       ],
       "description": "Explicit CPU selection completes without GPU fallback",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.stack.laplacian",
@@ -2271,7 +2529,8 @@
         "gpu"
       ],
       "description": "Strict GPU completion and CPU/GPU fusion equivalence",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.auto.cold.laplacian",
@@ -2279,7 +2538,8 @@
       "primary_milestone": "P6",
       "required_capabilities": [],
       "description": "Automatic execution produces valid output without a prescribed backend",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.aligned.laplacian",
@@ -2290,7 +2550,8 @@
         "gpu"
       ],
       "description": "Alignment and fusion complete on GPU with CPU-equivalent image",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.cpu.hybrid",
@@ -2301,7 +2562,8 @@
         "cpu"
       ],
       "description": "Explicit CPU selection completes without GPU fallback",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.stack.hybrid",
@@ -2312,7 +2574,8 @@
         "gpu"
       ],
       "description": "Strict GPU completion and CPU/GPU fusion equivalence",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.auto.cold.hybrid",
@@ -2320,7 +2583,8 @@
       "primary_milestone": "P6",
       "required_capabilities": [],
       "description": "Automatic execution produces valid output without a prescribed backend",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.aligned.hybrid",
@@ -2331,7 +2595,8 @@
         "gpu"
       ],
       "description": "Alignment and fusion complete on GPU with CPU-equivalent image",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.cpu.weighted_average",
@@ -2342,7 +2607,8 @@
         "cpu"
       ],
       "description": "Explicit CPU selection completes without GPU fallback",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.stack.weighted_average",
@@ -2353,7 +2619,8 @@
         "gpu"
       ],
       "description": "Strict GPU completion and CPU/GPU fusion equivalence",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.auto.cold.weighted_average",
@@ -2361,7 +2628,8 @@
       "primary_milestone": "P6",
       "required_capabilities": [],
       "description": "Automatic execution produces valid output without a prescribed backend",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.aligned.weighted_average",
@@ -2372,7 +2640,8 @@
         "gpu"
       ],
       "description": "Alignment and fusion complete on GPU with CPU-equivalent image",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.cpu.depth_map",
@@ -2383,7 +2652,8 @@
         "cpu"
       ],
       "description": "Explicit CPU selection completes without GPU fallback",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.stack.depth_map",
@@ -2394,7 +2664,8 @@
         "gpu"
       ],
       "description": "Strict GPU completion and CPU/GPU fusion equivalence",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.auto.cold.depth_map",
@@ -2402,7 +2673,8 @@
       "primary_milestone": "P6",
       "required_capabilities": [],
       "description": "Automatic execution produces valid output without a prescribed backend",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.aligned.depth_map",
@@ -2413,7 +2685,8 @@
         "gpu"
       ],
       "description": "Alignment and fusion complete on GPU with CPU-equivalent image",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.cpu.exposure_fusion",
@@ -2424,7 +2697,8 @@
         "cpu"
       ],
       "description": "Explicit CPU selection completes without GPU fallback",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.stack.exposure_fusion",
@@ -2435,7 +2709,8 @@
         "gpu"
       ],
       "description": "Strict GPU completion and CPU/GPU fusion equivalence",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.auto.cold.exposure_fusion",
@@ -2443,7 +2718,8 @@
       "primary_milestone": "P6",
       "required_capabilities": [],
       "description": "Automatic execution produces valid output without a prescribed backend",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.aligned.exposure_fusion",
@@ -2454,7 +2730,8 @@
         "gpu"
       ],
       "description": "Alignment and fusion complete on GPU with CPU-equivalent image",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.gpu.alignment.translation",
@@ -2465,7 +2742,8 @@
         "gpu"
       ],
       "description": "GPU pipeline agrees with CPU for supported transform model",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.gpu.alignment.euclidean",
@@ -2476,7 +2754,8 @@
         "gpu"
       ],
       "description": "GPU pipeline agrees with CPU for supported transform model",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.gpu.alignment.similarity",
@@ -2487,7 +2766,8 @@
         "gpu"
       ],
       "description": "GPU pipeline agrees with CPU for supported transform model",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.gpu.alignment.affine",
@@ -2498,7 +2778,8 @@
         "gpu"
       ],
       "description": "GPU pipeline agrees with CPU for supported transform model",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.gpu.alignment.breathing",
@@ -2509,7 +2790,8 @@
         "gpu"
       ],
       "description": "GPU pipeline agrees with CPU for supported transform model",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "devices.gpu.slabs.laplacian",
@@ -2520,7 +2802,8 @@
         "gpu"
       ],
       "description": "Overlapping GPU slabs agree with CPU slabs",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.slabs.hybrid",
@@ -2531,7 +2814,8 @@
         "gpu"
       ],
       "description": "Overlapping GPU slabs agree with CPU slabs",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.slabs.weighted_average",
@@ -2542,7 +2826,8 @@
         "gpu"
       ],
       "description": "Overlapping GPU slabs agree with CPU slabs",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.slabs.depth_map",
@@ -2553,7 +2838,8 @@
         "gpu"
       ],
       "description": "Overlapping GPU slabs agree with CPU slabs",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.precision16.hybrid",
@@ -2564,7 +2850,8 @@
         "gpu"
       ],
       "description": "GPU retains genuine 16-bit input precision and CPU parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.precision16.weighted_average",
@@ -2575,7 +2862,8 @@
         "gpu"
       ],
       "description": "GPU retains genuine 16-bit input precision and CPU parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.precision16.depth_map",
@@ -2586,7 +2874,8 @@
         "gpu"
       ],
       "description": "GPU retains genuine 16-bit input precision and CPU parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.precision16.exposure_fusion",
@@ -2597,7 +2886,8 @@
         "gpu"
       ],
       "description": "GPU retains genuine 16-bit input precision and CPU parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.high_precision",
@@ -2608,7 +2898,8 @@
         "gpu"
       ],
       "description": "High-precision GPU request produces CPU-equivalent pixels",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.corrupt_input_rejected",
@@ -2619,7 +2910,8 @@
         "gpu"
       ],
       "description": "Corrupt input fails the complete job without backend fallback",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.weighted.zero_regions",
@@ -2630,7 +2922,8 @@
         "gpu"
       ],
       "description": "Zero-weight regions preserve deterministic source color",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.exposure_constant_mix.4",
@@ -2641,7 +2934,8 @@
         "gpu"
       ],
       "description": "Analytic equal-weight fusion preserves low bits through batch tree",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.exposure_constant_mix.9",
@@ -2652,7 +2946,8 @@
         "gpu"
       ],
       "description": "Analytic equal-weight fusion preserves low bits through batch tree",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "devices.gpu.exposure_precision.2",
@@ -2663,7 +2958,8 @@
         "gpu"
       ],
       "description": "Independent full-precision identity and CPU/GPU parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.exposure_precision.4",
@@ -2674,7 +2970,8 @@
         "gpu"
       ],
       "description": "Independent full-precision identity and CPU/GPU parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.exposure_precision.9",
@@ -2685,7 +2982,8 @@
         "gpu"
       ],
       "description": "Independent full-precision identity and CPU/GPU parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.09"
     },
     {
       "id": "devices.gpu.corrupt.laplacian.stack",
@@ -2696,7 +2994,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.laplacian.translation",
@@ -2707,7 +3006,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.laplacian.euclidean",
@@ -2718,7 +3018,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.laplacian.similarity",
@@ -2729,7 +3030,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.laplacian.affine",
@@ -2740,7 +3042,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.laplacian.breathing",
@@ -2751,7 +3054,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.hybrid.stack",
@@ -2762,7 +3066,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.hybrid.translation",
@@ -2773,7 +3078,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.hybrid.euclidean",
@@ -2784,7 +3090,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.hybrid.similarity",
@@ -2795,7 +3102,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.hybrid.affine",
@@ -2806,7 +3114,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.hybrid.breathing",
@@ -2817,7 +3126,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.weighted_average.stack",
@@ -2828,7 +3138,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.weighted_average.translation",
@@ -2839,7 +3150,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.weighted_average.euclidean",
@@ -2850,7 +3162,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.weighted_average.similarity",
@@ -2861,7 +3174,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.weighted_average.affine",
@@ -2872,7 +3186,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.weighted_average.breathing",
@@ -2883,7 +3198,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.depth_map.stack",
@@ -2894,7 +3210,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.depth_map.translation",
@@ -2905,7 +3222,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.depth_map.euclidean",
@@ -2916,7 +3234,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.depth_map.similarity",
@@ -2927,7 +3246,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.depth_map.affine",
@@ -2938,7 +3258,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.depth_map.breathing",
@@ -2949,7 +3270,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.exposure_fusion.stack",
@@ -2960,7 +3282,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.exposure_fusion.translation",
@@ -2971,7 +3294,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.exposure_fusion.euclidean",
@@ -2982,7 +3306,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.exposure_fusion.similarity",
@@ -2993,7 +3318,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.exposure_fusion.affine",
@@ -3004,7 +3330,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.corrupt.exposure_fusion.breathing",
@@ -3015,7 +3342,8 @@
         "gpu"
       ],
       "description": "Corrupt requested input rejects complete job and retains existing export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.12"
     },
     {
       "id": "devices.gpu.exposure_mixed_dimensions",
@@ -3026,7 +3354,8 @@
         "gpu"
       ],
       "description": "Later sixteen-bit sources retain precision when resized or padded against an eight-bit first frame",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.10"
     },
     {
       "id": "interface.controls.method-alignment",
@@ -3036,7 +3365,8 @@
         "native_gui"
       ],
       "description": "Native controls preserve exclusive method selection and all alignment choices",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.algorithm.laplacian",
@@ -3046,7 +3376,8 @@
         "native_gui"
       ],
       "description": "Native method selection, processing, 16-bit export, and CLI pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.algorithm.hybrid",
@@ -3056,7 +3387,8 @@
         "native_gui"
       ],
       "description": "Native method selection, processing, 16-bit export, and CLI pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.algorithm.weighted_average",
@@ -3066,7 +3398,8 @@
         "native_gui"
       ],
       "description": "Native method selection, processing, 16-bit export, and CLI pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.algorithm.depth_map",
@@ -3076,7 +3409,8 @@
         "native_gui"
       ],
       "description": "Native method selection, processing, 16-bit export, and CLI pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.algorithm.exposure_fusion",
@@ -3086,7 +3420,8 @@
         "native_gui"
       ],
       "description": "Native method selection, processing, 16-bit export, and CLI pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.startup.empty",
@@ -3096,7 +3431,8 @@
         "native_gui"
       ],
       "description": "Empty workspace disables operations that require images",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.import.native-dialogs",
@@ -3106,7 +3442,8 @@
         "native_gui"
       ],
       "description": "Real native file/folder import, cancellation, duplicate suppression, and removal",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.import.raw",
@@ -3116,7 +3453,8 @@
         "native_gui"
       ],
       "description": "RAW preview, processing, and 16-bit native export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.export.formats",
@@ -3126,7 +3464,8 @@
         "native_gui"
       ],
       "description": "Native export options and all supported formats and bit depths",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.viewer.navigation-comparison",
@@ -3136,7 +3475,8 @@
         "native_gui"
       ],
       "description": "Native comparison divider, zoom, pan, and fixed-view source navigation",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.layout.panels",
@@ -3147,7 +3487,8 @@
         "layout_panels"
       ],
       "description": "Sidebar and inspector visibility through native menu actions",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.controls.advanced-visibility",
@@ -3158,7 +3499,8 @@
         "advanced_controls"
       ],
       "description": "Method-specific advanced controls follow selected algorithm",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.workflow.unsaved-discard",
@@ -3168,7 +3510,8 @@
         "native_gui"
       ],
       "description": "Unsaved work can be kept or explicitly discarded",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.lifecycle.pause-cancel",
@@ -3179,7 +3522,8 @@
         "pause_resume"
       ],
       "description": "Real worker pause/resume/cancel and successful reuse",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.14"
     },
     {
       "id": "interface.compute.gpu",
@@ -3190,7 +3534,8 @@
         "native_gui"
       ],
       "description": "GUI GPU preference reaches actual GPU completion",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.15"
     },
     {
       "id": "interface.alignment.crop",
@@ -3200,7 +3545,8 @@
         "native_gui"
       ],
       "description": "GUI alignment and crop agree with CLI pixels",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.settings.persistence",
@@ -3211,7 +3557,8 @@
         "preferences"
       ],
       "description": "Theme and processing choices persist across restart; fresh profile remains isolated",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.settings.lightroom-status",
@@ -3222,7 +3569,8 @@
         "native_gui"
       ],
       "description": "Lightroom status and action state are readable without changing installation",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.about",
@@ -3233,7 +3581,8 @@
         "native_gui"
       ],
       "description": "Application information exposes a readable version and closes",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.portability.retained-results",
@@ -3245,7 +3594,8 @@
         "retained_results"
       ],
       "description": "Cropped old result retains exact pixels after a different unaligned job and result reselection",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.portability.unicode-paths",
@@ -3256,7 +3606,8 @@
         "native_gui"
       ],
       "description": "Native Unicode file/folder import and CJK, accent, space and non-BMP export preserve pixels",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.export.batch",
@@ -3267,7 +3618,8 @@
         "batch_export"
       ],
       "description": "Batch export creates JPEG8, PNG16, TIFF16 with exact lossless pixels and CLI parity; cancel writes nothing",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.result.manual-crop",
@@ -3278,7 +3630,8 @@
         "manual_crop"
       ],
       "description": "Manual alignment crop preserves a source pixel rectangle, matches automatic CLI crop, and disables repeated crop",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.import.recent-folders",
@@ -3289,7 +3642,8 @@
         "recent_folders"
       ],
       "description": "Recent folder reopening can be cancelled or replace frames, and clearing recent history persists",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.viewer.keyboard-boundaries",
@@ -3299,7 +3653,8 @@
         "native_gui"
       ],
       "description": "Native view actions change scale and source selection, then restore fit",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.sprint.viewer-input",
@@ -3309,7 +3664,8 @@
         "native_gui"
       ],
       "description": "Target-declared native view actions change scale and restore fit",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.sprint.frame-context",
@@ -3320,7 +3676,8 @@
         "source_context"
       ],
       "description": "Source context menu reveals a file, removes one frame and removes the selected remainder",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.sprint.viewport-export",
@@ -3331,7 +3688,8 @@
         "viewport_export"
       ],
       "description": "Native viewport export preserves displayed RGB channels without freezing UI layout",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "algorithms.sprint.native-input.grayscale.hybrid",
@@ -3339,7 +3697,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.native-input.grayscale.weighted_average",
@@ -3347,7 +3706,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.native-input.grayscale.depth_map",
@@ -3355,7 +3715,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.native-input.grayscale16.hybrid",
@@ -3363,7 +3724,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.native-input.grayscale16.weighted_average",
@@ -3371,7 +3733,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.native-input.grayscale16.depth_map",
@@ -3379,7 +3742,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.native-input.rgba.hybrid",
@@ -3387,7 +3751,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.native-input.rgba.weighted_average",
@@ -3395,7 +3760,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.native-input.rgba.depth_map",
@@ -3403,7 +3769,8 @@
       "primary_milestone": "P2",
       "required_capabilities": [],
       "description": "Native gray/alpha decode preserves RGB geometry and CPU/GPU pixel parity",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.08"
     },
     {
       "id": "algorithms.sprint.black-translation",
@@ -3411,7 +3778,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Small zero-valued images remain zero under translation alignment",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "interface.recovery.close-unsaved",
@@ -3421,7 +3789,8 @@
         "native_gui"
       ],
       "description": "Close can be cancelled; cancelled close-export preserves the result; explicit discard exits cleanly",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "algorithms.recovery.cascade.cpu",
@@ -3429,7 +3798,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Large narrow frames recover known translation through multiscale CPU/GPU alignment",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "algorithms.recovery.cascade.gpu",
@@ -3437,7 +3807,8 @@
       "primary_milestone": "P5",
       "required_capabilities": [],
       "description": "Large narrow frames recover known translation through multiscale CPU/GPU alignment",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.11"
     },
     {
       "id": "interface.recovery.folder-import",
@@ -3447,7 +3818,8 @@
         "native_gui"
       ],
       "description": "Recursive folder import skips hidden/unsupported entries, suppresses duplicates and preserves frames after rejection",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.recovery.device-request",
@@ -3458,7 +3830,8 @@
         "gpu_preference"
       ],
       "description": "A GPU preference produces valid output without prescribing internal fallback strategy",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.recovery.missing-source",
@@ -3468,7 +3841,8 @@
         "native_gui"
       ],
       "description": "A source removed after import causes a recoverable worker error; restored inputs can be stacked",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.recovery.batch-export",
@@ -3479,7 +3853,8 @@
         "batch_export"
       ],
       "description": "A conflicting output directory reports export failure, preserves other files and permits retry",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     },
     {
       "id": "interface.recovery.export-cancel",
@@ -3489,7 +3864,207 @@
         "native_gui"
       ],
       "description": "Cancelling options or native Save preserves the result for a later successful export",
-      "status": "planned"
+      "status": "planned",
+      "p0_feasibility_gate": "P0.13"
     }
-  ]
+  ],
+  "plan_updated_date": "2026-11-17",
+  "p0_policy": {
+    "required_before": "P1",
+    "exit": "All 17 gates passed with recorded evidence; no unresolved blocker can be deferred.",
+    "mapping_meaning": "Each case maps to its primary feasibility gate; full case acceptance remains in its integration milestone. This mapping is not execution evidence.",
+    "gates": [
+      {
+        "id": "P0.01",
+        "name": "acceptance and measurable targets",
+        "status": "blocked",
+        "reason": "Review historical/current committed conformance snapshot differences and freeze acceptance/targets before P1."
+      },
+      {
+        "id": "P0.02",
+        "name": "hardware and test access",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.03",
+        "name": "complete dependency/build graph",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.04",
+        "name": "safe resource and launch boundary",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.05",
+        "name": "real assurance compatibility",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.06",
+        "name": "shared kernels on every runtime",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.07",
+        "name": "display interop and bounded resources",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.08",
+        "name": "codecs, RAW, color, and files",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.09",
+        "name": "numerical precision and determinism",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.10",
+        "name": "five-method and slab feasibility",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.11",
+        "name": "registration and crop feasibility",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.12",
+        "name": "job/error/device mechanisms",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.13",
+        "name": "native UI contract mechanisms",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.14",
+        "name": "lifecycle timing",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.15",
+        "name": "deployment and complete evidence route",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.16",
+        "name": "performance feasibility",
+        "status": "not_run"
+      },
+      {
+        "id": "P0.17",
+        "name": "closure review",
+        "status": "not_run"
+      }
+    ],
+    "contract_snapshot_review": {
+      "detected_date": "2026-11-17",
+      "status": "blocked",
+      "reason": "Historical planning fingerprints differ from current committed suite files. Review acceptance changes in P0.01; preserve historical snapshot. This plan edit did not change these files.",
+      "case_ids_unchanged": true,
+      "required_capability_changes": [],
+      "changed_files": [
+        {
+          "path": "README.md",
+          "snapshot_sha256": "4035a48aa40f62d7ecfcdeae6e234331fa0cd70d01930b71c9df8cc01dd041fa",
+          "current_sha256": "ba705d1f50b043bed431b969ef6f5b044685e279af68ab10e71e16691534a609",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "docs/ui-protocol.md",
+          "snapshot_sha256": "1dcf8b413569e94f299f152f2f35f4ac4f4662f5f05851fc407ccc23a452e5b2",
+          "current_sha256": "5ed438c373cddd938845102860e6004731a5d66216599eb5f18067803a0b0560",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "pyproject.toml",
+          "snapshot_sha256": "a1b4885b878414af674be3b83d36b16c4b9ef5464e9d22bd7c510b8778c7f185",
+          "current_sha256": "97326ce1eedc2e8655f5beeb87acae5c5241d4a35d1fef4e53693ec4deb6ba2c",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "src/pancake_conformance/cases/recovery.py",
+          "snapshot_sha256": "ce41eeb5895203fb4b4f6f179cb58064358f30f31d9cb6419fab7e1a312acf6c",
+          "current_sha256": "191ff97a1eafb83fff8289b463c91df45b9ede26a8815c4954e1fb104ae83b22",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "src/pancake_conformance/cli.py",
+          "snapshot_sha256": "6f658abd0147c901be1c82d4ec0552af552cf4a66caa5859eee4c1aa965ba1bc",
+          "current_sha256": "fbf86f028e922ece424e5a3da3dd5e364c15f09d9cd62238e9f9248f604b379d",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "src/pancake_conformance/macos_ui.py",
+          "snapshot_sha256": "4d1f77a43a9c8c5859898e9698bed227809ba89d45371742da86b92406b46996",
+          "current_sha256": "263bcfb5170f2d8fc41c2675c0ea672ff5efe4d593ef91dda0844a6d264e92c5",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "src/pancake_conformance/target.py",
+          "snapshot_sha256": "316f2eae99a3181196cbfc6c019e35b974a406ebeaf14424ae983856c5797cc8",
+          "current_sha256": "4cbe5b067e5565f0e91390886dfdb2f7ea569efd0aece41fa2a4e73203b7f9c4",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "src/pancake_conformance/vm_bootstrap.py",
+          "snapshot_sha256": "da2cd45358db5b1cb587d5040a726a54d150eb98e89513db50b5f613fe108693",
+          "current_sha256": "ad754b4f721c1c25a70ca58f8370c9aec9793ac289e7595bcdae59bf1796c9fc",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "tests/conftest.py",
+          "snapshot_sha256": "271bcc33afb35dcfb3e1a5ce3d137b0a67c9bc918cbcec88f3d9766b5841235f",
+          "current_sha256": "7b534f6c8e7ed219e74e072a49ea803893a1c9810f58b0808102b18e70722286",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "tests/test_cli_entrypoint.py",
+          "snapshot_sha256": "37852f572ecff5e8220c83d5384d6f877925f8c182d50493f0ff7077f5066e6f",
+          "current_sha256": "5afa234da78b6cfb619264682d49fa90dd069f6853f4653c8522ebe11f8f1d34",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "tests/test_external_target.py",
+          "snapshot_sha256": "0ac5b4cfd4e2724af311ea2e2dcd5446fd0dce803e7a91d05e1e1e0e21a2d12e",
+          "current_sha256": "731d2e105f4720fd091c5fe45b2ae5c773977118a5ad516ccae51e2db9f3103e",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "tests/test_gui_vm.py",
+          "snapshot_sha256": "bff8d8987560a214f1c10b1577176c9469f8b3dc8c2427e53fb5e23c3dbc670d",
+          "current_sha256": "06e8e23d973bdd3dd7be389dcadc18fa8f4ff90316067627cc96dcb68025c775",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "tests/test_native_pointer_variants.py",
+          "snapshot_sha256": "1f226701281a297d5b41467f098176b927736d12e56110d572d0377deff6f416",
+          "current_sha256": "358747e254cc2928d3f39e1cc218e674501a340de94cfead12a15e0ad78993e3",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "tests/test_recovery_cases.py",
+          "snapshot_sha256": "10bdaeb38ac320d3c5c0f15fca21bbfb967028b77ce8f7c7072e71d79e7753fa",
+          "current_sha256": "cbdfc2e5710fdd84d5015bbd862b4dbf47d3c4b7e82ec912ee9e9d2d3bed7f4e",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "tests/test_ui_protocol.py",
+          "snapshot_sha256": "90a3baae9444fb885995eaf9a8a2b011759ec210fff8564d2078e72bd2258766",
+          "current_sha256": "d00f467061a5746eb3fdcbb111a3683aa8b29686393e205dbfeeae2ef065b18e",
+          "current_matches_committed_head": true
+        },
+        {
+          "path": "uv.lock",
+          "snapshot_sha256": "47ab63da6df57d826dc686d6aa29453df3777c401a306ca9adcbf1910ee10662",
+          "current_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
+          "current_matches_committed_head": true
+        }
+      ]
+    }
+  }
 }
