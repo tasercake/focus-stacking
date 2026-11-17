@@ -5,8 +5,9 @@ baseline over `00bd137`). Audit worktree: `codex/p0-hardware`.
 
 ## Verdict
 
-**P0.02 is blocked on access qualification for the complete promised hardware
-matrix.** Local Apple hardware is identified. A later read-only probe verified
+**P0.02 is blocked: the user confirms no AMD/Intel GPU or Windows test access.**
+Available Apple/NVIDIA runtimes and the dedicated macOS guest have partial real
+execution/access proof in the later updates. Local Apple hardware is identified. A later read-only probe verified
 the existing Linux x86-64 RTX 3090 host is reachable; its runtime/GUI tools remain
 unqualified, and AMD/Intel/Windows access remains unresolved. This is an access
 inventory, not a CubeCL runtime pass or an application conformance run.
@@ -193,5 +194,12 @@ Slint-native-input, full-conformance or performance acceptance.
 Host PCI inventory exposes one GPU: NVIDIA RTX 3090. Vulkan also reports a
 software llvmpipe adapter; it is not AMD/Intel GPU evidence. Existing libvirt
 inventory has no VM. No AMD GPU, Intel GPU, Windows or macOS guest login lane has
-been established. User confirmed no AMD/Intel/Windows test hosts or runners while independent
+been established by that Linux check. The later dedicated guest qualification
+supersedes only the SSH/Aqua access gap, not current AX/Automation identity. User confirmed no AMD/Intel/Windows test hosts or runners while independent
 work continued; P0.02 remains blocked. These conditions cannot be removed by dependency exceptions.
+
+Dedicated guest access is now verified separately in
+[p0-guest-access-qualification.md](p0-guest-access-qualification.md). The suite-managed
+key exists in its cache even though the descriptor-specific `~/.ssh` path was
+absent. This closes SSH/Aqua access only; current native permission identity and
+actual Pancake GUI remain unqualified.

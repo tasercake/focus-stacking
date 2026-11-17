@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-17",
+  "status": "six_execution_paths_pass_one_primitive; P0_matrix_incomplete",
+  "source_commit": "f3fcd45d33c14f4c420f8e2f8179fff7538579c7",
+  "application_source_hashes": {
+    "Cargo.toml": "9173035f372e70a3549d84d54124d7344da727389dafe005323912f835444649",
+    "Cargo.lock": "7c7c64dcbf4255efec0705b472765dd001b733999b122f67c78f36f79349ba7b",
+    "src/lib.rs": "67db6936187d715540c7b85d64d1c831f85b3ce88b0daa3eefc302b370fb96c8",
+    "src/tests.rs": "b12b08b830f7b616de325f4145ed64feb72688d59006e00ce06623a53d950808",
+    "tests/kernel_contract.rs": "c8fc7d6a7a582df32ce3f8e58b2a948b154719a361c952749595b8ed3b561d44"
+  },
+  "suite_snapshot_sha256": "2d17fb4f570dcfae47e355b63e18650c325c586f47620c565b568f4fdcce20b2",
+  "scope": "One real CubeCL horizontal [1,2,1]/4 u16 blur using widened u32 device storage. Independent hand-calculated values cover odd 5x3 dimensions, full u16 range, width one and a 257x3 workgroup tail. Runtime selection changes no numerical source. This is not application conformance, a complete kernel battery, full RAW parity or performance acceptance.",
+  "runtimes": [
+    {
+      "runtime": "CPU LLVM JIT",
+      "architecture": "aarch64",
+      "device": "Apple M4 Pro",
+      "verdict": "primitive_passed"
+    },
+    {
+      "runtime": "wgpu Metal",
+      "device": "Apple M4 Pro",
+      "device_type": "IntegratedGpu",
+      "software_fallback_rejected": true,
+      "verdict": "primitive_passed"
+    },
+    {
+      "runtime": "native Metal",
+      "device": "Apple M4 Pro",
+      "fingerprint": "msl_Apple M4 Pro",
+      "command": "cargo +1.100.0 test --locked --features cubecl/metal-native --test native_contract -j4",
+      "verdict": "primitive_passed"
+    },
+    {
+      "runtime": "CPU LLVM JIT",
+      "architecture": "x86_64",
+      "device": "AMD Ryzen 9 7950X3D",
+      "fingerprint": "cpu_x86_64_load-512_f16-chain",
+      "verdict": "primitive_passed"
+    },
+    {
+      "runtime": "wgpu Vulkan",
+      "device": "NVIDIA GeForce RTX 3090",
+      "device_type": "DiscreteGpu",
+      "driver": "580.178.04",
+      "software_fallback_rejected": true,
+      "verdict": "primitive_passed"
+    },
+    {
+      "runtime": "native CUDA",
+      "device": "NVIDIA GeForce RTX 3090",
+      "fingerprint": "ptx_sm86",
+      "toolkit": "12.5",
+      "driver": "580.178.04",
+      "command": "CUDARC_CUDA_VERSION=12050 LD_LIBRARY_PATH=/opt/pancake-cuda/lib64 cargo test --locked --features cubecl/cuda --test native_contract -j4",
+      "verdict": "primitive_passed"
+    }
+  ],
+  "logs": [
+    {
+      "path": "pancake/docs/p0-kernel-evidence/linux-merged-kernel-contract.log.gz",
+      "raw_sha256": "94d5e89c2d0d600d0228070bd9ca2472911dbdf3933a64bd7763650d7a0c76bf",
+      "gzip_sha256": "081bc4ebff4b51de89e7a17737cab8d22bbc36f610e9fd95de5fe8c99ab38ab8"
+    },
+    {
+      "path": "pancake/docs/p0-kernel-evidence/linux-merged-cuda-contract.log.gz",
+      "raw_sha256": "6b7cb94f65e6fef5ecb8a5fb843a06706bc6024815fa9264b1e650228252b0c5",
+      "gzip_sha256": "a2721d0a020b9e5de5a9e0be64758ff65937c065e097aeff2bff0264a06e8cce"
+    },
+    {
+      "path": "pancake/docs/p0-kernel-evidence/native-merged-metal-contract.log.gz",
+      "raw_sha256": "a3020eec7af8920b26da8ee7a82cb0ff49e081d48fd9cf7442f8d9992ef1d8e8",
+      "gzip_sha256": "403e4c9df20d7d6d17fc2d63f39d5d0318144360a46d651bdd758bd79f791a84"
+    },
+    {
+      "path": "pancake/docs/p0-kernel-evidence/linux-suite-selftests.log.gz",
+      "raw_sha256": "7aba5d15643f50cb91136f6dd322f9d84f8319412db45d075f7ab11ad89d882e",
+      "gzip_sha256": "ebdefaa113e64c8f42f744598e1061a66166624663bc2c5f9a92cc8380b5f498"
+    },
+    {
+      "path": "pancake/docs/p0-kernel-evidence/linux-desktop-probe.log.gz",
+      "raw_sha256": "a03de3f8ecb6b248c0c2983e63c7b488e7ad54ae51fdfdfcce7497dcbf1810ed",
+      "gzip_sha256": "2fbfbf0ce9ccc3a7bb93f48ced51325169cb44ac9dabaa0918154cc68e17631d"
+    },
+    {
+      "path": "pancake/docs/p0-kernel-evidence/local-integration-all.log.gz",
+      "raw_sha256": "4d15892a811657c96076889f17756b70b90b672fb7805fb88c3b3a367715fbe8",
+      "gzip_sha256": "90cd2389f57172daebaf319f2a7e9fa69b26e61552a00cefedc9d8c621e178d0"
+    }
+  ],
+  "retained_extra_test_sources": {
+    "cuda": "pancake/docs/p0-kernel-evidence/native-cuda-contract.rs.txt",
+    "metal": "pancake/docs/p0-kernel-evidence/native-metal-contract.rs.txt"
+  },
+  "Linux_suite_selftests": {
+    "passed": 309,
+    "skipped": 2,
+    "skip_scope": "Live GUI smoke tests require an actual target and native session. Harness results are not Pancake target passes."
+  },
+  "Linux_desktop_constructor": "Passed: private 1440x1000 display, private AT-SPI bus, physical GPU visible, owned processes reaped. No host display/input connection.",
+  "remaining_hardware": "User confirms no AMD GPU, Intel GPU or Windows SSH/runner access; no matrix scope reduction approved.",
+  "sanitizer": "LinuxGPUASan failed; see pancake/docs/p0-sanitizer-investigation.md. No sanitizer exemption or fake pass.",
+  "extra_cuda_test_sha256": "43cee0430ca24f3b9a927655d8651cdfe242347e250e8900017d120c206d5a76",
+  "local_assurance": {
+    "command": "bash scripts/check.sh all",
+    "platform": "macOS arm64 / Apple M4 Pro",
+    "exit_code": 0,
+    "debug_tests": 6,
+    "release_tests": 6,
+    "strict_host_miri_tests": 3,
+    "layout_seeds": [
+      1,
+      42
+    ],
+    "native_tests_per_layout_seed": 6,
+    "source_coverage": {
+      "lines": [
+        62,
+        62
+      ],
+      "functions": [
+        7,
+        7
+      ],
+      "regions": [
+        66,
+        66
+      ],
+      "branches": [
+        8,
+        8
+      ]
+    },
+    "mutants_caught": 35,
+    "mutants_missed": 0,
+    "mutants_ignored": 0,
+    "scope": "Current application-owned Rust qualification source only. Not all transitive unsafe code, GPU instruction coverage or full-product qualification."
+  }
+}
