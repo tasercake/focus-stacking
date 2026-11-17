@@ -114,6 +114,12 @@ live native-smoke wrappers without explicit target/UI lane. Two skips are Linux
 desktop routing/boundary cases on Darwin. No GUI input was sent to the host.
 These are suite self-tests, not Pancake target passes or full source coverage.
 
+Also ran `bash scripts/check.sh all` inside this worktree's `pancake/`, with the
+existing pinned tool binaries available on PATH. All local scaffold gates passed.
+The application remains documentation-only: zero executable application tests,
+no application coverage claim, and no proof of real-code P0.05 compatibility.
+Remote native platform and Linux sanitizer checks were not run.
+
 The reviewed current snapshot pins all 90 non-adapter files, including added
 Linux sources. Existing historical hashes, reference baselines, case records,
 and core files remain untouched. Native Linux, real macOS GUI, physical GPU,

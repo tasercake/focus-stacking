@@ -2838,6 +2838,13 @@
     "host": "Darwin arm64",
     "target_conformance_run": false,
     "native_input_executed": false,
-    "locked_package_names_versions_unchanged": true
+    "locked_package_names_versions_unchanged": true,
+    "scaffold_gates": {
+      "command": "PATH=/Users/krishna/Documents/focus-stacking/pancake/target/tools/bin:$PATH bash scripts/check.sh all",
+      "working_directory": "pancake",
+      "returncode": 0,
+      "meaning": "Documentation-only scaffold checks passed; no executable application tests or application coverage exist. This does not satisfy real-code P0 assurance qualification.",
+      "remote_platform_checks_run": false
+    }
   }
 }
