@@ -1,0 +1,470 @@
+{
+  "diagnostic_only": true,
+  "profile": "E9.exposure_fusion.gpu",
+  "frozen_reference": {
+    "commit": "ab7a92708269c01c6094729f6cdfaf1415677364",
+    "lock_sha256": "fda57ac5eea063aebcc278eb57a90228e6da32fe2d8f67d7025ac367f4b51036",
+    "descriptor_sha256": "e3e951b674bc0103f267575a99533cc33ead40e2af56671766f4fc71f3f12b76"
+  },
+  "launcher_sha256": "47f2c63bfc635e53e886e9bbd6b66944a95f97c719fad26ed88f6c222594cb94",
+  "reference_python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+  "targets_sha256": "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+  "settings": {
+    "device": "gpu",
+    "method": "exposure_fusion",
+    "align": true,
+    "alignment_mode": "euclidean",
+    "alignment_reference": "first",
+    "kernel_size": 6,
+    "pyramid_levels": 8,
+    "scale_factor": 6,
+    "slab_size": 0,
+    "slab_overlap": 0,
+    "bit_depth": 16,
+    "auto": false,
+    "auto_crop": true,
+    "quality_report": false,
+    "gpu_id": 0
+  },
+  "cpu_affinity": [
+    14,
+    15
+  ],
+  "opencl_icd": {
+    "path": "/etc/OpenCL/vendors/nvidia.icd",
+    "sha256": "4ad07f8afc189894374aecb91023e6ff16bbceedf82496c04c0fdb0e2fe81e73"
+  },
+  "physical_device": {
+    "physical_name": "NVIDIA GeForce RTX 3090",
+    "pci": "00000000:01:00.0",
+    "uuid": "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac",
+    "nvidia_driver": "580.178.04",
+    "opencl": {
+      "name": "NVIDIA GeForce RTX 3090",
+      "driver_version": "580.178.04",
+      "index": 0,
+      "platform": "NVIDIA CUDA",
+      "uuid": "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+    }
+  },
+  "corpus": {
+    "source": {
+      "id": "D28",
+      "name": "Waterloo MEF subjective database",
+      "primary_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+      "rights_evidence": "Explicit creator reuse/attribution terms",
+      "revision": null,
+      "selected_downloads": {
+        "evaluation_domain": "exposure_fusion_only",
+        "files": [
+          {
+            "path": "MEFDatabase.rar",
+            "sha256": "02939e5eb63d0536793e467848c9381e41c71ca1642b9f0291e2fc0843744242",
+            "size": 69869523,
+            "url": "https://ivc.uwaterloo.ca/database/MEF/MEFDatabase.rar"
+          }
+        ],
+        "id": "D28",
+        "layout": "exposure_stacks",
+        "link_pattern": "(?i)\\.(zip|rar|mat)(\\?|$)",
+        "name": "Waterloo MEF subjective database",
+        "original_split": "No original independent split verified",
+        "page_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+        "primary_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+        "provider": "files",
+        "reference_semantics": "MOS 1 to 10; exposure quality only",
+        "reference_type": "human_MOS",
+        "rights_evidence": "Explicit creator reuse/attribution terms",
+        "selection": ".bokehforge/state/download-plan.json",
+        "status": "available",
+        "transfer": "srgb_assumed"
+      }
+    },
+    "encoding": "Native photographic 8-bit images; no resize, replication, or precision promotion",
+    "path": "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json",
+    "sha256": "6d417c9c00866755bdbc8e2fafc1421de8414e1ea9e75d2cfd7e96e2161a89ac"
+  },
+  "ordered_input_sha256": [
+    "65bef59ae2cffaac5a0401780c884fc1f0cb87c3fb6ba7057213bbb03b775f9d",
+    "37094f4247a7e5cac3af1876137f42c88263ace0d075d99daec7b1e796e33ad0",
+    "8582dc34b2035c4daafc5784a9f7191a6aff3161a7fd54b4d493c45145d6a8e6",
+    "5fc9ade7715c0110ec5b4d18777ce2718c2f70946fa23833222b98b425b2ca7c",
+    "530a91ac82e4406acc23913088efb0ab0d056e686345088e41f60e4fc6176f60",
+    "5c7ed4b5bba42b52c93eeaaf462b1531717d1abd43938445a1e6bea9c19c1ae3",
+    "4f26850b1aee4fe40ab0f060fc24568f54e637d9b5158b74c4a99a865c991e35",
+    "e20b37e52a492042647c15edb5e9f45990e5bd585f38d1fc14282e95752597da",
+    "029ae94dfcc2d105a2ee2f91e5d535820c00e9e73c6b4bdf7b0ba690df670c32"
+  ],
+  "input_hashes_unchanged": true,
+  "instrumented": {
+    "cli_milestones": [
+      "Device: GPU \u00b7 NVIDIA GeForce RTX 3090",
+      "GPU: NVIDIA GeForce RTX 3090",
+      "Auto-cropped: 1px top, 1px bottom, 1px left, 1px right",
+      "Output saved: /tmp/e9-reference-opencl-402vjch5/instrumented.tif (16-bit, 1039 KB)"
+    ],
+    "reference_messages": [
+      "/home/krishna/Documents/focus-stacking/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/lib/python3.12/site-packages/pyopencl/__init__.py:572: CompilerWarning: Non-empty compiler output encountered. Set the environment variable PYOPENCL_COMPILER_OUTPUT=1 to see more."
+    ],
+    "mean": {
+      "batch_sizes": [
+        4,
+        4,
+        1
+      ],
+      "device_results": 1,
+      "cpu_fallback_entries": 0,
+      "partial_f32_bgr_sha256": [
+        "db55a4b098c2f78f2854829ad584cba7aed3d6be0029e948efc251d192aa5c99",
+        "76031dfe0d644ffea670f5295b9f8672df153f05043c0221a5baa483b038f9ff",
+        "aedf5fe7816d22801f20e3f0dc51b70a286db1f9147caff041009234500769de"
+      ],
+      "float64_mean_max_absolute_error": 2.4159749358432236e-05
+    },
+    "alignment_transforms": {
+      "DSC_0163.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0164.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0165.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0166.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0167.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0168.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0169.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0170.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0171.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    "crop_top_bottom_left_right": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "argv": [
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/pancake-conformance/src/pancake_conformance/adapters/pancake/e9_reference.py",
+      "--input",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0163.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0164.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0165.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0166.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0167.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0168.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0169.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0170.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0171.png",
+      "--output",
+      "/tmp/e9-reference-opencl-402vjch5/instrumented.tif",
+      "--gpu",
+      "--method",
+      "exposure_fusion",
+      "--align",
+      "--alignment-mode",
+      "euclidean",
+      "--alignment-ref",
+      "first",
+      "--kernel-size",
+      "6",
+      "--pyramid-levels",
+      "8",
+      "--scale-factor",
+      "6",
+      "--slab-size",
+      "0",
+      "--slab-overlap",
+      "0",
+      "--bit-depth",
+      "16",
+      "--auto-crop",
+      "--gpu-id",
+      "0"
+    ],
+    "independently_verified_rgb16_conversion": true,
+    "export": {
+      "shape": [
+        337,
+        510,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "f66f27a89d50bf5697b0ba207aba935057f90c26d7a6566fc860ce5e0160bccd",
+      "pixel_sha256": "e4133ebad2cdf9b8212ea5f81bf6b091094dc409e1003601247a5e97ea8390be",
+      "bytes": 1063928,
+      "minimum": 266,
+      "maximum": 65535
+    }
+  },
+  "instrumented_process_argv": [
+    "/home/krishna/Documents/focus-stacking/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python",
+    "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/qualification/p10-performance/evidence/e9-reference-prototype/verify_opencl.py.txt",
+    "--observe-job",
+    "/tmp/e9-reference-opencl-402vjch5/observe-job.json"
+  ],
+  "clean_uninstrumented": {
+    "cli_milestones": [
+      "Device: GPU \u00b7 NVIDIA GeForce RTX 3090",
+      "GPU: NVIDIA GeForce RTX 3090",
+      "Auto-cropped: 1px top, 1px bottom, 1px left, 1px right",
+      "Output saved: /tmp/e9-reference-opencl-402vjch5/clean.tif (16-bit, 1039 KB)"
+    ],
+    "reference_messages": [
+      "/home/krishna/Documents/focus-stacking/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/lib/python3.12/site-packages/pyopencl/__init__.py:572: CompilerWarning: Non-empty compiler output encountered. Set the environment variable PYOPENCL_COMPILER_OUTPUT=1 to see more."
+    ],
+    "argv": [
+      "/home/krishna/Documents/focus-stacking/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/pancake-conformance/src/pancake_conformance/adapters/pancake/e9_reference.py",
+      "--input",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0163.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0164.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0165.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0166.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0167.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0168.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0169.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0170.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0171.png",
+      "--output",
+      "/tmp/e9-reference-opencl-402vjch5/clean.tif",
+      "--gpu",
+      "--method",
+      "exposure_fusion",
+      "--align",
+      "--alignment-mode",
+      "euclidean",
+      "--alignment-ref",
+      "first",
+      "--kernel-size",
+      "6",
+      "--pyramid-levels",
+      "8",
+      "--scale-factor",
+      "6",
+      "--slab-size",
+      "0",
+      "--slab-overlap",
+      "0",
+      "--bit-depth",
+      "16",
+      "--auto-crop",
+      "--gpu-id",
+      "0"
+    ],
+    "export": {
+      "shape": [
+        337,
+        510,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "f66f27a89d50bf5697b0ba207aba935057f90c26d7a6566fc860ce5e0160bccd",
+      "pixel_sha256": "e4133ebad2cdf9b8212ea5f81bf6b091094dc409e1003601247a5e97ea8390be",
+      "bytes": 1063928,
+      "minimum": 266,
+      "maximum": 65535
+    }
+  },
+  "clean_file_and_decoded_sha256_match": true,
+  "fixed_review_windows": {
+    "historical_window_receipt_sha256": {
+      "vulkan-review.json": "20c7eec0fa143a22e29c32b97f91fcdc3e6fd3dc01a0ee2969fc86cc93668c3f",
+      "cpu-review.json": "f7e4bdc99e7109ab03efe0c2cb285e20d5c93ba55f359c8f92497bab31152391"
+    },
+    "outputs": {
+      "reference": {
+        "shape": [
+          337,
+          510,
+          3
+        ],
+        "dtype": "uint16",
+        "sha256": "f66f27a89d50bf5697b0ba207aba935057f90c26d7a6566fc860ce5e0160bccd",
+        "pixel_sha256": "e4133ebad2cdf9b8212ea5f81bf6b091094dc409e1003601247a5e97ea8390be",
+        "bytes": 1063928,
+        "minimum": 266,
+        "maximum": 65535
+      }
+    },
+    "regions": [
+      {
+        "name": "upper-left",
+        "xywh": [
+          103,
+          60,
+          48,
+          48
+        ],
+        "reference": {
+          "rgb_mean_u16": [
+            36154.628038194445,
+            30642.24826388889,
+            25693.965277777777
+          ],
+          "rgb_min_u16": [
+            18560,
+            10005,
+            3992
+          ],
+          "rgb_max_u16": [
+            55843,
+            53319,
+            45838
+          ],
+          "fraction_at_floor": 0.0,
+          "fraction_at_ceiling": 0.0
+        }
+      },
+      {
+        "name": "center",
+        "xywh": [
+          231,
+          144,
+          48,
+          48
+        ],
+        "reference": {
+          "rgb_mean_u16": [
+            31709.38671875,
+            29232.518663194445,
+            25423.944878472223
+          ],
+          "rgb_min_u16": [
+            19244,
+            14532,
+            8471
+          ],
+          "rgb_max_u16": [
+            41824,
+            38798,
+            34521
+          ],
+          "fraction_at_floor": 0.0,
+          "fraction_at_ceiling": 0.0
+        }
+      },
+      {
+        "name": "lower-right",
+        "xywh": [
+          358,
+          228,
+          48,
+          48
+        ],
+        "reference": {
+          "rgb_mean_u16": [
+            21703.540364583332,
+            15262.182725694445,
+            4671.418836805556
+          ],
+          "rgb_min_u16": [
+            12561,
+            5974,
+            687
+          ],
+          "rgb_max_u16": [
+            38255,
+            22727,
+            16674
+          ],
+          "fraction_at_floor": 0.0,
+          "fraction_at_ceiling": 0.0
+        }
+      }
+    ]
+  }
+}
