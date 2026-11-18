@@ -1,0 +1,67 @@
+{
+  "revision": "113076d61ee76dc59670615f0d2f85d66faf013e",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)\nbinary: rustc\ncommit-hash: 0ef1bc386059596dada8fb65b50425aab2ea637a\ncommit-date: 2026-11-09\nhost: x86_64-unknown-linux-gnu\nrelease: 1.100.0\nLLVM version: 23.1.5",
+  "lock_sha256": "639c5c88b9286e5583174f05168412db19f39dc3f651b6682b685d1db801e0dd",
+  "suite_source_sha256": "73f51014ab281903f43c270579d8c0de32fc1cee5a99c1e84febc0979c702f89",
+  "descriptor_sha256": "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac",
+  "command": [
+    "uv",
+    "run",
+    "--project",
+    "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake-conformance",
+    "--frozen",
+    "pancake-conformance",
+    "run",
+    "--target",
+    "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml",
+    "--output",
+    "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/artifacts/pancake-coverage/pilot-native-113076d/conformance",
+    "--no-coverage",
+    "--cli-command",
+    "[\"/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-cli\"]",
+    "--gui-command",
+    "[\"/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-gui\"]",
+    "--case",
+    "interface.about",
+    "--case",
+    "interface.recovery.close-unsaved"
+  ],
+  "binary": {
+    "gui": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-gui",
+      "sha256": "93133805d0fe0f0dabbd1ace3683aa84e77161b4b4e6d142f6c91876ab88f5ff",
+      "build_id": "f67cb454356acc618e891a1ec6b4c121dcc2840a"
+    },
+    "cli": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-cli",
+      "sha256": "ef06aeb15e6d2be5c02b3e5fc71d6fbd4753937fadb6220bace982538abdd336",
+      "build_id": "1cdf298f3b42d2abe2c08173a1442e40f1fffb50"
+    }
+  },
+  "sessions": [
+    {
+      "case": "interface.about",
+      "call": "cases/interface.about/call-01",
+      "shutdown": {
+        "pid": 941681,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "profile": "pancake-941681-f67cb454356acc618e891a1ec6b4c121dcc2840a.profraw",
+      "sha256": "db25e90149054aff192412a983f5bb8966d424122d035a6d8c79af37957415d0"
+    },
+    {
+      "case": "interface.recovery.close-unsaved",
+      "call": "cases/interface.recovery.close-unsaved/call-01",
+      "shutdown": {
+        "pid": 942230,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "profile": "pancake-942230-f67cb454356acc618e891a1ec6b4c121dcc2840a.profraw",
+      "sha256": "16464a095d1b85c0040984f30f8d4459d5e6ca32758b086406e5bfb30f368a54"
+    }
+  ]
+}
