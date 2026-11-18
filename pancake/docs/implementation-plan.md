@@ -90,6 +90,13 @@ and the frozen case roster, descriptor and contract match the earlier replay.
 [Strict 376-case ledger](p9-linux-package-evidence/fb9c399/linux-ledger.json.gz).
 [Clean-lineage receipt](p9-linux-package-evidence/fb9c399/clean-ancestry.json).
 
+The combined typed TIFF and resident Hybrid scan changes passed 45
+focused CPU tests and all 153 mapped P2/P4 cases on exact `e5b6260`.
+The replay matched 118 CPU and 19 physical RTX Vulkan completions with
+zero fallback. The strict 376-case package ledger remains scoped to
+`fb9c399`. The combined source needs its own matched full release replay.
+[Dual-scan build and native evidence](p10-dual-scan-evidence/e5b6260/README.md).
+
 The `c1e2cac` source compiled and linked the native Linux CUDA and HIP
 CLI profiles. Two CPU and two physical RTX 3090 CUDA cases ran through the
 hashed CUDA release with zero fallback, and all four export digests matched
@@ -478,9 +485,16 @@ Independent review accepted the representative RGB16 pair and its three
 fixed windows. The Pancake image had 364 additional floor samples and
 731 additional ceiling samples elsewhere, with no visible texture loss
 at native scale. The verdict covers the exact `c1e2cac` package, these
-nine E9 inputs and explicit CPU. The corrected GPU schedule and the
-other 24 logical profiles remain open.
+nine E9 inputs and explicit CPU.
 [Qualified E9 CPU profile](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-c1e2cac/README.md).
+
+The corrected E9 physical CUDA/OpenCL campaign also completed all 34
+primary jobs and two backend witnesses. The warm ratio of 0.521168
+missed 0.50. Cold and process-tree RSS passed at 0.078821 and 0.426292.
+GPU observation gaps exceeded 20 ms on both applications. Independent
+review accepted sampled representative detail and retained the endpoint
+clipping differences. This leaves E9 CPU as the single qualified profile.
+[Corrected E9 CUDA/OpenCL result](../../qualification/p10-performance/evidence/integrated-e9-corrected-cuda-c1e2cac/README.md).
 
 The same-source E9 CUDA compiler experiment on the RTX 3090 measured
 452.260 ms warm median for LLVM and 737.959 ms for C++, with exact RGB16
@@ -568,6 +582,14 @@ the full-canvas replacement unresolved. The product path retains its current
 registration behavior.
 [Actual D150 proxy observations](d150-geometry-audit/witness-pilot/README.md).
 
+The separate CPU batching diagnostic checked six authenticated D150 edges
+over 42 paired observations. All 3,240 scalar moments matched bit for bit.
+Median sampled witness reduction fell from 18.632 ms to 0.597 ms.
+The existing maps and supporting cells matched. Full-canvas registration,
+crop, fused output, GPU cost and frozen D150 timing remain open.
+[Batched witness replay](d150-geometry-audit/witness-batching/README.md).
+[Connected pose and required evidence](d150-geometry-audit/connected-pose/README.md).
+
 One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
 Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
 Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
@@ -587,6 +609,16 @@ were rehashed and removed after the three borrowers finished.
 [Exact T50 physical pair](../../qualification/p10-performance/evidence/t50-hybrid-pair-8694b55/README.md).
 [Reference alignment audit](../../qualification/p10-performance/evidence/t50-reference-alignment-audit/README.md).
 [Shared input and cleanup](../../qualification/p10-performance/evidence/t50-shared-8694b55/README.md).
+
+The two-scan candidate ran two balanced same-input physical T50 Hybrid
+pairs against the exact `fb9c399` package. Stock and candidate took
+21.966→19.544 s and 22.046→19.513 s, an 11.0–11.5% diagnostic reduction.
+All four RGB16 outputs and both sets of 50 identity maps matched.
+RSS gaps met the 20 ms cap. All GPU-memory streams exceeded it.
+The owner rehashed and removed all 52 TIFFs after both diagnostics
+released their reads. The frozen matched-reference schedule remains open.
+[Exact ABBA diagnostic](p10-dual-scan-evidence/e5b6260/README.md).
+[Shared input and owner cleanup](../../qualification/p10-performance/evidence/t50-shared-fb9c399/README.md).
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF

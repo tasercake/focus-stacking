@@ -12,9 +12,11 @@ corrected-reference E9 CPU campaign at exact `c1e2cac` passed its numeric
 and independent representative-image quality gates. Its 34 primary jobs
 and two backend diagnostics add to five historical full-count schedules
 at `12f2151` with 170 primary jobs and ten backend diagnostics. Three of
-the historical schedules used an ineligible E9 reference combiner. Three
-CPU profiles now have eligible full schedules. Ten CPU and all 13 GPU
-profiles still need an eligible full schedule.
+the historical schedules used an ineligible E9 reference combiner. The
+corrected native CUDA/OpenCL E9 campaign adds 34 primary jobs and two
+backend diagnostics. It missed the warm target and device cadence.
+Three CPU profiles and one GPU profile have eligible full schedules.
+Ten CPU and twelve GPU profiles lack a full eligible schedule.
 [Qualified E9 CPU campaign](integrated-e9-corrected-cpu-c1e2cac/README.md)
 
 ## Profile coverage
@@ -40,7 +42,7 @@ the full matched schedule is absent.
 | D150 | `hybrid` | Full count at `12f2151` | Open schedule |
 | D150 | `weighted_average` | Open schedule | Open schedule |
 | D150 | `depth_map` | Open schedule | Open schedule |
-| E9 | `exposure_fusion` | Qualified at `c1e2cac` | Corrected schedule open. Historical Vulkan and CUDA schedules ineligible. |
+| E9 | `exposure_fusion` | Qualified at `c1e2cac` | Corrected CUDA/OpenCL full count at `c1e2cac`. Warm failed and device cadence remains open. |
 
 The profile IDs are `<workload>.<method>.cpu` and
 `<workload>.<method>.gpu`. The input receipts pin 50 native generated RGB16
@@ -66,6 +68,7 @@ observations from the ineligible legacy reference combiner. The
 | [E9 exposure fusion Vulkan/OpenCL, packaged `12f2151`](integrated-e9-12f2151/README.md) | 0.70500 | 0.09522 | 0.71987 | Pending cadence | Ineligible comparator. |
 | [E9 exposure fusion CUDA/OpenCL, native `12f2151`](integrated-e9-cuda-12f2151/README.md) | 0.56340 | 0.08442 | 0.42523 | Pending cadence | Ineligible comparator. |
 | [E9 exposure fusion CPU, packaged `c1e2cac`](integrated-e9-corrected-cpu-c1e2cac/README.md) | 0.425874, pass | 0.057144, pass | 0.318864, pass | — | Independent review passed with residual exposure differences and 364 additional floor and 731 additional ceiling samples. |
+| [E9 exposure fusion CUDA/OpenCL, native `c1e2cac`](integrated-e9-corrected-cuda-c1e2cac/README.md) | 0.521168, fail | 0.078821, pass | 0.426292, pass | Pending cadence | Same sampled representative detail with residual exposure and endpoint differences. |
 
 The native CUDA E9 sampled lower bound was 295,698,432 B. Half the
 cadence-valid historical reference peak of 320,864,256 B is 160,432,128 B. The strict
@@ -118,8 +121,8 @@ ledger and the newer suite source retain distinct provenance.
 - **Engineering and scheduling.** Complete the missing full matched profiles
   with the approved inputs and consistent output quality. Resolve the
   measured R50 speed misses and D150/R50 quality gaps. E9 GPU needs a
-  full matched schedule and quality review with the corrected reference.
-  Final release also needs matching full
+  passing warm comparison and cadence-valid device memory observation
+  with the corrected reference. Final release also needs matching full
   native latency, package, conformance and assurance evidence.
 - **Host memory observation.** The full D150 and R50 CPU campaigns had
   process-tree sampling gaps above 20 ms. A dedicated collector core did
