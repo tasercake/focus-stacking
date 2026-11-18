@@ -144,7 +144,7 @@ fn repeated_registration_keeps_unwarped_cpu_export() -> Result<(), String> {
         run(config, options, |_| {}).map_err(|error| error.to_string())
     };
     let control_output = root.join("unaligned.png");
-    stack(AlignmentMode::Off, &control_output, &Options::default())?;
+    let control = stack(AlignmentMode::Off, &control_output, &Options::default())?;
     let registered_output = root.join("aligned.png");
     let events = root.join("registration.jsonl");
     let options = Options {
@@ -153,7 +153,8 @@ fn repeated_registration_keeps_unwarped_cpu_export() -> Result<(), String> {
     };
     let result = stack(AlignmentMode::Translation, &registered_output, &options)?;
     require(
-        result.source_transform(1) == Some(Affine::IDENTITY),
+        control.source_transform(1) == Some(Affine::IDENTITY)
+            && result.source_transform(1) == Some(Affine::IDENTITY),
         "repeated texture produced an unsupported transform",
     )?;
     let control_image = decode(&control_output)?;
