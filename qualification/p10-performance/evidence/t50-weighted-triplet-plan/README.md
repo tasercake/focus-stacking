@@ -142,3 +142,43 @@ quiet lease are execution prerequisites.
 describes the exact a49 default CPU/wgpu CLI and separate CPU fixture proof.
 `raw-host-records.tar.gz` at the same revision contains the
 `default-release` build command, logs and ELF evidence.
+
+## Prepared dispatch
+
+Use the [read-only preflight and dispatcher](weighted-cpu-triplet.py.txt)
+through the retained stage6 interpreter and this tool checkout's Python source
+paths. Default invocation builds the three argv lists and verifies the source,
+descriptors, lock and reference environment without opening any corpus file.
+The independent sparse source anchors are each clean and contain only the
+complete application source and pinned descriptor. Their roots are
+`/tmp/pancake-worktrees.t3paqgWM/t50-weighted-triplet-stock-source` and
+`/tmp/pancake-worktrees.t3paqgWM/t50-weighted-triplet-resident-source`.
+
+Once the lease is explicitly granted, write a new receipt in the owned
+diagnostic output parent. It must record true `exclusive_host_granted`,
+`stage6_read_granted` and `mutation_terminal` fields, the exact `profile`,
+`materialization_sha256` and `order` documented above, and the observed
+grant/host census. Extract the exact package rootlessly into the private
+scratch area with `dpkg-deb -x`. The dispatcher verifies the extracted
+`usr/bin/pancake-cli`, both actual ELF build IDs and SHA-256 hashes on
+each side of execution. The shared input paths are fixed by the stage
+receipt. Keep the producer checkouts and both packaged ELFs untouched.
+
+```sh
+PYTHONPATH="$tool_worktree/qualification/p10-performance:$tool_worktree/pancake-conformance/src" \
+  PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 \
+  taskset -c 0-14 env -u DISPLAY -u WAYLAND_DISPLAY \
+  "$reference_python" -B "$triplet_script" --execute-diagnostic \
+  --quiet-receipt "$quiet_receipt" --package "$notice_deb" \
+  --stock-source "$stock_source" --stock-cli "$extracted/usr/bin/pancake-cli" \
+  --resident-source "$resident_source" --resident-cli "$resident_cli" \
+  --output "$new_triplet_artifact_root"
+```
+
+The output root is new and private. `children-terminal.json` identifies
+the declared job loop's terminal boundary. Wait for the command and the
+common lock to exit before any next quiet workload. Keep failed sample
+records and check output digests before authenticated cleanup. The
+[fixture tests](test-weighted-cpu-triplet.py.txt) use archived event JSON
+and synthetic failures to check roles, input and map order, crop, lease
+requirements and the unchanged RSS validity gate. They read no TIFFs.
