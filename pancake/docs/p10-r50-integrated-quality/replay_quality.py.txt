@@ -1,0 +1,244 @@
+"""Run the exact integrated and corrected-reference R50 CPU jobs, once each."""
+
+import json
+import os
+import platform
+import signal
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+import numpy as np
+from p10 import (
+    CANDIDATE,
+    REFERENCE,
+    ROOT,
+    TARGETS_PATH,
+    _assert_completion,
+    _campaign_lock,
+    _environment,
+    _reference_launch,
+)
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames, verify_output
+
+ADDRESS_SPACE_LIMIT = 32 * 1024**3
+MINIMUM_AVAILABLE_KIB = 12 * 1024**2
+INITIAL_AVAILABLE_KIB = 40 * 1024**2
+TIMEOUT_SECONDS = 1200
+THREADS = 2
+CANONICAL_COMMIT = "12f2151c8a198b5209c8f4d506dbd17fd9aaa74f"
+
+
+def status_kib(file, field):
+    """Read one Linux KiB counter, or account for a short-lived process."""
+    try:
+        with Path(file).open() as lines:
+            for line in lines:
+                if line.startswith(field + ":"):
+                    return int(line.split()[1])
+    except FileNotFoundError:
+        return None
+    return None
+
+
+def child(argv, cwd, environment, directory, record):
+    """Bound a real isolated CPU job and retain structural result diagnostics."""
+    available = status_kib("/proc/meminfo", "MemAvailable")
+    if available is None or available < INITIAL_AVAILABLE_KIB:
+        raise RuntimeError(f"host available memory {available} KiB below start guard")
+    peak, smallest, killed = 0, available, None
+    wrapper = ["/usr/bin/prlimit", f"--as={ADDRESS_SPACE_LIMIT}", "--", *argv]
+    record.update({"command": argv, "executed_argv": wrapper, "cwd": str(cwd)})
+    with (
+        (directory / "stdout.log").open("xb") as stdout,
+        (directory / "stderr.log").open("xb") as stderr,
+        subprocess.Popen(
+            wrapper,
+            cwd=cwd,
+            env=environment,
+            start_new_session=True,
+            stdout=stdout,
+            stderr=stderr,
+        ) as process,
+    ):
+        limit = time.monotonic() + TIMEOUT_SECONDS
+        try:
+            while process.poll() is None:
+                memory = status_kib("/proc/meminfo", "MemAvailable")
+                if memory is None:
+                    killed = "host available-memory counter unavailable"
+                    break
+                smallest = min(smallest, memory)
+                peak = max(
+                    peak, status_kib(f"/proc/{process.pid}/status", "VmHWM") or 0
+                )
+                if memory < MINIMUM_AVAILABLE_KIB:
+                    killed = f"host available memory reached {memory} KiB"
+                    break
+                if time.monotonic() >= limit:
+                    killed = "functional job timeout exceeded"
+                    break
+                time.sleep(0.2)
+        finally:
+            if process.poll() is None:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+        result = process.wait()
+    record.update(
+        {
+            "pid": process.pid,
+            "returncode": result,
+            "abort_reason": killed,
+            "lower_bound_process_vm_hwm_kib": peak,
+            "minimum_host_available_kib": smallest,
+        }
+    )
+    if result or killed:
+        raise RuntimeError(f"job did not complete: exit={result} abort={killed}")
+
+
+def git_revision(path):
+    return subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=path, text=True
+    ).strip()
+
+
+def checked_transforms(completion, paths):
+    matrices = completion["alignment_transforms"]
+    if set(matrices) != set(map(str, paths)):
+        raise ValueError("completion lacks one or more frozen paths")
+    transforms = np.asarray([matrices[str(path)] for path in paths], dtype=np.float64)
+    if transforms.shape != (len(paths), 2, 3) or not np.isfinite(transforms).all():
+        raise ValueError("completion transform shape or values invalid")
+    identity = np.eye(2, 3)
+    return {
+        "count": len(transforms),
+        "identities_at_1e_6": int(
+            (np.abs(transforms - identity).max((1, 2)) <= 1e-6).sum()
+        ),
+        "maximum_translation_norm_px": float(
+            np.linalg.norm(transforms[:, :, 2], axis=1).max()
+        ),
+    }
+
+
+def run():
+    build_root, binary, expected_binary, producer_log = sys.argv[1:]
+    build_root = Path(build_root).resolve(strict=True)
+    binary = Path(binary).resolve(strict=True)
+    producer_log = Path(producer_log).resolve(strict=True)
+    if not binary.is_relative_to(build_root) or sha256(binary) != expected_binary:
+        raise ValueError("binary does not match the independent integrated build")
+    if (
+        git_revision(build_root) != CANONICAL_COMMIT
+        or git_revision(ROOT) != CANONICAL_COMMIT
+    ):
+        raise ValueError("integrated producer or verifier revision differs")
+    reference = TargetSpec.load(REFERENCE)
+    reference_runtime_lock = REFERENCE.parent / "uv.lock"
+    campaign = Campaign.load(TARGETS_PATH)
+    frozen_reference = campaign.raw["reference"]
+    if (
+        git_revision(reference.root) != frozen_reference["source_commit"]
+        or sha256(reference_runtime_lock) != frozen_reference["runtime_lock_sha256"]
+        or sha256(REFERENCE) != frozen_reference["descriptor_sha256"]
+    ):
+        raise ValueError("reference revision, lock or descriptor differs")
+    profile = next(
+        item for item in campaign.profiles("cpu") if item.key == "R50.hybrid.cpu"
+    )
+    records, corpus_identity = corpus(ROOT, campaign, profile.workload)
+    scratch = ROOT / "artifacts/r50-quality"
+    input_root = scratch / "inputs"
+    paths = verify_frames(input_root, records, 50)
+    if paths != sorted(paths, key=str):
+        raise ValueError("paths do not agree with the frozen ordered CLI inputs")
+    metadata = json.loads((scratch / "metadata.json").read_bytes())
+    if {tuple(row["oriented_shape_hwc"]) for row in metadata["frames"]} != {
+        (3392, 5088, 3)
+    }:
+        raise ValueError("unexpected audited R50 shape")
+    bounds = metadata["frames"][0]["oriented_shape_hwc"]
+    ref_identity = _reference_launch(reference, sys.executable, profile.key)
+    details = {
+        "purpose": "One instrumented functional run per application; no P10 timing credit",
+        "platform": platform.platform(),
+        "integration_commit": CANONICAL_COMMIT,
+        "profile": profile.key,
+        "frozen_settings": profile.options,
+        "ordered_frame_manifest": corpus_identity,
+        "reference_cli": ref_identity,
+        "reference_commit": frozen_reference["source_commit"],
+        "reference_descriptor_sha256": sha256(REFERENCE),
+        "reference_runtime_lock_sha256": sha256(reference_runtime_lock),
+        "candidate_descriptor_sha256": sha256(CANDIDATE),
+        "candidate_lock_sha256": sha256(build_root / "Cargo.lock"),
+        "candidate_binary_sha256": expected_binary,
+        "candidate_producer_build_log_sha256": sha256(producer_log),
+        "performance_targets_sha256": sha256(TARGETS_PATH),
+        "minimum_host_available_kib": MINIMUM_AVAILABLE_KIB,
+        "initial_host_available_kib": INITIAL_AVAILABLE_KIB,
+        "child_address_space_limit_bytes": ADDRESS_SPACE_LIMIT,
+        "child_timeout_seconds": TIMEOUT_SECONDS,
+        "openmp_and_numba_threads_per_job": THREADS,
+        "cpu_affinity": sorted(os.sched_getaffinity(0)),
+        "source_geometry_hwc": bounds,
+        "jobs": {},
+    }
+    candidate = TargetSpec.load(CANDIDATE)
+    launches = {
+        "candidate": (candidate, [str(binary)], build_root, "cpu"),
+        "reference": (reference, ref_identity["command"], reference.root, None),
+    }
+    with _campaign_lock():
+        for name, (target, executable, cwd, runtime) in launches.items():
+            directory = scratch / name
+            directory.mkdir()
+            output = directory / "complete.tif"
+            record = {}
+            details["jobs"][name] = record
+            environment = _environment(
+                target, directory / "cache", directory, THREADS, None, None, True
+            )
+            record["environment"] = environment
+            command = [
+                *executable,
+                *target.stack_arguments(paths, output, profile.options),
+            ]
+            print(f"Starting {name} full R50 Hybrid CPU", flush=True)
+            try:
+                child(command, cwd, environment, directory, record)
+                completion = _assert_completion(
+                    directory / "events.jsonl", "cpu", runtime, None
+                )
+                record["output"] = verify_output(output, bounds)
+                record["registration"] = checked_transforms(completion, paths)
+                record["backend"] = {
+                    key: completion[key]
+                    for key in ("actual_backend", "device")
+                    if key in completion
+                }
+                record["status"] = "completed"
+            except (OSError, RuntimeError, ValueError) as error:
+                record.update({"status": "failed", "error": str(error)})
+            finally:
+                record["observation_sha256"] = {
+                    file.name: sha256(file)
+                    for file in directory.iterdir()
+                    if file.is_file() and file != output
+                }
+                print(name, record["status"], record.get("error", ""), flush=True)
+        verify_frames(input_root, records, 50)
+        details["inputs_unchanged_after_both_jobs"] = True
+        details["candidate_binary_reverified"] = sha256(binary) == expected_binary
+    (scratch / "jobs.json").write_text(
+        json.dumps(details, indent=2, allow_nan=False) + "\n"
+    )
+
+
+if __name__ == "__main__":
+    run()
