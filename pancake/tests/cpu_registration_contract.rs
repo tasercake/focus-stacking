@@ -82,6 +82,48 @@ fn cpu_breathing_clamps_a_supported_expansion() -> Result<(), String> {
     Ok(())
 }
 
+/// A translated signed shear is reversible in both composition orders.
+///
+/// # Errors
+///
+/// Returns a matrix or composition that disagrees with the independent inverse.
+#[test]
+fn cpu_affine_inverse_reverses_signed_shear() -> Result<(), String> {
+    // The linear map has determinant one. Inverting the two linear equations
+    // gives x = 3X/4 - Y/2 - 13/4 and y = X/2 + Y + 1/2.
+    let forward = Affine::from_matrix([[1.0, 0.5, 3.0], [-0.5, 0.75, -2.0]])?;
+    let expected = Affine::from_matrix([[0.75, -0.5, -3.25], [0.5, 1.0, 0.5]])?;
+    let inverse = forward.inverse()?;
+    let round_trips = [inverse.compose(forward)?, forward.compose(inverse)?];
+    if inverse != expected || round_trips != [Affine::IDENTITY; 2] {
+        return Err(format!(
+            "signed shear inverse did not recover coordinates: {inverse:?}, {round_trips:?}"
+        ));
+    }
+    Ok(())
+}
+
+/// Scale displacement is measured from the last pixel center.
+///
+/// # Errors
+///
+/// Returns a crop error or a mismatch with the independently derived bounds.
+#[test]
+fn cpu_scaled_crop_uses_the_last_pixel_center() -> Result<(), String> {
+    // The last of 20 centers is x=19. Its 0.988-pixel displacement needs one
+    // rounded-up pixel plus one for interpolation. The y axis only needs
+    // the interpolation margin because it is unchanged.
+    let scale = Affine::from_matrix([[1.052, 0.0, 0.0], [0.0, 1.0, 0.0]])?;
+    let crop = symmetric_crop(20, 10, &[scale])?;
+    let expected = Bounds::new(2, 1, 16, 8)?;
+    if crop != expected {
+        return Err(format!(
+            "scaled last-pixel crop expected {expected:?}, got {crop:?}"
+        ));
+    }
+    Ok(())
+}
+
 /// An elongated reference canvas keeps aspect ratio within the thumbnail working budget.
 ///
 /// # Errors
