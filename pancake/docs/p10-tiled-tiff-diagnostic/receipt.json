@@ -97,7 +97,10 @@
         "decoded_pixel_sha256": "ca30585fb6c52464f0302c55f62a79c95a628423df649b574f149f198853665a"
       }
     ],
-    "materialization_command": "ionice -c3 nice -n 15 uv run --no-project --python 3.12.12 --with-requirements qualification/t50-generated/requirements.txt python qualification/t50-generated/t50_generated.py --materialize-from qualification/t50-generated/evidence/native-t50-receipt.json --output \"$stage/inputs\" --receipt \"$stage/materialization.json\""
+    "materialization_command": "ionice -c3 nice -n 15 uv run --no-project --python 3.12.12 --with-requirements qualification/t50-generated/requirements.txt python qualification/t50-generated/t50_generated.py --materialize-from qualification/t50-generated/evidence/native-t50-receipt.json --output \"$stage/inputs\" --receipt \"$stage/materialization.json\"",
+    "retained_materialization_receipt": "t50-materialization.json.gz",
+    "retained_cleanup_receipt": "t50-cleanup.json",
+    "cleanup_receipt_sha256": "90fe604e953e04fe33e348d19e4421a3bf6b3b5bea6f8c23663bd8d9708fedb9"
   },
   "test_first_red": {
     "command": "cargo test --locked --test cpu_image_io tiled_tiff -- --nocapture",
@@ -242,5 +245,43 @@
       "pancake/tests/data/tiled-rgb16-zip.tif": "d3290dbadc3e8f21113f5033f51b2af16ff2c263630ac9e12807dcf7e5c9bf09"
     }
   },
-  "candidate_revision": "cd34f7796cf4bbdaf5aaa5e331ae95f9c886e900"
+  "candidate_revision": "cd34f7796cf4bbdaf5aaa5e331ae95f9c886e900",
+  "p2_replay": {
+    "candidate_revision": "70ee7bfe7696105c58caafe4269b594feb3619e6",
+    "locked_release_cli_sha256": "23e6fdae7593e53e4ded6199fd08141bb9002f21662b42fbe4589b8b8222ed31",
+    "cpu": {
+      "lane": "cpu",
+      "revision": "70ee7bfe7696105c58caafe4269b594feb3619e6",
+      "suite_source_sha256": "485eaae7724d8706e991c6067af7739e370ed57e9e0e15cf5d9d6f5c57804a2a",
+      "passed": 68,
+      "failed": 0,
+      "unsupported": 0,
+      "unrun": 0,
+      "events": {
+        "cpu": 27
+      }
+    },
+    "gpu": {
+      "lane": "gpu",
+      "revision": "70ee7bfe7696105c58caafe4269b594feb3619e6",
+      "suite_source_sha256": "485eaae7724d8706e991c6067af7739e370ed57e9e0e15cf5d9d6f5c57804a2a",
+      "passed": 16,
+      "failed": 0,
+      "unsupported": 0,
+      "unrun": 0,
+      "events": {
+        "gpu": 16,
+        "cpu": 16
+      }
+    },
+    "retained_cli": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/t50-tiff-70ee7bf/pancake-cli",
+    "focused_codec_log": "focused-codec-70ee7bf.log.gz",
+    "old_deflate_fixture": {
+      "filename": "pancake/tests/data/tiled-rgb16-old-deflate.tif",
+      "sha256": "a81235bac7b6ec66d50d29071098185480f6bc71c8020c4bfae87ed122f21251",
+      "compression_tag": 32946,
+      "verified_independent_source_array": true,
+      "verified_exact_application_decode": true
+    }
+  }
 }
