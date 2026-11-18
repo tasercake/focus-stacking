@@ -21,7 +21,7 @@ and [assurance receipts](p1-assurance-evidence/README.md).
 The locked release at `cb5e3a4` passes the accrued 109-case P1/P2 set with
 physical NVIDIA Vulkan evidence. The six 2D NumPy grayscale cases now pass.
 Retain all 109 IDs in later regressions. Canon CR3 crop/render compatibility
-and full milestone assurance remain open.
+and full milestone assurance remained open at that revision.
 [Conformance receipts](p2-conformance-evidence/README.md).
 
 
@@ -41,6 +41,57 @@ raw report and provenance record.
 | P4 multiscale methods, exposure and slabs | 69/69 | [P4 replay](p4-conformance-evidence.md) |
 | P5 motion, crop and registration | 64/64 | [P5 replay](p5-registration.md) |
 | P6 completion, parity and recovery | 72/72 | [P6 replay](p6-device-replay-evidence/cb5e3a4/README.md) |
+
+**The packaged `12f2151` Linux release passes all 376 case IDs.** The
+locked default Linux workspace release used the rootlessly extracted Debian
+package binaries in the host, private GUI and physical RTX 3090 lanes.
+The verifier accepted 341/341 host cases, 34/34 isolated GUI cases, and
+1/1 physical GUI case. Matched input and binary receipts cover the
+unchanged 376-ID catalog, including all earlier milestone cases.
+[Integrated package and receipt index](p9-linux-package-evidence/README.md).
+
+The release uses the reviewed Slint interpreter with repository-owned
+source. The known upstream Rowan strict-Miri finding remains in the
+assurance record. [Interpreter release decision](p9-slint-boundary.md).
+
+Linux CPU AddressSanitizer and ThreadSanitizer each passed 119 of 119
+tests across 19 executables at `12f2151`. The separate `5443cdf` coverage
+replay passed 33 CPU interface cases and raised combined owned-source line
+coverage to 5,315 of 5,775. The strict coverage comparator still failed.
+Physical GPU ASan, integrated mutation coverage and the remaining release
+assurance conditions are open.
+[Integrated CPU sanitizer receipts](p9-tsan-audit/integrated-12f2151/README.md).
+[Combined CPU and GUI coverage scope](p9-cpu-assurance-evidence/native-gui-continuous/5443cdf/README.md).
+
+The matching optional Linux CUDA and HIP release profiles both linked. The
+CUDA build passed four frozen CLI cases, with two CPU completions and two
+native CUDA completions on the RTX 3090. The HIP result is a build/link
+receipt. Apple execution and signed packaging, as well as the Windows
+native build, remain open.
+[Native Linux profile evidence](p9-linux-native-evidence/12f2151/README.md).
+[Windows build prerequisite](p9-windows-build-evidence/12f2151/README.md).
+
+The corrected real R50 reference and sealed `12f2151` release both completed
+the 50-frame CPU workflow and wrote 5086 × 3390 RGB16 TIFFs. Geometry and
+transforms agree. The decoded full-frame mean absolute difference was 506.42
+on the u16 scale. Equal-quality acceptance and comparative
+performance remain open.
+[Corrected reference](p2-cr3-reference-evidence/README.md).
+[Integrated R50 functional pair](p10-r50-integrated-quality/README.md).
+
+At the packaged `12f2151` CLI, the aligned real E9 comparison completed 17
+launches per application in each CPU and physical NVIDIA lane. CPU warm,
+cold and peak RSS ratios against the reference were 0.4604, 0.0628 and 0.3188,
+meeting their numeric limits. Vulkan/OpenCL warm and RSS ratios of 0.7050
+and 0.7199 missed their 0.50 limits. The cold ratio of 0.0952 met its 1.00
+limit. GPU-memory sampling gaps and cross-application output-quality
+alignment remain open.
+[Exact E9 measurement and quality witnesses](../../qualification/p10-performance/evidence/integrated-e9-12f2151/README.md).
+
+The earlier native viewer-cache replay at `89c6a22` measured 43.274 ms idle
+and 43.355 ms loaded P95 against the 33 ms limit. These viewer and prior
+lifecycle measurements apply to their recorded revisions.
+[Viewer cache measurement](p10-viewer-cache-evidence/README.md).
 
 **Linux release conformance passes all 376 case IDs at `5216ba4`.** The
 release verifier matched 341 host cases, 34 isolated GUI cases, and one
