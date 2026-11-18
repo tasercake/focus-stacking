@@ -3,8 +3,13 @@
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stderr
+from io import StringIO
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
+import p10
 from p10 import (
     ADAPTERS,
     R50_REFERENCE,
@@ -20,6 +25,55 @@ REFERENCE = ADAPTERS / "chimpstackr_reference/chimpstackr.toml"
 
 
 class LaunchContracts(unittest.TestCase):
+    def test_cpu_interval_cli_preserves_default_and_accepts_tighter_request(self):
+        argv = [
+            "p10.py", "run", "--runtime", "cpu", "--profile", "T50.weighted_average.cpu",
+            "--input-root", "inputs", "--build-receipt", "receipt.json", "--output", "results",
+            "--threads", "1", "--timeout", "120",
+        ]
+        with patch("p10.run_profile", return_value=0) as run:
+            for option, expected in (([], 8), (["--rss-sample-interval-ms", "3"], 3)):
+                with self.subTest(interval=expected), patch("sys.argv", argv + option):
+                    self.assertEqual(p10.main(), 0)
+                    self.assertEqual(run.call_args.args[0].rss_sample_interval_ms, expected)
+            with (
+                patch("sys.argv", argv + ["--rss-sample-interval-ms", "0"]),
+                redirect_stderr(StringIO()),
+                self.assertRaises(SystemExit) as failure,
+            ):
+                p10.main()
+            self.assertEqual(failure.exception.code, 2)
+
+    def test_both_arms_record_the_requested_interval_in_the_launch_receipt(self):
+        args = SimpleNamespace(
+            runtime="cpu", threads=1, gpu_uuid=None, cuda_library_path=None,
+            rss_sampler_cpu=15, timeout=120,
+        )
+        profile = SimpleNamespace(device="cpu", options={})
+        measurement = {"returncode": 0, "timed_out": False, "resource_errors": []}
+        identity = {"command": ["reference"], "executable": "candidate"}
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            patch("p10.measure", return_value=measurement) as measure,
+            patch("p10._environment", return_value={}),
+            patch("p10._cpu_thermal_state", return_value=None),
+            patch("p10.verify_output", return_value={}),
+        ):
+            directory = Path(temporary)
+            spec = SimpleNamespace(
+                root=directory, command=lambda _name: ["cli"],
+                stack_arguments=lambda _frames, _path, _settings: [],
+            )
+            for name in ("reference", "candidate"):
+                record, _ = p10._run_sample(
+                    profile, ("warm", 1, name), name, spec, identity, args, [], [], directory,
+                    None, rss_sample_interval_ms=3,
+                )
+                launch = json.loads((directory / "warm-01" / name / "launch.json").read_text())
+                self.assertEqual(launch["sample_interval_ns"], 3_000_000)
+                self.assertTrue(record["valid"])
+                self.assertEqual(measure.call_args.kwargs["rss_sample_interval_ms"], 3)
+
     def test_cuda_library_path_leaves_the_reference_loader_unchanged(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
