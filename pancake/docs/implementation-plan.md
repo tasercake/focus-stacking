@@ -110,9 +110,13 @@ its own tested revision.
 [Native registration abstention and nightly coverage](p9-cpu-assurance-evidence/registration-abstention/README.md).
 
 The first combined test tranche at `870f7f9` passed canonical fast and
-all 151 CPU dev tests. The exact results apply to that revision. The
-second combined test tranche needs a fresh canonical run.
-[Combined fast and CPU replay](p9-cpu-assurance-evidence/870f7f9/README.md).
+all 151 CPU dev tests. The second, at `5b98890`, passed canonical fast
+and all 160 CPU dev tests. Supplemental strict Linux Miri passed all 26
+library tests on that second revision. The later Pearson and spectral
+tests have isolated native receipts and still need a combined replay.
+[First combined fast and CPU replay](p9-cpu-assurance-evidence/870f7f9/README.md).
+[Second combined fast and CPU replay](p9-cpu-assurance-evidence/5b98890/README.md).
+[Supplemental Linux Miri](p9-cpu-assurance-evidence/5b98890-linux-miri/README.md).
 
 At exact `0a9ae85`, both Linux CPU randomized layout seeds passed all 148
 tests, with 38 fingerprinted executable paths across the two builds.
@@ -340,6 +344,16 @@ changes test code only, including two guarded unit-test modules.
 [Exposure residency](p9-mutation-audit/0a9ae85-resident-rgb-retention/README.md).
 [Public P5 geometry](p9-mutation-audit/0a9ae85-p5-geometry/README.md).
 [Euclidean and search radius](p9-mutation-audit/estimator-geometry-0a9ae85/README.md).
+
+Two further focused CPU replays caught the original Pearson reference
+variance and weak spectral peak operators. The Pearson fixture recovers
+a known translation in its textured control and abstains with the
+low-variance reference. The pure spectral fixture brackets the same
+cutoff using a reachable 64×64 proxy and checks the exact signed shift.
+Both original mutations failed, and both restored controls passed. Full
+mutation acceptance remains open.
+[Pearson variance replay](p9-mutation-audit/pearson-variance-0a9ae85/README.md).
+[Weak spectral peak replay](p9-mutation-audit/spectral-weak-peak/README.md).
 
 Follow-up tests caught all three earlier survivors on their separately
 verified revisions. The panorama test exercised the thumbnail budget
