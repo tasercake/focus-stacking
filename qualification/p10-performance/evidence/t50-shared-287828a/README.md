@@ -21,8 +21,12 @@ and 117,977,395,200 B, respectively. Host available memory was 42,380,328 KiB
 and 43,708,112 KiB. The generator retained the original 15 GiB disk reserve
 and recorded zero full-frame buffers. This stage ran zero benchmark jobs.
 
-The live [stage receipt](shared-stage.json) identifies the read-only input
-root and ownership-linked manifest. Each borrower verifies the same manifest
-and returns the timing lease independently. Authenticated input cleanup is
-the stage owner's responsibility after all borrowers release. [All frozen
-records](materialization.json.gz) · [Commands and resource observations](raw-stage.tar.gz)
+The [stage receipt](shared-stage.json) records the temporary input root and
+ownership-linked manifest. The TIFF worker, single-copy registration, and
+packaged viewer consumers all released the stage after their actual runs.
+Their receipts identify the same materialization. The generator rehashed
+each file and verified ownership before deleting all 52 TIFFs, totaling
+2,775,174,405 bytes. No staged TIFF remains. [Borrower receipts](released-borrowers.json) ·
+[Cleanup summary](cleanup-summary.json) · [Authenticated cleanup](cleanup.json.gz)
+
+[All frozen records](materialization.json.gz) · [Commands and resource observations](raw-stage.tar.gz)
