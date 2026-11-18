@@ -195,7 +195,8 @@ pub(super) fn process(
     let device = runtime.device();
     let plan = Plan::new(config, &first, bytes)?;
     let settings = config.settings();
-    let retain_input = settings.method == Method::Hybrid && settings.slab_size == 0;
+    let retain_input = matches!(settings.method, Method::Hybrid | Method::ExposureFusion)
+        && settings.slab_size == 0;
     let mut alignment = Alignment::new(
         device,
         config,

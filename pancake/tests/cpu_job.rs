@@ -104,6 +104,7 @@ fn interrupted_execution_retains_an_existing_export() -> Result<(), String> {
     for (method, alignment) in [
         (Method::WeightedAverage, AlignmentMode::Off),
         (Method::Hybrid, AlignmentMode::Similarity),
+        (Method::ExposureFusion, AlignmentMode::Euclidean),
     ] {
         verify_interrupted_execution(method, alignment)?;
     }

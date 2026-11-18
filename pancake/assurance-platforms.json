@@ -54,7 +54,7 @@
     "src/job/mod.rs": "4c1f348633c4993d665fefd809c3640b1fe88b4ee4b4e6d4daca61ee80b7fbbd",
     "src/job/registration.rs": "d44af21ee677ca0c78ccc09d3afdc182ba38be25e0d008e5e1b5f72db19fb72e",
     "src/job/stream/tests.rs": "3411f6941856919ae065969ae3023da8ba12a9682a540e0a8bde3b731094cc4d",
-    "src/job/stream.rs": "52bea0a2a9c95f8f82f1085eca557adb6b92757f8f2470ee0537d054aeb286c2",
+    "src/job/stream.rs": "c05cae5f1d8145b041e8e7df07c03c267cbeb8965ab27c720f5a87213000c63e",
     "src/job/worker.rs": "a2772be63942b532391894ee8d036d72009122d8c932f069cd255b5fb67ecf5d",
     "src/lib.rs": "0fe92b92441a50f8ccd6ef85650ba11b319e1de661109e5492b91b6b378746e7",
     "src/registration/estimate.rs": "eb759d5846c7136c7e3aab680a6bd9253a81b1ef0d4488007d05e56ed08c3ab6",
