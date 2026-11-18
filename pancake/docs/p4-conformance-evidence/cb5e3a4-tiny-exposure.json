@@ -1,0 +1,578 @@
+{
+  "binary_sha256": "818a2c3532141f5f96e75accc569121f064f2925bf31738956a94887a9f4cfc8",
+  "outcomes": [
+    {
+      "actual": [
+        [
+          [
+            32936,
+            32938,
+            32940
+          ]
+        ]
+      ],
+      "argv": [
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/pancake/target/release/pancake-cli",
+        "--cpu",
+        "--input",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-00.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-01.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-02.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-03.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-04.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-05.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-06.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-07.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-08.tif",
+        "--method",
+        "exposure_fusion",
+        "--bit-depth",
+        "16",
+        "--output",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/result-cpu.tif"
+      ],
+      "backend": "cpu",
+      "dtype": "uint16",
+      "events": [
+        {
+          "actual_backend": "cpu",
+          "alignment_transforms": {
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-00.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-01.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-02.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-03.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-04.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-05.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-06.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-07.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-08.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "completed": true,
+          "device": "AMD Ryzen 9 7950X3D 16-Core Processor",
+          "device_fingerprint": "cpu_x86_64_load-512_f16-chain",
+          "device_pci_address": null,
+          "event": "stack_complete",
+          "fallback_reason": null,
+          "physical_gpu": false,
+          "runtime": "cpu",
+          "sequential_transforms": [
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          ]
+        }
+      ],
+      "expected": [
+        [
+          [
+            32936,
+            32938,
+            32940
+          ]
+        ]
+      ],
+      "max_error": 0,
+      "passed": true,
+      "returncode": 0,
+      "source_hashes_preserved": true,
+      "stderr": "",
+      "stdout": "progress 1/9\nprogress 2/9\nprogress 3/9\nprogress 4/9\nprogress 5/9\nprogress 6/9\nprogress 7/9\nprogress 8/9\nprogress 9/9\n"
+    },
+    {
+      "actual": [
+        [
+          [
+            32936,
+            32938,
+            32940
+          ]
+        ]
+      ],
+      "argv": [
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/pancake/target/release/pancake-cli",
+        "--gpu",
+        "--input",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-00.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-01.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-02.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-03.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-04.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-05.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-06.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-07.tif",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-08.tif",
+        "--method",
+        "exposure_fusion",
+        "--bit-depth",
+        "16",
+        "--output",
+        "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/result-gpu.tif"
+      ],
+      "backend": "gpu",
+      "dtype": "uint16",
+      "events": [
+        {
+          "actual_backend": "gpu",
+          "alignment_transforms": {
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-00.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-01.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-02.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-03.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-04.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-05.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-06.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-07.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-08.tif": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "completed": true,
+          "device": "NVIDIA GeForce RTX 3090",
+          "device_fingerprint": "spirv_4318_8708",
+          "device_pci_address": "0000:01:00.0",
+          "event": "stack_complete",
+          "fallback_reason": null,
+          "physical_gpu": true,
+          "runtime": "wgpu-vulkan",
+          "sequential_transforms": [
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          ]
+        }
+      ],
+      "expected": [
+        [
+          [
+            32936,
+            32938,
+            32940
+          ]
+        ]
+      ],
+      "max_error": 0,
+      "passed": true,
+      "returncode": 0,
+      "source_hashes_preserved": true,
+      "stderr": "",
+      "stdout": "progress 1/9\nprogress 2/9\nprogress 3/9\nprogress 4/9\nprogress 5/9\nprogress 6/9\nprogress 7/9\nprogress 8/9\nprogress 9/9\n"
+    }
+  ],
+  "source_sha256": {
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-00.tif": "d0c7132a75e7f4fc8e740b59ad8d99837d5bcb08d38592de0b2cc3362e1562bb",
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-01.tif": "3ef686cf6703fb077c14229150b542d24ed7494ee06139aa0894e2c125e4d77b",
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-02.tif": "e1d67a7e281e4d1dfc980ad8c95aa07b800ed3a8f4bbb4b1342c4870353ada11",
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-03.tif": "4a7d0c91dc146085b1b6bf3a1ca71719958cd1d412876011538adc05fd432d3e",
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-04.tif": "48b369e9bdce60e57bca9bc01a1ee38540830fbedd07e84c19e329937d758209",
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-05.tif": "882c615567e9814a53aa92ad9c235632681c2a9d2b32a1cc9053a6f5de61c33e",
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-06.tif": "106a6c754d26df828ee55b26dee4452c976e258c41ff7828935c09d21a354155",
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-07.tif": "6d775395b5fd12e4c20a0c8f938c680cdc8c87aafd1194035d26e09177b7b162",
+    "/tmp/pancake-worktrees.t3paqgWM/p4-methods/artifacts/p4-verification/cb5e3a4-tiny/frame-08.tif": "8d496f7bd300efab9efc73ae05d9c5799b054fe5bac12bd20bbd807530871606"
+  }
+}
