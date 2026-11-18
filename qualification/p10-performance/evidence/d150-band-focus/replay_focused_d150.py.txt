@@ -1,0 +1,142 @@
+"""Replay three established fusers and a scale-aware candidate on common pixels."""
+from pathlib import Path
+from importlib.machinery import SourceFileLoader
+from importlib.util import module_from_spec, spec_from_loader
+import json
+import os
+import subprocess
+import sys
+
+import cv2
+import tifffile
+
+ROOT = Path.cwd()
+source = ROOT / "qualification/p10-performance/evidence/d150-hybrid-detail-prototype/run_fixed_d150.py.txt"
+loader = SourceFileLoader("d150_fixed", str(source))
+spec = spec_from_loader(loader.name, loader)
+frozen = module_from_spec(spec)
+loader.exec_module(frozen)
+
+REFERENCE_COMMIT = "ab7a92708269c01c6094729f6cdfaf1415677364"
+P5_MAP = "b5b862bf0ffa3b9a630373082f606ad8a8912d8d71e642d1b667a7928f58133a"
+
+
+def run(executable, root, inputs, lane, reference=False):
+    """Force CPU with alignment/crop disabled in each actual product CLI."""
+    lane.mkdir()
+    complete = lane / "out.tif"
+    events = lane / "events.jsonl"
+    env = {
+        "PATH": os.environ["PATH"], "HOME": str(lane),
+        "OMP_NUM_THREADS": "4", "RAYON_NUM_THREADS": "4", "NUMBA_NUM_THREADS": "4",
+        "OPENBLAS_NUM_THREADS": "1", "NUMBA_CACHE_DIR": str(lane / "numba"),
+        "PANCAKE_COMPUTE_CACHE_DIR": str(lane / "cache"),
+        "CONFORMANCE_EVENTS_PATH": str(events),
+    }
+    if reference:
+        from pancake_conformance.adapters.chimpstackr import ChimpStackrAdapter
+        env = ChimpStackrAdapter(root, str(executable[0])).environment(env, events)
+    argv = [
+        "taskset", "-c", "0-3", *map(str, executable), "--input", *map(str, inputs),
+        "--output", str(complete), "--cpu", "--method", "hybrid", "--kernel-size", "6",
+        "--pyramid-levels", "8", "--scale-factor", "6", "--slab-size", "40",
+        "--slab-overlap", "4", "--bit-depth", "16",
+    ]
+    (lane / "launch.json").write_text(json.dumps({
+        "argv": argv, "environment": env, "cwd": str(root), "exe_sha256": frozen.sha(executable[0]),
+        "reference_commit": REFERENCE_COMMIT if reference else None,
+    }, indent=2) + "\n")
+    with (lane / "stdout.log").open("xb") as out, (lane / "stderr.log").open("xb") as err:
+        subprocess.run(argv, cwd=root, env=env, stdout=out, stderr=err, timeout=180, check=True)
+    (event,) = [
+        item for line in events.read_text().splitlines()
+        if (item := json.loads(line))["event"] == "stack_complete"
+    ]
+    if not event["completed"] or event["actual_backend"] != "cpu":
+        raise ValueError("no evidence of actual completed CPU fusion")
+    if not reference and (
+        event["fallback_reason"] is not None
+        or list(event["alignment_transforms"]) != list(map(str, inputs))
+        or any(value != frozen.IDENTITY for value in event["alignment_transforms"].values())
+    ):
+        raise ValueError("Pancake unexpectedly warped the fixed image data")
+    output = tifffile.imread(complete)
+    if output.shape != (1728, 2304, 3) or output.dtype.name != "uint16":
+        raise ValueError("expected genuine matched complete RGB16 TIFF")
+    return output
+
+
+def main():
+    original_root, absolute_map, holdout, reference, output_dir, stock, first, *others = [
+        Path(arg).resolve() for arg in sys.argv[1:]
+    ]
+    images = frozen.authenticated_inputs(original_root)
+    if frozen.sha(absolute_map) != P5_MAP or frozen.sha(stock) != frozen.STOCK_SHA or frozen.sha(first) != frozen.PROTOTYPE_SHA:
+        raise ValueError("controlled maps or established fuser executable changed")
+    if subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=reference, text=True).strip() != REFERENCE_COMMIT:
+        raise ValueError("reference checkout is not pinned")
+    absolute = json.loads(absolute_map.read_bytes())["alignment_transforms"]
+    maps = [absolute[path.name] for path in images]
+    heldout = [
+        row for row in json.loads(holdout.read_bytes())["selection"]
+        if all(36 <= index < 76 for index in row["adjacent_indices"])
+    ]
+    regions = [row["first_canvas_xywh"] for row in heldout]
+    if len(regions) != 2:
+        raise ValueError("expected two independent real focus witnesses in the 40-frame slab")
+    cv2.setNumThreads(1)
+    if not output_dir.exists():
+        output_dir.mkdir()
+        inputs, registration, anchors = frozen.prepare(
+            output_dir / "common", images, maps, range(36, 76), regions,
+        )
+        (output_dir / "registered.json").write_text(json.dumps(registration, indent=2) + "\n")
+        for i, anchor in enumerate(anchors):
+            tifffile.imwrite(output_dir / f"witness-{i}.tif", anchor[4], photometric="rgb")
+        (output_dir / "witness.json").write_text(json.dumps([
+            {"score": anchor[0], "index": anchor[1], "filename": anchor[2]}
+            for anchor in anchors
+        ], indent=2) + "\n")
+    inputs = sorted((output_dir / "common").glob("source-*.tif"))
+    registration = json.loads((output_dir / "registered.json").read_bytes())
+    if len(inputs) != 40 or [frozen.sha(path) for path in inputs] != [
+        row["common_tiff_sha256"] for row in registration
+    ]:
+        raise ValueError("staged shared TIFFs changed")
+    anchors = []
+    for i, row in enumerate(json.loads((output_dir / "witness.json").read_bytes())):
+        patch = tifffile.imread(output_dir / f"witness-{i}.tif")
+        score, phase = frozen.features(patch)
+        anchors.append((score, row["index"], row["filename"], phase, patch))
+    if not others:
+        variants = [
+            ("stock", [stock], ROOT / "pancake", False),
+            ("rank-only", [first], ROOT / "pancake", False),
+            ("pinned-reference", [Path(sys.executable), "-m", "src.cli"], reference, True),
+        ]
+    else:
+        variants = [("band-local", [others[0]], ROOT / "pancake", False)]
+    for name, argv, cwd, is_reference in variants:
+        print(name, "running", flush=True)
+        result = run(argv, cwd, inputs, output_dir / name, is_reference)
+        proof = []
+        for roi, witness in zip(regions, anchors, strict=True):
+            values = frozen.phase_comparison(frozen.cropped(result, roi), witness)
+            proof.append({
+                "first_canvas_xywh": roi, "witness": witness[2],
+                "source_p90": witness[0], **values,
+            })
+        (output_dir / f"{name}-result.json").write_text(json.dumps({
+            "map_sha256": P5_MAP, "source_manifest_sha256": frozen.MANIFEST_SHA, "slice": [36, 76],
+            "type": "fixed-input single slab diagnostic", "regions": proof,
+            "output_sha256": frozen.sha(output_dir / name / "out.tif"),
+        }, indent=2) + "\n")
+        print(name, json.dumps(proof), flush=True)
+    if frozen.authenticated_inputs(original_root) != images or [frozen.sha(path) for path in inputs] != [
+        row["common_tiff_sha256"] for row in registration
+    ]:
+        raise ValueError("original or registered inputs changed")
+
+
+if __name__ == "__main__":
+    main()
