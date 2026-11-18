@@ -534,25 +534,82 @@ fn paused_stack_resumes_and_publishes_only_its_completed_generation() -> Result<
     )
 }
 
-/// Invalid observer metadata leaves the published export and source bytes intact.
+/// Report exact Unicode source geometry and preserve an export when its
+/// observer cannot encode a native byte path.
 ///
 /// # Errors
-/// Returns fixture, execution, I/O or observer-diagnostic errors.
+/// Returns fixture, execution, geometry, I/O or observer-diagnostic errors.
 #[cfg(unix)]
 #[test]
 fn observer_handles_non_unicode_paths_without_fabricating_geometry() -> Result<(), String> {
     use std::os::unix::ffi::OsStrExt;
+
+    // Darwin's EILSEQ is 92. APFS rejected the invalid UTF-8 rename in CI.
+    const DARWIN_EILSEQ: i32 = 92;
+
     let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
-    let originals = sources(directory.path())?;
-    let [first, second] = originals;
-    let opaque = directory
-        .path()
-        .join(std::ffi::OsStr::from_bytes(b"frame-\xff.png"));
-    std::fs::rename(&second, &opaque).map_err(|error| error.to_string())?;
-    let output = directory.path().join("retained.png");
-    let events = directory.path().join("events.jsonl");
+    let root = directory.path();
+    let [first, second] = sources(root)?;
+    let original = std::fs::read(&second).map_err(|error| error.to_string())?;
     let expected = decode(&first)?;
-    let original = std::fs::read(&opaque).map_err(|error| error.to_string())?;
+    let unicode = root.join("frame-雪-🥞.png");
+    std::fs::rename(&second, &unicode).map_err(|error| error.to_string())?;
+    let output = root.join("unicode.png");
+    let events = root.join("unicode-events.jsonl");
+    let options = Options {
+        events_path: Some(events.clone()),
+        ..Options::default()
+    };
+    let result = run(
+        request(&[first.clone(), unicode.clone()], &output)?,
+        &options,
+        |_| {},
+    )
+    .map_err(|error| error.to_string())?;
+    let observed = std::fs::read(events).map_err(|error| error.to_string())?;
+    let event: serde_json::Value =
+        serde_json::from_slice(&observed).map_err(|error| error.to_string())?;
+    let geometry = event
+        .get("alignment_transforms")
+        .and_then(serde_json::Value::as_object)
+        .ok_or("Unicode stack did not report source geometry")?;
+    require(
+        event.get("event").and_then(serde_json::Value::as_str) == Some("stack_complete")
+            && event
+                .get("actual_backend")
+                .and_then(serde_json::Value::as_str)
+                == Some("cpu")
+            && event.get("completed").and_then(serde_json::Value::as_bool) == Some(true)
+            && geometry.len() == 2
+            && result.warnings().is_empty()
+            && decode(&output)?.samples() == expected.samples(),
+        "Unicode paths changed the real CPU stack or its completion event",
+    )?;
+    let identity = serde_json::json!([[1.0_f32, 0.0_f32, 0.0_f32], [0.0_f32, 1.0_f32, 0.0_f32]]);
+    for source in [&first, &unicode] {
+        let canonical = source.canonicalize().map_err(|error| error.to_string())?;
+        let key = canonical
+            .to_str()
+            .ok_or("Unicode fixture path was not UTF-8")?;
+        require(
+            geometry.get(key) == Some(&identity),
+            "the observer did not report the exact Unicode source key and transform",
+        )?;
+    }
+
+    let opaque = root.join(std::ffi::OsStr::from_bytes(b"frame-\xff.png"));
+    match std::fs::rename(&unicode, &opaque) {
+        Ok(()) => {}
+        Err(error) if cfg!(target_os = "macos") && error.raw_os_error() == Some(DARWIN_EILSEQ) => {
+            return require(
+                std::fs::read(&unicode).map_err(|error| error.to_string())? == original,
+                "Darwin's rejected rename changed the original source",
+            );
+        }
+        Err(error) => return Err(format!("could not rename source to a byte path: {error}")),
+    }
+    let output = root.join("retained.png");
+    let events = root.join("events.jsonl");
     let options = Options {
         events_path: Some(events.clone()),
         ..Options::default()
