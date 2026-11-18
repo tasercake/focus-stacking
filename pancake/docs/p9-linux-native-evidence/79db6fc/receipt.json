@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "tested_revision": "79db6fc62bed7f61b136d7384992c4970dd09ef3",
+  "cargo_lock_sha256": "012cda6d161124eef8ecc3c5c6a4fed8db881e5f7606f4b9d7aee5f766f1a879",
+  "frozen_contract_file_count": 90,
+  "frozen_contract_sha256": "2d17fb4f570dcfae47e355b63e18650c325c586f47620c565b568f4fdcce20b2",
+  "builds": {
+    "hip": {
+      "binary_sha256": "50552e07663fb35d2232f4592fba232a39644e1ee7487eee23b1b96a33f2a647",
+      "bytes": 164435424,
+      "linked_native_symbol_count": 270,
+      "metadata_sha256": "269ebe502a64d643b35542a548c36bc502b5f2677b85c68229b2cdf0c434811e",
+      "compile_and_link": "passed",
+      "dependency_policy": "passed",
+      "offline_cargo_deny": "passed",
+      "runtime_exercised": false
+    },
+    "cuda": {
+      "binary_sha256": "a7396a200ba2318559497f4527d32081ad66f189f76445675a009dfe2f7ea802",
+      "bytes": 130090232,
+      "linked_native_symbol_count": 281,
+      "metadata_sha256": "6eed4da3951af0efa81ff501c4cccae344eb81815cd8160afdb9ceae553b9708",
+      "compile_and_link": "passed",
+      "dependency_policy": "passed",
+      "offline_cargo_deny": "passed",
+      "runtime_exercised": true
+    }
+  },
+  "run_binary_sha256": "a7396a200ba2318559497f4527d32081ad66f189f76445675a009dfe2f7ea802",
+  "runs": {
+    "cpu": {
+      "provenance": {
+        "contract_version": 2,
+        "target": "pancake-rust",
+        "target_root": "/tmp/pancake-worktrees.t3paqgWM/p6-runtime/pancake",
+        "target_commit": "79db6fc62bed7f61b136d7384992c4970dd09ef3",
+        "target_dirty": "",
+        "suite_commit": "79db6fc62bed7f61b136d7384992c4970dd09ef3",
+        "suite_dirty": "",
+        "suite_source_sha256": "73f51014ab281903f43c270579d8c0de32fc1cee5a99c1e84febc0979c702f89",
+        "target_descriptor_sha256": "f774e9e080fb49e2f82f11923668db6212ccea83f2924b370dbba1d508c2bfc8",
+        "coverage_scope_sha256": null,
+        "cli_command": [
+          "./target/release/pancake-cli"
+        ],
+        "gui_command": [
+          "./target/release/pancake-gui"
+        ],
+        "python": "3.12.12 (main, Feb 12 2026, 00:42:14) [Clang 21.1.4 ]",
+        "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+        "uv_lock_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
+        "cases": [
+          "devices.cpu.weighted_average",
+          "devices.cpu.exposure_fusion"
+        ]
+      },
+      "counts": {
+        "passed": 2,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "completed": {
+        "devices.cpu.weighted_average": {
+          "device": "AMD Ryzen 9 7950X3D 16-Core Processor",
+          "runtime": "cpu",
+          "output_sha256": "f061c84ef52171e941f30bbaa02ae971def93f8ea74582c78502ff4aa61e916b"
+        },
+        "devices.cpu.exposure_fusion": {
+          "device": "AMD Ryzen 9 7950X3D 16-Core Processor",
+          "runtime": "cpu",
+          "output_sha256": "322e932d0109b85e6e015767ffb710efcd53b7b51bf114f4762bbe28e3682b7d"
+        }
+      }
+    },
+    "cuda": {
+      "provenance": {
+        "contract_version": 2,
+        "target": "pancake-rust",
+        "target_root": "/tmp/pancake-worktrees.t3paqgWM/p6-runtime/pancake",
+        "target_commit": "79db6fc62bed7f61b136d7384992c4970dd09ef3",
+        "target_dirty": "",
+        "suite_commit": "79db6fc62bed7f61b136d7384992c4970dd09ef3",
+        "suite_dirty": "",
+        "suite_source_sha256": "73f51014ab281903f43c270579d8c0de32fc1cee5a99c1e84febc0979c702f89",
+        "target_descriptor_sha256": "f774e9e080fb49e2f82f11923668db6212ccea83f2924b370dbba1d508c2bfc8",
+        "coverage_scope_sha256": null,
+        "cli_command": [
+          "./target/release/pancake-cli"
+        ],
+        "gui_command": [
+          "./target/release/pancake-gui"
+        ],
+        "python": "3.12.12 (main, Feb 12 2026, 00:42:14) [Clang 21.1.4 ]",
+        "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+        "uv_lock_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
+        "cases": [
+          "devices.gpu.weighted.zero_regions",
+          "devices.gpu.exposure_constant_mix.9"
+        ]
+      },
+      "counts": {
+        "passed": 2,
+        "failed": 0,
+        "unsupported": 0
+      },
+      "completed": {
+        "devices.gpu.weighted.zero_regions": {
+          "device": "NVIDIA GeForce RTX 3090",
+          "runtime": "cuda",
+          "output_sha256": "a82582e4bde363c5efe33b3e7c16b251321b99ac799e4f3676124889c6a128ea"
+        },
+        "devices.gpu.exposure_constant_mix.9": {
+          "device": "NVIDIA GeForce RTX 3090",
+          "runtime": "cuda",
+          "output_sha256": "86b070bd25acd701051d0f208ae2328889f5e5bea2092b85e8f51de274814e6e"
+        }
+      }
+    }
+  },
+  "offline_advisory_database_revision": "233155b4025b854c68a4b199c0e32d7fd53291a2",
+  "build_commands": {
+    "hip": [
+      "cargo",
+      "build",
+      "--locked",
+      "--release",
+      "-p",
+      "pancake",
+      "-p",
+      "pancake-cli",
+      "--bin",
+      "pancake-cli",
+      "-j",
+      "3",
+      "--features",
+      "cubecl/hip"
+    ],
+    "cuda": [
+      "cargo",
+      "build",
+      "--locked",
+      "--release",
+      "-p",
+      "pancake",
+      "-p",
+      "pancake-cli",
+      "--bin",
+      "pancake-cli",
+      "-j",
+      "3",
+      "--features",
+      "cubecl/cuda"
+    ]
+  },
+  "cuda_build_environment": {
+    "CUDARC_CUDA_VERSION": "12050"
+  },
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+  "os": "Linux 6.8.0-147-generic x86_64 GNU/Linux",
+  "hardware": "NVIDIA GeForce RTX 3090, 00000000:01:00.0, 580.178.04, 24576 MiB",
+  "example_kind": "focused_contract_execution_not_performance_measurement",
+  "hashed_run_files": 79,
+  "raw_text_members": 73,
+  "retained_archive_sha256": {
+    "raw-text-records.tar.gz": "a7d499d79ef5a8dd15f8bea10c3da0d1eab7989aaa5ffb08517b5885b0da7aa0",
+    "run-file-manifest.json.gz": "ad88f997ab53ecdcf852caedb98e11b07ca794c044a54640ddc05b49b2c981a3"
+  }
+}

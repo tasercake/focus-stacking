@@ -1,5 +1,17 @@
 # P3 release CLI conformance
 
+Hardened release candidate `cb5e3a4a35c2ce356c93fed0f784825a17787148`
+also passed all **27 P3 roadmap cases** in a clean headless checkout on
+2026-11-18. The suite selected and completed exactly those 27 IDs on
+Linux x86_64, with 31 completed CPU stack calls on the AMD Ryzen
+9 7950X3D and zero failures, skips, unsupported cases, or unrun IDs.
+The release binary and Rust dependency lock matched their recorded
+SHA-256 values. This rerun covers the primary P3 cohort.
+[Receipt](cb5e3a4/receipt.json) · [Raw report](cb5e3a4/report.json.gz) ·
+[Provenance](cb5e3a4/provenance.json)
+
+## Initial release candidate
+
 On 2026-11-18, release candidate
 `18c17b6f1dd2ff2a15ccea985fe430ac1eb7a666` completed all 27 primary P3
 cases, 13 related P6 device cases, and the 25 previously passing P1
