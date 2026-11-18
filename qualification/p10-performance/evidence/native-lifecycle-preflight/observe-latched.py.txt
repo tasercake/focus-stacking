@@ -1,0 +1,131 @@
+"""Check real native lifecycle state availability without timing qualification."""
+
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+from framebuffer import XTestPointer, XwdScreen, observed_desktop
+from linux_latency import _prepare_pointer, _wait_cancel, _wait_state, _worker_metadata
+from pancake_conformance.fixtures import generate_fixture
+from pancake_conformance.linux_ui import LinuxUISession
+from pancake_conformance.macos_ui import MacOSUISession
+from protocol import sha256
+
+STATUS = {"control": "stack.status", "field": "title"}
+
+
+def tap(ui, pointer, control):
+    with _prepare_pointer(
+        pointer, ui, {"kind": "click", "at": {"control": control}}
+    ) as dispatch:
+        dispatch()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--binary", type=Path, required=True)
+    parser.add_argument("--sha256", required=True)
+    parser.add_argument("--revision", required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    binary = args.binary.resolve(strict=True)
+    if sha256(binary) != args.sha256:
+        raise ValueError("selected binary hash mismatch")
+    base = args.output.resolve()
+    base.mkdir(parents=True, exist_ok=False)
+    output = base / "private"
+    lock = subprocess.check_output(
+        ["git", "show", args.revision + ":pancake/Cargo.lock"]
+    )
+    fixture_root = base / "fixture"
+    fixture = generate_fixture("lifecycle", fixture_root)
+    inputs = [str(path) for path in fixture.paths]
+    argv = [str(binary), *inputs]
+    report = {
+        "scope": "untimed native lifecycle observer availability diagnostic",
+        "revision": args.revision,
+        "binary_sha256": args.sha256,
+        "cargo_lock_sha256": hashlib.sha256(lock).hexdigest(),
+        "fixture_shape": fixture.shape,
+        "source_count": len(inputs),
+        "first_source_sha256": sha256(fixture.paths[0]),
+        "arguments": argv,
+        "observed_states": [],
+        "renderer": "winit-software",
+    }
+    try:
+        env = dict(os.environ, SLINT_BACKEND="winit-software")
+        with (
+            observed_desktop(output, env) as (private, path),
+            XwdScreen(path) as screen,
+            XTestPointer(private, screen) as pointer,
+            (output / "gui.stdout").open("w") as stdout,
+            (output / "gui.stderr").open("w") as stderr,
+        ):
+            process = subprocess.Popen(
+                argv, env=private, stdout=stdout, stderr=stderr, start_new_session=True
+            )
+            try:
+                with LinuxUISession(process, output, private) as ui:
+                    ui.click("method.laplacian")
+                    ui.select("alignment", "Breathing", timeout=15)
+                    tap(ui, pointer, "stack.start")
+                    _, station = _wait_state(ui, STATUS, {"running"}, 15)
+                    report["observed_states"].append(station)
+                    tap(ui, pointer, "stack.pause")
+                    _, station = _wait_state(ui, STATUS, {"paused"}, 15)
+                    report["observed_states"].append(station)
+                    tap(ui, pointer, "stack.resume")
+                    _, station = _wait_state(ui, STATUS, {"running"}, 15)
+                    report["observed_states"].append(station)
+                    before = _worker_metadata(ui, STATUS)
+                    report["native_before_cancel"] = before
+                    tap(ui, pointer, "stack.stop")
+                    _, kind, ack = _wait_cancel(ui, STATUS, before, 30)
+                    # The measurement boundary is exercised, but this is a
+                    # preflight and deliberately excludes elapsed samples.
+                    report["native_acknowledgement_kind"] = kind
+                    report["native_acknowledgement"] = ack
+                    if ack["state"] == "Idle":
+                        settled = ack
+                    else:
+                        _, _, settled = _wait_cancel(
+                            ui, STATUS, before, 120, settled=True
+                        )
+                    report["worker_settled"] = settled
+                    report["native_restart_enabled"] = ui.node("stack.start").get(
+                        "enabled"
+                    )
+                    report["status"] = "observed"
+            finally:
+                MacOSUISession._reap(process)
+    except (AssertionError, OSError, RuntimeError, ValueError) as error:
+        report["status"] = "incomplete"
+        report["error"] = str(error)
+    finally:
+        shutil.rmtree(fixture_root)
+        report["temporary_fixture_removed"] = not fixture_root.exists()
+        (base / "receipt.json").write_text(json.dumps(report, indent=2) + "\n")
+    print(
+        json.dumps(
+            {
+                k: report[k]
+                for k in (
+                    "status",
+                    "error",
+                    "observed_states",
+                    "native_acknowledgement_kind",
+                    "native_restart_enabled",
+                )
+                if k in report
+            }
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
