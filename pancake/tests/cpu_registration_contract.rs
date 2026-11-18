@@ -124,6 +124,59 @@ fn cpu_scaled_crop_uses_the_last_pixel_center() -> Result<(), String> {
     Ok(())
 }
 
+/// A correlated source cannot establish motion against a nearly flat reference.
+///
+/// # Errors
+///
+/// Returns a device error or an incorrect registration decision.
+#[test]
+fn cpu_registration_requires_detail_in_the_reference() -> Result<(), String> {
+    let (width, height) = (113_u16, 95_u16);
+    let (dx, dy) = (3.0_f32, -3.0_f32);
+    let (reference, source) = scene_pair(width, height, dx, dy, 1.0);
+    let device = cubecl::Device::cpu().map_err(|error| error.to_string())?;
+    let prepare = |samples| {
+        let w = usize::from(width);
+        let h = usize::from(height);
+        thumbnail(&device, Frame::new(w, h, samples)?, w, h, 2_097_152)
+    };
+    let estimate = |reference, source| {
+        estimate_pair(
+            &device,
+            &prepare(reference)?,
+            &prepare(source)?,
+            Model::Translation,
+            0.03,
+            false,
+        )
+    };
+    let control = estimate(&reference, &source)?;
+    let [[_, _, tx], [_, _, ty]] = control.transform.matrix();
+    if (tx - dx).abs() > 0.14 || (ty - dy).abs() > 0.14 || control.confidence <= 0.5 {
+        return Err(format!(
+            "expected textured motion [{dx}, {dy}], got {control:?}"
+        ));
+    }
+
+    // Both exposures retain the same translated structure, but the reference
+    // has only one quarter of the moving image's contrast.
+    let near_flat = reference
+        .iter()
+        .map(|sample| sample * 0.002)
+        .collect::<Vec<_>>();
+    let brighter = source
+        .iter()
+        .map(|sample| sample * 0.008)
+        .collect::<Vec<_>>();
+    let result = estimate(&near_flat, &brighter)?;
+    if result.transform != Affine::IDENTITY || result.confidence.abs() >= f32::EPSILON {
+        return Err(format!(
+            "near-flat reference claimed unsupported motion: {result:?}"
+        ));
+    }
+    Ok(())
+}
+
 /// An elongated reference canvas keeps aspect ratio within the thumbnail working budget.
 ///
 /// # Errors
