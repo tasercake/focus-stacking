@@ -1,0 +1,132 @@
+"""Observe independently extracted T50 source colors on the actual Pancake GUI."""
+import json
+import os
+import subprocess
+from pathlib import Path
+
+import numpy as np
+import tifffile
+from framebuffer import Patch, XTestPointer, XwdScreen, observe_transition, observed_desktop
+from pancake_conformance.linux_ui import LinuxUISession
+from pancake_conformance.macos_ui import MacOSUISession, find_node
+from protocol import sha256
+
+ARTIFACT=Path('/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake/target/debug/pancake-gui')
+PAIR=Path('artifacts/p10-scale-preflight/t50-pair')
+OUTPUT=Path('artifacts/p10-scale-preflight/gui-source-witness-modelled').resolve()
+
+def render_preview(path, width, height, zoom):
+    rgb=tifffile.imread(path)
+    source_h,source_w=rgb.shape[:2]
+    step=(max(source_w,source_h)+2047)//2048
+    texture=((rgb[::step,::step].astype(np.uint32)+128)//257).astype(np.uint8)
+    del rgb
+    pw,ph=zoom*source_w,zoom*source_h
+    # The pinned Slint software renderer rounds destination geometry, uses
+    # 1/256-texel integer steps, and truncates the resulting index for RGBA.
+    imgx=round((width-pw)/2)
+    imgy=round((height-ph)/2)
+    xs=(np.arange(width)-imgx)*((texture.shape[1]*256)//round(pw))//256
+    ys=(np.arange(height)-imgy)*((texture.shape[0]*256)//round(ph))//256
+    safe=((xs>5)&(xs<texture.shape[1]-5))[None,:] & ((ys>5)&(ys<texture.shape[0]-5))[:,None]
+    return texture[np.clip(ys,0,texture.shape[0]-1)[:,None],np.clip(xs,0,texture.shape[1]-1)[None,:]],safe
+
+def main():
+    OUTPUT.mkdir(parents=True,exist_ok=False)
+    first,second=(PAIR/f'focus_{index:03}.tif' for index in (0,6))
+    inputs=[str(path.resolve()) for path in (first,second)]
+    launch=[str(ARTIFACT),*inputs]
+    binary=sha256(ARTIFACT)
+    env=dict(os.environ,SLINT_BACKEND='winit-software')
+    with (
+        observed_desktop(OUTPUT,env) as (private,screen_path),
+        XwdScreen(screen_path) as screen,
+        XTestPointer(private,screen) as pointer,
+        (OUTPUT/'stdout.txt').open('w') as out,
+        (OUTPUT/'stderr.txt').open('w') as err,
+    ):
+        process=subprocess.Popen(launch, env=private, stdout=out, stderr=err,start_new_session=True,
+                                 cwd=ARTIFACT.parents[2])
+        try:
+            with LinuxUISession(process,OUTPUT,private) as ui:
+                def viewer_after_import(snapshot):
+                    node=find_node(snapshot,'viewer')
+                    data=json.loads(node['description'])
+                    return (node,data) if data['has_image'] and data['source_index']==1 else None
+                node,data=ui.wait(viewer_after_import,timeout=40,description='native T50 first source image')
+                x,y=node['position']
+                width,height=node['size']
+                row=ui.node('frame.1')
+                cx,cy=row['position']
+                cw,ch=row['size']
+                pointer.move(cx+cw//2,cy+ch//2)
+                pointer.settle()
+                current=screen.rgb(x,y,width,height)
+                p0,valid=render_preview(first,width,height,data['zoom'])
+                p1,_=render_preview(second,width,height,data['zoom'])
+                before_error=np.max(np.abs(current.astype(np.int16)-p0),axis=2)
+                diff=np.max(np.abs(p0.astype(np.int16)-p1),axis=2)
+                candidates=np.argwhere(valid&(before_error<=1)&(diff>=8))
+                if not len(candidates):
+                    raise ValueError('no independently matched and discriminating witness pixels')
+                selected=[]
+                rng=np.random.default_rng(20261118)
+                for yy,xx in candidates[rng.permutation(len(candidates))]:
+                    if all(abs(xx-oldx)+abs(yy-oldy)>25 for oldy,oldx in selected):
+                        selected.append((int(yy),int(xx)))
+                        if len(selected)==6:
+                            break
+                if len(selected)<6:
+                    raise ValueError('insufficient discriminating screen regions')
+                before=[Patch(x+xx,y+yy,p0[yy:yy+1,xx:xx+1],1) for yy,xx in selected]
+                after=[Patch(x+xx,y+yy,p1[yy:yy+1,xx:xx+1],1) for yy,xx in selected]
+
+                def dispatch():
+                    pointer.button(1,True)
+                    pointer.button(1,False)
+                    pointer.flush()
+
+                try:
+                    observed=observe_transition(screen,dispatch,before,after,timeout=10)["witnesses"]
+                except TimeoutError:
+                    failed_node=find_node(ui.snapshot(),'viewer')
+                    diagnostic={
+                        "native_row_position":row['position'],"native_row_size": row['size'],
+                        "before_viewer":data,"after_viewer":json.loads(failed_node['description']),
+                        "before_frame_geometry":[x,y,width,height],
+                        "after_frame_geometry":failed_node['position']+failed_node['size'],
+                        "witnesses":[{'xy':[before_patch.x,before_patch.y],
+                                      'before_expected':before_patch.rgb[0,0].tolist(),
+                                      'after_expected':after_patch.rgb[0,0].tolist(),
+                                      'after_observed':after_patch.read(screen)[0][0,0].tolist(),
+                                      'after_max_channel_error':after_patch.read(screen)[1]}
+                                     for before_patch,after_patch in zip(before,after,strict=True)]
+                    }
+                    (OUTPUT/'failed-witness.json').write_text(json.dumps(diagnostic,indent=2)+'\n')
+                    print(json.dumps(diagnostic))
+                    raise
+                for patch,(pixels,error) in zip(after,observed,strict=True):
+                    if error>patch.tolerance:
+                        raise ValueError('independent source pixel difference exceeds tolerance')
+                final=ui.wait(lambda snap: (value if (value:=json.loads(find_node(snap,'viewer')['description']))['source_index']==2 else None),
+                              timeout=10,description='source 2 actually selected')
+                report={
+                    'scope':'functional native witness check on debug Pancake; no P10 performance measurement',
+                    'source_revision':'8f1da27b65c','binary_sha256':binary,'launch':launch,
+                    'inputs':[{'name':path.name,'sha256':sha256(path)} for path in (first,second)],
+                    'viewport':{'position':[x,y],'size':[width,height],'metadata_before':data,'metadata_after':final},
+                    'software_resample_model': 'pinned Slint fixed-point texture-coordinate nearest sampling',
+                    'witnesses':[{'xy':[patch.x,patch.y],'before_expected':p.rgb[0,0].tolist(),
+                                  'after_expected':patch.rgb[0,0].tolist(),'after_observed':pixels[0,0].tolist(),
+                                  'maximum_channel_error':error}
+                                 for p, patch, (pixels,error) in zip(before,after,observed,strict=True)],
+                }
+                if sha256(ARTIFACT)!=binary:
+                    raise ValueError('debug build changed during native witness capture')
+                (OUTPUT/'receipt.json').write_text(json.dumps(report,indent=2)+'\n')
+                print(json.dumps(report))
+        finally:
+            MacOSUISession._reap(process)
+
+if __name__=='__main__':
+    main()
