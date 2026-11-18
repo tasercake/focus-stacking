@@ -82,11 +82,60 @@ test ! -e "$real"
   printf '\n#[path = "real_pilot.rs"]\nmod real_pilot;\n' >> "$overlay"
   printf '\n#[cfg(test)]\n#[path = "witness_pilot.rs"]\nmod witness_pilot;\n' >> "$kernel"
   cd "$repo/pancake"
+  export CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 RAYON_NUM_THREADS=2
+  taskset -c 2,3 cargo test --locked --lib witness_bilateral_motion_and_ambiguity \
+    -- --nocapture --test-threads=1 2>&1 | tee "$scratch/synthetic-recheck.log"
   PANCAKE_WITNESS_ACQUISITION="$stage/acquisition.json" \
     PANCAKE_WITNESS_DIRECTIONS="$motion/direction-replay.json" \
     PANCAKE_WITNESS_OUTPUT="$scratch/real.json" \
-    CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 \
-    RAYON_NUM_THREADS=2 taskset -c 2,3 cargo test --locked --lib witness_ -- --nocapture \
-    2>&1 | tee "$scratch/real.log"
+    taskset -c 2,3 cargo test --locked --lib witness_real_d150_proxy_diagnostic \
+    -- --nocapture --test-threads=1 2>&1 | tee "$scratch/real.log"
 )
 ```
+
+## Measured CPU diagnostic
+
+The actual overlay compiled with the same product revision and lock on the
+Ryzen 9 7950X3D, Linux 6.8.0-147-generic, on logical CPUs 2 and 3. Both tests
+passed again after replacing the pilot's fixed synthetic extent with its
+checked pair extent. The real test linked the existing decoder,
+registration prefilter, affine sampler and CubeCL moment kernel. It used
+the six authorized intervals in the nine-source acquisition and the exact
+old direct and reverse-anchor maps. The third hypothesis was identity.
+[Acquisition](acquisition.json.gz) · [Synthetic recheck](synthetic-recheck.log.gz) ·
+[Real test](real.log.gz).
+
+| Interval | Direct strict wins | Inverse-reverse strict wins | Identity strict wins | Two-axis inverse-reverse support |
+| --- | ---: | ---: | ---: | --- |
+| `579→580` | 0/9 | 6/9 | 0/9 | Yes |
+| Genuine `580→581` | 0/9 | 8/9 | 0/9 | Yes |
+| `581→582` | 0/9 | 8/9 | 0/9 | Yes |
+| `653→654` | 0/9 | 2/9 | 0/9 | No |
+| False direct jump `654→655` | 0/9 | 1/9 | 0/9 | No |
+| `655→656` | 1/9 | 0/9 | 2/9 | No |
+
+Each strict win requires lower cross-fitted error than both alternatives
+in both directions and both lattice fits. A tile with insufficient
+comparable gain or contrast has no winner. On `654→655`, each of the three
+cells where the direct estimate and both rivals had comparable losses
+favored both alternatives over direct in all four fits. A single cell
+distinguished the two alternatives, leaving the whole-canvas result
+unresolved. The separately measured native optical correspondences support
+that distinction. On `580→581`, the proxy retains detectable information
+for corroborating the genuine nonidentity step. These are sampled
+witness results, without a validated global pose, crop, or fused output.
+[Every directional cell loss and dispatch count](real-results.json.gz).
+
+This unbatched CPU diagnostic issued 108 small moment dispatches and
+readbacks per interval. Witness cost across six intervals was 134.81 ms
+total and 19.31 ms median, with 9.92–54.26 ms range. The median of the last
+five was 18.47 ms. Separate JPEG decode, prefilter and pair upload consumed
+8.053 s in the development-profile test. These observations exclude reverse
+candidate estimation, represent two cores and supply no frozen performance
+credit. The prior 5.32 ms per-edge warm headroom was from a different exact
+release. This launch pattern cannot support a throughput claim. A later
+bounded batched layout would still need its own backend and full-job proof.
+
+All nine JPEGs were rehashed and removed. The ZIP was verified before
+extraction and removed by acquisition. Product source and the frozen
+suite remain unchanged. [Cleanup and executable receipt](cleanup.json).

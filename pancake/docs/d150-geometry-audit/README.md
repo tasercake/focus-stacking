@@ -178,5 +178,12 @@ the long-range trajectory and fused quality remain open.
 The [bounded witness design](witness-design/README.md) compares the same
 directional histories in scale-6 proxy coordinates. It identifies the
 invalid one-frame absolute switch, the false jump's narrow support, and
-what can be validated with existing CubeCL moments. The proposed witness,
-reverse-estimation demand and real output quality still need measurement.
+what can be validated with existing CubeCL moments. A batched witness,
+reverse-estimation demand and fused output quality still need measurement.
+
+The [passive CPU pilot](witness-pilot/README.md) verified that the actual
+scale-6 luma retains evidence for the genuine step. It ranked the
+inverse-reverse hypothesis first in eight of nine cells. The wrong direct
+step lost wherever all models had comparable evidence, and the
+replacement global pose remained unresolved. The pilot also records the
+exact unbatched observation cost and authenticated input cleanup.
