@@ -1,5 +1,6 @@
 //! Portable image sampling and registration scoring.
 
+use cubecl::bytes::Bytes;
 use cubecl::prelude::*;
 use cubecl::std::tensor::TensorHandle;
 
@@ -82,11 +83,10 @@ fn check_budget(input: usize, output: usize, tile: usize, budget: usize) -> Resu
 
 /// Upload packed rows or short affine parameters as one typed device tensor.
 fn upload(client: &Client, data: &[f32]) -> TensorHandle {
-    TensorHandle::new_contiguous(
-        [data.len()],
-        client.create_from_slice(f32::as_bytes(data)),
-        f32::cube_type(),
-    )
+    // Establish the native byte alignment before copying the source.
+    let mut bytes = Bytes::from_bytes_vec(Vec::new());
+    bytes.extend_from_byte_slice(f32::as_bytes(data));
+    TensorHandle::new_contiguous([data.len()], client.create(bytes), f32::cube_type())
 }
 
 /// Read exactly the declared number of finite device samples.
