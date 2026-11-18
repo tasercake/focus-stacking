@@ -239,3 +239,73 @@ fn missing_vulkan_device_falls_back_only_when_unforced() -> Result<(), String> {
     }
     Ok(())
 }
+
+/// An absent progress reader must cause a CLI delivery failure
+/// while retaining the already completed stack and its truthful observation.
+///
+/// # Errors
+/// Returns a pipe, fixture, process, observer or publication error.
+#[test]
+fn closed_progress_stream_leaves_a_completed_export() -> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let root = directory.path();
+    write_sources(root)?;
+    let destination = root.join("result.png");
+    let events = root.join("completion.jsonl");
+    let (reader, writer) = std::io::pipe()?;
+    drop(reader);
+    let outcome = cmd(root)
+        .env("CONFORMANCE_EVENTS_PATH", &events)
+        .stdout(writer)
+        .args(["--output", "result.png", "--bit-depth", "16"])
+        .output()?;
+    let diagnostic = String::from_utf8(outcome.stderr)?;
+    if outcome.status.code() != Some(1_i32)
+        || !diagnostic.contains("error:")
+        || !outcome.stdout.is_empty()
+    {
+        return Err(format!("closed progress stream reported success: {diagnostic}").into());
+    }
+    let exported = decode(&destination)?;
+    let source = decode(&root.join("first.png"))?;
+    let completion = std::fs::read_to_string(events)?;
+    if exported.samples() != source.samples()
+        || !completion.contains(r#""event":"stack_complete""#)
+        || !completion.contains(r#""actual_backend":"cpu""#)
+    {
+        return Err("progress delivery failure changed the completed CPU stack".into());
+    }
+    Ok(())
+}
+
+/// Closing the diagnostic reader makes the genuine JPEG precision warning
+/// undeliverable. The process reports that failure after publication.
+///
+/// # Errors
+/// Returns a pipe, fixture, process or JPEG verification error.
+#[test]
+fn closed_warning_stream_leaves_a_completed_export() -> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let root = directory.path();
+    write_sources(root)?;
+    let (reader, writer) = std::io::pipe()?;
+    drop(reader);
+    let outcome = cmd(root)
+        .stderr(writer)
+        .args(["--output", "result.jpg", "--bit-depth", "16"])
+        .output()?;
+    let progress = String::from_utf8(outcome.stdout)?;
+    let published = decode(&root.join("result.jpg"))?;
+    if outcome.status.code() != Some(1_i32)
+        || !outcome.stderr.is_empty()
+        || !progress.lines().any(|line| line == "progress 2/2")
+        || (
+            published.width(),
+            published.height(),
+            published.sample_encoding(),
+        ) != (13, 11, SampleEncoding::U8)
+    {
+        return Err("closed warning stream lost or misrepresented the published JPEG".into());
+    }
+    Ok(())
+}
