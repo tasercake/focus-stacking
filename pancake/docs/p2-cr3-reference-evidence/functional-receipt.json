@@ -1,0 +1,239 @@
+{
+  "application_source_revision": "43e884791c70839371e3266f5b9d68bbb4611f31",
+  "corrected_reference_source_geometry": {
+    "camera_crop_xywh": [
+      272,
+      172,
+      5088,
+      3392
+    ],
+    "camera_saturation_after_black": 12840,
+    "orientation": 0,
+    "oriented_shape_hwc": [
+      3392,
+      5088,
+      3
+    ],
+    "policy": "camera-recommended-cr3-srgb-v1",
+    "sensor_shape_hw": [
+      3574,
+      5376
+    ]
+  },
+  "cpu": "AMD Ryzen 9 7950X3D",
+  "date": "2026-11-18",
+  "evidence_sha256": {
+    "capture-comparison.json": "dd5845ff87dda0ca19f80c026a4a98f068ce4669a6c2ac362957a76a5387e8e1",
+    "compare-capture.py.txt": "af47799b1082586f7d6a6aff57a2ffad3b4bf9ceff103243ff16912d5172951f",
+    "complete-events.jsonl": "accde386405dec463f9c96e8152fbbf40504d1587d4fd0b00e85c797da2703e7",
+    "complete-stdout.txt": "59f9590f8e87fd238d9ac1ca86ca9138045c9dc5a7ea38f568172c0f7bd563e4",
+    "corrupt-events.jsonl": "b6179452cbca60842da3498a736192c0fa9df574c3dae5ede6789ce3ad86c6bf",
+    "corrupt-stderr.txt": "0805daf1287a9453751b053ad940723e794d92d65dfef5fc948b9c1b2918cb69",
+    "replay.py.txt": "b4a031ef36335eba58798a12f274b40e8a710f26c90e5201b0ea6f9ec49445e9"
+  },
+  "frozen_source_manifest_sha256": "dd7a7e8a396d16e952d3d24d258afc1e05b77bb1664b179d3a43a7f66e413fab",
+  "gpu": "NVIDIA RTX 3090 driver 580.178.04; reference stack completion CPU",
+  "inputs_before_after": {
+    "frame_000.CR3": {
+      "bytes": 8869034,
+      "sha256": "4538bc75741cc16292b1838c52989050d084c4a51f0e005a554819190c379fca"
+    },
+    "frame_049.CR3": {
+      "bytes": 8813738,
+      "sha256": "98fe6e370fc2ab58ba7b45d242a8c2f2a1942404ee0e0524c5cb33048969dc36"
+    }
+  },
+  "performance_targets_sha256": "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "raw_ingest": {
+    "path": "pancake-conformance/src/pancake_conformance/adapters/pancake/cr3_reference.py",
+    "sha256": "0272c8f3dff4a8b31e5bb7817a02225b7c44d51a6a8c8ed90bf22712a4396992"
+  },
+  "reference_descriptor_sha256": "e3e951b674bc0103f267575a99533cc33ead40e2af56671766f4fc71f3f12b76",
+  "reference_revision": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "runtime_lock_sha256": "fda57ac5eea063aebcc278eb57a90228e6da32fe2d8f67d7025ac367f4b51036",
+  "scope": "Functional actual CPU stack of two frozen native CR3 inputs and a separate failure; no P10 sample qualification",
+  "settings": {
+    "align": true,
+    "alignment_mode": "similarity",
+    "alignment_reference": "first",
+    "auto": false,
+    "auto_crop": true,
+    "bit_depth": 16,
+    "device": "cpu",
+    "kernel_size": 6,
+    "method": "hybrid",
+    "pyramid_levels": 8,
+    "quality_report": false,
+    "scale_factor": 6,
+    "slab_overlap": 0,
+    "slab_size": 0
+  },
+  "verification": {
+    "replay-corrupt": {
+      "command": [
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python",
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/pancake-conformance/src/pancake_conformance/adapters/pancake/cr3_reference.py",
+        "--input",
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/frame_000.CR3",
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/truncated.CR3",
+        "--output",
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/replay-corrupt/result.tif",
+        "--cpu",
+        "--method",
+        "hybrid",
+        "--align",
+        "--alignment-mode",
+        "similarity",
+        "--alignment-ref",
+        "first",
+        "--kernel-size",
+        "6",
+        "--pyramid-levels",
+        "8",
+        "--scale-factor",
+        "6",
+        "--slab-size",
+        "0",
+        "--slab-overlap",
+        "0",
+        "--bit-depth",
+        "16",
+        "--auto-crop"
+      ],
+      "completed": false,
+      "crop_or_export_event": false,
+      "existing_output_preserved": true,
+      "exit": "nonzero"
+    },
+    "replay-cpu": {
+      "command": [
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python",
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/pancake-conformance/src/pancake_conformance/adapters/pancake/cr3_reference.py",
+        "--input",
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/frame_000.CR3",
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/frame_049.CR3",
+        "--output",
+        "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/replay-cpu/result.tif",
+        "--cpu",
+        "--method",
+        "hybrid",
+        "--align",
+        "--alignment-mode",
+        "similarity",
+        "--alignment-ref",
+        "first",
+        "--kernel-size",
+        "6",
+        "--pyramid-levels",
+        "8",
+        "--scale-factor",
+        "6",
+        "--slab-size",
+        "0",
+        "--slab-overlap",
+        "0",
+        "--bit-depth",
+        "16",
+        "--auto-crop"
+      ],
+      "completion": {
+        "actual_backend": "cpu",
+        "actual_backend_by_stage": {
+          "alignment_estimation": "cpu",
+          "fusion": "cpu",
+          "warping": "cpu"
+        },
+        "algorithm": "hybrid",
+        "alignment_transforms": {
+          "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/frame_000.CR3": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ],
+          "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/frame_049.CR3": [
+            [
+              1.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ]
+          ]
+        },
+        "completed": true,
+        "device": null,
+        "effective_parameters": {
+          "align_rotation_scale": true,
+          "alignment_mode": "similarity",
+          "alignment_reference": "first",
+          "alignment_scale_factor": 6,
+          "breathing_high_precision": false,
+          "breathing_max_scale_step": 0.05,
+          "contrast_threshold": 0.0,
+          "depthmap_smoothing": 5,
+          "feather_radius": 2,
+          "fusion_kernel_size": 6,
+          "gpu_mode": "cpu",
+          "pyramid_num_levels": 8,
+          "selected_gpu_id": 0,
+          "slab_overlap": 0,
+          "slab_size": 0,
+          "stacking_method": "hybrid",
+          "use_gpu": false
+        },
+        "event": "stack_complete",
+        "input_order": [
+          "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/frame_000.CR3",
+          "/tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/frame_049.CR3"
+        ],
+        "output_shape": [
+          3392,
+          5088,
+          3
+        ],
+        "pid": 1283233,
+        "requested_backend": "cpu",
+        "schema_version": 1,
+        "sequential_transforms": null,
+        "time_ns": 1794978160439872683
+      },
+      "exit": 0,
+      "image": {
+        "bytes": 105281074,
+        "dtype": "uint16",
+        "maximum": 65535,
+        "minimum": 0,
+        "pixel_sha256": "5110c7a68f641d9c49d049d8ae0226de82f14d8d809293a5e74d9df662529eed",
+        "sha256": "977c5294b51bf70c14688b3ffa67da18fa1f74e7ea4cb53f98d25b4691d48d33",
+        "shape": [
+          3390,
+          5086,
+          3
+        ]
+      }
+    }
+  },
+  "versions": {
+    "libraw": [
+      0,
+      22,
+      0
+    ],
+    "numpy": "2.5.4",
+    "opencv": "4.14.0",
+    "python": "3.12.12",
+    "rawpy": "0.26.1",
+    "tifffile": "2026.11.12"
+  }
+}

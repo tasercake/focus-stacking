@@ -1,0 +1,146 @@
+{
+  "frames": {
+    "frame_000.CR3": {
+      "source_sha256": "4538bc75741cc16292b1838c52989050d084c4a51f0e005a554819190c379fca",
+      "geometry_metadata": {
+        "policy": "camera-recommended-cr3-srgb-v1",
+        "sensor_shape_hw": [
+          3574,
+          5376
+        ],
+        "camera_crop_xywh": [
+          272,
+          172,
+          5088,
+          3392
+        ],
+        "oriented_shape_hwc": [
+          3392,
+          5088,
+          3
+        ],
+        "orientation": 0,
+        "camera_saturation_after_black": 12840
+      },
+      "corrected_rgb_sha256": "8b3b57b9cadab47278a3245144dd1241875fff4141dcec1c7bb74a2f1b44c4cd",
+      "reference_historical_shape": [
+        3412,
+        5118,
+        3
+      ],
+      "candidate_rawler_shape": [
+        3392,
+        5088,
+        3
+      ],
+      "historical_common_overlap": {
+        "mean_absolute_normalized_rgb": 0.07557163322028387,
+        "p99_absolute_normalized_rgb": 0.0941329076886177,
+        "max_absolute_normalized_rgb": 0.7883878946304321,
+        "channel_signed_mean_normalized_rgb": [
+          0.07552748673878766,
+          0.07547238885454642,
+          0.07571412447244012
+        ]
+      },
+      "corrected_full_frame": {
+        "mean_absolute_normalized_rgb": 0.0041153825423517415,
+        "p99_absolute_normalized_rgb": 0.02236972562968731,
+        "max_absolute_normalized_rgb": 0.7883878946304321,
+        "channel_signed_mean_normalized_rgb": [
+          4.037836705587131e-05,
+          4.930027860022267e-05,
+          -0.00016927670441323526
+        ]
+      }
+    },
+    "frame_049.CR3": {
+      "source_sha256": "98fe6e370fc2ab58ba7b45d242a8c2f2a1942404ee0e0524c5cb33048969dc36",
+      "geometry_metadata": {
+        "policy": "camera-recommended-cr3-srgb-v1",
+        "sensor_shape_hw": [
+          3574,
+          5376
+        ],
+        "camera_crop_xywh": [
+          272,
+          172,
+          5088,
+          3392
+        ],
+        "oriented_shape_hwc": [
+          3392,
+          5088,
+          3
+        ],
+        "orientation": 0,
+        "camera_saturation_after_black": 12840
+      },
+      "corrected_rgb_sha256": "a2f467b5c05adadadb94d0b3b4587372acba33e142586379e4e555e9292adc7c",
+      "reference_historical_shape": [
+        3412,
+        5118,
+        3
+      ],
+      "candidate_rawler_shape": [
+        3392,
+        5088,
+        3
+      ],
+      "historical_common_overlap": {
+        "mean_absolute_normalized_rgb": 0.07528918404574786,
+        "p99_absolute_normalized_rgb": 0.09390401840209961,
+        "max_absolute_normalized_rgb": 0.8053101301193237,
+        "channel_signed_mean_normalized_rgb": [
+          0.07512533993103486,
+          0.07508751457129814,
+          0.07565402184712486
+        ]
+      },
+      "corrected_full_frame": {
+        "mean_absolute_normalized_rgb": 0.004094513984059727,
+        "p99_absolute_normalized_rgb": 0.02223239466547966,
+        "max_absolute_normalized_rgb": 0.8053101301193237,
+        "channel_signed_mean_normalized_rgb": [
+          4.1374438323995895e-05,
+          4.414767833453335e-05,
+          -0.0001526244681119194
+        ]
+      }
+    }
+  },
+  "orientation": {
+    "edited_file_sha256": "4ebb03a5781a6c9f6e5440804837c6db1cffdf8b1a14ee0aefca339eb6227f9f",
+    "edited_metadata": {
+      "policy": "camera-recommended-cr3-srgb-v1",
+      "sensor_shape_hw": [
+        3574,
+        5376
+      ],
+      "camera_crop_xywh": [
+        272,
+        172,
+        5088,
+        3392
+      ],
+      "oriented_shape_hwc": [
+        5088,
+        3392,
+        3
+      ],
+      "orientation": 6,
+      "camera_saturation_after_black": 12840
+    },
+    "native_shape": [
+      3392,
+      5088,
+      3
+    ],
+    "rotated_shape": [
+      5088,
+      3392,
+      3
+    ],
+    "exactly_once_pixel_match": true
+  }
+}
