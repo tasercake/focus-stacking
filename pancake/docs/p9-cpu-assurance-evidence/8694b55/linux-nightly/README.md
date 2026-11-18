@@ -24,3 +24,7 @@ GNU time measured 3m42.12s for the supplemental Miri command and
 and sanitizer release lanes retain their separate requirements.
 [Command](command.txt) [Environment](environment.txt)
 [Miri process status](miri.time) [Layout process status](layouts.time)
+
+The pre-cleanup native manifest records SHA-256, size and ELF build ID
+for the 19 test executables used by each seed.
+[Native test executable identities](native-artifacts.json)
