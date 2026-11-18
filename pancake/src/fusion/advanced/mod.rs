@@ -145,12 +145,11 @@ impl AdvancedAccumulator {
         if let Some(error) = &self.failure {
             return Err(error.clone());
         }
-        let image = match resident {
-            Some(input) => input.into_tensor(&self.client, self.grid.width, self.grid.height)?,
-            None => {
-                self.grid.validate(rgb)?;
-                upload(&self.client, rgb)
-            }
+        let image = if let Some(input) = resident {
+            input.into_tensor(&self.client, self.grid.width, self.grid.height)?
+        } else {
+            self.grid.validate(rgb)?;
+            upload(&self.client, rgb)
         };
         let result = self.submit_frame(image);
         if let Err(error) = &result {
