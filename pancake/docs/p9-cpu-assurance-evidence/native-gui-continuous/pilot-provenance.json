@@ -1,0 +1,25 @@
+{
+  "contract_version": 2,
+  "target": "pancake-rust",
+  "target_root": "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake",
+  "target_commit": "113076d61ee76dc59670615f0d2f85d66faf013e",
+  "target_dirty": "",
+  "suite_commit": "113076d61ee76dc59670615f0d2f85d66faf013e",
+  "suite_dirty": "",
+  "suite_source_sha256": "73f51014ab281903f43c270579d8c0de32fc1cee5a99c1e84febc0979c702f89",
+  "target_descriptor_sha256": "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac",
+  "coverage_scope_sha256": null,
+  "cli_command": [
+    "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-cli"
+  ],
+  "gui_command": [
+    "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-gui"
+  ],
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:14) [Clang 21.1.4 ]",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "uv_lock_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
+  "cases": [
+    "interface.about",
+    "interface.recovery.close-unsaved"
+  ]
+}

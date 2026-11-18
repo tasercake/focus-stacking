@@ -1,0 +1,645 @@
+{
+  "revision": "5443cdf066df120de96ac3258d7beabe843cb1fd",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)\nbinary: rustc\ncommit-hash: 0ef1bc386059596dada8fb65b50425aab2ea637a\ncommit-date: 2026-11-09\nhost: x86_64-unknown-linux-gnu\nrelease: 1.100.0\nLLVM version: 23.1.5",
+  "lock_sha256": "639c5c88b9286e5583174f05168412db19f39dc3f651b6682b685d1db801e0dd",
+  "suite_source_sha256": "73f51014ab281903f43c270579d8c0de32fc1cee5a99c1e84febc0979c702f89",
+  "descriptor_sha256": "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac",
+  "command": [
+    "uv",
+    "run",
+    "--project",
+    "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake-conformance",
+    "--frozen",
+    "pancake-conformance",
+    "run",
+    "--target",
+    "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml",
+    "--output",
+    "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/artifacts/pancake-coverage/cohort-5443cdf066df/run/native/conformance",
+    "--no-coverage",
+    "--cli-command",
+    "[\"/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-cli\"]",
+    "--gui-command",
+    "[\"/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-gui\"]",
+    "--case",
+    "interface.controls.method-alignment",
+    "--case",
+    "interface.algorithm.laplacian",
+    "--case",
+    "interface.algorithm.hybrid",
+    "--case",
+    "interface.algorithm.weighted_average",
+    "--case",
+    "interface.algorithm.depth_map",
+    "--case",
+    "interface.algorithm.exposure_fusion",
+    "--case",
+    "interface.startup.empty",
+    "--case",
+    "interface.import.native-dialogs",
+    "--case",
+    "interface.import.raw",
+    "--case",
+    "interface.export.formats",
+    "--case",
+    "interface.viewer.navigation-comparison",
+    "--case",
+    "interface.layout.panels",
+    "--case",
+    "interface.controls.advanced-visibility",
+    "--case",
+    "interface.workflow.unsaved-discard",
+    "--case",
+    "interface.lifecycle.pause-cancel",
+    "--case",
+    "interface.alignment.crop",
+    "--case",
+    "interface.settings.persistence",
+    "--case",
+    "interface.settings.lightroom-status",
+    "--case",
+    "interface.about",
+    "--case",
+    "interface.portability.retained-results",
+    "--case",
+    "interface.portability.unicode-paths",
+    "--case",
+    "interface.export.batch",
+    "--case",
+    "interface.result.manual-crop",
+    "--case",
+    "interface.import.recent-folders",
+    "--case",
+    "interface.viewer.keyboard-boundaries",
+    "--case",
+    "interface.sprint.viewer-input",
+    "--case",
+    "interface.sprint.frame-context",
+    "--case",
+    "interface.sprint.viewport-export",
+    "--case",
+    "interface.recovery.close-unsaved",
+    "--case",
+    "interface.recovery.folder-import",
+    "--case",
+    "interface.recovery.missing-source",
+    "--case",
+    "interface.recovery.batch-export",
+    "--case",
+    "interface.recovery.export-cancel"
+  ],
+  "binary": {
+    "gui": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-gui",
+      "sha256": "22ffd49747f412976dfadf7af05be1de62cb3757a30cd1c35a1bad57aaef5ffa",
+      "build_id": "b65f860f1dcb07f56df64ecbc6a117ac58cc42bf"
+    },
+    "cli": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/target/native-profile-target/debug/pancake-cli",
+      "sha256": "45ba0afa847f3dae315eca7c304837fa440ffc872dcdef7f3be279b7f6d0c040",
+      "build_id": "df4b864d9c097094f495da0237bf19c5877c5083"
+    }
+  },
+  "sessions": [
+    {
+      "case": "interface.controls.method-alignment",
+      "call": "cases/interface.controls.method-alignment/call-01",
+      "shutdown": {
+        "pid": 1039442,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1039442-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "36f65cb8ff610cc210989af498b0dde330fe71e5b679f538a43e5ef46af33d47"
+    },
+    {
+      "case": "interface.algorithm.laplacian",
+      "call": "cases/interface.algorithm.laplacian/call-01",
+      "shutdown": {
+        "pid": 1044083,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "6b0e80f03fc413615aceea75e6c68e98b990c9bc17827fe7b22a57f9ef216d36",
+      "profile": "pancake-1044083-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "96d153fd1ce6855222948e29de1453a0c4033ff21d7e19aa5aa8c92e3aea9e05"
+    },
+    {
+      "case": "interface.algorithm.hybrid",
+      "call": "cases/interface.algorithm.hybrid/call-01",
+      "shutdown": {
+        "pid": 1067408,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "a72076f235b64bd9a04e6cc62aa9cc80305544b013c1ef3b93c29278d69e5bd7",
+      "profile": "pancake-1067408-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "a8b67d0db44b5352b0cca6ceaa76b0faa0566a5aa156cc178d647794477b470b"
+    },
+    {
+      "case": "interface.algorithm.weighted_average",
+      "call": "cases/interface.algorithm.weighted_average/call-01",
+      "shutdown": {
+        "pid": 1080483,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "d43cad5e2259e976ccc9fa6f75c5937ebf5e89f983ce4f9b9dd9801f20123ef6",
+      "profile": "pancake-1080483-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "93e52d866ebff8c18ec9453506ea6f938c8adf9a99917b51cfab871fbab10139"
+    },
+    {
+      "case": "interface.algorithm.depth_map",
+      "call": "cases/interface.algorithm.depth_map/call-01",
+      "shutdown": {
+        "pid": 1088279,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "df707f13d1dc7be76bbbbbbec594716c0e16c0a9df19625848ac9f33d1957b29",
+      "profile": "pancake-1088279-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "eacf25fee26148c0265fbc68dc0080b16716c4985430e2d7b46c6501314fece0"
+    },
+    {
+      "case": "interface.algorithm.exposure_fusion",
+      "call": "cases/interface.algorithm.exposure_fusion/call-01",
+      "shutdown": {
+        "pid": 1105896,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "0369c1c919e9a0448e7a8cfdca8f585c6f2536287921cbcf4eb87d65a78599da",
+      "profile": "pancake-1105896-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "191e990b1957f9f9f4b60471690dfca1bc77757e0900bbbb6d46c5c1bfd9605d"
+    },
+    {
+      "case": "interface.startup.empty",
+      "call": "cases/interface.startup.empty/call-01",
+      "shutdown": {
+        "pid": 1119413,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1119413-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "07a79220cdc47ef5495bda9b434382d92dc08ee2b91428c88011f63f098b2351"
+    },
+    {
+      "case": "interface.import.native-dialogs",
+      "call": "cases/interface.import.native-dialogs/call-01",
+      "shutdown": {
+        "pid": 1120600,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1120600-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "d8b136de2b130026e2af2440ebe16f7ef5dd86137369aefe56e80641797ce932"
+    },
+    {
+      "case": "interface.import.raw",
+      "call": "cases/interface.import.raw/call-01",
+      "shutdown": {
+        "pid": 1134188,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "c49b9f8efcf4788bfbee5c769e7e3778e5349ae5d5fbe14421cc02c356fc3f82",
+      "profile": "pancake-1134188-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "1e5b8ce9a11514545c148772905aa4e47ab9d4a183249478f4c2d60709253133"
+    },
+    {
+      "case": "interface.export.formats",
+      "call": "cases/interface.export.formats/call-01",
+      "shutdown": {
+        "pid": 1136288,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "7bc85f8ad91493b5bd55df2318247f5b20e5326a2107351bf29a57c3e1330a7b",
+      "profile": "pancake-1136288-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "8e59f5c9ff21993975cb4c1a286ffb934602a5dbf9c5e84535582f321e288f83"
+    },
+    {
+      "case": "interface.viewer.navigation-comparison",
+      "call": "cases/interface.viewer.navigation-comparison/call-01",
+      "shutdown": {
+        "pid": 1177100,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "1c6f9d214a43fdbc117189b87e46adf7580568fe7a8508b421f98435183af021",
+      "profile": "pancake-1177100-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "34981472409c5e2f7ca200da17824cc1f7c80bf1d7dfd503ff1a52263e4c1522"
+    },
+    {
+      "case": "interface.layout.panels",
+      "call": "cases/interface.layout.panels/call-01",
+      "shutdown": {
+        "pid": 1254785,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1254785-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "db115054296c05372d93c9e2d57f96eeb143816fd0980aaee4341cd391fef178"
+    },
+    {
+      "case": "interface.controls.advanced-visibility",
+      "call": "cases/interface.controls.advanced-visibility/call-01",
+      "shutdown": {
+        "pid": 1258735,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1258735-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "b80865a770b0e7ff8035aec3aecf1ca70970dd0b1ee12f747a8b49617ac1fcba"
+    },
+    {
+      "case": "interface.workflow.unsaved-discard",
+      "call": "cases/interface.workflow.unsaved-discard/call-01",
+      "shutdown": {
+        "pid": 1259031,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "edb215ac9e99c318a46d3241d0591a028466964cd6faa3dc3ecbe76502a6513a",
+      "profile": "pancake-1259031-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "a53a3c4a8392d1a6a07ba9e34938615ecaa7d07a950638a9b4abc91537f21d7a"
+    },
+    {
+      "case": "interface.lifecycle.pause-cancel",
+      "call": "cases/interface.lifecycle.pause-cancel/call-01",
+      "shutdown": {
+        "pid": 1259547,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "f94a631a37f96c66fb818cae8a8d3fb4b38da6639714db28309eb07cb3d9267e",
+      "profile": "pancake-1259547-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "e34fc9e772cab6a9b8dfd212109acda738008e801071c7112532b0e4758f444e"
+    },
+    {
+      "case": "interface.alignment.crop",
+      "call": "cases/interface.alignment.crop/call-01",
+      "shutdown": {
+        "pid": 1265999,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "506e31ced4a9361f0464737364c1a1dadfb5058ab2af854dc10a79ccb866b621",
+      "profile": "pancake-1265999-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "7efb555883786cd8686ca0a43669a18d2ad0d2a6429871278f4a07f5d5f9192a"
+    },
+    {
+      "case": "interface.settings.persistence",
+      "call": "cases/interface.settings.persistence/call-01",
+      "shutdown": {
+        "pid": 1269127,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1269127-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "4761d69040eca00698b610aee122b6e5f3da1da5592b72239710825e53e129d8"
+    },
+    {
+      "case": "interface.settings.persistence",
+      "call": "cases/interface.settings.persistence/call-02",
+      "shutdown": {
+        "pid": 1270199,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1270199-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "182b0e5a0b08f1566f2fe58bc29d116c861360bd6098593ad55065477d45a023"
+    },
+    {
+      "case": "interface.settings.persistence",
+      "call": "cases/interface.settings.persistence/call-03",
+      "shutdown": {
+        "pid": 1270375,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1270375-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "da74df8a7db67a2d121cce1c84dc54ca63e1604355a8975ad7bf9e66dee9fd55"
+    },
+    {
+      "case": "interface.settings.lightroom-status",
+      "call": "cases/interface.settings.lightroom-status/call-01",
+      "shutdown": {
+        "pid": 1270620,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1270620-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "38c5cec828bb1bb85d8ee9ae46c3387ffc582ac92902e16600ed8d4da4e0e46b"
+    },
+    {
+      "case": "interface.about",
+      "call": "cases/interface.about/call-01",
+      "shutdown": {
+        "pid": 1270766,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1270766-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "8dc3f35f407e1abf0ecb750641afd0dac941f0725d55e8806a17fd6b5dfe0e9a"
+    },
+    {
+      "case": "interface.portability.retained-results",
+      "call": "cases/interface.portability.retained-results/call-01",
+      "shutdown": {
+        "pid": 1270953,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 2,
+      "events_sha256": "3335425074e46e092e58e379c1b8f14f9817485821032d7d050d7cf8dca0beca",
+      "profile": "pancake-1270953-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "c626a2dd386b6365dd354fd94b64327bdd6bdb536ab68311d54a3e97d38eb2b5"
+    },
+    {
+      "case": "interface.portability.unicode-paths",
+      "call": "cases/interface.portability.unicode-paths/call-01",
+      "shutdown": {
+        "pid": 1285260,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "df53d1e01800d90418483ea8281660226e53489ae8c484a1f37dce79461c54a8",
+      "profile": "pancake-1285260-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "7cd0229ed03e43ac858c84469a94a53645d6b8bff6feab62fb661562342ba69e"
+    },
+    {
+      "case": "interface.export.batch",
+      "call": "cases/interface.export.batch/call-01",
+      "shutdown": {
+        "pid": 1291550,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "72fe3146f151ef99fe3f03b0e0fc2d4b87b5365da87ed12b282c3a5469860a79",
+      "profile": "pancake-1291550-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "187409a839db515e5a8034bdd62cd5d5b35410b05273ccbcbf6ee569185c3c9b"
+    },
+    {
+      "case": "interface.result.manual-crop",
+      "call": "cases/interface.result.manual-crop/call-01",
+      "shutdown": {
+        "pid": 1295910,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "418a9a15eb032d3ec120c6016a0410351db5462bf77221bf3553d1dbd6a05052",
+      "profile": "pancake-1295910-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "6f6dbc821a31a432ca1c86e44aa432552b74440a2eedef59067099a98973c1f2"
+    },
+    {
+      "case": "interface.import.recent-folders",
+      "call": "cases/interface.import.recent-folders/call-01",
+      "shutdown": {
+        "pid": 1302726,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1302726-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "e28f851a4b209bcba445f2e0703cd641b1b72fdfb2e1d339430b5af1d9e59a2c"
+    },
+    {
+      "case": "interface.import.recent-folders",
+      "call": "cases/interface.import.recent-folders/call-02",
+      "shutdown": {
+        "pid": 1304881,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1304881-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "1092455e0d89629cb5e740ee926486baf9a8e05ada0467bff7bfe950aaf95022"
+    },
+    {
+      "case": "interface.viewer.keyboard-boundaries",
+      "call": "cases/interface.viewer.keyboard-boundaries/call-01",
+      "shutdown": {
+        "pid": 1306686,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "a14ef4468712a8d0c3326899b9ae7a4fb5c9f5202527624bd6e6dd9e5c0ee60a",
+      "profile": "pancake-1306686-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "2051e514d34ccbba5cf69a3d3c5219aba0bc484d2c9f0a2c5fbb7db9befe4ba6"
+    },
+    {
+      "case": "interface.sprint.viewer-input",
+      "call": "cases/interface.sprint.viewer-input/call-01",
+      "shutdown": {
+        "pid": 1308574,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1308574-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "6790eb010974a371b7c58b7081ea1dccb97574a059d4d423da27760a5ac81b9d"
+    },
+    {
+      "case": "interface.sprint.frame-context",
+      "call": "cases/interface.sprint.frame-context/call-01",
+      "shutdown": {
+        "pid": 1310472,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1310472-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "1cd0980930a8857d481f043fcd5ba4fc73da1e0b27ec355b6a6b073bf08f7b6e"
+    },
+    {
+      "case": "interface.sprint.viewport-export",
+      "call": "cases/interface.sprint.viewport-export/call-01",
+      "shutdown": {
+        "pid": 1316000,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-1316000-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "97801f5ef02f033783f33f5cf4fe96e0d375e1be0011cd60d10e16ea8830ae29"
+    },
+    {
+      "case": "interface.recovery.close-unsaved",
+      "call": "cases/interface.recovery.close-unsaved/call-01",
+      "shutdown": {
+        "pid": 1325868,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "9d522a20eb7e6497e775520d127e3e1b378e3f9d1dd1545e0f536de97f3c6435",
+      "profile": "pancake-1325868-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "4fdba762ab546ed24861b73c989deb69a9c0262d3b599f25f9519c1b19c5069a"
+    },
+    {
+      "case": "interface.recovery.folder-import",
+      "call": "cases/interface.recovery.folder-import/call-01",
+      "shutdown": {
+        "pid": 1327579,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "4c5659988dcf41617319f84554fff499f31d27aaef4f9567f750cb5ef482fd2f",
+      "profile": "pancake-1327579-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "11dd5b7c5ce020f6b789f6192041c8b88c8f8a6220f25ba0cfab296ecfed72ad"
+    },
+    {
+      "case": "interface.recovery.missing-source",
+      "call": "cases/interface.recovery.missing-source/call-01",
+      "shutdown": {
+        "pid": 1358552,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "a0ef310fcd6a1142327a7642cbd21a1aa52924458d636312bc96f66803d27fc2",
+      "profile": "pancake-1358552-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "439704cd26ff26399d983dce5b26ccb528c39f96e3c00ce3ff71f42f5f704e8c"
+    },
+    {
+      "case": "interface.recovery.batch-export",
+      "call": "cases/interface.recovery.batch-export/call-01",
+      "shutdown": {
+        "pid": 1372567,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "800587fe8cc72e8c804270c3dd372f98ec465e8bfcdb79c2288409f069bbc4d8",
+      "profile": "pancake-1372567-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "afcb9d61a78aa9c2b58534c62a6450a49edfbe44b5871d4beb6996f30f6871ca"
+    },
+    {
+      "case": "interface.recovery.export-cancel",
+      "call": "cases/interface.recovery.export-cancel/call-01",
+      "shutdown": {
+        "pid": 1395685,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "c4f46c933291ad6ff7efc9d2edfd473e029c7d3df04fd6cb075fcfe15e44e032",
+      "profile": "pancake-1395685-b65f860f1dcb07f56df64ecbc6a117ac58cc42bf.profraw",
+      "bytes": 71960,
+      "sha256": "b074c7ac7cc0aa30a2ce88b95c64dcaca96038d62a9b00c8d5d9f238630064dc"
+    }
+  ]
+}

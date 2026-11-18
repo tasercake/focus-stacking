@@ -1,0 +1,5 @@
+info: cargo-llvm-cov currently setting cfg(coverage); you can opt-out it by passing --no-cfg-coverage
+   Compiling pancake v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake)
+   Compiling pancake-cli v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/crates/pancake-cli)
+   Compiling pancake-gui v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/resume-gui-profiles/pancake/crates/pancake-gui)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.16s

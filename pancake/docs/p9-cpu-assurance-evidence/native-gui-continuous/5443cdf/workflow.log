@@ -1,0 +1,3 @@
+CPU assurance: uncovered CPU lines
+Native CPU coverage: 33 passed cases, 36 matched GUI profiles.
+Native CPU coverage: standard source mapping and thresholds retained.
