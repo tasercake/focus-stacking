@@ -323,17 +323,29 @@ remains open.
 The later retained-result trace kept 200 idle and 80 loaded inputs and
 verified all 784 observed pixel patches. Four late transitions showed
 71.6–100.7 ms between Vulkan submit return and present entry alongside
-long semaphore waits on another thread. The trace establishes this host
-interval. The responsible Rust lock remains unverified.
+long semaphore waits on another thread. That API trace established the host
+interval and left the Rust wait site unresolved.
 [Instrumented retained-result attribution](p10-vulkan-retained-result-evidence/8694b55/README.md).
 
 A read-only audit examined the pinned CubeCL and wgpu source on
 `c1e2cac` alongside that earlier `8694b55` trace. A shared-device read
 guard can span the poller's native fence wait, and presentation requires
-the corresponding write guard. No live guard acquisition was recorded.
-A scoped follow-up can distinguish lock contention from queue and
-presentation delay by timing acquisition on the same guard instance.
+the corresponding write guard. The audit proposed measuring acquisition on
+the same guard instance to distinguish lock contention from queue and
+presentation delay.
 [Shared-device poll and present audit](../../qualification/p10-performance/evidence/viewer-poll-lock-audit/README.md).
+
+The `fb9c399`-based instrumented viewer used a common Linux monotonic
+clock across the observer and Rust recorder. Nine uniquely matched loaded
+events showed the rendering thread waiting 36.434–182.437 ms for the
+same typed device lock held by a CubeCL poller. Its confirmed read
+hold covered 36.429–182.416 ms of that wait. Seven late events
+overlapped two possible presents and remain unresolved. The original
+tight Nsight clock join was inconclusive. The instrumented run
+validated all 784 patches and one physical RTX Vulkan completion.
+Scheduler behavior, the frozen 33 ms target and the latency verdict
+remain unchanged.
+[Physical same-lock attribution](p10-vulkan-lock-attribution/fb9c399/README.md).
 
 An uninstrumented two-arm viewer experiment on the RTX 3090 measured
 52.322024 ms loaded P95 on the exact `c1e2cac` package and 66.942485 ms
