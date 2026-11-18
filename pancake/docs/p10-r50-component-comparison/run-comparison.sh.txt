@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+scratch=$(realpath "$1")
+test -s "$scratch/quiet-lease.txt"
+test ! -e "$scratch/comparison"
+binaries=/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries
+export PYTHONPATH="$PWD/qualification/p10-performance"
+export TZ=Asia/Singapore
+{
+    date --iso-8601=seconds
+    uname -a
+    awk '/^MemAvailable|^SwapFree/' /proc/meminfo
+    lscpu -e=CPU,CORE,SOCKET,NODE,ONLINE
+} > "$scratch/window-start.txt"
+program=(/usr/bin/prlimit --as=34359738368 -- /usr/bin/taskset -c 0-14
+    "$scratch/conformance-venv/bin/python" "$scratch/compare-r50-local.py"
+    --inputs "$scratch/inputs" --output "$scratch/comparison"
+    --lease "$scratch/quiet-lease.txt"
+    --baseline "$binaries/registration-owned-07816a2/pancake-cli"
+    --hybrid "$binaries/hybrid-band-903836c/pancake-cli"
+    --luma "$binaries/registration-luma-f034185/pancake-cli"
+    "${@:2}")
+printf '%q\n' "${program[@]}" > "$scratch/compare-r50.command"
+trap 'result=$?; { date --iso-8601=seconds; awk "/^MemAvailable|^SwapFree/" /proc/meminfo; printf "paired_exit=%s\n" "$result"; } > "$scratch/window-end.txt"' EXIT
+"${program[@]}" > "$scratch/compare-r50.stdout.txt" 2> "$scratch/compare-r50.stderr.txt"

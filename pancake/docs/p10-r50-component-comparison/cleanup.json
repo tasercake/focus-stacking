@@ -1,0 +1,61 @@
+{
+  "removed_owned_scratch": "/tmp/pancake-worktrees.t3paqgWM/r50-three-arm/artifacts/r50-quality",
+  "removed_originals": 50,
+  "removed_original_bytes": 442098996,
+  "removed_output_files": {
+    "comparison/baseline/complete.tif": {
+      "shape": [
+        3390,
+        5086,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "1a0927e1df4709c6953f70a993a52af56880711f2a093141ab2b8a5bfc6a4181",
+      "pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+      "bytes": 103450274,
+      "minimum": 512,
+      "maximum": 65535
+    },
+    "comparison/hybrid/complete.tif": {
+      "shape": [
+        3390,
+        5086,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "1a0927e1df4709c6953f70a993a52af56880711f2a093141ab2b8a5bfc6a4181",
+      "pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+      "bytes": 103450274,
+      "minimum": 512,
+      "maximum": 65535
+    },
+    "comparison/luma/complete.tif": {
+      "shape": [
+        3390,
+        5086,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "1a0927e1df4709c6953f70a993a52af56880711f2a093141ab2b8a5bfc6a4181",
+      "pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+      "bytes": 103450274,
+      "minimum": 512,
+      "maximum": 65535
+    },
+    "comparison/raw/complete.tif": {
+      "shape": [
+        3390,
+        5086,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "1a0927e1df4709c6953f70a993a52af56880711f2a093141ab2b8a5bfc6a4181",
+      "pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+      "bytes": 103450274,
+      "minimum": 512,
+      "maximum": 65535
+    }
+  },
+  "input_and_export_hashes_reverified": true,
+  "immutable_release_elfs_remain_with_artifact_owners": true
+}

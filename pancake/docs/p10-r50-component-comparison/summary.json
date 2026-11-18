@@ -1,0 +1,357 @@
+{
+  "scope": "One exact CPU observation per arm, outside the frozen timing gates",
+  "profile": "R50.hybrid.cpu",
+  "settings": {
+    "device": "cpu",
+    "method": "hybrid",
+    "align": true,
+    "alignment_mode": "similarity",
+    "alignment_reference": "first",
+    "kernel_size": 6,
+    "pyramid_levels": 8,
+    "scale_factor": 6,
+    "slab_size": 0,
+    "slab_overlap": 0,
+    "bit_depth": 16,
+    "auto": false,
+    "auto_crop": true,
+    "quality_report": false
+  },
+  "order": [
+    "baseline",
+    "hybrid",
+    "luma",
+    "raw"
+  ],
+  "source": {
+    "source": {
+      "id": "D02",
+      "name": "Sood 999-frame macro stack",
+      "primary_url": "https://huggingface.co/datasets/jjjsood/focus-stack-sample",
+      "revision": "0f8256edf2d2e3f1f1ea162f78a8bca36eb6915c",
+      "rights": "CC BY 4.0; dataset LICENSE at pinned revision",
+      "author": "Johannes Sood",
+      "license_sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+      "readme_sha256": "c54f3060ac7c655eef98b594154f301437a43c138c997b5e731cd45c3ebf62a3",
+      "selection": "First 50 distinct filename-sorted CR3 files, frame_000 through frame_049. Contiguous optical focus frames; no repeated file or upscale. Partial dataset acquisition, not complete 999-frame source."
+    },
+    "full_raw_decode": {
+      "engine": "rawpy",
+      "rawpy_version": "0.26.1",
+      "libraw_version": [
+        0,
+        22,
+        0
+      ],
+      "python_version": "3.12.12",
+      "full_raw_decodes": 50,
+      "postprocess_parameters": {
+        "output_bps": 16,
+        "use_camera_wb": true,
+        "no_auto_bright": true
+      },
+      "other_parameters": "rawpy defaults; no preview/thumbnail extraction",
+      "output_shape": [
+        3412,
+        5118,
+        3
+      ],
+      "output_dtype": "uint16",
+      "sensor_white_level": 16383,
+      "original_precision": "14-bit sensor samples stored in uint16; nonzero low eight bits verified in all 50 raw visible planes. Does not claim 16-bit sensor ADC.",
+      "scope": "Corpus qualification with reference LibRaw only. Not Rust decoder qualification, Pancake conformance, or performance baseline.",
+      "T50_exclusion": "Native visible 5118x3412 is below required 6000x4000. No resizing or 8-bit promotion fills T50."
+    },
+    "path": "/tmp/pancake-worktrees.t3paqgWM/r50-three-arm/pancake-conformance/src/pancake_conformance/adapters/pancake/performance-raw-corpus.json",
+    "sha256": "dd7a7e8a396d16e952d3d24d258afc1e05b77bb1664b179d3a43a7f66e413fab"
+  },
+  "hardware": {
+    "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "kernel": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "os_release": {
+      "NAME": "Ubuntu",
+      "ID": "ubuntu",
+      "PRETTY_NAME": "Ubuntu 24.04.5 LTS",
+      "VERSION_ID": "24.04",
+      "VERSION": "24.04.5 LTS (Noble Numbat)",
+      "VERSION_CODENAME": "noble",
+      "ID_LIKE": "debian",
+      "HOME_URL": "https://www.ubuntu.com/",
+      "SUPPORT_URL": "https://help.ubuntu.com/",
+      "BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/",
+      "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+      "UBUNTU_CODENAME": "noble",
+      "LOGO": "ubuntu-logo"
+    },
+    "frequency_policy": {
+      "/sys/devices/system/cpu/cpufreq/policy11": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy8": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy6": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy28": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy18": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy4": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy26": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy16": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy2": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy24": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy14": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy0": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy22": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy12": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy9": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy30": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy20": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy10": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy7": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy29": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy19": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy5": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy27": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy17": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy3": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy25": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy15": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy1": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy23": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy13": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy31": "powersave",
+      "/sys/devices/system/cpu/cpufreq/policy21": "powersave"
+    },
+    "timer": {
+      "python": "3.12.12 (main, Feb 12 2026, 00:42:14) [Clang 21.1.4 ]",
+      "clock": {
+        "implementation": "clock_gettime(CLOCK_MONOTONIC)",
+        "monotonic": true,
+        "adjustable": false,
+        "resolution": 1e-09
+      }
+    },
+    "memory": "Linux procfs session sum and NVIDIA NVML per PID; sampled, transient peaks can be missed",
+    "validator": {
+      "numpy": "2.5.4",
+      "tifffile": "2026.11.12",
+      "imagecodecs": "2026.11.11"
+    }
+  },
+  "performance_targets_sha256": "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+  "started_unix_ns": 1795004367006486224,
+  "finished_unix_ns": 1795004524593688281,
+  "cpu_temperature_start": {
+    "/sys/class/hwmon/hwmon1/temp3_input": 48750,
+    "/sys/class/hwmon/hwmon1/temp4_input": 46375,
+    "/sys/class/hwmon/hwmon1/temp1_input": 51500
+  },
+  "cpu_temperature_end": {
+    "/sys/class/hwmon/hwmon1/temp3_input": 49125,
+    "/sys/class/hwmon/hwmon1/temp4_input": 47000,
+    "/sys/class/hwmon/hwmon1/temp1_input": 64875
+  },
+  "inputs_unchanged": true,
+  "executable_identities_unchanged": true,
+  "all_match_historical_output": true,
+  "arms": {
+    "baseline": {
+      "path": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/registration-owned-07816a2/pancake-cli",
+      "revision": "07816a24a62f96bc3d3252e95fcfd2b4b5950269",
+      "sha256": "aad46d08e71f1973ba4ffa1efa7d7fe0ee7747e02cf2a3834903af448587f9ed",
+      "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+      "changed_production_paths": [],
+      "elapsed_ns": 39928490465,
+      "child_peak_rss_bytes": 2445996032,
+      "child_user_seconds": 271.384825,
+      "child_system_seconds": 21.44398,
+      "boundaries_ns": [
+        1481465377,
+        37826674172,
+        620350916
+      ],
+      "output": {
+        "shape": [
+          3390,
+          5086,
+          3
+        ],
+        "dtype": "uint16",
+        "sha256": "1a0927e1df4709c6953f70a993a52af56880711f2a093141ab2b8a5bfc6a4181",
+        "pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+        "bytes": 103450274,
+        "minimum": 512,
+        "maximum": 65535
+      },
+      "transform_f32_sha256": {
+        "alignment_transforms": "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b",
+        "sequential_transforms": "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b"
+      },
+      "elapsed_ratio": 1.0,
+      "child_rss_ratio": 1.0,
+      "actual_backend": "cpu",
+      "runtime": "cpu",
+      "fallback_reason": null,
+      "real_cpu_device": "AMD Ryzen 9 7950X3D 16-Core Processor"
+    },
+    "hybrid": {
+      "path": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/hybrid-band-903836c/pancake-cli",
+      "revision": "903836ca831ba1e92b7d4f006836320dd8cbe402",
+      "sha256": "c4cf0e5f9ed65e4fd3b91835b27b28d1ff12e518d9dee57fb70f3cb3ed0fc6f6",
+      "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+      "changed_production_paths": [
+        "pancake/src/fusion/advanced/levels.rs"
+      ],
+      "elapsed_ns": 37024287775,
+      "child_peak_rss_bytes": 2255192064,
+      "child_user_seconds": 223.532499,
+      "child_system_seconds": 21.425778,
+      "boundaries_ns": [
+        1339269868,
+        35079434187,
+        605583720
+      ],
+      "output": {
+        "shape": [
+          3390,
+          5086,
+          3
+        ],
+        "dtype": "uint16",
+        "sha256": "1a0927e1df4709c6953f70a993a52af56880711f2a093141ab2b8a5bfc6a4181",
+        "pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+        "bytes": 103450274,
+        "minimum": 512,
+        "maximum": 65535
+      },
+      "transform_f32_sha256": {
+        "alignment_transforms": "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b",
+        "sequential_transforms": "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b"
+      },
+      "pixel_metrics": {
+        "status": "decoded_pair",
+        "mean_absolute_u16": 0.0,
+        "maximum_absolute_u16": 0,
+        "rms_u16": 0.0,
+        "changed_sample_fraction": 0.0
+      },
+      "elapsed_ratio": 0.9272649014230646,
+      "child_rss_ratio": 0.9219933452451324,
+      "actual_backend": "cpu",
+      "runtime": "cpu",
+      "fallback_reason": null,
+      "real_cpu_device": "AMD Ryzen 9 7950X3D 16-Core Processor"
+    },
+    "luma": {
+      "path": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/registration-luma-f034185/pancake-cli",
+      "revision": "f034185843cb20bfb61c31655f999e2f26e1c939",
+      "sha256": "5cd03069846177a3f94fcd304f3d01d3d03ab007a99246dd6b10c1ccc5f205b5",
+      "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+      "changed_production_paths": [
+        "pancake/src/registration/estimate.rs",
+        "pancake/src/registration/kernels.rs",
+        "pancake/src/registration/kernels/tests.rs"
+      ],
+      "elapsed_ns": 40361237274,
+      "child_peak_rss_bytes": 2465366016,
+      "child_user_seconds": 266.851631,
+      "child_system_seconds": 21.3789,
+      "boundaries_ns": [
+        1503891323,
+        38214584196,
+        642761755
+      ],
+      "output": {
+        "shape": [
+          3390,
+          5086,
+          3
+        ],
+        "dtype": "uint16",
+        "sha256": "1a0927e1df4709c6953f70a993a52af56880711f2a093141ab2b8a5bfc6a4181",
+        "pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+        "bytes": 103450274,
+        "minimum": 512,
+        "maximum": 65535
+      },
+      "transform_f32_sha256": {
+        "alignment_transforms": "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b",
+        "sequential_transforms": "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b"
+      },
+      "pixel_metrics": {
+        "status": "decoded_pair",
+        "mean_absolute_u16": 0.0,
+        "maximum_absolute_u16": 0,
+        "rms_u16": 0.0,
+        "changed_sample_fraction": 0.0
+      },
+      "elapsed_ratio": 1.0108380458154143,
+      "child_rss_ratio": 1.0079190578179973,
+      "actual_backend": "cpu",
+      "runtime": "cpu",
+      "fallback_reason": null,
+      "real_cpu_device": "AMD Ryzen 9 7950X3D 16-Core Processor"
+    },
+    "raw": {
+      "path": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/raw-packing-c8f68cf/pancake-cli",
+      "revision": "c8f68cf79d143403ad9d5df906a5f8cfa2047526",
+      "sha256": "bea745e2654042fd52499eccb634339a59ea493eeab8bb3e9582294a352fe4ca",
+      "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+      "changed_production_paths": [
+        "pancake/src/image_io/raw.rs",
+        "pancake/src/image_io/raw/tests.rs"
+      ],
+      "elapsed_ns": 38098155665,
+      "child_peak_rss_bytes": 2465042432,
+      "child_user_seconds": 271.654999,
+      "child_system_seconds": 21.781353,
+      "boundaries_ns": [
+        1439101053,
+        36047894785,
+        611159827
+      ],
+      "output": {
+        "shape": [
+          3390,
+          5086,
+          3
+        ],
+        "dtype": "uint16",
+        "sha256": "1a0927e1df4709c6953f70a993a52af56880711f2a093141ab2b8a5bfc6a4181",
+        "pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+        "bytes": 103450274,
+        "minimum": 512,
+        "maximum": 65535
+      },
+      "transform_f32_sha256": {
+        "alignment_transforms": "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b",
+        "sequential_transforms": "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b"
+      },
+      "pixel_metrics": {
+        "status": "decoded_pair",
+        "mean_absolute_u16": 0.0,
+        "maximum_absolute_u16": 0,
+        "rms_u16": 0.0,
+        "changed_sample_fraction": 0.0
+      },
+      "elapsed_ratio": 0.9541596794999198,
+      "child_rss_ratio": 1.0077867665158993,
+      "actual_backend": "cpu",
+      "runtime": "cpu",
+      "fallback_reason": null,
+      "real_cpu_device": "AMD Ryzen 9 7950X3D 16-Core Processor"
+    }
+  }
+}
