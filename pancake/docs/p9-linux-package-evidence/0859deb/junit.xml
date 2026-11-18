@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="pancake-conformance" tests="5" failures="0" skipped="0" time="6.146153243957087"><testcase name="cli.help" classname="cli" time="0.0075" /><testcase name="cli.paths.glob" classname="cli" time="0.3119" /><testcase name="interface.algorithm.weighted_average" classname="interface" time="2.4338" /><testcase name="interface.startup.empty" classname="interface" time="0.9130" /><testcase name="interface.recovery.close-unsaved" classname="interface" time="2.4799" /></testsuite>
