@@ -50,8 +50,9 @@ Compared with the original warp integration checkpoint, the base changed
 only three E9 trace evidence files. Product sources, test sources and
 locks match. Retained runtime receipts identify their original tested
 revisions and binaries. The latest sealed Debian package is `e81079d`.
-The current product adds the checked Exposure Fusion upload reuse described
-below. It needs a matching package build, full case replay and assurance.
+The current product adds checked Exposure Fusion upload reuse and the
+private U16 completion for normalized RAW. It needs a matching package
+build, full case replay and assurance.
 
 The exact combined `c1e2cac` source passed the unchanged Linux CPU ASan and
 TSan gates. Each ran 146 passing tests across 19 groups with no diagnostics.
@@ -507,12 +508,26 @@ once. The luma source remains experimental, and the combined Hybrid and
 RAW changes still need matched release and frozen performance replays.
 [Four-arm R50 diagnostic](p10-r50-component-comparison/README.md).
 
-The `e81079d` R50 audit identified an intact generic scan after checked
-Rawler normalization. It also reproduced a 17.374 s ideal decode-overlap
-ceiling from the earlier 50-frame trace. The scan remains a bounded
-hypothesis. Exact combined R50 timing, output-quality review and the
-frozen CPU and GPU profiles remain open.
-[Exact R50 coverage and residual hypothesis](p10-r50-e81079d-audit/README.md).
+The `e81079d` R50 audit found a generic finite scan after Rawler
+normalization and reproduced a 17.374 s ideal decode-overlap ceiling
+from the earlier 50-frame trace. The adopted `c80d59a` change checks that
+each developed sample has a U16 code, then checks the packed raster size.
+The generic finite check still applies to arbitrary float inputs. The
+scoped witness removed one RAW validation scan and retained both EXR
+validation calls. All 23 library and 28 native image I/O tests passed.
+[R50 coverage audit](p10-r50-e81079d-audit/README.md).
+[Native scan and DNG parity evidence](p10-r50-typed-raw/README.md).
+
+Two authenticated Canon CR3 images exercised parallel RAW workers on CPU
+and physical RTX 3090 Vulkan. Within each runtime, the stock and candidate
+matched exact RGB16 TIFF bytes and every f32 registration transform. A
+single 50-image CPU Hybrid pair took 35.642573 s on stock and 34.944663 s
+with typed RAW completion. The complete RGB16 exports and both transform
+families matched. Direct-child peak RSS rose by 19,353,600 B. The frozen
+CPU and GPU profiles and independent detail and color review remain open.
+[Positive Canon CPU replay](p10-r50-typed-raw/canon-positive/README.md).
+[Positive Canon physical Vulkan replay](p10-r50-typed-raw/physical-canon/README.md).
+[Matched full R50 CPU diagnostic](p10-r50-typed-raw/full-r50-diagnostic/README.md).
 [Isolated luma disposition](p10-registration-luma-lattice/README.md#full-r50-follow-up).
 
 The five-buffer Hybrid change removes a temporary RGB band while
