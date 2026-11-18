@@ -22,6 +22,9 @@ const OVERSIZED_PNG: [u8; 33] = [
 /// Little-endian RGB16 tiles with horizontal predictor, DEFLATE and a known ICC profile.
 const TILED_RGB16: &[u8] = include_bytes!("data/tiled-rgb16-zip.tif");
 
+/// Independently encoded RGB16 tiles using the historical DEFLATE compression tag.
+const TILED_RGB16_OLD_DEFLATE: &[u8] = include_bytes!("data/tiled-rgb16-old-deflate.tif");
+
 /// The same encoded sample codes with big-endian storage and EXIF orientation 6.
 const TILED_RGB16_ROTATED: &[u8] = include_bytes!("data/tiled-rgb16-zip-rotated.tif");
 
@@ -54,6 +57,7 @@ fn tiled_tiff_keeps_rgb16_edge_pixels_and_orientation() -> TestResult {
         .copy_from_slice(&1_u16.to_be_bytes());
     for (bytes, rotated, width, height) in [
         (TILED_RGB16, false, 257_usize, 259_usize),
+        (TILED_RGB16_OLD_DEFLATE, false, 257, 259),
         (big_endian.as_slice(), false, 257, 259),
         (TILED_RGB16_ROTATED, true, 259, 257),
     ] {
