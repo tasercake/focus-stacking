@@ -69,6 +69,15 @@ class MacPackageTests(unittest.TestCase):
             return "locked build output\n"
         if argv[0] in {"cargo", "rustc", "sw_vers"}:
             return f"{argv[0]} fixture version\n"
+        if argv == ("xcode-select", "--print-path"):
+            return "/Applications/Xcode.app/Contents/Developer\n"
+        if argv[:4] == ("xcrun", "--no-cache", "--sdk", "macosx"):
+            return {
+                ("--show-sdk-version",): "26.4\n",
+                ("--show-sdk-path",): "/test/MacOSX.sdk\n",
+                ("clang", "--version"): "Apple clang fixture version\n",
+                ("--find", "ld"): "/test/apple/ld\n",
+            }[argv[4:]]
         if argv[:2] == ("lipo", "-archs"):
             return self.architecture + "\n"
         if argv[:2] == ("otool", "-L"):
@@ -102,7 +111,12 @@ class MacPackageTests(unittest.TestCase):
         return build_package(self.source, self.output, IDENTIFIER, "17")
 
     def test_stages_matching_cli_and_audited_app(self):
-        self.package()
+        with patch.dict("os.environ", {
+            "MACOSX_DEPLOYMENT_TARGET": "15.0",
+            "CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER": "/test/custom-linker",
+            "UNRELATED_FIXTURE": "discard this value",
+        }):
+            self.package()
         app = self.output / "Pancake.app"
         plist_path = app / "Contents" / "Info.plist"
         plist = plistlib.loads(plist_path.read_bytes())
@@ -120,6 +134,16 @@ class MacPackageTests(unittest.TestCase):
         self.assertEqual(tuple(receipt["build_command"][:len(BUILD)]), BUILD)
         self.assertEqual(receipt["bundle_identifier"], IDENTIFIER)
         self.assertEqual(receipt["signing_mode"], "ad-hoc")
+        tools = receipt["tool_versions"]
+        self.assertEqual(tools["developer_directory"], "/Applications/Xcode.app/Contents/Developer")
+        self.assertEqual(tools["sdk_version"], "26.4")
+        self.assertEqual(tools["sdk_path"], "/test/MacOSX.sdk")
+        self.assertEqual(tools["clang"], "Apple clang fixture version")
+        self.assertEqual(tools["sdk_linker_path"], "/test/apple/ld")
+        self.assertEqual(receipt["build_overrides"], {
+            "MACOSX_DEPLOYMENT_TARGET": "15.0",
+            "CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER": "/test/custom-linker",
+        })
         self.assertEqual(receipt["files_sha256"]["Pancake.app/Contents/Info.plist"], file_sha256(plist_path))
         self.assertIn("Pancake.app/Contents/_CodeSignature/CodeResources", receipt["files_sha256"])
         for name, path in zip(BINARIES, ("pancake-cli", "Pancake.app/Contents/MacOS/pancake-gui"), strict=True):
@@ -177,6 +201,12 @@ class MacPackageTests(unittest.TestCase):
             self.package()
         self.assertEqual(original.read_text(), "user file")
         self.assertEqual(list(self.output.iterdir()), [original])
+
+    def test_accepts_a_new_nonignored_output_inside_the_source_worktree(self):
+        self.output = self.source / "local-packages" / "private-package"
+        self.package()
+        self.assertTrue((self.output / "package-receipt.json").is_file())
+        self.assertEqual(list(self.output.parent.iterdir()), [self.output])
 
     def test_rejects_dirty_source_invalid_identity_and_non_apple_hosts(self):
         with patch("package_macos.platform.system", return_value="Linux"):
