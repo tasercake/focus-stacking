@@ -81,3 +81,32 @@ np.save("b.npy", np.roll(first, 1, axis=1))
 ./pancake/target/release/pancake-cli --cpu --method weighted_average \
   --input a.npy b.npy --output result.png
 ```
+
+## Accrued P1 and P2 pass
+
+The clean release at `cb5e3a4a35c2ce356c93fed0f784825a17787148` reused
+the same dependency lock, suite descriptor, locked build command and host
+lane. It passed all 109 selected IDs, including all 25 from P1 and all
+84 from P2. The suite completed with exit 0 and zero failed, unsupported or
+unrun selected cases. The 376-case catalog and all 90 frozen contract files
+again matched the adopted hashes.
+
+All six NumPy grayscale cases now exported a single-plane PNG and met their
+shape and CPU/GPU parity checks. The same two-frame reproduction yielded PNG
+mode `L` at shape `(17, 19)`. Independent verification also checked 43
+completed CPU calls and 16 completed physical GPU calls, each matching its
+request. GPU details identify NVIDIA GeForce RTX 3090 at PCI address
+`0000:01:00.0` through `wgpu-vulkan`. The negative cases retained their
+original output bytes where required and issued path-specific errors.
+
+- [Original report](cb5e3a4-report.json.gz)
+- [Raw provenance](cb5e3a4-provenance.json)
+- [Hardware and hashes](cb5e3a4-execution.txt)
+- [Locked release build](cb5e3a4-release.log)
+- [Actual completion events](cb5e3a4-completion-events.json.gz)
+- [Independent accounting and diagnostics](cb5e3a4-accounting.json)
+- [Direct two-frame reproduction](cb5e3a4-gray-array-repro.txt)
+
+P2 conformance has passed on this host candidate. The production Canon CR3
+crop and render compatibility tests and the full milestone assurance gates
+remain open.
