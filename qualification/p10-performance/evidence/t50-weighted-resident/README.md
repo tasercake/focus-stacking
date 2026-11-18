@@ -72,3 +72,5 @@ full T50 timing require their own runs.
 [Archive checksum](raw-host-records.sha256)
 
 [Physical Vulkan replay](physical-vulkan/README.md)
+
+[Native CUDA probe build](native-cuda-build/README.md)
