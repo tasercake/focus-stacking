@@ -1,9 +1,8 @@
 # P5 registration core verification
 
-The registration core passed its focused Linux CPU and physical NVIDIA Vulkan
-checks on 2026-11-18. The release CLI still needs to pass the 64 P5 roadmap
-cases through the complete job, export and telemetry paths. The component
-checks below supply zero case passes.
+The headless release CLI passed all 64 P5 roadmap cases on 2026-11-18 on
+Linux CPU and physical NVIDIA Vulkan. The integrated run below supplies the
+64 passes. The separate component checks qualify the geometry directly.
 
 - Tested source `faeca6a86073f6e9efcccdffc8dcfaa8e0ed7e53` with Rust 1.100.0.
 - Cargo lock SHA-256 `f2603e6cb6e669617a5ef4098cfa9a27f042edd3e380be2e6c3e57820a32700f`.
@@ -67,8 +66,8 @@ cp pancake/docs/p5-registration-evidence/fixture-probe.rs.txt \
 )
 ```
 
-Native CUDA, Apple, complete job recovery, end-to-end case accounting and
-workspace-wide assurance remain pending on the integrated revision.
+Native CUDA, Apple and workspace-wide assurance remain separate release
+obligations. This scope retains Linux CPU and physical NVIDIA Vulkan evidence.
 
 ## Elongated-canvas regression
 
@@ -91,3 +90,48 @@ error on CPU high precision and RTX 3090 Vulkan ordinary precision respectively.
 little-endian float data from those fixture PNGs, normalized by dividing
 decoded channel values by 255, in `artifacts/p5/cascade-probe/wide-{0,1}.f32`.
 [Probe source](p5-registration-evidence/cascade-probe.rs.txt).
+
+
+## Integrated release result
+
+Exactly 64 passed, zero failed and zero unsupported on clean source revision
+`cb5e3a4a35c2ce356c93fed0f784825a17787148`. The locked release binary
+SHA-256 was `818a2c3532141f5f96e75accc569121f064f2925bf31738956a94887a9f4cfc8`
+and the Cargo lock SHA-256 was
+`012cda6d161124eef8ecc3c5c6a4fed8db881e5f7606f4b9d7aee5f766f1a879`.
+The run took place in the same Linux 6.8 x86-64 and RTX 3090 hardware lane
+recorded above, with display variables unset. The frozen runner and roadmap
+agreed on all 376 ordered IDs before the documented selection of 64.
+
+The largest error at the measured corners and center was 0.078271px for
+affine registration with previous-frame reference, within 1px. Both
+4097×257 recovery cascade outputs had zero RGB error inside the tested
+region. The physical GPU case reported the NVIDIA RTX 3090 on `wgpu-vulkan`
+at PCI `0000:01:00.0`, `physical_gpu=true`, with no fallback. The unchanged
+runner verified input and output hashes and decoded pixels on the real
+CLI. A preliminary four-case diagnostic at the older release is excluded
+from this count.
+
+- [Case selection](p5-registration-evidence/contract-cb5e3a4/case-list.txt)
+- [Raw report](p5-registration-evidence/contract-cb5e3a4/report.json.gz)
+  and [JUnit](p5-registration-evidence/contract-cb5e3a4/junit.xml.gz)
+- [Clean commit, descriptor and frozen suite provenance](p5-registration-evidence/contract-cb5e3a4/provenance.json)
+- [Unchanged per-case commands, exit statuses, logs and runtime events](p5-registration-evidence/contract-cb5e3a4/process-artifacts.tar.gz)
+  and [receipt hashes](p5-registration-evidence/contract-cb5e3a4/SHA256SUMS)
+
+Replay from the repository root with the matching verified executable staged
+at `pancake/target/release/pancake-cli`.
+
+```bash
+case_arguments=()
+while read -r case_id; do case_arguments+=(--case "$case_id"); done \
+  < pancake/docs/p5-registration-evidence/contract-cb5e3a4/case-list.txt
+env -u DISPLAY -u WAYLAND_DISPLAY uv run --project pancake-conformance --frozen \
+  pancake-conformance run \
+  --target pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml \
+  --no-coverage --output artifacts/p5/contract-replay "${case_arguments[@]}"
+```
+
+Sources and generated exports are reconstructible from the immutable
+fixture definitions. The report retains their validated hashes. This
+64-ID slice requires regression coverage on the final release revision.
