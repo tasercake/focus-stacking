@@ -1,0 +1,93 @@
+"""Untimed, same-host, frozen E9 geometry and decoded-pixel comparison."""
+import json
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+import numpy as np
+from pancake_conformance.target import TargetSpec
+
+from p10 import CANDIDATE, REFERENCE, ROOT, TARGETS_PATH, _assert_completion, _environment, _hardware
+from protocol import Campaign, _read_rgb16, corpus, pixel_metrics, sha256, verify_frames, verify_output
+
+P5 = Path('/tmp/pancake-worktrees.t3paqgWM/p5-registration/pancake')
+REV = '5e102447ad95c641eb773d9fdf94f2bc3757b81d'
+BINARY = Path('artifacts/p10-scale-preflight/pancake-cli-5e10244').resolve()
+OUTPUT = Path('artifacts/p10-scale-preflight/e9-after-registration').resolve()
+STAGE = Path('/home/krishna/Documents/focus-stacking/artifacts/pancake-corpus/p2-real-inputs')
+EXPECTED_SHA = '3ac6abaecc1bbd5743efd2abc6879a43d4b17294514b7bc209a05227d613ccbb'
+
+
+def main():
+    OUTPUT.mkdir(parents=True, exist_ok=False)
+    campaign = Campaign.load(TARGETS_PATH)
+    records, source = corpus(ROOT, campaign, 'E9')
+    frames = verify_frames(STAGE, records, 9)
+    profile = next(profile for profile in campaign.profiles('cpu') if profile.workload == 'E9')
+    report = {
+        'scope': 'untimed same-host E9 decoded quality/geometry preflight, no performance samples',
+        'candidate_revision': REV, 'candidate_binary_sha256': sha256(BINARY),
+        'reference_version': campaign.raw['reference'], 'hardware': _hardware(None),
+        'corpus':source, 'settings':profile.options, 'runs':{},
+    }
+    if report['candidate_binary_sha256'] != EXPECTED_SHA:
+        raise ValueError('wrong candidate release bytes')
+    paths={}
+    try:
+        for kind, descriptor in [('reference',REFERENCE),('candidate',CANDIDATE)]:
+            target=TargetSpec.load(descriptor)
+            run=OUTPUT/kind
+            run.mkdir(exist_ok=False)
+            export=run/'export.tif'
+            env=_environment(target,run/'cache',run,len(os.sched_getaffinity(0)),None,None,True)
+            if kind=='candidate':
+                cwd=P5
+                command=[str(BINARY)]
+            else:
+                cwd=target.root
+                command=target.command('cli',python=REFERENCE.parent/'.venv/bin/python')
+            argv=[*command,*target.stack_arguments(frames,export,profile.options)]
+            entry={'argv':argv,'cwd':str(cwd),'descriptor_sha256':sha256(descriptor)}
+            report['runs'][kind]=entry
+            with (run/'stdout.txt').open('wb') as stdout, (run/'stderr.txt').open('wb') as stderr:
+                result=subprocess.run(argv,cwd=cwd,env=env,stdout=stdout,stderr=stderr,timeout=120,check=False)
+            entry['returncode']=result.returncode
+            result.check_returncode()
+            entry['output']=verify_output(export,records[0]['shape'])
+            event=_assert_completion(run/'events.jsonl','cpu','cpu' if kind=='candidate' else None,None)
+            entry['completion']={key:event.get(key) for key in ('actual_backend','runtime','device')}
+            entry['events_sha256']=sha256(run/'events.jsonl')
+            paths[kind]=export
+        report['pixel_metrics']=pixel_metrics(paths['reference'],paths['candidate'],records[0]['shape'])
+        if report['pixel_metrics']['status']!='decoded_pair':
+            raise ValueError('E9 geometry still differs')
+        a,b=(_read_rgb16(paths[kind]) for kind in ('reference','candidate'))
+        ny,nx=a.shape[:2]
+        windows=[('upper-left',nx//4,ny//4),('center',nx//2,ny//2),('lower-right',3*nx//4,3*ny//4)]
+        report['representative_regions']=[]
+        for tag,x,y in windows:
+            rgb_a=a[y-24:y+24,x-24:x+24].astype(np.int32)
+            rgb_b=b[y-24:y+24,x-24:x+24].astype(np.int32)
+            error=np.abs(rgb_a-rgb_b)
+            report['representative_regions'].append({'tag':tag,'xywh':[x-24,y-24,48,48],
+                'mean_absolute_u16':float(error.mean()),'max_absolute_u16':int(error.max())})
+        report['status']='decoded_pair'
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        report['status']='functional_fail'
+        report['error']=str(error)
+    finally:
+        for kind in ('reference','candidate'):
+            root=OUTPUT/kind
+            (root/'export.tif').unlink(missing_ok=True)
+            if (root/'cache').exists():
+                shutil.rmtree(root/'cache')
+        report['temporary_exports_removed']=not list(OUTPUT.glob('*/export.tif'))
+        verify_frames(STAGE,records,9)
+        report['inputs_unchanged']=True
+        (OUTPUT/'receipt.json').write_text(json.dumps(report,indent=2)+'\n')
+    print(json.dumps({key: report[key] for key in ('status','error','pixel_metrics','representative_regions') if key in report},indent=2))
+    return 0 if report['status']=='decoded_pair' else 1
+
+if __name__=='__main__':
+    raise SystemExit(main())
