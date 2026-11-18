@@ -143,29 +143,30 @@ fn repeated_registration_keeps_unwarped_cpu_export() -> Result<(), String> {
         let config = JobConfig::new(&inputs, Some(output.to_owned()), settings)?;
         run(config, options, |_| {}).map_err(|error| error.to_string())
     };
-    let unaligned = root.join("unaligned.png");
-    stack(AlignmentMode::Off, &unaligned, &Options::default())?;
-    let aligned = root.join("aligned.png");
+    let control_output = root.join("unaligned.png");
+    stack(AlignmentMode::Off, &control_output, &Options::default())?;
+    let registered_output = root.join("aligned.png");
     let events = root.join("registration.jsonl");
     let options = Options {
         events_path: Some(events.clone()),
         ..Options::default()
     };
-    let result = stack(AlignmentMode::Translation, &aligned, &options)?;
+    let result = stack(AlignmentMode::Translation, &registered_output, &options)?;
     require(
         result.source_transform(1) == Some(Affine::IDENTITY),
         "repeated texture produced an unsupported transform",
     )?;
-    let unaligned = decode(&unaligned)?;
-    let aligned = decode(&aligned)?;
+    let control_image = decode(&control_output)?;
+    let registered_image = decode(&registered_output)?;
     require(
-        (aligned.width(), aligned.height()) == (112, 96)
-            && aligned.samples() == unaligned.samples(),
+        (registered_image.width(), registered_image.height()) == (112, 96)
+            && registered_image.samples() == control_image.samples(),
         "ambiguous registration changed the unwarped CPU export",
     )?;
     let event = std::fs::read_to_string(events).map_err(|error| error.to_string())?;
     let event: serde_json::Value =
         serde_json::from_str(&event).map_err(|error| error.to_string())?;
+    let identity_transforms = [Affine::IDENTITY.matrix(); 2];
     require(
         event.get("event").and_then(serde_json::Value::as_str) == Some("stack_complete")
             && event.get("completed").and_then(serde_json::Value::as_bool) == Some(true)
@@ -173,8 +174,7 @@ fn repeated_registration_keeps_unwarped_cpu_export() -> Result<(), String> {
                 .get("actual_backend")
                 .and_then(serde_json::Value::as_str)
                 == Some("cpu")
-            && event.get("sequential_transforms")
-                == Some(&serde_json::json!([Affine::IDENTITY.matrix(); 2])),
+            && event.get("sequential_transforms") == Some(&serde_json::json!(identity_transforms)),
         "completion did not retain the actual CPU identity transforms",
     )?;
     for (path, before) in inputs.iter().zip(originals) {
