@@ -1,0 +1,23 @@
+	Command being timed: "bash -c env -u CARGO_TARGET_DIR -u RUSTFLAGS -u CARGO_ENCODED_RUSTFLAGS -u RUSTC_WRAPPER -u RUSTC_WORKSPACE_WRAPPER -u LLVM_PROFILE_FILE -u DISPLAY -u WAYLAND_DISPLAY -u DBUS_SESSION_BUS_ADDRESS -u AT_SPI_BUS_ADDRESS PATH="/tmp/pancake-tools/bin:$PATH" CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 taskset -c 0,1 python3 artifacts/native-overlay-c1e2cac/stage-relocation.py"
+	User time (seconds): 260.08
+	System time (seconds): 43.43
+	Percent of CPU this job got: 197%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:33.60
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2205660
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 867
+	Minor (reclaiming a frame) page faults: 20429592
+	Voluntary context switches: 54514
+	Involuntary context switches: 36752
+	Swaps: 0
+	File system inputs: 8728
+	File system outputs: 11245880
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/artifacts/native-overlay-c1e2cac/stage.py", line 78, in <module>
+    gui["compare_mapping"](archived_map, baseline)
+  File "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/scripts/gui_coverage.py", line 139, in compare_mapping
+    raise ValueError("source mapping changed")
+ValueError: source mapping changed

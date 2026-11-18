@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/artifacts/native-overlay-c1e2cac/stage-continue.py", line 93, in <module>
+    binary = {kind: gui["native_identity"](target / "debug" / f"pancake-{kind}")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/scripts/gui_coverage.py", line 177, in native_identity
+    notes = output(["readelf", "--notes", path], path.parent)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/scripts/gui_coverage.py", line 158, in output
+    return subprocess.check_output(command, cwd=cwd, text=True).strip()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: PosixPath('/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/native-profile-target/debug')

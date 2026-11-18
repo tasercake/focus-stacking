@@ -1,0 +1,119 @@
+"""Prepare the existing GUI coverage workflow through its CPU-only control stage."""
+from datetime import datetime, timezone
+import gzip
+import json
+import os
+from pathlib import Path
+import re
+import runpy
+import shutil
+import subprocess
+
+repo = Path.cwd()
+workspace = repo / "pancake"
+evidence = repo / "artifacts/native-overlay-c1e2cac"
+gui = runpy.run_path(str(workspace / "scripts/gui_coverage.py"))
+revision = "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb"
+archived = "707094da8a7a08758ab6bb8162ea8566b3295431:pancake/docs/p9-cpu-assurance-evidence/c1e2cac/stable/coverage-cpu.json.gz"
+
+def run(command, name, *, cwd=workspace, env=None):
+    status = gui["logged"](command, evidence / f"{name}.log", cwd=cwd, env=env)
+    (evidence / f"{name}.status").write_text(f"{status}\n")
+    return status
+
+def save(name, value):
+    (evidence / name).write_text(json.dumps(value, indent=2) + "\n")
+
+def assert_clean():
+    if gui["output"](["git", "rev-parse", "HEAD"], repo) != revision or gui["output"](
+        ["git", "status", "--porcelain", "--untracked-files=all"], repo
+    ):
+        raise ValueError("exact source must remain clean")
+
+def rebase(value, old, new):
+    if isinstance(value, dict):
+        return {key: rebase(item, old, new) for key, item in value.items()}
+    if isinstance(value, list):
+        return [rebase(item, old, new) for item in value]
+    if isinstance(value, str) and value.startswith(old):
+        return new + value[len(old):]
+    return value
+
+
+from collections import Counter
+
+assert_clean()
+cases = (evidence / "cases.txt").read_text().splitlines()
+if cases != ["interface.about", "interface.recovery.close-unsaved", "interface.sprint.frame-context"]:
+    raise ValueError("expected only the three approved CPU cases")
+status = int((evidence / "coverage-cpu.status").read_text())
+baseline = gui["read_json"](evidence / "coverage-cpu.json")
+archive = json.loads(gzip.decompress(subprocess.check_output(["git", "show", archived], cwd=repo)))
+prior_prefix = "/tmp/pancake-worktrees.t3paqgWM/stable-coverage-c1e2cac/pancake/"
+archived_map = rebase(archive, prior_prefix, str(workspace) + "/")
+
+# Compare archived source locations across worktree/build paths. Keep the
+# named identity guard for reexports and the new native control below.
+def archived_scope(report):
+    data, = report["data"]
+    per_file = {row["filename"]: gui["coverage_metrics"](row["summary"]) for row in data["files"]}
+    signatures = Counter(
+        (tuple(function["filenames"]), function["count"] > 0,
+         tuple((*region[:4], *region[5:], region[4] > 0) for region in function["regions"]),
+         tuple((*branch[:4], *branch[6:], branch[4] > 0, branch[5] > 0)
+               for branch in function["branches"]))
+        for function in data["functions"]
+    )
+    return gui["coverage_metrics"](data["totals"]), per_file, signatures
+
+if archived_scope(archived_map) != archived_scope(baseline):
+    raise ValueError("archived source coordinates or covered counts differ")
+save("archived-map-check.json", {"matched": True, "archive_identity": archived,
+     "comparison": "coordinates, multiplicity, positive signatures, all per-file counts",
+     "named_symbol_scope": "same-build comparison only"})
+
+export = evidence / "coverage-cpu-reexport.json"
+export_log = evidence / "coverage-cpu-reexport.log"
+report_command = ["cargo", "llvm-cov", "report", "--workspace", "--include-build-script",
+                  "--json", "-v", "--output-path", export]
+if run(report_command, "coverage-cpu-reexport") != 0:
+    raise ValueError("cannot reexport the standard CPU source map")
+reexport = gui["read_json"](export)
+gui["compare_mapping"](baseline, reexport)
+gui["compare_mapping"](reexport, baseline)
+
+target = workspace / "target/native-profile-target"
+env = dict(os.environ, CARGO_TARGET_DIR=str(target))
+env["CARGO_ENCODED_RUSTFLAGS"] = "\x1f".join(("-C", "llvm-args=-runtime-counter-relocation"))
+build = ["bash", "-e", "-c", "source <(cargo llvm-cov show-env --sh)\n"
+         "cargo build --locked --workspace --all-features --bins"]
+if run(build, "native-build", env=env) != 0:
+    raise ValueError("cannot build the exact native profiling binaries")
+assert_clean()
+binary = {kind: gui["native_identity"](target / "debug" / f"pancake-{kind}")
+          for kind in ("cli", "gui")}
+cov = gui["llvm_tool"](workspace, "llvm-cov")
+prof = gui["llvm_tool"](workspace, "llvm-profdata")
+cpu_profile, mapping = gui["export_arguments"](export_log, workspace, cov)
+indexed = evidence / "control.profdata"
+subprocess.run([prof, "merge", "-sparse", "--failure-mode=any", "-o", indexed, cpu_profile], check=True)
+control_path = evidence / "control.json"
+control_command = [cov, "export", "-format=text", f"-instr-profile={indexed}", *mapping,
+                   "-object", binary["gui"]["path"]]
+with control_path.open("w") as report:
+    subprocess.run(control_command, cwd=workspace, stdout=report, check=True)
+control = gui["read_json"](control_path)
+gui["compare_mapping"](baseline, control, adding_mapping=True)
+baseline_data, = baseline["data"]
+control_data, = control["data"]
+save("stage.json", {"revision": revision, "binary": binary, "cases": cases,
+                    "standalone_status": status, "baseline": baseline_data["totals"],
+                    "control": control_data["totals"], "llvm_cov": str(cov),
+                    "llvm_profdata": str(prof), "cpu_profile": str(cpu_profile),
+                    "cpu_profile_sha256": gui["digest"](cpu_profile),
+                    "control_profdata_sha256": gui["digest"](indexed),
+                    "control_export": list(map(str, control_command)),
+                    "completed_utc": datetime.now(timezone.utc).isoformat(),
+                    "archive_control": "identical coordinates, covered signatures and per-file counts",
+                    "display_launched": False})
+print("Standalone map and CPU-only native-object control match. No GUI was launched.")

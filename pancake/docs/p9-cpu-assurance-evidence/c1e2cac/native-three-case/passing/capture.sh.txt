@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Run once when the private CPU desktop is available.
+set -euo pipefail
+repo=$(git rev-parse --show-toplevel)
+proof="$repo/artifacts/native-overlay-c1e2cac"
+cd "$repo"
+test "$(git rev-parse HEAD)" = c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb
+test -z "$(git status --porcelain --untracked-files=all)"
+short=$(mktemp -d /tmp/pcg.XXXXXXXX)
+printf '%s\n' "$short" >"$proof/corrected-root.txt"
+source /home/krishna/Documents/focus-stacking/artifacts/p10-compare/native-tools/gui-env.sh
+export PATH="/tmp/pancake-tools/bin:$PATH"
+export UV_PROJECT_ENVIRONMENT="$proof/uv-env" UV_OFFLINE=1
+export SLINT_BACKEND=winit-software
+unset DISPLAY WAYLAND_DISPLAY DBUS_SESSION_BUS_ADDRESS AT_SPI_BUS_ADDRESS PANCAKE_RUNTIME
+native="$repo/pancake/target/native-profile-target/debug"
+command=(taskset -c 0,1 python3 pancake/scripts/gui_coverage.py capture
+  --output "$short/artifacts/n" --cli "$native/pancake-cli" --gui "$native/pancake-gui")
+for id in interface.about interface.recovery.close-unsaved interface.sprint.frame-context; do
+    command+=(--case "$id")
+done
+{ printf '%q ' "${command[@]}"; printf '\n'; } >"$proof/corrected-command.txt"
+date -u +%FT%TZ >"$proof/corrected-start.txt"
+set +e
+"${command[@]}" >"$proof/corrected-driver.log" 2>&1
+status=$?
+set -e
+printf '%d\n' "$status" >"$proof/corrected-driver.status"
+date -u +%FT%TZ >"$proof/corrected-end.txt"
+cat "$proof/corrected-driver.log"
+exit "$status"

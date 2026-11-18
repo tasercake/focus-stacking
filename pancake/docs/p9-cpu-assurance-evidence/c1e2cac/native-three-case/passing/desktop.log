@@ -1,0 +1,530 @@
+_XSERVTransSocketUNIXCreateListener: ...SocketCreateListener() failed
+_XSERVTransMakeAllCOTSServerListeners: server already running
+The XKEYBOARD keymap compiler (xkbcomp) reports:
+> Warning:          Could not resolve keysym XF86CameraAccessEnable
+> Warning:          Could not resolve keysym XF86CameraAccessDisable
+> Warning:          Could not resolve keysym XF86CameraAccessToggle
+> Warning:          Could not resolve keysym XF86NextElement
+> Warning:          Could not resolve keysym XF86PreviousElement
+> Warning:          Could not resolve keysym XF86AutopilotEngageToggle
+> Warning:          Could not resolve keysym XF86MarkWaypoint
+> Warning:          Could not resolve keysym XF86Sos
+> Warning:          Could not resolve keysym XF86NavChart
+> Warning:          Could not resolve keysym XF86FishingChart
+> Warning:          Could not resolve keysym XF86SingleRangeRadar
+> Warning:          Could not resolve keysym XF86DualRangeRadar
+> Warning:          Could not resolve keysym XF86RadarOverlay
+> Warning:          Could not resolve keysym XF86TraditionalSonar
+> Warning:          Could not resolve keysym XF86ClearvuSonar
+> Warning:          Could not resolve keysym XF86SidevuSonar
+> Warning:          Could not resolve keysym XF86NavInfo
+Errors from xkbcomp are not fatal to the X server
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.a11y.Bus' requested by ':1.0' (uid=1000 pid=901932 comm="gdbus call --session --dest org.a11y.Bus --object-" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.a11y.Bus'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='ca.desrt.dconf' requested by ':1.1' (uid=1000 pid=901937 comm="/usr/libexec/at-spi-bus-launcher" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'ca.desrt.dconf'
+Openbox-Message: Unable to find a valid menu file "/var/lib/openbox/debian-menu.xml"
+dbus-daemon[901958]: Activating service name='org.a11y.atspi.Registry' requested by ':1.0' (uid=1000 pid=901954 comm="/usr/bin/python3 -u /tmp/pancake-worktrees.t3paqgW" label="chatgpt (unconfined)")
+dbus-daemon[901958]: Successfully activated service 'org.a11y.atspi.Registry'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.5' (uid=1000 pid=901953 comm="/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.freedesktop.portal.Documents' requested by ':1.6' (uid=1000 pid=901993 comm="/usr/libexec/xdg-desktop-portal" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.7' (uid=1000 pid=901999 comm="/usr/libexec/xdg-document-portal" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.freedesktop.portal.Documents'
+Ignoring invalid max threads value 4294967295 > max (100000).
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.907: Choosing gtk.portal for org.freedesktop.impl.portal.Lockdown as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.907: The preferred method to match portal implementations to desktop environments is to use the portals.conf(5) configuration file
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.6' (uid=1000 pid=901993 comm="/usr/libexec/xdg-desktop-portal" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gtk.vfs.Daemon' requested by ':1.9' (uid=1000 pid=902015 comm="/usr/libexec/xdg-desktop-portal-gtk" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gtk.vfs.Daemon'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.971: No skeleton to export
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.971: Choosing gtk.portal for org.freedesktop.impl.portal.FileChooser as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.972: Choosing gtk.portal for org.freedesktop.impl.portal.AppChooser as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.972: Choosing gtk.portal for org.freedesktop.impl.portal.Print as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.973: Choosing gtk.portal for org.freedesktop.impl.portal.Notification as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.973: Choosing gtk.portal for org.freedesktop.impl.portal.Inhibit as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.973: Choosing gtk.portal for org.freedesktop.impl.portal.Access as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.976: Failed connect to PipeWire: Couldn't connect to PipeWire
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.976: Choosing gtk.portal for org.freedesktop.impl.portal.Account as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.976: Choosing gtk.portal for org.freedesktop.impl.portal.Email as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:901993): xdg-desktop-portal-WARNING **: 21:31:25.976: Choosing gtk.portal for org.freedesktop.impl.portal.DynamicLauncher as a last-resort fallback
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.freedesktop.portal.Desktop'
+Obt-Message: Failed to open an Input Method
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.freedesktop.FileManager1' requested by ':1.15' (uid=1000 pid=902084 comm="/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.xfce.Xfconf' requested by ':1.16' (uid=1000 pid=902497 comm="/usr/bin/Thunar --gapplication-service" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.xfce.Xfconf'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.freedesktop.FileManager1'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gtk.vfs.Metadata' requested by ':1.16' (uid=1000 pid=902497 comm="/usr/bin/Thunar --gapplication-service" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gtk.vfs.Metadata'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gtk.vfs.UDisks2VolumeMonitor' requested by ':1.16' (uid=1000 pid=902497 comm="/usr/bin/Thunar --gapplication-service" label="chatgpt (unconfined)")
+
+(process:902515): GLib-GIO-WARNING **: 21:31:30.986: Error creating IO channel for /proc/self/mountinfo: Too many open files (g-io-error-quark, 31)
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gtk.vfs.UDisks2VolumeMonitor'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gtk.vfs.GPhoto2VolumeMonitor' requested by ':1.16' (uid=1000 pid=902497 comm="/usr/bin/Thunar --gapplication-service" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gtk.vfs.GPhoto2VolumeMonitor'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gtk.vfs.AfcVolumeMonitor' requested by ':1.16' (uid=1000 pid=902497 comm="/usr/bin/Thunar --gapplication-service" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gtk.vfs.AfcVolumeMonitor'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gtk.vfs.MTPVolumeMonitor' requested by ':1.16' (uid=1000 pid=902497 comm="/usr/bin/Thunar --gapplication-service" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gtk.vfs.MTPVolumeMonitor'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gtk.vfs.GoaVolumeMonitor' requested by ':1.16' (uid=1000 pid=902497 comm="/usr/bin/Thunar --gapplication-service" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gnome.OnlineAccounts' requested by ':1.23' (uid=1000 pid=902541 comm="/usr/libexec/gvfs-goa-volume-monitor" label="chatgpt (unconfined)")
+goa-daemon-Message: 21:31:31.055: goa-daemon version 3.50.4 starting
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.gnome.Identity' requested by ':1.24' (uid=1000 pid=902546 comm="/usr/libexec/goa-daemon" label="chatgpt (unconfined)")
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gnome.Identity'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gnome.OnlineAccounts'
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.gtk.vfs.GoaVolumeMonitor'
+
+(process:902567): GLib-GIO-WARNING **: 21:31:31.090: Error creating IO channel for /proc/self/mountinfo: Too many open files (g-io-error-quark, 31)
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.094: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: invalid (NULL) pointer instance
+
+(process:902567): GLib-GObject-CRITICAL **: 21:31:31.095: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+dbus-daemon[901919]: [session uid=1000 pid=901919] Activating service name='org.freedesktop.thumbnails.Thumbnailer1' requested by ':1.16' (uid=1000 pid=902497 comm="/usr/bin/Thunar --gapplication-service" label="chatgpt (unconfined)")
+
+(Thunar:902497): GLib-GIO-CRITICAL **: 21:31:31.136: GFileInfo created without standard::size
+
+(Thunar:902497): GLib-GIO-CRITICAL **: 21:31:31.136: file ../../../gio/gfileinfo.c: line 1845 (g_file_info_get_size): should not be reached
+Xlib:  extension "DRI2" missing on display ":1".
+
+(tumblerd:902577): GLib-GObject-CRITICAL **: 21:31:33.125: invalid (NULL) pointer instance
+
+(tumblerd:902577): GLib-GObject-CRITICAL **: 21:31:33.125: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(tumblerd:902577): GLib-GObject-CRITICAL **: 21:31:33.125: invalid (NULL) pointer instance
+
+(tumblerd:902577): GLib-GObject-CRITICAL **: 21:31:33.125: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(tumblerd:902577): GLib-GObject-CRITICAL **: 21:31:33.125: invalid (NULL) pointer instance
+
+(tumblerd:902577): GLib-GObject-CRITICAL **: 21:31:33.125: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+
+(tumblerd:902577): GLib-GObject-CRITICAL **: 21:31:33.125: invalid (NULL) pointer instance
+
+(tumblerd:902577): GLib-GObject-CRITICAL **: 21:31:33.125: g_signal_connect_data: assertion 'G_TYPE_CHECK_INSTANCE (instance)' failed
+dbus-daemon[901919]: [session uid=1000 pid=901919] Successfully activated service 'org.freedesktop.thumbnails.Thumbnailer1'
+
+(xfconfd:902502): xfconfd-WARNING **: 21:31:38.608: Name org.xfce.Xfconf lost on the message dbus, exiting.
+
+(/usr/libexec/xdg-document-portal:901999): GLib-GIO-WARNING **: 21:31:38.614: Error releasing name org.freedesktop.portal.Documents: The connection is closed

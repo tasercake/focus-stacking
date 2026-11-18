@@ -1,0 +1,34 @@
+{
+  "revision": "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb",
+  "standalone_status": 1,
+  "combined_status": 1,
+  "passing_cases": 3,
+  "clean_sessions": 3,
+  "cpu_jobs": 1,
+  "metrics": {
+    "lines": {
+      "baseline": 4658,
+      "combined": 5340,
+      "total": 6475,
+      "gain": 682
+    },
+    "functions": {
+      "baseline": 476,
+      "combined": 559,
+      "total": 756,
+      "gain": 83
+    },
+    "regions": {
+      "baseline": 4776,
+      "combined": 5523,
+      "total": 7288,
+      "gain": 747
+    },
+    "branches": {
+      "baseline": 0,
+      "combined": 0,
+      "total": 0,
+      "gain": 0
+    }
+  }
+}

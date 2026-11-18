@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "passed",
+  "complete": true,
+  "selected_count": 3,
+  "completed_count": 3,
+  "counts": {
+    "passed": 3,
+    "failed": 0,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "interface.about",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 1.8157944140257314,
+      "error": "",
+      "notes": {
+        "about": {
+          "version": "0.1.0"
+        },
+        "artifact_directory": "/tmp/pcg.1sq6fCbl/artifacts/n/conformance/cases/interface.about"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.sprint.frame-context",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 7.034179549082182,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pcg.1sq6fCbl/artifacts/n/conformance/cases/interface.sprint.frame-context"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.close-unsaved",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 4.3664869429776445,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "unsaved_close": {
+          "cancel_keeps_result": true,
+          "cancel_export_keeps_app": true,
+          "explicit_quit": true
+        },
+        "artifact_directory": "/tmp/pcg.1sq6fCbl/artifacts/n/conformance/cases/interface.recovery.close-unsaved"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}
