@@ -76,6 +76,13 @@ The stable strict comparator still exited 1 on uncovered lines. The local
 test prototype remains separate from the integrated suite.
 [Native About coverage evidence](p9-cpu-assurance-evidence/fb9c399/native-about-target/README.md).
 
+The scoped headless GTK child now keeps the compiler's profile path.
+The same filtered test hits the error path once and emits separate
+PID-bound parent and child profiles. Production code is unchanged
+outside this test module. Strict full coverage and branch results remain
+open, and the current release package replay stays pinned to `e81079d`.
+[Scoped GTK child profiles](p9-cpu-assurance-evidence/gtk-child-profile/README.md).
+
 **The packaged `fb9c399` Linux release passes all 376 frozen case IDs.**
 The locked workspace build, fast and dependency gates, and rootless Debian
 verification passed. The strict ledger accepted 341 host cases, 34 isolated
@@ -539,6 +546,16 @@ GPU observation gaps exceeded 20 ms on both applications. Independent
 review accepted sampled representative detail and retained the endpoint
 clipping differences. This leaves E9 CPU as the single qualified profile.
 [Corrected E9 CUDA/OpenCL result](../../qualification/p10-performance/evidence/integrated-e9-corrected-cuda-c1e2cac/README.md).
+
+The exact integrated `e81079d` native CUDA/OpenCL campaign completed
+34 fresh primary jobs and two backend witnesses. Warm median was 0.505452
+of the reference, 4.295 ms over the 0.50 limit. Cold median and
+process-tree RSS passed at 0.074855 and 0.420741. Attributable GPU
+memory remains pending after 17 CUDA and four OpenCL gaps over 20 ms.
+The first warm pair reproduced the prior independently reviewed RGB16
+images and inputs exactly. The frozen GPU profile remains failed and
+the completed-job inventory stays at one qualified profile out of 26.
+[Exact integrated E9 CUDA/OpenCL result](../../qualification/p10-performance/evidence/integrated-e9-corrected-cuda-e81079d/README.md).
 
 The same-source E9 CUDA compiler experiment on the RTX 3090 measured
 452.260 ms warm median for LLVM and 737.959 ms for C++, with exact RGB16
