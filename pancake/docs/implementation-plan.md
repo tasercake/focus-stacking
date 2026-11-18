@@ -45,6 +45,12 @@ raw report and provenance record.
 
 ## Active delivery checkpoint
 
+The integrated local branch uses the audited clean base `8410863`.
+Compared with the original warp integration checkpoint, the base changed
+only three E9 trace evidence files. Product sources, test sources and
+locks match. Retained runtime receipts still identify their original
+tested revisions and binaries.
+
 **The packaged `8694b55` Linux release passes all 376 case IDs.** The strict
 ledger matched 341 host, 34 isolated GUI and one physical RTX 3090 Vulkan
 GUI case to the exact locked source and extracted Debian binaries. The
@@ -308,6 +314,32 @@ The thumbnail lattice remains an experiment plan. The authenticated
 originals and temporary outputs were removed.
 [Owned-upload R50 evidence](p10-r50-phase-287828a/owned-upload/README.md).
 [Thumbnail lattice proposal](p10-r50-phase-287828a/thumbnail-lattice-plan.md).
+
+The four-arm R50 CPU diagnostic used the same 50 authenticated Canon CR3s.
+The owned-upload control took 39.928490 s, the five-buffer Hybrid arm
+37.024288 s, the RAW packing arm 38.098156 s and the isolated luma lattice
+40.361237 s. All 50 alignment matrices, all 50 sequential matrices and
+the encoded and decoded RGB16 TIFFs matched across all arms. Each arm ran
+once. The luma source remains experimental, and the combined Hybrid and
+RAW changes still need matched release and frozen performance replays.
+[Four-arm R50 diagnostic](p10-r50-component-comparison/README.md).
+[Isolated luma disposition](p10-registration-luma-lattice/README.md#full-r50-follow-up).
+
+The five-buffer Hybrid change removes a temporary RGB band while
+retaining the existing per-pass storage binding limit. The exact `903836c`
+CLI passed all 69 P4 cases, including real RTX 3090 Vulkan work. On each of
+CPU, Vulkan and native CUDA, the isolated stock and candidate paths matched
+235,962 f32 channel values across 18 fixtures. The earlier seven-tensor
+prototype remains experimental.
+[P4 and Vulkan receipts](p10-r50-hybrid-band/README.md).
+[Exact native CUDA parity](p10-r50-hybrid-band/native-cuda/README.md).
+
+The RAW packing change uses the existing bounded RAW pool on eligible
+large frames. Its exact `c8f68cf` CLI passed all 84 P2 IDs, including 16
+physical RTX 3090 Vulkan completions. The same source passed 20/20
+supplemental Linux Miri library tests. The canonical macOS gate and the
+combined package replay remain open.
+[RAW packing and exact P2/Miri receipts](p10-r50-raw-packing-residual/README.md).
 
 At the packaged `12f2151` CLI, the aligned real E9 comparison completed 17
 launches per application in each CPU and physical NVIDIA lane. CPU warm,
