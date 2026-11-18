@@ -1,5 +1,31 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `d6359e1`
+
+The locked default-feature workspace release built both executables at
+`d6359e129737f1a9077fb4abc2a8f783fa1f7b38`. The fast and dependency gates and
+four package tests passed. The local Debian archive is
+`artifacts/pancake-packages/linux-d6359e1/pancake_0.1.0_amd64.deb`. It contains 69,478,602 bytes and has
+SHA-256 `e6b4d83e8100d04d1692fc8d2f0e276e249fa5a1d79e6e8f623801632c860758`.
+[Build, hardware and source receipts](d6359e1/summary.json).
+[Rootless package inspection](d6359e1/package-verification.json).
+
+Rootless extraction verified both executable hashes, the desktop entry,
+native linked libraries, help and the archived source notices. The package
+binaries then ran all 376 frozen case IDs. The strict verifier accepted
+341 host cases, 34 isolated GUI cases, and the physical RTX 3090 GUI case
+using actual wgpu Vulkan. All three ran on the same committed source,
+contract, descriptor, locks and extracted executable bytes. The raw case
+reports remain under `artifacts/p9-d6359e1/{h,g,p}`.
+[Strict aggregate ledger](d6359e1/linux-ledger.json.gz).
+
+The cold build finished and emitted both hashes before its command wrapper
+failed. A successful rerun of the locked build verified identical bytes.
+Both logs are retained. The prior Linux package and benchmark artifacts
+remain attributable to their recorded source revisions.
+[Cold build](d6359e1/release-build-initial-launch.log.gz).
+[Successful build attestation](d6359e1/release-build.log.gz).
+
 ## Integrated Linux package candidate `12f2151`
 
 The locked workspace release built both executables on Ubuntu 24.04.5 x86-64

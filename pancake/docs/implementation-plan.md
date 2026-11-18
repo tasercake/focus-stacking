@@ -42,6 +42,16 @@ raw report and provenance record.
 | P5 motion, crop and registration | 64/64 | [P5 replay](p5-registration.md) |
 | P6 completion, parity and recovery | 72/72 | [P6 replay](p6-device-replay-evidence/cb5e3a4/README.md) |
 
+**The packaged `d6359e1` Linux release passes all 376 case IDs.** The
+same-source locked workspace build, fast and dependency checks, and rootless
+Debian package verification passed. The strict ledger accepted 341 host
+cases, 34 isolated GUI cases, and one physical RTX 3090 GUI case. The
+package includes the RAW channel-copy reduction, whose focused decode and
+parity receipts are separate from the full P10 benchmark of `12f2151`.
+[Linux package and matched ledger](p9-linux-package-evidence/README.md).
+[Exact RAW source and focused measurements](p10-r50-raw-audit/README.md).
+[Source-equivalent real RAW parity](p10-r50-raw-audit/f2f1bb3/README.md).
+
 **The packaged `12f2151` Linux release passes all 376 case IDs.** The
 locked default Linux workspace release used the rootlessly extracted Debian
 package binaries in the host, private GUI and physical RTX 3090 lanes.
