@@ -61,7 +61,7 @@
     "src/registration/geometry.rs": "6bbfc0ef0ee0b028f63cadcd6ab85183a9da2f370da2cf6ad9260793e27f3893",
     "src/registration/kernels.rs": "4cd45398eefac5d8127d7e8ed25fcdee904035e60c20e553b827d7298d5e9636",
     "src/registration/mod.rs": "55c08bddfe86806228681c33d5e40f91369aa34726c62fbbb83232a48e60b41d",
-    "src/registration/spectral.rs": "a184047d5119828e96e67b6873f3de881b99124c30778d48dfa8161510ea7216",
+    "src/registration/spectral.rs": "21bcc91c44faade8fb5c53a59d52ac8a077bdb7448a232d201663ee35a14d577",
     "src/runtime/mod.rs": "630623ae62ca7417005743df56579fb9e5bfefaf66a7a338e20a9e0b2132e3a0",
     "src/runtime/portable.rs": "abc9d55c33609ebc1b4add22935422f55391695eb92dae186d6435fd9fea5ac6",
     "src/tests.rs": "c50f65f08d4f5a50aad6a48823be4684a459838d6d69200f53eec91f700fa88f"
