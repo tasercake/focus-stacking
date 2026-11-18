@@ -8,7 +8,8 @@ comparison permits native CUDA against reference OpenCL on the same card.
 The inspected target SHA-256 is `58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc`.
 
 **One of 26 logical profiles has met every completed-job gate.** The
-corrected-reference E9 CPU profile qualified at `c1e2cac` and `e81079d`,
+corrected-reference E9 CPU profile qualified at `c1e2cac`, `e81079d` and
+the notice-bearing `0a9ae85` release,
 each with 34 primary jobs, two CPU witnesses and the same independently
 reviewed RGB16 pair. Five historical full-count schedules at `12f2151`
 recorded 170 primary jobs and ten witnesses. Three used an ineligible E9
@@ -17,7 +18,7 @@ reference combiner. Three corrected E9 CUDA/OpenCL runs each completed
 warm, cold and process-tree RSS. Attributable GPU memory remains pending.
 Three CPU profiles and one GPU profile have eligible full schedules.
 Ten CPU and twelve GPU profiles lack a full eligible schedule.
-[Exact `e81079d` E9 CPU qualification](integrated-e9-corrected-cpu-e81079d/README.md).
+[Latest exact packaged E9 CPU qualification](integrated-e9-corrected-cpu-0a9ae85/README.md).
 
 ## Profile coverage
 
@@ -42,7 +43,7 @@ the full matched schedule is absent.
 | D150 | `hybrid` | Full count at `12f2151` | Open schedule |
 | D150 | `weighted_average` | Open schedule | Open schedule |
 | D150 | `depth_map` | Open schedule | Open schedule |
-| E9 | `exposure_fusion` | Qualified at `c1e2cac` and `e81079d` | Corrected full CUDA/OpenCL schedules at `c1e2cac`, `e81079d` and standalone `481d805`. The latest warm ratio passed at 0.494304. Device cadence and integrated release verification remain open. |
+| E9 | `exposure_fusion` | Qualified at `c1e2cac`, `e81079d` and `0a9ae85` | Corrected full CUDA/OpenCL schedules at `c1e2cac`, `e81079d` and standalone `481d805`. That last schedule passed warm at 0.494304. Device cadence and a full matched schedule at `0a9ae85` remain open. |
 
 The profile IDs are `<workload>.<method>.cpu` and
 `<workload>.<method>.gpu`. The input receipts pin 50 native generated RGB16
@@ -72,6 +73,7 @@ observations from the ineligible legacy reference combiner. The
 | [E9 exposure fusion CPU, packaged `e81079d`](integrated-e9-corrected-cpu-e81079d/README.md) | 0.421197, pass | 0.058141, pass | 0.316061, pass | — | The independently reviewed `c1e2cac` CPU pair repeated exactly. |
 | [E9 exposure fusion CUDA/OpenCL, native `e81079d`](integrated-e9-corrected-cuda-e81079d/README.md) | 0.505452, fail | 0.074855, pass | 0.420741, pass | Pending cadence | Exact prior independently reviewed RGB16 pair and inputs. |
 | [E9 exposure fusion CUDA/OpenCL, standalone `481d805`](integrated-e9-cuda-exposure-481d805/README.md) | 0.494304, pass | 0.074387, pass | 0.410362, pass | Pending cadence | Same reviewed RGB16 images and inputs. Integrated package and conformance remain open. |
+| [E9 exposure fusion CPU, packaged `0a9ae85`](integrated-e9-corrected-cpu-0a9ae85/README.md) | 0.409919, pass | 0.054769, pass | 0.311990, pass | — | The earlier independently reviewed CPU pair repeated exactly. |
 
 The latest E9 campaign sampled device-memory lower bounds of 291,504,128 B
 on CUDA and 320,864,256 B on OpenCL. Seventeen CUDA and four OpenCL traces
@@ -92,6 +94,11 @@ against 65.857370 s (0.662276). The reference RSS gap was 25.190 ms and
 the paired memory gate remains pending. The single diagnostic adds
 no completed-job profile coverage.
 [Measured T50 Weighted Average CPU pair](t50-weighted-cpu-e81079d/README.md).
+
+The corrected `e81079d` GDB replay measured 18.921 s inside two original
+RGB staging call sites. Both stock executions matched the TIFF bytes and
+transforms. This diagnostic leaves the full T50 schedule open.
+[Measured stock Weighted CPU phases](t50-weighted-phase-measured/README.md).
 
 ## Native latency and matching release
 
@@ -132,10 +139,13 @@ ledger and the newer suite source retain distinct provenance.
 [Native Linux profiles](../../../pancake/docs/p9-linux-native-evidence/c1e2cac/README.md) ·
 [Current implementation and assurance scope](../../../pancake/docs/implementation-plan.md#active-delivery-checkpoint)
 
-The newer exact `e81079d` Debian package also passed all 376 frozen cases
-and supplied the exact E9 CPU binary above. The later Exposure Fusion
-reuse changes the app and needs a matching release package and full replay.
-[Exact `e81079d` package and strict ledger](../../../pancake/docs/p9-linux-package-evidence/e81079d/summary.json).
+The newest exact notice-bearing `0a9ae85` Debian package passed all 376
+frozen cases and supplied the latest E9 CPU binary above. Two exact
+standalone `0a9ae85` CUDA smoke jobs also completed on physical RTX 3090
+with zero fallback. These verify native CUDA execution. The full matched
+GPU schedule and device-memory outcome remain open.
+[Exact `0a9ae85` package and strict ledger](../../../pancake/docs/p9-linux-package-evidence/0a9ae85/summary.json).
+[Physical RTX CUDA smoke](native-cuda-0a9ae85-real-e9/README.md).
 
 ## Holds and unavailable evidence
 
@@ -155,11 +165,14 @@ reuse changes the app and needs a matching release package and full replay.
 - **Device memory observation.** The installed NVIDIA process lists miss
   the 20 ms window on prior physical jobs. The local `ff9f5eb` overlap
   diagnostic found no complete Vulkan bypass and an inconclusive CUDA
-  control. The recorded capability inquiry found accounting disabled.
-  Per-PID maxima would require supported enabled mode and complete process
-  ownership provenance. A trustworthy attributable source remains required.
+  control. A new read-only check confirmed accounting is disabled on this
+  RTX 3090 and the current session has no administrative access. Hardware
+  calibration remains pending on an administrator-preenabled host. It
+  must validate terminal CUDA and OpenCL maxima and complete GPU-owner
+  provenance, with a separate Vulkan calibration before use in that lane.
   [NVIDIA per-call evidence](resource-sampling/collector-cadence-followup.md) ·
-  [Accounting capability and lifetime requirements](resource-sampling/nvml-accounting.md)
+  [Accounting capability and lifetime requirements](resource-sampling/nvml-accounting.md) ·
+  [Current read-only host check](resource-sampling/nvml-accounting-host-preflight.json)
 - **Apple execution.** No final matching physical Apple CPU, wgpu Metal,
   native Metal, native GUI, or Apple footprint receipt is available here.
   These remain unverified along with exact Apple packaging. Retained builds

@@ -49,10 +49,10 @@ The integrated local branch uses the audited clean base `8410863`.
 Compared with the original warp integration checkpoint, the base changed
 only three E9 trace evidence files. Product sources, test sources and
 locks match. Retained runtime receipts identify their original tested
-revisions and binaries. The latest sealed Debian package is `e81079d`.
-The current product adds checked Exposure Fusion upload reuse and the
-private U16 completion for normalized RAW. It needs a matching package
-build, full case replay and assurance.
+revisions and binaries. The latest sealed Debian package is `0a9ae85`.
+It includes checked Exposure Fusion upload reuse and the private U16
+completion for normalized RAW. Full assurance, platform and performance
+acceptance remain open.
 
 The exact combined `c1e2cac` source passed the unchanged Linux CPU ASan and
 TSan gates. Each ran 146 passing tests across 19 groups with no diagnostics.
@@ -81,7 +81,7 @@ The scoped headless GTK child now keeps the compiler's profile path.
 The same filtered test hits the error path once and emits separate
 PID-bound parent and child profiles. Production code is unchanged
 outside this test module. Strict full coverage and branch results remain
-open. The latest sealed package replay identifies `e81079d`.
+open. The latest sealed package replay identifies `0a9ae85`.
 [Scoped GTK child profiles](p9-cpu-assurance-evidence/gtk-child-profile/README.md).
 
 At `7748045`, the full fast gate and all 147 selected CPU dev tests
@@ -101,12 +101,32 @@ Nightly recorded 577/764 branch outcomes. Stable emitted no branch map.
 [CPU ASan](p9-cpu-assurance-evidence/0a9ae85/address/README.md).
 [CPU TSan](p9-tsan-audit/integrated-0a9ae85/README.md).
 
+At exact `0a9ae85`, both Linux CPU randomized layout seeds passed all 148
+tests, with 38 fingerprinted executable paths across the two builds.
+Supplemental strict Linux Miri passed all 23 library tests. The canonical
+Apple Miri gate remains separate.
+[CPU layouts](p9-cpu-assurance-evidence/0a9ae85/linux-layouts/README.md).
+[Supplemental Linux Miri](p9-cpu-assurance-evidence/0a9ae85-linux-miri/README.md).
+
 The exact `0a9ae85` native Linux CUDA and HIP release CLIs linked with
-their separate locked feature sets. The CUDA witness preparation binds
-the actual executable, toolchain and runtime libraries. Its real smoke
-remains unrun in this receipt. HIP execution was outside the build scope.
+their separate locked feature sets. Two real E9 smoke jobs on the exact
+CUDA ELF completed on the RTX 3090 with zero fallback. Both reproduced
+the prior RGB16 hashes and nine first-reference and sequential maps.
+HIP execution was outside the build scope.
 [Native CUDA build and smoke preparation](../../qualification/p10-performance/evidence/native-cuda-0a9ae85/README.md).
+[Actual physical CUDA witnesses](../../qualification/p10-performance/evidence/native-cuda-0a9ae85-real-e9/README.md).
 [Native HIP build](p9-linux-native-evidence/0a9ae85/hip/README.md).
+
+**The notice-bearing `0a9ae85` Debian package passed all 376 frozen case IDs.**
+The locked release build, fast, dependency and rootless package gates
+passed alongside 341 host cases, 34 isolated GUI cases and one physical
+RTX 3090 Vulkan case with zero fallback. The archive is 69,494,276 bytes
+with SHA-256 `c3516a65762b58889858857c8163744e86e82c9427a953730c0450580c5cc4c4`.
+Independent review verified both ELF payloads and the included project and
+LLVM notices. The verified LLVM build receipt binds 112 ordered static
+inputs and 2,182 matching native objects in the producer rlib.
+[Exact notice-bearing package and lane receipt](p9-linux-package-evidence/0a9ae85/summary.json).
+[Strict aggregate ledger](p9-linux-package-evidence/0a9ae85/linux-ledger.json.gz).
 
 **The exact `e81079d` Debian package passed all 376 frozen case IDs.**
 The locked release build, fast and dependency checks, and rootless
@@ -258,8 +278,9 @@ yet to run at that revision.
 
 The exact `0a9ae85` local mutator listed 2,672 unique candidates. The
 independent list for partition 9/16 matched the 167 expected candidates
-in order. Both listings exited 0. Execution of this partition and the
-complete mutation verdict remain open.
+in order. Both listings exited 0. Native execution of that partition
+started on 2026-11-19 at 01:30:24 SGT. Its terminal result and the complete
+mutation verdict remain open.
 [Exact native mutation preflight](p9-mutation-audit/0a9ae85-canonical-preflight/README.md).
 
 Follow-up tests caught all three earlier survivors on their separately
@@ -441,6 +462,12 @@ lock. Five remained ambiguous. A separate drag/release sensitivity check
 assigned those five without changing the primary verdict. The frozen
 matched viewer gate remains open.
 [Stock viewer pipeline attribution](p10-viewer-pipeline-trace/README.md).
+
+The live private RTX 3090 Vulkan surface advertised FIFO and Immediate.
+Four startup and resize configurations resolved to FIFO. Mailbox was
+unavailable on this surface, and the experiment stopped before a
+candidate build. The loaded viewer gate remains open.
+[Live presentation mode contract](p10-mailbox-capability-0a9ae85/README.md).
 
 An uninstrumented two-arm viewer experiment on the RTX 3090 measured
 52.322024 ms loaded P95 on the exact `c1e2cac` package and 66.942485 ms
@@ -632,6 +659,13 @@ RSS ratios were 0.421197, 0.058141 and 0.316061. The exact input and
 RGB16 hashes match the independently reviewed CPU pair. This remains
 one qualified logical profile of 26.
 [Exact packaged E9 CPU result](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-e81079d/README.md).
+
+The exact notice-bearing `0a9ae85` Debian package qualified the same E9
+CPU profile again. Its 34 primary jobs and two CPU witnesses measured
+warm, cold and process-tree RSS ratios of 0.409919, 0.054769 and 0.311990.
+The exact reviewed RGB16 pair and nine source hashes repeated. The
+completed-job aggregate remains one qualified logical profile out of 26.
+[Latest exact packaged E9 CPU result](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-0a9ae85/README.md).
 
 The corrected E9 physical CUDA/OpenCL campaign also completed all 34
 primary jobs and two backend witnesses. The warm ratio of 0.521168
@@ -838,6 +872,13 @@ in 43.383004 s. The runner stopped at an ordered-map schema error before
 GDB started. The fixed verifier passed five tests using the actual event
 and malformed controls. The attempt supplies no measured phase times.
 [Stock control and verifier correction](../../qualification/p10-performance/evidence/t50-weighted-phase-attempt/README.md).
+
+The corrected stock trace completed at exact `e81079d` in 45.932933 s
+against its 43.569249 s untraced control. Registration and Weighted add
+RGB staging accounted for 18.921 s of traced host-call intervals. The
+two RGB16 exports and all maps matched exactly. This attributes time to
+staging calls and leaves eventual savings and frozen performance open.
+[Measured stock Weighted CPU phases](../../qualification/p10-performance/evidence/t50-weighted-phase-measured/README.md).
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
