@@ -1,0 +1,2043 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "failed",
+  "complete": true,
+  "selected_count": 11,
+  "completed_count": 11,
+  "counts": {
+    "passed": 9,
+    "failed": 2,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "interface.import.native-dialogs",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 32.90265250799712,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface.py\", line 129, in _native_import\n    ui.wait(lambda snap: _has(snap, \"open-panel\"), description=\"native file import\")\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/ui.py\", line 86, in wait\n    return self.native.wait(lambda snapshot: condition(self.normalize(snapshot)), **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 300, in wait\n    raise TimeoutError(f\"Timed out after {timeout}s waiting for {description}\")\nTimeoutError: Timed out after 30s waiting for native file import\n",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.import.native-dialogs"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.export.formats",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 13.264154453994706,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "JPG-8": {
+          "shape": [
+            129,
+            193,
+            3
+          ],
+          "dtype": "uint8",
+          "range": 241.0,
+          "mean": 116.23000093719457,
+          "sharpness": 30957.564665393533
+        },
+        "PNG-8": {
+          "shape": [
+            129,
+            193,
+            3
+          ],
+          "dtype": "uint8",
+          "range": 235.0,
+          "mean": 115.97648980466187,
+          "sharpness": 30818.765891291674
+        },
+        "PNG-16": {
+          "shape": [
+            129,
+            193,
+            3
+          ],
+          "dtype": "uint16",
+          "range": 60372.0,
+          "mean": 29806.014914782238,
+          "sharpness": 2035067984.3452332
+        },
+        "TIFF-8": {
+          "shape": [
+            129,
+            193,
+            3
+          ],
+          "dtype": "uint8",
+          "range": 235.0,
+          "mean": 115.97648980466187,
+          "sharpness": 30818.765891291674
+        },
+        "TIFF-16": {
+          "shape": [
+            129,
+            193,
+            3
+          ],
+          "dtype": "uint16",
+          "range": 60372.0,
+          "mean": 29806.014914782238,
+          "sharpness": 2035067984.3452332
+        },
+        "EXR-float32": {
+          "shape": [
+            129,
+            193,
+            3
+          ],
+          "dtype": "float32",
+          "range": 0.9212199049070477,
+          "mean": 0.45481064915657043,
+          "sharpness": 0.4738405905447242,
+          "storage_precision": {
+            "B": "FLOAT",
+            "G": "FLOAT",
+            "R": "FLOAT"
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.export.formats"
+      },
+      "outputs": {
+        "gui-JPG-8": "export-0.jpg",
+        "gui-PNG-8": "export-1.png",
+        "gui-PNG-16": "export-2.png",
+        "gui-TIFF-8": "export-3.tif",
+        "gui-TIFF-16": "export-4.tif",
+        "gui-EXR-float32": "export-5.exr"
+      },
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.viewer.navigation-comparison",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 85.91437301901169,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.viewer.navigation-comparison"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.lifecycle.pause-cancel",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 26.337385459977668,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "lifecycle": {
+            "metadata": {
+              "generator_version": 2,
+              "kind": "real-processing-lifecycle-workload",
+              "shape": [
+                1024,
+                1536,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 64,
+              "shared_pixel_storage": "hardlinks",
+              "source_transforms": [
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ],
+                [
+                  [
+                    1,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ]
+                ]
+              ]
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_03.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_04.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_05.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_06.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_07.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_08.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_09.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_10.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_11.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_12.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_13.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_14.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_15.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_16.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_17.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_18.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_19.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_20.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_21.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_22.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_23.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_24.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_25.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_26.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_27.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_28.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_29.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_30.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_31.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_32.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_33.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_34.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_35.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_36.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_37.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_38.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_39.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_40.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_41.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_42.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_43.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_44.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_45.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_46.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_47.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_48.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_49.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_50.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_51.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_52.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_53.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_54.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_55.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_56.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_57.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_58.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_59.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_60.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_61.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_62.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              },
+              {
+                "name": "frame_63.png",
+                "sha256": "d9a1425f2bb6492d06009521cd2ac30b0e754fe0da5b7fa189803f17bb7cd6e8"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.lifecycle.pause-cancel"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.portability.retained-results",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 12.065406745998189,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "translation": {
+            "metadata": {
+              "generator_version": 2,
+              "source_transforms": [
+                [
+                  [
+                    1.0,
+                    -0.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                [
+                  [
+                    1.0,
+                    -0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    -0.5
+                  ]
+                ],
+                [
+                  [
+                    1.0,
+                    -0.0,
+                    2.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    -1.0
+                  ]
+                ],
+                [
+                  [
+                    1.0,
+                    -0.0,
+                    3.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    -1.5
+                  ]
+                ]
+              ],
+              "interior": [
+                32,
+                225,
+                32,
+                289
+              ],
+              "kind": "translation",
+              "shape": [
+                257,
+                321,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 4
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a39b247eeb478f5e6d27bbcbfd2b9883f9585c4c47075e7880fb46e71a3d44e9"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "a94406e4c14a12241e2b4ca60212788f72fb363c2c24bc723cee6e93d222d274"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "6f451620a144e5de4ba0d6f07c2b7870bb38a04a0295d9fdece1c243416995ef"
+              },
+              {
+                "name": "frame_03.png",
+                "sha256": "5c81f8733cf2f245d5a0c457a0e701aaf24f2210a66aec7327d252be1f8863e9"
+              }
+            ]
+          }
+        },
+        "retained_results": {
+          "first": {
+            "shape": [
+              251,
+              311,
+              3
+            ],
+            "dtype": "uint16",
+            "range": 42166.0,
+            "mean": 29802.954245184323,
+            "sharpness": 271655060.05797225
+          },
+          "second": {
+            "shape": [
+              257,
+              321,
+              3
+            ],
+            "dtype": "uint16",
+            "range": 42653.0,
+            "mean": 29826.466772529104,
+            "sharpness": 265510181.3489432
+          },
+          "retained": {
+            "mean_absolute_error": 0.0,
+            "max_absolute_error": 0.0,
+            "p99_absolute_error": 0.0,
+            "fraction_above_threshold": 0.0
+          }
+        },
+        "requests": [
+          {
+            "options": {
+              "device": "cpu",
+              "kernel_size": 3,
+              "pyramid_levels": 4,
+              "scale_factor": 6,
+              "method": "hybrid",
+              "bit_depth": 16
+            },
+            "output_format": "tif",
+            "input_names": [
+              "frame_00.png",
+              "frame_01.png",
+              "frame_02.png",
+              "frame_03.png"
+            ],
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a39b247eeb478f5e6d27bbcbfd2b9883f9585c4c47075e7880fb46e71a3d44e9"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "a94406e4c14a12241e2b4ca60212788f72fb363c2c24bc723cee6e93d222d274"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "6f451620a144e5de4ba0d6f07c2b7870bb38a04a0295d9fdece1c243416995ef"
+              },
+              {
+                "name": "frame_03.png",
+                "sha256": "5c81f8733cf2f245d5a0c457a0e701aaf24f2210a66aec7327d252be1f8863e9"
+              }
+            ]
+          }
+        ],
+        "surface_parity": {
+          "mean_absolute_error": 0.0,
+          "max_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "fraction_above_threshold": 0.0
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.portability.retained-results"
+      },
+      "outputs": {
+        "retained-before": "retained-before.tif",
+        "replacement": "replacement.tif",
+        "retained-after": "retained-after.tif",
+        "output-02.tif": "output-02.tif"
+      },
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.portability.unicode-paths",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 6.575895679998212,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "unicode": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "\u7126\u70b9 caf\u00e9 frame 00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "\u7126\u70b9 caf\u00e9 frame 01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "\u7126\u70b9 caf\u00e9 frame 02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "unicode_image": {
+          "shape": [
+            129,
+            193,
+            3
+          ],
+          "dtype": "uint16",
+          "range": 60173.0,
+          "mean": 29800.082325849165,
+          "sharpness": 2032266750.4618943
+        },
+        "requests": [
+          {
+            "options": {
+              "device": "cpu",
+              "kernel_size": 3,
+              "pyramid_levels": 4,
+              "scale_factor": 6,
+              "method": "hybrid",
+              "bit_depth": 16
+            },
+            "output_format": "tif",
+            "input_names": [
+              "\u7126\u70b9 caf\u00e9 frame 00.png",
+              "\u7126\u70b9 caf\u00e9 frame 01.png",
+              "\u7126\u70b9 caf\u00e9 frame 02.png"
+            ],
+            "inputs": [
+              {
+                "name": "\u7126\u70b9 caf\u00e9 frame 00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "\u7126\u70b9 caf\u00e9 frame 01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "\u7126\u70b9 caf\u00e9 frame 02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        ],
+        "surface_parity": {
+          "mean_absolute_error": 0.0,
+          "max_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "fraction_above_threshold": 0.0
+        },
+        "unicode_names": {
+          "inputs": [
+            "\u7126\u70b9 caf\u00e9 frame 00.png",
+            "\u7126\u70b9 caf\u00e9 frame 01.png",
+            "\u7126\u70b9 caf\u00e9 frame 02.png"
+          ],
+          "export": "\u7126\u70b9 caf\u00e9 \ud801\udc00.tif"
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.portability.unicode-paths"
+      },
+      "outputs": {
+        "unicode-gui": "\u7126\u70b9 caf\u00e9 \ud801\udc00.tif",
+        "output-02.tif": "output-02.tif"
+      },
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.export.batch",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 34.379735765978694,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py\", line 51, in _batch_export\n    ui.wait(lambda snap: _has(snap, \"open-panel\"), description=\"batch export folder\")\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/ui.py\", line 86, in wait\n    return self.native.wait(lambda snapshot: condition(self.normalize(snapshot)), **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 300, in wait\n    raise TimeoutError(f\"Timed out after {timeout}s waiting for {description}\")\nTimeoutError: Timed out after 30s waiting for batch export folder\n",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.export.batch"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.result.manual-crop",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 8.686903950991109,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "translation": {
+            "metadata": {
+              "generator_version": 2,
+              "source_transforms": [
+                [
+                  [
+                    1.0,
+                    -0.0,
+                    0.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    0.0
+                  ]
+                ],
+                [
+                  [
+                    1.0,
+                    -0.0,
+                    1.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    -0.5
+                  ]
+                ],
+                [
+                  [
+                    1.0,
+                    -0.0,
+                    2.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    -1.0
+                  ]
+                ],
+                [
+                  [
+                    1.0,
+                    -0.0,
+                    3.0
+                  ],
+                  [
+                    0.0,
+                    1.0,
+                    -1.5
+                  ]
+                ]
+              ],
+              "interior": [
+                32,
+                225,
+                32,
+                289
+              ],
+              "kind": "translation",
+              "shape": [
+                257,
+                321,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 4
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a39b247eeb478f5e6d27bbcbfd2b9883f9585c4c47075e7880fb46e71a3d44e9"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "a94406e4c14a12241e2b4ca60212788f72fb363c2c24bc723cee6e93d222d274"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "6f451620a144e5de4ba0d6f07c2b7870bb38a04a0295d9fdece1c243416995ef"
+              },
+              {
+                "name": "frame_03.png",
+                "sha256": "5c81f8733cf2f245d5a0c457a0e701aaf24f2210a66aec7327d252be1f8863e9"
+              }
+            ]
+          }
+        },
+        "manual_crop": {
+          "source_shape": [
+            257,
+            321,
+            3
+          ],
+          "cropped_shape": [
+            251,
+            311,
+            3
+          ]
+        },
+        "requests": [
+          {
+            "options": {
+              "device": "cpu",
+              "kernel_size": 3,
+              "pyramid_levels": 4,
+              "scale_factor": 6,
+              "method": "weighted_average",
+              "align": true,
+              "alignment_mode": "translation",
+              "auto_crop": true,
+              "bit_depth": 16
+            },
+            "output_format": "tif",
+            "input_names": [
+              "frame_00.png",
+              "frame_01.png",
+              "frame_02.png",
+              "frame_03.png"
+            ],
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a39b247eeb478f5e6d27bbcbfd2b9883f9585c4c47075e7880fb46e71a3d44e9"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "a94406e4c14a12241e2b4ca60212788f72fb363c2c24bc723cee6e93d222d274"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "6f451620a144e5de4ba0d6f07c2b7870bb38a04a0295d9fdece1c243416995ef"
+              },
+              {
+                "name": "frame_03.png",
+                "sha256": "5c81f8733cf2f245d5a0c457a0e701aaf24f2210a66aec7327d252be1f8863e9"
+              }
+            ]
+          }
+        ],
+        "surface_parity": {
+          "mean_absolute_error": 0.0,
+          "max_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "fraction_above_threshold": 0.0
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.result.manual-crop"
+      },
+      "outputs": {
+        "uncropped": "before.tif",
+        "cropped": "cropped.tif",
+        "cropped-again": "cropped-again.tif",
+        "output-02.tif": "output-02.tif"
+      },
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.sprint.viewport-export",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 2.8909856969839893,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "flat": {
+            "metadata": {
+              "generator_version": 2,
+              "shape": [
+                65,
+                99,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "7bda100f3c8b3da1458233f94706f8608b56e08fa95e20bac2d2a12b74724f86"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "7bda100f3c8b3da1458233f94706f8608b56e08fa95e20bac2d2a12b74724f86"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "7bda100f3c8b3da1458233f94706f8608b56e08fa95e20bac2d2a12b74724f86"
+              }
+            ]
+          }
+        },
+        "viewport_export": {
+          "file": "viewport.png",
+          "shape": [
+            540,
+            722,
+            3
+          ],
+          "center_rgb_error": 0.0
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.sprint.viewport-export"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.close-unsaved",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 4.47949305298971,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "unsaved_close": {
+          "cancel_keeps_result": true,
+          "cancel_export_keeps_app": true,
+          "explicit_quit": true
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.recovery.close-unsaved"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.missing-source",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 5.158007158024702,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "requests": [
+          {
+            "options": {
+              "device": "cpu",
+              "kernel_size": 3,
+              "pyramid_levels": 4,
+              "scale_factor": 6,
+              "method": "hybrid",
+              "bit_depth": 16
+            },
+            "output_format": "tif",
+            "input_names": [
+              "frame_00.png",
+              "frame_01.png",
+              "frame_02.png"
+            ],
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        ],
+        "surface_parity": {
+          "mean_absolute_error": 0.0,
+          "max_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "fraction_above_threshold": 0.0
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c10/cases/interface.recovery.missing-source"
+      },
+      "outputs": {
+        "recovered": "recovered.tif",
+        "output-02.tif": "output-02.tif"
+      },
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}
