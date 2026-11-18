@@ -47,3 +47,27 @@ inputs, an unsupported input format and oversize PNG headers. A diagnostic from
 an unavailable pipeline would satisfy their generic rejection assertion, so
 the P1 evidence must verify the offending inputs and actual error reasons.
 The later successful glob and path-order cases exercise a completed stack.
+
+## First locked release executable
+
+On 2026-11-18, candidate `4b2f9f745f7a9cfe8da6adcb17a18f39c6f3d9cc`
+built under Rust 1.100.0 with `cargo build --release --locked --package
+pancake-cli --bin pancake-cli` from `pancake/`. The unchanged conformance
+entry point ran `cli.help` plus every other P1 parser and path ID with
+`DISPLAY`, `WAYLAND_DISPLAY`, `DBUS_SESSION_BUS_ADDRESS` and
+`XDG_SESSION_TYPE` unset. It passed all 20 selected IDs, with no failures or
+unsupported results. Each failing CLI invocation reported the offending flag,
+value or input count. The five image decoder cases were outside this run.
+
+- [Complete selected-case report](cli-parser-release.json.gz)
+- [Raw suite provenance](cli-parser-release-provenance.json)
+- [Checked rejection diagnostics](cli-parser-diagnostics.txt)
+- [Release help output](cli-parser-help.txt)
+- [Executable, Cargo.lock and ELF linkage](cli-parser-linkage.txt)
+
+`python3 -m unittest scripts/test_headless_dependencies.py` passed on the same
+revision. It checked the normal and build dependency edges of both the CLI
+and core for all Cargo target platforms and features. The compute graph
+contains the low-level `wayland-sys` loader through wgpu. The release ELF
+needs libc, libgcc_s, libstdc++ and libm. Its loader trace for `--help`
+shows no X11, Wayland, GTK, EGL, GLX or Vulkan library loaded.
