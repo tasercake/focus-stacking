@@ -6,7 +6,9 @@ use std::rc::{Rc, Weak};
 
 use num_traits::ToPrimitive as _;
 use slint::platform::software_renderer::{MinimalSoftwareWindow, RepaintBufferType};
-use slint::platform::{Platform, PlatformError, PointerEventButton, WindowAdapter, WindowEvent};
+use slint::platform::{
+    Key, Platform, PlatformError, PointerEventButton, WindowAdapter, WindowEvent,
+};
 use slint::{
     ComponentHandle as _, Image, LogicalPosition, PhysicalSize, Rgb8Pixel, SharedPixelBuffer,
 };
@@ -226,6 +228,119 @@ fn observe_comparison(
         RESULT,
         "the result beyond the dragged split must stay visible",
     )?;
+    Ok(())
+}
+
+/// Observe the real fit command without letting button decoration schedule more frames.
+/// # Errors
+/// Returns a window, input, or rendered-image regression.
+#[test]
+fn viewer_fit_updates_without_decorative_animation() -> Result<(), Box<dyn Error>> {
+    let adapter = MinimalSoftwareWindow::new(RepaintBufferType::NewBuffer);
+    let platform_window = Rc::downgrade(&adapter);
+    slint::platform::set_platform(Box::new(Offscreen(platform_window.clone())))?;
+    adapter.set_size(PhysicalSize::new(
+        u32::try_from(WIDTH)?,
+        u32::try_from(HEIGHT)?,
+    ));
+    let workspace = super::compile_workspace()?.create()?;
+    workspace.set_property("native-menu-bar", false.into())?;
+    let mut portrait = SharedPixelBuffer::new(40, 320);
+    portrait.make_mut_slice().fill(RESULT);
+    workspace.set_property("preview", Image::from_rgb8(portrait).into())?;
+    workspace.set_property("preview-width", 40_i32.into())?;
+    workspace.set_property("preview-height", 320_i32.into())?;
+    let component = workspace.as_weak();
+    let observed = workspace
+        .show()
+        .map_err(Box::<dyn Error>::from)
+        .and_then(|()| observe_fit_command(&workspace, &adapter));
+    let hidden = workspace.hide().map_err(Box::<dyn Error>::from);
+    drop(workspace);
+    drop(adapter);
+    observed.and(hidden)?;
+    if component.upgrade().is_some() || platform_window.upgrade().is_some() {
+        return Err("The finished fit command retained its offscreen workspace.".into());
+    }
+    Ok(())
+}
+
+/// Recover the toolbar position from the photograph's actual rendered bounds.
+/// # Errors
+/// Returns rendered geometry, input dispatch, or view behavior errors.
+fn observe_fit_command(
+    workspace: &ComponentInstance,
+    adapter: &MinimalSoftwareWindow,
+) -> Result<(), Box<dyn Error>> {
+    let original = render(adapter)?;
+    let rows = original.as_chunks::<WIDTH>().0;
+    let bottom = rows
+        .iter()
+        .rposition(|row| row.contains(&RESULT))
+        .ok_or("The fit image did not reach its canvas edge.")?;
+    let y = bottom / 2;
+    let middle = rows.get(y).ok_or("Missing image row.")?;
+    let canvas = Rgb8Pixel::new(20, 22, 25);
+    let left = middle
+        .iter()
+        .position(|&pixel| pixel == canvas)
+        .ok_or("Missing canvas background.")?;
+    let position = |x: usize, y: usize| -> Result<LogicalPosition, &'static str> {
+        let (x, y) = x
+            .to_f32()
+            .zip(y.to_f32())
+            .ok_or("Invalid pointer position.")?;
+        Ok(LogicalPosition::new(x, y))
+    };
+    let window = workspace.window();
+    let _scrolled = window.dispatch_event_with_result(WindowEvent::PointerScrolled {
+        position: position(left.saturating_add(32), y)?,
+        delta_x: 0.0,
+        delta_y: 1.0,
+    })?;
+    let zoomed = render(adapter)?;
+    let photo_pixels =
+        |picture: &[Rgb8Pixel]| picture.iter().filter(|&&pixel| pixel == RESULT).count();
+    if photo_pixels(&zoomed) <= photo_pixels(&original) {
+        return Err("Scrolling did not change the real displayed photograph.".into());
+    }
+
+    // The leftmost toolbar button starts ten pixels inside the canvas.
+    let fit = position(left.saturating_add(18), bottom.saturating_add(24))?;
+    let _hover = window.dispatch_event_with_result(WindowEvent::PointerMoved { position: fit })?;
+    let _hovered = render(adapter)?;
+    if window.has_active_animations() {
+        return Err("Hovering on Fit scheduled a decorative animation.".into());
+    }
+    let _press = window.dispatch_event_with_result(WindowEvent::PointerPressed {
+        position: fit,
+        button: PointerEventButton::Left,
+    })?;
+    let _release = window.dispatch_event_with_result(WindowEvent::PointerReleased {
+        position: fit,
+        button: PointerEventButton::Left,
+    })?;
+    let fitted = render(adapter)?;
+    if photo_pixels(&fitted) != photo_pixels(&original) || window.has_active_animations() {
+        return Err(
+            "A Fit click must restore the photograph with no trailing skin animation.".into(),
+        );
+    }
+
+    // Fit returns focus to the canvas, then tab visits Fit and 1:1 in order.
+    for key in [Key::Tab, Key::Tab, Key::Return] {
+        let _pressed =
+            window.dispatch_event_with_result(WindowEvent::KeyPressed { text: key.into() })?;
+        let _released =
+            window.dispatch_event_with_result(WindowEvent::KeyReleased { text: key.into() })?;
+    }
+    let actual = render(adapter)?;
+    if !(12_000..=13_600).contains(&photo_pixels(&actual)) || window.has_active_animations() {
+        return Err(
+            "Keyboard activation must show the 40 × 320 photograph at 1:1 without animation."
+                .into(),
+        );
+    }
     Ok(())
 }
 
