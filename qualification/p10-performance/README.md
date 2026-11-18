@@ -65,7 +65,10 @@ other reference profiles retain their existing paths and treatment.
 
 The common affinity mask and worker limit apply to both targets. To constrain
 both applications, run the entire command under the same `taskset` mask and
-give `--threads` the number of allowed CPUs. Keep other audits, builds, and
+give `--threads` the number of allowed CPUs. `--rss-sampler-cpu N` optionally
+places only the RSS sampler on an allowed logical CPU outside that mask. The
+report records its effective mask. On an SMT host that CPU can still share a
+physical core with an application CPU. Keep other audits, builds, and
 GPU jobs idle while measuring. The common Git-directory lock serializes this
 runner across worktrees. Independent applications require separate scheduling.
 The report captures CPU frequency policy, available CPU temperatures, GPU
@@ -86,7 +89,8 @@ uses the kernel session ID to screen unrelated PIDs before reading their
 `/proc` entries. A separate NVIDIA sampler attributes the pinned device’s
 NVML compute and graphics lists to actual session members, counting a PID
 that appears on both lists once. The separate raw traces record each
-collector’s own start and completion times, observed PIDs, and bytes.
+collector’s scheduled and actual start, completion, acquisition thread CPU
+time, observed PIDs, and bytes.
 
 Both samplers use an 8 ms nominal interval on the same monotonic clock as
 the job. The reducer checks each counter independently from launch through
@@ -97,6 +101,9 @@ along with maximum acquisition time and sampler thread CPU cost. Transient
 peaks can escape polling, and RSS can count a shared page in multiple
 processes. [Linux procfs reference](https://docs.kernel.org/filesystems/proc.html) ·
 [NVML process queries](https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlDeviceQueries.html)
+
+The [D150 cadence investigation](evidence/resource-sampling/d150-rss-cadence.md)
+records the measurement that motivated the optional RSS sampler affinity.
 
 Linux `wait4` reports the waited process’s RSS high water separately. A
 cgroup `memory.peak` includes charged file cache and kernel data. NVIDIA
