@@ -97,6 +97,11 @@ zero fallback. The strict 376-case package ledger remains scoped to
 `fb9c399`. The combined source needs its own matched full release replay.
 [Dual-scan build and native evidence](p10-dual-scan-evidence/e5b6260/README.md).
 
+At `25cc498`, the unchanged fast gate and all 147 CPU dev tests passed.
+That source includes the two scan removals. The later FFT coefficient
+change has its own scoped P5 and runtime results.
+[Exact fast and CPU tests](p9-cpu-assurance-evidence/25cc498/README.md).
+
 The `c1e2cac` source compiled and linked the native Linux CUDA and HIP
 CLI profiles. Two CPU and two physical RTX 3090 CUDA cases ran through the
 hashed CUDA release with zero fallback, and all four export digests matched
@@ -514,12 +519,27 @@ and transform parity. The faster LLVM profile remains the release profile.
 The frozen E9 reference comparison retains its earlier verdict.
 [Native CUDA compiler diagnostic](../../qualification/p10-performance/evidence/e9-cuda-compiler-diagnostic/README.md).
 
-The separate host-only E9 compiler diagnostic moved trigonometry into the
-window stage. It reduced measured first-use compiler time by 7.77 ms at
-side 64 and 10.24 ms at side 128. Exact native CPU controls matched six
-spectral fixtures. The prototype stays separate, with real E9 execution
-and impact on the frozen warm result unverified.
+The FFT coefficient table moves trigonometry into the first window
+dispatch and reuses the values across both forward transforms and the
+inverse. The earlier host-only diagnostic reduced measured first-use
+compiler time by 7.77 ms at side 64 and 10.24 ms at side 128.
 [Host first-use compiler evidence](../../qualification/p10-performance/evidence/e9-cold-kernel-diagnostic/README.md).
+
+The exact coefficient-table candidate `a919045` matched six native CPU
+spectral fixtures and all 380 coefficient-angle bits. All 64 mapped P5
+cases passed, including 63 CPU cases and one physical RTX Vulkan case.
+Separate stock and candidate runs matched 122,880 f32 channels bit
+for bit on each of native Vulkan and CUDA.
+[Host parity and native link](../../qualification/p10-performance/evidence/e9-lut-75c-host/README.md).
+[Mapped P5 and two physical runtime comparisons](../../qualification/p10-performance/evidence/e9-lut-portability/README.md).
+
+Four paired native CUDA E9 observations on the RTX 3090 measured a
+410.183 ms stock warm median and 393.651 ms with the table, a 4.03%
+diagnostic reduction. All 12 jobs preserved exact RGB16 exports and
+both registration map families. The existing corrected CUDA/OpenCL
+warm miss retains its original revision and verdict. The integrated
+source needs a fresh full package replay and matched E9 campaign.
+[Paired CUDA E9 diagnostic](../../qualification/p10-performance/evidence/e9-cuda-lut-diagnostic/README.md).
 
 The read-only E9 startup audit found two CUDA driver loader opens in the
 first discovery path. Historical discovery took 13.075 ms of 116.574 ms
