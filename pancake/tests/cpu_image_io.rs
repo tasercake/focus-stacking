@@ -683,6 +683,44 @@ fn malformed_dng_sensor_metadata_fails_preflight() -> TestResult {
     Ok(())
 }
 
+/// The encoded RAW limit includes its last byte and preserves native Bayer RGB.
+///
+/// # Errors
+/// Returns file setup, decode, or native sample parity errors.
+#[test]
+fn encoded_raw_at_limit_develops_identically() -> TestResult {
+    const ENCODED_LIMIT: u64 = 268_435_456;
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("encoded-at-limit.dng");
+    fs::write(&path, include_bytes!("data/bayer-conformance.dng"))?;
+    let unpadded = decode(&path)?;
+
+    // The original IFDs and Bayer strip precede the zero-filled trailer.
+    File::options()
+        .write(true)
+        .open(&path)?
+        .set_len(ENCODED_LIMIT)?;
+    require(
+        fs::metadata(&path)?.len() == ENCODED_LIMIT,
+        "could not stage the exact encoded RAW size limit",
+    )?;
+    let padded = decode(&path)?;
+    require(
+        (padded.width(), padded.height(), padded.sample_encoding())
+            == (160, 112, SampleEncoding::U16),
+        "exact-cap DNG lost native geometry or RGB16 precision",
+    )?;
+    require(
+        padded.samples().len() == unpadded.samples().len()
+            && padded
+                .samples()
+                .iter()
+                .zip(unpadded.samples())
+                .all(|(padded, unpadded)| padded.to_bits() == unpadded.to_bits()),
+        "the trailing zeros changed Bayer development at the exact encoded limit",
+    )
+}
+
 /// Reject an over-budget encoded RAW file by its actual byte count.
 ///
 /// # Errors
