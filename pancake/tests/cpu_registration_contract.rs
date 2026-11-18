@@ -38,3 +38,24 @@ fn cpu_panorama_thumbnail_respects_proxy_budget() -> Result<(), String> {
     })?;
     Ok(())
 }
+
+/// Preserve every output sample when the final registration tile is partial.
+/// # Errors
+/// Returns an allocation, device, or sample mismatch error.
+#[test]
+fn cpu_registration_preserves_partial_final_tile() -> Result<(), String> {
+    let (width, height) = (301, 293);
+    let pixels = (0_u16..=u16::MAX)
+        .cycle()
+        .take(264_579)
+        .map(f32::from)
+        .collect::<Vec<_>>();
+    let frame = Frame::new(width, height, &pixels)?;
+    let bounds = Bounds::new(0, 0, width, height)?;
+    let device = cubecl::Device::cpu().map_err(|error| error.to_string())?;
+    let result = warp(&device, frame, Affine::IDENTITY, bounds, 8_388_608)?;
+    if result != pixels {
+        return Err("tiled registration did not preserve the complete RGB frame".to_owned());
+    }
+    Ok(())
+}
