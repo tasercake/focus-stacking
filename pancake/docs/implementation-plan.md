@@ -224,6 +224,17 @@ diagnostic leaves the full warm, cold, process-tree RSS and equal-quality
 verdicts open.
 [Packaged R50 pair and stage trace](p10-r50-phase-287828a/README.md).
 
+The separate `287828a` versus `07816a2` R50 CPU pair completed in
+51.521 s and 42.072 s respectively. The encoded and decoded RGB16 TIFFs
+matched, as did all 50 f32 alignment and sequential transforms. Separate
+GDB runs measured registration thumbnails at 17.206 s and 7.944 s.
+RAW decode and fusion remained the longest stages in the owned-buffer arm.
+The comparison leaves frozen timing medians and process-tree RSS open.
+The thumbnail lattice remains an experiment plan. The authenticated
+originals and temporary outputs were removed.
+[Owned-upload R50 evidence](p10-r50-phase-287828a/owned-upload/README.md).
+[Thumbnail lattice proposal](p10-r50-phase-287828a/thumbnail-lattice-plan.md).
+
 At the packaged `12f2151` CLI, the aligned real E9 comparison completed 17
 launches per application in each CPU and physical NVIDIA lane. CPU warm,
 cold and peak RSS ratios against the reference were 0.4604, 0.0628 and 0.3188,
@@ -245,6 +256,13 @@ The same-source E9 CUDA compiler experiment on the RTX 3090 measured
 and transform parity. The faster LLVM profile remains the release profile.
 The frozen E9 reference comparison retains its earlier verdict.
 [Native CUDA compiler diagnostic](../../qualification/p10-performance/evidence/e9-cuda-compiler-diagnostic/README.md).
+
+The separate host-only E9 compiler diagnostic moved trigonometry into the
+window stage. It reduced measured first-use compiler time by 7.77 ms at
+side 64 and 10.24 ms at side 128. Exact native CPU controls matched six
+spectral fixtures. The prototype stays separate, with real E9 execution
+and impact on the frozen warm result unverified.
+[Host first-use compiler evidence](../../qualification/p10-performance/evidence/e9-cold-kernel-diagnostic/README.md).
 
 The packaged `12f2151` GUI recorded all 400 calibrated visible transitions on
 physical RTX 3090, with 200 idle and 200 loaded events. The 41.121 ms idle and
@@ -285,6 +303,15 @@ remain separate from the packaged build. Equal-quality acceptance is open.
 [Full-stack cubic pair](d150-geometry-audit/breathing-sampling/README.md).
 [Fixed-input Hybrid pair](../../qualification/p10-performance/evidence/d150-hybrid-coherence-287828a/README.md).
 
+A nine-original D150 probe found that inverted reverse-anchor proposals
+reduced held-out bilateral transfer errors at both selected transitions.
+Direction choice, whole-stack geometry and fused quality remain open.
+The standalone Hybrid expansion audit measured phase leakage too small in
+its analytic witness to attribute the observed D150 quality gap to the
+expansion stencil. These findings remain diagnostic.
+[Reverse-anchor motion study](d150-geometry-audit/motion-admission/README.md).
+[Hybrid expansion audit](../../qualification/p10-performance/evidence/hybrid-math-review-287828a/README.md).
+
 One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
 Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
 Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
@@ -310,8 +337,9 @@ uploads totaling 14.4 GB of logical data and preserved the exact TIFF bytes,
 50 transforms and completion events. The separate bounded tiled-TIFF
 diagnostic preserved all sample bits across nine paired decode observations.
 Frozen end-to-end speed and memory remain open. The shared `287828a` stage
-verified all 52 generated file and independently decoded pixel records. It
-ran zero benchmark jobs during materialization.
+verified all 52 generated file and independently decoded pixel records.
+After all three borrowers released the stage, all 52 TIFFs were authenticated
+again and removed.
 [Physical resident RGB comparison](p10-t50-resident-input/README.md).
 [Bounded TIFF decode](p10-tiled-tiff-diagnostic/README.md).
 [Verified T50 stage](../../qualification/p10-performance/evidence/t50-shared-287828a/README.md).
@@ -331,6 +359,25 @@ the frozen cadence. The encoded and decoded RGB16 output, 50 identity
 transforms and completion records matched. VRAM sample gaps exceeded 20 ms.
 The frozen cross-application speed, memory and quality verdicts remain open.
 [Registration upload A/B and allocation proof](p10-registration-owned-upload/README.md).
+
+The bounded TIFF row-worker candidate `e228c68` passed all 84 P2 IDs,
+with 68 CPU-only IDs and 16 GPU-bearing IDs. The latter recorded 16
+physical RTX 3090 Vulkan completions plus their native CPU comparisons.
+The independent supplemental Linux Miri harness passed both copied pure
+cursor tests. The real TIFF and ICC filesystem checks remain in the native
+integration lane. The canonical macOS workspace gate remains open.
+[Exact P2 accounting](p10-tiff-row-worker/p2/qualification.json).
+[TIFF worker and Miri review](p10-tiff-row-workers-review/README.md).
+
+The separately built `287828a` serial and `e228c68` row-worker CLIs ran one
+matched physical T50 diagnostic. Wall time fell from 55.539 s to 38.517 s.
+Both observed process-tree RSS peaks were about 1.55 GB with compliant RSS
+cadence. The encoded and decoded RGB16 output and all 50 identity transforms
+matched. GPU memory sample gaps were 93.134 and 116.456 ms. The launches
+started at different GPU power states and temperatures. The row-worker and
+one-copy upload effects were measured in separate A/B pairs. The combined
+source still needs release replay and the frozen cross-application comparison.
+[Physical TIFF worker pair](p10-tiff-row-worker/README.md).
 
 The decode overlap audit retains ordered current-frame reads. Its archived
 trace model bounds the benefit and identifies the extra memory, input-order
