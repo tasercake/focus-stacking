@@ -43,6 +43,8 @@ UUID of its actual OpenCL index and checks it against NVML. The candidate
 completion event supplies `runtime`, `device`, and `device_pci_address` as well
 as the public `actual_backend` field. Each GPU sample must show attributable
 memory on the matched card and completion without a reported CPU fallback.
+Use `--cuda-library-path` when the CUDA build requires a specific toolkit
+library directory. This changes the candidate child’s loader environment.
 
 For T50 pass the directory containing the exact `focus_000.tif` through
 `focus_049.tif` files. Real R50/D150/E9 paths resolve under the staging root
