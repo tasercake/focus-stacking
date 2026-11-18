@@ -1,0 +1,19 @@
+{
+  "source": "cb5e3a4a35c2ce356c93fed0f784825a17787148",
+  "binary_sha256": "818a2c3532141f5f96e75accc569121f064f2925bf31738956a94887a9f4cfc8",
+  "rust_lock_sha256": "012cda6d161124eef8ecc3c5c6a4fed8db881e5f7606f4b9d7aee5f766f1a879",
+  "rust_toolchain": "1.100.0",
+  "build": "cargo +1.100.0 build --release --locked -p pancake-cli",
+  "runtime": "cpu",
+  "selected": 27,
+  "passed": 27,
+  "failed": 0,
+  "unsupported": 0,
+  "skipped": 0,
+  "unrun": 0,
+  "completed_stack_calls_by_device": {
+    "AMD Ryzen 9 7950X3D 16-Core Processor": 31
+  },
+  "raw_report_sha256": "4dc071eb64c3fb0611920d945b42874732d4ba598e2ebb2851fef110915c5058",
+  "raw_call_artifacts": 89
+}
