@@ -1,6 +1,6 @@
 # R50 Hybrid band accumulation prototype
 
-Candidate `3d2782e8e30a66cef1b5248d62ff6f8042c30736` removes the transient Hybrid RGB band. The existing weighted CubeCL kernel already derives the coefficient from the fine and coarse Gaussian levels for Exposure. Hybrid now uses that input route, and a separate selection kernel derives the coefficient only when a pixel gets a new strict focus winner. Both passes fit the previous limit of five storage tensors. The CPU result matched the old path bit for bit. Physical parity and application performance remain pending.
+Candidate `3d2782e8e30a66cef1b5248d62ff6f8042c30736` removes the transient Hybrid RGB band. The existing weighted CubeCL kernel already derives the coefficient from the fine and coarse Gaussian levels for Exposure. Hybrid now uses that input route, and a separate selection kernel derives the coefficient only when a pixel gets a new strict focus winner. Both passes fit the previous limit of five storage tensors. The CPU and physical Vulkan results matched the old path bit for bit. Exact locked candidate `903836c` passed every P4 case. R50 performance and native CUDA parity remain pending.
 
 ## Observed cost and scope
 
@@ -33,10 +33,31 @@ python3 scripts/miri_host_policy.py . validate
 
 For the differential, build each lock and source revision separately and link the retained driver with `rustc +1.100.0 --edition=2024`, `-L dependency=DIR` and explicit `--extern pancake=LIB --extern cubecl=LIB`. With Cargo’s build-directory layout, populate `DIR` with links to the build’s `target/debug/build/*/*/out/` rlibs and proc macros. Run each executable with its output path and compare the two files using `cmp`.
 
-## Prepared replay
+## Exact physical Vulkan and P4 closure
 
-Use the shared `gpu_advanced_fusion` contract and the same 18 old and new f32 cases on explicitly selected physical Vulkan, then native CUDA with `--features cubecl/cuda` and the approved native libraries. The prepared driver uses ordinary application runtime qualification and records the observed backend, hardware fingerprint, PCI address and adapter information. It fails if the requested physical backend did not run. Compare each backend to its own old driver output. [Physical differential driver](compare-native-f32.rs.txt)
+The locked `903836ca831ba1e92b7d4f006836320dd8cbe402` release CLI has SHA-256 `c4cf0e5f9ed65e4fd3b91835b27b28d1ff12e518d9dee57fb70f3cb3ed0fc6f6`. It was built using `taskset -c 12,13 cargo +1.100.0 build --offline --locked --release -p pancake-cli` with two Cargo jobs, incremental compilation off and no compiler wrapper. The ELF build ID is `d9527bde1bfac3c8645b623bcf5336704ae0a8e8`. The dependency lock digest is the same as the focused CPU run.
 
-Build the locked release CLI from the exact candidate, hash it, and use the unchanged frozen adapter and P4 case selection. The 69 case IDs in this receipt were independently matched in order against the retained P4 archive. Confirm 69 passing outcomes, actual physical Vulkan execution for `algorithms.coverage.hdr_multibatch.gpu`, and verified CLI and clean-source provenance after the replay. The P6 physical Hybrid stack, aligned stack, slabs and 16-bit cases are additional direct product checks of the changed route. [Replay command](run-p4.sh.txt) · [Exact P4 case IDs](p4-case-ids.txt) · [Historical P4 evidence](../p4-conformance-evidence.md)
+On the physical NVIDIA RTX 3090 at PCI `0000:01:00.0`, driver `580.178.04`, the same 18 raw f32 cases for clean stock `b820da05` and candidate `903836c` each finished on explicitly selected Vulkan. All 235,962 channels matched bit for bit. Both output digests were `697aec036d9827b6c2bd46d8330f06950db2026574009e9042420b7e0530b212`. The shared GPU contract also passed. [Physical differential driver](compare-native-f32.rs.txt)
 
-No physical replay or new R50 timings have been collected on this candidate. A paired R50 follow-up needs the same authenticated 50 originals, retained flags and output/transform comparison before assessing the stage and whole-job memory.
+The exact frozen P4 replay ran from 20:05:30 to 20:06:11 SGT on 2026-11-18. All 69 mapped cases passed with zero failures or unsupported cases, and the candidate ELF rehashed unchanged before and after execution. Target and suite provenance both identify clean `903836c`. The physical HDR case completed with `wgpu-vulkan`, `physical_gpu: true` and no fallback on the same RTX 3090. The run supplies functional evidence. [Verification receipt](physical-and-p4-receipt.json) · [Replay command](run-p4.sh.txt) · [Exact case IDs](p4-case-ids.txt)
+
+The verified read-only ELF, complete raw archive and separate checksums are retained under `artifacts/pancake-performance/binaries/hybrid-band-903836c/` in the repository's artifact store. Archive SHA-256 is `e4f163c873cc9e5ef7f21284b5080d818a34390b696b13a50d32c02d14fa149f`.
+
+## Prepared R50 comparison
+
+The common control is the preserved exact `07816a2` owned-registration-upload release. Its production paths and lock are byte-identical to `b820da05`. Compare it separately with the exact Hybrid ELF above and the exact `f034185` luma lattice ELF. All three use the same lock. The Hybrid executable delta is `pancake/src/fusion/advanced/levels.rs`. The luma delta is limited to the registration estimator and kernels, including their tests. The comparison uses the same 50 authenticated Canon CR3s, first-anchor similarity, kernel 6, eight reductions, scale 6, no slabs, auto crop and RGB16 TIFF. [Frozen R50 profile](../performance-targets.json) · [Historical one-copy diagnostic](../p10-r50-phase-287828a/owned-upload/README.md)
+
+The corpus owner can copy `r50-three-arm.py.txt` to its task scratch as `r50-three-arm.py` and extract `diagnose.py` from the pinned ancestor before taking the agreed CPU quiet slot. The existing measured-process helper records public frame progress, exit status, elapsed time and direct-child high-water RSS. All three arms run in fixed order with per-arm fresh application caches and common Linux affinity 0–14. SHA-256 validation uses the immutable manifest before and after the three runs. Output decoding checks expected 5086×3390 genuine RGB16, exact prior pixel hash, and the bit digests of all 50 alignment and 50 sequential matrices in input order. Every arm must report actual CPU completion without fallback. Output verification follows the timed launches. Command environment expects the frozen Python environment and an explicit quiet lease receipt.
+
+```bash
+repo=/home/krishna/Documents/focus-stacking
+git -C "$repo" show 8694b55:pancake/docs/p10-r50-phase-287828a/diagnose.py.txt > "$scratch/diagnose.py"
+export PYTHONPATH="$repo/qualification/p10-performance:$repo/pancake-conformance/src"
+prlimit --as=34359738368 -- taskset -c 0-14 "$frozen_python" "$scratch/r50-three-arm.py" \
+  --inputs "$authenticated_originals" --output "$new_report_directory" --lease "$quiet_receipt" \
+  --baseline "$repo/artifacts/pancake-performance/binaries/registration-owned-07816a2/pancake-cli" \
+  --hybrid "$repo/artifacts/pancake-performance/binaries/hybrid-band-903836c/pancake-cli" \
+  --luma "$verified_luma_elf"
+```
+
+The prepared recipe was checked statically. No originals were acquired and no R50 run or CUDA run was made in this task. A single observation per arm is a component diagnostic outside the frozen warm and memory gates. [Three-arm recipe](r50-three-arm.py.txt)
