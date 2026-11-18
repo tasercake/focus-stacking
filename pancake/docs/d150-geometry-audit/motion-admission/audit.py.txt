@@ -1,0 +1,187 @@
+"""Discriminate supported D150 motion from an erroneous direct-map discontinuity."""
+
+import argparse
+import gzip
+import hashlib
+import json
+import math
+from pathlib import Path
+import statistics
+import tarfile
+
+
+DOCS = Path("pancake/docs/d150-geometry-audit")
+SEALED = Path("qualification/p10-performance/evidence/integrated-d150-12f2151")
+PACKAGED_EVENTS_SHA = "e5b11085f6586765d74d4311347437b57a67f24966d389800c92ae396a3b2f05"
+LOCAL_CHAIN_SHA = "b5b862bf0ffa3b9a630373082f606ad8a8912d8d71e642d1b667a7928f58133a"
+CORPUS = Path("pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json")
+CORPUS_SHA = "6d417c9c00866755bdbc8e2fafc1421de8414e1ea9e75d2cfd7e96e2161a89ac"
+IDENTITY = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]
+POINTS = [(0, 0), (2303, 0), (0, 1727), (2303, 1727), (1151.5, 863.5)]
+GENUINE = ("P9160580_d2.jpg", "P9160581_d2.jpg")
+ERRONEOUS = ("P9160654_d2.jpg", "P9160655_d2.jpg")
+PROBE_INDICES = [0, 63, 64, 65, 66, 137, 138, 139, 140]
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def completion(payload):
+    complete, = [row for line in payload.splitlines()
+                 if (row := json.loads(line)).get("event") == "stack_complete"]
+    assert complete["completed"] and complete["actual_backend"] == "cpu"
+    return complete
+
+
+def archived_event(member):
+    archive = SEALED / "raw-paired-runs.tar.gz"
+    assert sha(archive.read_bytes()) == (SEALED / "raw-paired-runs.sha256").read_text().split()[0]
+    with tarfile.open(archive, "r:gz") as source:
+        entry = source.extractfile(member)
+        assert entry is not None
+        return completion(entry.read())
+
+
+def evidence(path):
+    return json.loads(gzip.decompress((DOCS / path).read_bytes()))
+
+
+def transforms(event):
+    matrices = {Path(path).name: value for path, value in event["alignment_transforms"].items()}
+    assert len(matrices) == 150
+    assert all(len(row) == 2 and all(len(axis) == 3 and all(math.isfinite(value) for value in axis)
+                                      for axis in row) for row in matrices.values())
+    return matrices
+
+
+def inverse(matrix):
+    (a, b, x), (c, d, y) = matrix
+    determinant = a*d-b*c
+    assert determinant > 0
+    return [[d/determinant, -b/determinant, (b*y-d*x)/determinant],
+            [-c/determinant, a/determinant, (c*x-a*y)/determinant]]
+
+
+def apply(matrix, point):
+    x, y = point
+    return [a*x + b*y + t for a, b, t in matrix]
+
+
+def relative(before, after):
+    reverse = inverse(before)
+    (a, b, x), (c, d, y) = after
+    return [[a*reverse[0][0]+b*reverse[1][0], a*reverse[0][1]+b*reverse[1][1], a*reverse[0][2]+b*reverse[1][2]+x],
+            [c*reverse[0][0]+d*reverse[1][0], c*reverse[0][1]+d*reverse[1][1], c*reverse[0][2]+d*reverse[1][2]+y]]
+
+
+def change(matrix):
+    return max(math.dist(apply(matrix, point), point) for point in POINTS)
+
+
+def error(matrix, matches):
+    residual = [math.dist(apply(matrix, row["before"]), row["after"]) for row in matches]
+    return {"minimum_px": min(residual), "median_px": statistics.median(residual), "maximum_px": max(residual)}
+
+
+def crop(matrices):
+    limits = [0.0, 0.0]
+    for matrix in matrices.values():
+        for point in POINTS[:4]:
+            mapped = apply(matrix, point)
+            limits = [max(existing, abs(a-b)) for existing, a, b in zip(limits, mapped, point)]
+    x, y = [math.ceil(limit)+1 for limit in limits]
+    assert 2*x < 2304 and 2*y < 1728
+    return {"margin_x_y": [x, y], "width_height": [2304-2*x, 1728-2*y]}
+
+
+def step(event, pair):
+    maps = transforms(event)
+    before, after = pair
+    return relative(maps[before], maps[after])
+
+
+def probe_plan():
+    payload = CORPUS.read_bytes()
+    assert sha(payload) == CORPUS_SHA
+    manifest = json.loads(payload)
+    workload = next(item for item in manifest["workloads"] if item["id"] == "D150-native-dorsal")
+    records = [{"frame_index": index, **workload["frames"][index]} for index in PROBE_INDICES]
+    assert [Path(records[index]["path"]).name for index in (2, 3)] == list(GENUINE)
+    assert [Path(records[index]["path"]).name for index in (6, 7)] == list(ERRONEOUS)
+    return {"frozen_manifest_sha256": CORPUS_SHA, "records": records}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--packaged-events", type=Path, required=True)
+    args = parser.parse_args()
+    payload = gzip.decompress(args.packaged_events.read_bytes())
+    assert sha(payload) == PACKAGED_EVENTS_SHA
+    packaged = completion(payload)
+    pinned = archived_event("paired/diagnostic-01/reference/events.jsonl")
+    sealed = archived_event("paired/diagnostic-01/candidate/events.jsonl")
+    packaged_maps = transforms(packaged)
+    assert packaged_maps == transforms(sealed)
+
+    local_bytes = gzip.decompress((DOCS / "subpixel-diagnostic/native-local-track.json.gz").read_bytes())
+    assert sha(local_bytes) == LOCAL_CHAIN_SHA
+    local = {tuple([row["before"], row["after"]]): row for row in json.loads(local_bytes)["steps"]}
+    control = evidence("landmarks-dense.json.gz")
+    false_patches, = [row["matches"] for row in control["pairs"] if (row["before"], row["after"]) == ERRONEOUS]
+    assert len(false_patches) == 9
+    false_step = step(packaged, ERRONEOUS)
+    false_fit = error(false_step, false_patches)
+    identity_fit = error(IDENTITY, false_patches)
+    false_margin = false_fit["median_px"] - identity_fit["median_px"]
+
+    true_motion = local[GENUINE]
+    true_margin = true_motion["median_identity_error_px"] - true_motion["median_witness_error_px"]
+    reference_step = step(pinned, GENUINE)
+    product_step = step(packaged, GENUINE)
+    assert product_step == IDENTITY
+    assert true_motion["witness_candidates"] == 47
+    assert true_margin > 0 and false_margin > true_margin
+    assert true_motion["motion"] != IDENTITY and reference_step != IDENTITY
+
+    prototypes = {}
+    for label, path in (("adjacent", "prototype-ff2c037/events.jsonl.gz"),
+                        ("adjacent_subpixel", "subpixel-diagnostic/release-0cc9159/events.jsonl.gz")):
+        event = evidence(path)
+        prototypes[label] = {"genuine": step(event, GENUINE), "erroneous": step(event, ERRONEOUS)}
+        assert prototypes[label] == {"genuine": IDENTITY, "erroneous": IDENTITY}
+
+    one_removed = dict(packaged_maps)
+    one_removed[ERRONEOUS[1]] = one_removed[ERRONEOUS[0]]
+    ordered = list(one_removed)
+    following = ordered[ordered.index(ERRONEOUS[1])+1]
+    next_unfiltered = relative(one_removed[ERRONEOUS[1]], one_removed[following])
+    result = {
+        "scope": "Archive-only independent witness audit and one-map counterfactual; no new product run",
+        "packaged_completion_sha256": sha(payload),
+        "source_native_track_sha256": sha(local_bytes),
+        "packaged_matches_archived_sealed_geometry": True,
+        "minimal_probe": probe_plan(),
+        "erroneous_transition": {
+            "sources": ERRONEOUS, "packaged_step": false_step, "witness_count": len(false_patches),
+            "max_canvas_change_px": change(false_step), "direct_error": false_fit, "identity_error": identity_fit,
+            "median_preference_margin_px": false_margin,
+            "half_margin_px": false_margin/2,
+        },
+        "genuine_transition": {
+            "sources": GENUINE, "packaged_step": product_step, "reference_step": reference_step,
+            "reference_max_canvas_change_px": change(reference_step), "native_local_evidence": true_motion,
+            "local_max_canvas_change_px": change(true_motion["motion"]),
+            "median_preference_margin_px": true_margin, "half_margin_px": true_margin/2,
+        },
+        "known_product_pairing_prototypes": prototypes,
+        "suppress_only_first_bad_map": {
+            "packaged_crop": crop(packaged_maps), "counterfactual_crop": crop(one_removed),
+            "next_source": following, "next_max_canvas_change_px": change(next_unfiltered),
+        },
+    }
+    print(json.dumps(result, indent=2, allow_nan=False))
+
+
+if __name__ == "__main__":
+    main()

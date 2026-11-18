@@ -168,3 +168,9 @@ subpixel signed detail in an independent analytic fixture. Its exact paired
 D150 RGB16 exports had byte-identical transforms and matching crop. The
 four historical focus regions became slightly softer, so the independent
 sampling change stays separate from the release.
+
+The [nine-original anchor-direction probe](motion-admission/README.md)
+reproduced the wrong direct jump and independently confirmed the genuine
+adjacent motion. Positive inverse reverse-anchor fits matched both nearby
+transitions more closely on held-out bilateral landmarks. Direction choice,
+the long-range trajectory and fused quality remain open.
