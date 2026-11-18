@@ -116,6 +116,15 @@ canonical macOS assurance run, Apple physical runtime evidence, macOS
 package validation, strict coverage, full mutation and P10 performance
 open. The final push and its required hosted checks remain pending.
 
+The private Apple Silicon packaging recipe records the locked build, SDK,
+ARM64 linkage, executable digests and ad-hoc signing identity. Its six
+portable staging tests passed on Linux. Native Mac build, package
+signing, AX and Automation, and both Metal execution lanes remain
+unrun here. The owner permits the Linux-first compatibility assumption
+while Apple evidence is unavailable. Distribution signing and
+notarization remain owner decisions.
+[Private Apple package recipe](p9-release-preparation.md#apple-and-retained-builds).
+
 **The packaged `8694b55` Linux release passes all 376 case IDs.** The strict
 ledger matched 341 host, 34 isolated GUI and one physical RTX 3090 Vulkan
 GUI case to the exact locked source and extracted Debian binaries. The
@@ -453,6 +462,13 @@ the encoded and decoded RGB16 TIFFs matched across all arms. Each arm ran
 once. The luma source remains experimental, and the combined Hybrid and
 RAW changes still need matched release and frozen performance replays.
 [Four-arm R50 diagnostic](p10-r50-component-comparison/README.md).
+
+The `e81079d` R50 audit identified an intact generic scan after checked
+Rawler normalization. It also reproduced a 17.374 s ideal decode-overlap
+ceiling from the earlier 50-frame trace. The scan remains a bounded
+hypothesis. Exact combined R50 timing, output-quality review and the
+frozen CPU and GPU profiles remain open.
+[Exact R50 coverage and residual hypothesis](p10-r50-e81079d-audit/README.md).
 [Isolated luma disposition](p10-registration-luma-lattice/README.md#full-r50-follow-up).
 
 The five-buffer Hybrid change removes a temporary RGB band while
@@ -640,6 +656,12 @@ unresolved. The false jump remains contradicted by nine native matches.
 The predeclared recovery probe leaves output quality and performance
 open.
 [Exact anchor and skip-edge review](d150-geometry-audit/anchored-recovery-review/README.md).
+
+The follow-up D150 trial preregisters 11 authenticated originals, six
+fresh bidirectional edges and six prior controls. Its native hold-out
+screen permits abstention. The subset is unmaterialized and the probe
+remains unrun.
+[Predeclared D150 anchor and skip-edge trial](d150-geometry-audit/anchor-skip-prereg/README.md).
 
 One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
 Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
