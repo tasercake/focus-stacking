@@ -19,6 +19,15 @@ const OVERSIZED_PNG: [u8; 33] = [
     0, 0, 0xe3, 0xe6, 0xa7, 0xb4,
 ];
 
+/// An 8192×8192 RGB8 PNG envelope with correct CRCs and one compressed pixel.
+const EXCESS_AREA_PNG: [u8; 69] = [
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+    0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x20, 0x00, 0x08, 0x02, 0x00, 0x00, 0x00, 0xfd, 0xc8, 0x5d,
+    0x0e, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x60, 0x60, 0x60, 0x00,
+    0x00, 0x00, 0x04, 0x00, 0x01, 0xf6, 0x17, 0x38, 0x55, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e,
+    0x44, 0xae, 0x42, 0x60, 0x82,
+];
+
 /// Little-endian RGB16 tiles with horizontal predictor, DEFLATE and a known ICC profile.
 const TILED_RGB16: &[u8] = include_bytes!("data/tiled-rgb16-zip.tif");
 
@@ -188,6 +197,25 @@ fn oversized_png_is_rejected_before_pixels_are_read() -> TestResult {
     require(
         error.contains("limit") && error.contains("oversized.png"),
         &format!("must reject oversized dimensions before decoding compressed data: {error}"),
+    )
+}
+
+/// Reject the total pixel count of an image whose individual axes meet the limit.
+///
+/// # Errors
+/// Returns filesystem errors or reports acceptance or a misleading decode diagnostic.
+#[test]
+fn png_pixel_budget_is_checked_before_incomplete_raster() -> TestResult {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("too-many-pixels.png");
+    fs::write(&path, EXCESS_AREA_PNG)?;
+    let error = decode(&path)
+        .err()
+        .ok_or_else(|| io::Error::other("over-budget PNG was decoded"))?;
+    require(
+        error.contains("too-many-pixels.png")
+            && error.contains("dimensions 8192×8192 exceed the image limit of 50000000 pixels"),
+        &format!("expected a pixel-budget diagnostic before a raster error: {error}"),
     )
 }
 
