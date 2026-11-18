@@ -74,3 +74,5 @@ full T50 timing require their own runs.
 [Physical Vulkan replay](physical-vulkan/README.md)
 
 [Native CUDA probe build](native-cuda-build/README.md)
+
+[Physical native CUDA replay](physical-cuda/README.md)
