@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+workspace=$(pwd)
+output="$workspace/artifacts/viewer-redraw"
+export CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0
+export RUSTC_WRAPPER=/tmp/pancake-tools/bin/pancake-rust-cache
+cd pancake
+{
+    git rev-parse HEAD
+    rustc -vV
+    cargo -V
+    cargo build --locked --release --workspace --bins
+} > "$output/release.log" 2>&1
+python3 - "$workspace" "$output/candidate.build.json" <<'PY'
+import hashlib
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+workspace, receipt_path = map(Path, sys.argv[1:])
+root = workspace / 'pancake'
+descriptor = workspace / 'pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml'
+executable = (root / 'target/release/pancake-gui').resolve(strict=True)
+log = receipt_path.with_name('release.log')
+
+
+def output(*args):
+    return subprocess.check_output(args, cwd=root, text=True).strip()
+
+
+def digest(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+commit = output('git', 'rev-parse', 'HEAD')
+assert commit == log.read_text().splitlines()[0]
+assert not output('git', '-C', str(workspace), 'status', '--porcelain', '--', 'pancake', str(descriptor))
+record = {
+    'build': ['cargo', 'build', '--locked', '--release', '--workspace', '--bins'],
+    'component': 'gui',
+    'commit': commit,
+    'lock_sha256': digest(root / 'Cargo.lock'),
+    'descriptor_sha256': digest(descriptor),
+    'executable': str(executable),
+    'binary_sha256': digest(executable),
+    'binary_size': executable.stat().st_size,
+    'cargo': output('cargo', '-V'),
+    'rustc': output('rustc', '-vV'),
+    'build_environment': {
+        name: os.environ[name]
+        for name in ('CARGO_BUILD_JOBS', 'CARGO_INCREMENTAL', 'RUSTC_WRAPPER')
+    },
+    'release_log_sha256': digest(log),
+}
+with receipt_path.open('x') as stream:
+    stream.write(json.dumps(record, indent=2) + '\n')
+print(receipt_path)
+PY
