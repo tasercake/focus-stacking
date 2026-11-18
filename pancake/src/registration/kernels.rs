@@ -43,8 +43,8 @@ pub fn warp(
         &[a, b, tx, c, d, ty, f32::from(output.x), f32::from(output.y)],
     );
     let mut output_samples = Vec::with_capacity(expected);
-    while output_samples.len() < expected {
-        let start = output_samples.len();
+    // A checked nonempty extent guarantees a positive tile size.
+    for start in (0..expected).step_by(tile) {
         let count = expected.saturating_sub(start).min(tile);
         let result = TensorHandle::empty(&client, [count], f32::cube_type());
         let dimension = CubeDim::new(&client, count);
@@ -63,6 +63,7 @@ pub fn warp(
         );
         output_samples.extend(read(&client, result, count)?);
     }
+    let _frame = Frame::new(output.width(), output.height(), &output_samples)?;
     Ok(output_samples)
 }
 

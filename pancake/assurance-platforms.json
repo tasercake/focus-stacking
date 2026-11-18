@@ -59,7 +59,7 @@
     "src/lib.rs": "0fe92b92441a50f8ccd6ef85650ba11b319e1de661109e5492b91b6b378746e7",
     "src/registration/estimate.rs": "eb759d5846c7136c7e3aab680a6bd9253a81b1ef0d4488007d05e56ed08c3ab6",
     "src/registration/geometry.rs": "6bbfc0ef0ee0b028f63cadcd6ab85183a9da2f370da2cf6ad9260793e27f3893",
-    "src/registration/kernels.rs": "d2026ee3cbd1e4ef0f66af7a7d8e043d36df334b1c1fe8a03cef77f4c2694630",
+    "src/registration/kernels.rs": "4cd45398eefac5d8127d7e8ed25fcdee904035e60c20e553b827d7298d5e9636",
     "src/registration/mod.rs": "55c08bddfe86806228681c33d5e40f91369aa34726c62fbbb83232a48e60b41d",
     "src/registration/spectral.rs": "a184047d5119828e96e67b6873f3de881b99124c30778d48dfa8161510ea7216",
     "src/runtime/mod.rs": "630623ae62ca7417005743df56579fb9e5bfefaf66a7a338e20a9e0b2132e3a0",
