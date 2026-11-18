@@ -76,13 +76,20 @@ unverified.
 [Native Linux profile evidence](p9-linux-native-evidence/12f2151/README.md).
 [Windows build prerequisite](p9-windows-build-evidence/12f2151/README.md).
 
-The corrected real R50 reference and sealed `12f2151` release both completed
-the 50-frame CPU workflow and wrote 5086 × 3390 RGB16 TIFFs. Geometry and
-transforms agree. The decoded full-frame mean absolute difference was 506.42
-on the u16 scale. Equal-quality acceptance and comparative
-performance remain open.
+The packaged `12f2151` R50 Hybrid CPU campaign completed all 34 primary
+launches and two CPU diagnostics on the 50 authenticated Canon CR3 originals.
+The corrected reference developed each CR3 in the measured process. Warm
+medians of 94.403 s for Pancake and 40.598 s for ChimpStackr gave a 2.3253
+ratio, above the 0.50 limit. Cold medians of 95.290 s and 46.767 s gave a
+2.0376 ratio, above the 1.00 limit. Process-tree peak RSS remains pending
+because the sampling gaps exceeded 20 ms. Both targets exported genuine
+5086 × 3390 RGB16. The first warm pair shared the same first-frame crop,
+and both diagnostics recorded identity transforms. The warm pair's full-frame
+RGB mean absolute difference was 506.42 u16 codes. Local color and detail
+differences leave equal-quality acceptance open.
+[Sealed R50 benchmark and crop/color review](../../qualification/p10-performance/evidence/integrated-r50-12f2151/README.md).
 [Corrected reference](p2-cr3-reference-evidence/README.md).
-[Integrated R50 functional pair](p10-r50-integrated-quality/README.md).
+[Earlier R50 functional pair](p10-r50-integrated-quality/README.md).
 
 At the packaged `12f2151` CLI, the aligned real E9 comparison completed 17
 launches per application in each CPU and physical NVIDIA lane. CPU warm,
@@ -126,6 +133,9 @@ Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
 while warping and fusion completed on the GPU. The diagnostic carries no
 frozen warm or cold timing credit. Resource and equal-quality gates remain open.
 [Generated T50 diagnostic and cleanup](../../qualification/p10-performance/evidence/t50-12f2151-preflight/pair-001/README.md).
+
+The final GitHub push of `main` and required CI run remain pending while
+the frozen release gates are unmet.
 
 **Linux release conformance passes all 376 case IDs at `5216ba4`.** The
 release verifier matched 341 host cases, 34 isolated GUI cases, and one
