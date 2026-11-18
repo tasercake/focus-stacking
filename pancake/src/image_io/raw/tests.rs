@@ -1,12 +1,13 @@
 //! Preserve the developed RAW RGB16 boundary across packing changes.
 
 use std::error::Error;
+use std::num::NonZeroUsize;
 
 use image::metadata::Orientation;
 use rawler::imgop::develop::Intermediate;
 use rawler::pixarray::Color2D;
 
-use super::{developed_raster, raster_to_rgb};
+use super::{developed_raster, raster_to_rgb, raw_worker_count};
 
 /// Asymmetric RGB triples with explicit expected unsigned code values.
 const SAMPLE_CODES: [(f32, u16); 18] = [
@@ -89,6 +90,36 @@ fn packed_raw_preserves_oriented_working_samples() -> Result<(), Box<dyn Error>>
                 .eq(actual.samples().iter().copied().map(f32::to_bits))
         {
             return Err(format!("working RAW samples differ for EXIF {code}").into());
+        }
+    }
+    Ok(())
+}
+
+/// Leave one CPU for the job/UI caller while bounding the process-wide pool.
+///
+/// # Errors
+///
+/// Returns a violated CPU budget or fallback.
+#[test]
+fn raw_worker_count_respects_available_cpu_budget() -> Result<(), Box<dyn Error>> {
+    let cases = [
+        (0, 1),
+        (1, 1),
+        (2, 1),
+        (3, 2),
+        (8, 7),
+        (15, 14),
+        (16, 15),
+        (17, 15),
+        (128, 15),
+    ];
+    for (available, required) in cases {
+        let actual = raw_worker_count(NonZeroUsize::new(available));
+        if actual != required {
+            return Err(format!(
+                "RAW workers for {available} available CPUs: {actual}, expected {required}"
+            )
+            .into());
         }
     }
     Ok(())

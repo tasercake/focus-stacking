@@ -2,9 +2,11 @@
 
 use std::fs::File;
 use std::io::Read;
+use std::num::NonZeroUsize;
 use std::panic;
 use std::path::Path;
 use std::sync::{Arc, LazyLock};
+use std::thread;
 
 use image::{DynamicImage, ImageBuffer, metadata::Orientation};
 use rawler::decoders::{Decoder, FormatHint, RawDecodeParams, WellKnownIFD};
@@ -22,14 +24,24 @@ mod tests;
 /// Maximum owned encoded RAW bytes, separate from raster allocation limits.
 const MAX_RAW_BYTES: u64 = 256 * 1024 * 1024;
 
+/// Limit worker stacks and decoder scratch on high-core hosts.
+const MAX_RAW_WORKERS: usize = 15;
+
 /// One process-wide pool bounds nested decoder and developer parallelism.
 static RAW_POOL: LazyLock<Result<rayon::ThreadPool, String>> = LazyLock::new(|| {
     rayon::ThreadPoolBuilder::new()
-        .num_threads(2)
+        .num_threads(raw_worker_count(thread::available_parallelism().ok()))
         .thread_name(|index| format!("pancake-raw-{index}"))
         .build()
         .map_err(|error| error.to_string())
 });
+
+/// Keep a CPU available to the caller and fall back to one worker without a host budget.
+fn raw_worker_count(available: Option<NonZeroUsize>) -> usize {
+    available.map_or(1, |threads| {
+        threads.get().saturating_sub(1).clamp(1, MAX_RAW_WORKERS)
+    })
+}
 
 /// Validate the encoded source size and execute full camera-RAW development.
 ///
