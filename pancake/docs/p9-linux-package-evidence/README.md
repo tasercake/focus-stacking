@@ -23,15 +23,18 @@ The packaged GUI opens on a private desktop while a benign
 trace records no reads of that file. [Desktop entry receipt](5216ba4/desktop-entry-receipt.json).
 [Packaged interpreter receipt](5216ba4/slint-receipt.json).
 
-The stock conformance runner and strict verifier recorded 341/341 host passes
-using the extracted package. The separate physical-GPU GUI lane passed
-1/1 on the same source, descriptor, locks and executable bytes. Completed
-application telemetry identifies wgpu Vulkan on the RTX 3090 at
-`0000:01:00.0`. Full Linux accounting requires the complete isolated 34-case
-GUI report as well. The deployed candidate stays provisional pending the
-remaining platform, integrated assurance and frozen performance conditions.
-[Host receipt](5216ba4/host-receipt.json).
+The strict aggregate verifier passed with all 376 frozen cases accounted for.
+The host lane passed 341/341 using the extracted package. Isolated native GUI
+passed 34/34 using software presentation. The separate physical-GPU GUI lane
+passed 1/1 on the RTX 3090 at `0000:01:00.0`, and actual completion telemetry
+identifies wgpu Vulkan. All three lanes attest to the same application source,
+descriptor, locks, package executable bytes and hardware inventory. The local
+raw records stay under `artifacts/p9-5216ba4`. The candidate stays provisional
+pending the remaining platform, integrated assurance and frozen performance
+conditions. [Host receipt](5216ba4/host-receipt.json).
+[Isolated GUI receipt](5216ba4/isolated-gui-receipt.json).
 [Physical GPU GUI receipt](5216ba4/physical-gpu-receipt.json).
+[Aggregate ledger](5216ba4/linux-ledger.json.gz).
 
 ## P7 release checkpoint `0859deb`
 
