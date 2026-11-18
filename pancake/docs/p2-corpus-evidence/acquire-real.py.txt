@@ -1,0 +1,111 @@
+import hashlib
+import io
+import json
+import pathlib
+import shutil
+import subprocess
+import urllib.request
+import zipfile
+from concurrent.futures import ThreadPoolExecutor
+
+manifest_dir = pathlib.Path("pancake-conformance/src/pancake_conformance/adapters/pancake")
+root = pathlib.Path("artifacts/p2-real-inputs")
+r50_path = manifest_dir / "performance-raw-corpus.json"
+others_path = manifest_dir / "performance-corpus.json"
+r50 = json.loads(r50_path.read_text())
+others = json.loads(others_path.read_text())
+receipts = {}
+
+def hash_file(path):
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+def verify(path, size, digest):
+    if path.stat().st_size != size or hash_file(path) != digest:
+        raise ValueError(f"Frozen size or hash mismatch for {path}")
+
+def write_exact(path, stream, size, digest):
+    temp = path.with_suffix(path.suffix + ".part")
+    path.parent.mkdir(exist_ok=True, parents=True)
+    try:
+        remaining = size
+        with temp.open("xb") as target:
+            while remaining:
+                block = stream.read(min(remaining, 1024**2))
+                if not block:
+                    raise ValueError(f"Short source stream for {path}")
+                target.write(block)
+                remaining -= len(block)
+            if stream.read(1):
+                raise ValueError(f"Long source stream for {path}")
+        verify(temp, size, digest)
+        temp.rename(path)
+    finally:
+        temp.unlink(missing_ok=True)
+
+def download(record):
+    path = root / record["path"]
+    size, digest = record["size_bytes"], record["sha256"]
+    if path.exists():
+        verify(path, size, digest)
+    else:
+        with urllib.request.urlopen(record["url"], timeout=90) as source:
+            write_exact(path, source, size, digest)
+    print(f"verified: {record['path']} ({size} bytes)", flush=True)
+
+def read_source(archive, work, member_root):
+    for frame in work["frames"]:
+        path = root / frame["path"]
+        member = frame["path"].split(f"/{member_root}/", 1)[1]
+        if path.exists():
+            verify(path, frame["bytes"], frame["sha256"])
+        elif archive.suffix == ".zip":
+            with zipfile.ZipFile(archive) as source, source.open(member) as payload:
+                write_exact(path, payload, frame["bytes"], frame["sha256"])
+        else:
+            result = subprocess.run(
+                ["7z", "x", "-so", "-spd", str(archive), member],
+                capture_output=True,
+                check=True,
+            )
+            write_exact(path, io.BytesIO(result.stdout), frame["bytes"], frame["sha256"])
+    print(f"verified: {work['id']} ({len(work['frames'])} frames)", flush=True)
+
+archives = {}
+for work in others["workloads"]:
+    source = next(s for s in others["sources"] if s["id"] == work["dataset_id"])
+    record = source["selected_downloads"]["files"][0]
+    archives[work["id"]] = {
+        "path": f"archives/{record['path']}",
+        "size_bytes": record["size"],
+        "sha256": record["sha256"],
+        "url": record["url"],
+    }
+selected = list(archives.values()) + r50["frames"]
+planned_download_bytes = sum(record["size_bytes"] for record in selected)
+if planned_download_bytes != 565427810 or planned_download_bytes > r50["native_download_budget_bytes"]:
+    raise ValueError("Download plan exceeds its frozen selected source budget")
+if shutil.disk_usage(root).free < 15*1024**3 + 2 * planned_download_bytes:
+    raise ValueError("Insufficient disk for real input staging")
+failures = []
+with ThreadPoolExecutor(max_workers=4) as pool:
+    pending = [(record["path"], pool.submit(download, record)) for record in selected]
+    for path, future in pending:
+        try:
+            future.result()
+        except Exception as error:
+            print(f"FAILED {path}: {error}", flush=True)
+            failures.append(path)
+for work in others["workloads"]:
+    record = archives[work["id"]]
+    if record["path"] in failures:
+        continue
+    archive = root / record["path"]
+    member_root = f"{archive.stem}-{record['sha256'][:12]}"
+    try:
+        read_source(archive, work, member_root)
+    except Exception as error:
+        print(f"FAILED {work['id']} extract: {error}", flush=True)
+        failures.append(work["id"])
+if failures:
+    raise SystemExit(failed_paths if (failed_paths := failures) else 1)
