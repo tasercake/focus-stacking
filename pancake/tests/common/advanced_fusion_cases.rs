@@ -190,6 +190,66 @@ impl LaunchObserver for LaunchCount {
     }
 }
 
+/// Keep the earlier RGB coefficient when two sources have exactly zero focus.
+///
+/// # Errors
+/// Returns a launch, layout, or numerical failure.
+pub fn check_hybrid_level_bounds(device: &cubecl::Device) -> Result<(), String> {
+    for (width, height, depth) in [(1, 1, 0), (33, 1, 1), (1, 33, 1), (33, 19, 4)] {
+        let mut accumulator = AdvancedAccumulator::new(
+            device,
+            width,
+            height,
+            AdvancedMethod::Hybrid,
+            6,
+            depth,
+            BUDGET,
+        )?;
+        let first = [0.25_f32, 0.5, 0.75].repeat(width * height);
+        let second = [0.75_f32, 0.5, 0.25].repeat(width * height);
+        accumulator.add_frame(&first)?;
+        accumulator.add_frame(&second)?;
+        let actual = accumulator.finish()?;
+        if actual.len() != first.len()
+            || actual
+                .iter()
+                .zip(first)
+                .any(|(sample, expected)| sample.to_bits() != expected.to_bits())
+        {
+            return Err(format!(
+                "Hybrid changed a zero-weight winner or the {width}×{height} depth-{depth} extent"
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// Accumulate weighted and winning coefficients with one pass over each band.
+///
+/// # Errors
+/// Returns a launch, shape, or numerical failure.
+pub fn check_hybrid_frame_launches(device: &cubecl::Device) -> Result<(), String> {
+    let mut accumulator =
+        AdvancedAccumulator::new(device, WIDTH, HEIGHT, AdvancedMethod::Hybrid, 6, 4, BUDGET)?;
+    let launches = Arc::new(LaunchCount::default());
+    let observing = LaunchObservation::new(launches.clone());
+    accumulator.add_frame(&focus_frame(true))?;
+    accumulator.add_frame(&focus_frame(false))?;
+    drop(observing);
+    let output = accumulator.finish()?;
+    if output.len() != WIDTH * HEIGHT * 3 || output.iter().any(|sample| !sample.is_finite()) {
+        return Err("Hybrid launch witness did not complete a finite RGB output".to_owned());
+    }
+    // Per frame: three focus passes, two reductions per step, five band updates.
+    let issued = launches.0.load(Ordering::Relaxed);
+    if issued > 32 {
+        return Err(format!(
+            "two four-reduction Hybrid frames should need at most 32 launches, issued {issued}"
+        ));
+    }
+    Ok(())
+}
+
 /// A change of raster size alone should reuse the same compiled exposure kernels.
 ///
 /// # Errors
