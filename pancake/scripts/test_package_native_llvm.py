@@ -1,11 +1,18 @@
 """Fast artifact-verification tests with small local GNU archives."""
 
 import hashlib
+import json
 import tempfile
 import unittest
 from pathlib import Path
 
-from package_native_llvm import confirm_archive_members, static_llvm_inputs
+from package_native_llvm import (
+    NATIVE_DOCS,
+    confirm_archive_members,
+    stage_native_llvm_notices,
+    static_llvm_inputs,
+    verify_native_llvm_notices,
+)
 from package_notices import bind_shared_project_license
 
 
@@ -53,6 +60,7 @@ class PackageNativeLlvmTests(unittest.TestCase):
             for directives in (
                 "cargo:rustc-link-lib=static=LLVMCore\ncargo:rustc-link-lib=static=LLVMCore\n",
                 "cargo:rustc-link-lib=static=LLVMCore\ncargo:rustc-link-lib=dylib=LLVMCore\n",
+                "cargo:rustc-link-lib=static=LLVMCore\ncargo:rustc-link-lib=LLVMCore\n",
             ):
                 output.write_text(f"cargo:rustc-link-search=native={root_lib}\n" + directives)
                 with self.assertRaises(ValueError):
@@ -88,3 +96,49 @@ class PackageNativeLlvmTests(unittest.TestCase):
         for row in rows[1:]:
             self.assertEqual(row["shared_project_license"], shared)
             self.assertEqual(row["status"], "covered_by_shared_project_notice")
+
+    def test_staging_requires_matching_well_formed_release_evidence(self):
+        revision = "a" * 40
+        lock = "b" * 64
+        binaries = {name: {"sha256": "c" * 64, "bytes": 10} for name in ("pancake-cli", "pancake-gui")}
+        with tempfile.TemporaryDirectory() as location:
+            root = Path(location)
+            source = root / "source"
+            source.mkdir()
+            text = b"Fixture notice\n"
+            (source / "LICENSE.TXT").write_bytes(text)
+            identity = {
+                "target": "x86_64-unknown-linux-gnu", "wrapper_version": "23.1.0-4",
+                "archive_sha256": "a" * 64, "archive_sidecar_sha256": "b" * 64,
+                "installed_content_sha256": "c" * 64, "upstream_commit": "d" * 40,
+            }
+            pins = {"schema_version": 1, **identity, "static_llvm_library_count": 1, "notices": {
+                "LICENSE.TXT": {"bytes": len(text), "sha256": hashlib.sha256(text).hexdigest()},
+            }}
+            (source / "manifest.json").write_text(json.dumps(pins))
+            record = {
+                "schema_version": 1, **identity, "source_commit": revision, "cargo_lock_sha256": lock,
+                "binaries": binaries, "link_output_sha256": "e" * 64,
+                "static_llvm_inputs": [{"name": "libLLVMCore.a", "sha256": "f" * 64, "bytes": 12}],
+                "native_rlib": {"rlib_sha256": "a" * 64, "rlib_bytes": 30,
+                                "matched_native_objects": 2, "distinct_native_object_digests": 2},
+            }
+            receipt = root / "build.json"
+            receipt.write_text(json.dumps(record))
+            stale = {**binaries, "pancake-cli": {"sha256": "f" * 64, "bytes": 10}}
+            with self.assertRaisesRegex(ValueError, "identities differ"):
+                stage_native_llvm_notices(root / "payload", source, receipt, revision, lock, stale)
+            invalid = {**record, "static_llvm_inputs": [{**record["static_llvm_inputs"][0], "sha256": []}]}
+            for rejected in (invalid, {**record, "unrecognized_field": "unreviewed text"}):
+                receipt.write_text(json.dumps(rejected))
+                with self.assertRaisesRegex(ValueError, "[Mm]alformed"):
+                    stage_native_llvm_notices(root / "payload", source, receipt, revision, lock, binaries)
+            self.assertFalse((root / "payload").exists())
+
+            receipt.write_text(json.dumps(record))
+            files = stage_native_llvm_notices(root / "payload", source, receipt, revision, lock, binaries)
+            self.assertEqual(len(files), 3)
+            verify_native_llvm_notices(root / "payload", files)
+            (root / "payload" / NATIVE_DOCS / "LICENSE.TXT").write_bytes(b"Wrong")
+            with self.assertRaisesRegex(ValueError, "changed"):
+                verify_native_llvm_notices(root / "payload", files)
