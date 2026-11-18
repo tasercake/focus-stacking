@@ -55,7 +55,24 @@ executables. Fast, dependency and rootless package checks passed. The
 [Exact package and lane summary](p9-linux-package-evidence/287828a/summary.json).
 [Strict ledger](p9-linux-package-evidence/287828a/linux-ledger.json.gz).
 
-At the same revision, local Linux CPU ASan and TSan each passed 137/137
+The `8694b55` combined Linux candidate built and passed dependency and
+rootless Debian package checks. Its package replay has 341/341 host and
+1/1 physical RTX 3090 Vulkan GUI passes under `artifacts/p9-8694b55/`.
+The isolated 34-case replay and strict aggregate were pending at this
+checkpoint. The original `8694b55` strict fast check exited 101 at 20
+Clippy diagnostics in the CPU focus test. The test-only `7ffc01d` repair
+passed the unchanged fast check and 3/3 focused native tests. All fixture
+input, reference and tolerance bits matched. The test repair leaves the
+packaged product source and lock unchanged.
+[Original and repaired fast checks](p9-cpu-assurance-evidence/7ffc01d-focus-lint/README.md).
+
+The exact `8694b55` supplemental Linux Miri run passed 22/22. Both
+randomized-layout seeds passed 142/142 across 19 targets each, including
+the real large TIFF and ICC corruption test. The canonical macOS gate
+still needs a matching hosted run.
+[Linux nightly receipts and artifact identities](p9-cpu-assurance-evidence/8694b55/linux-nightly/README.md).
+
+At `287828a`, local Linux CPU ASan and TSan each passed 137/137
 across 19 targets. The unchanged nightly gate ran 137 passing tests and
 exited 1 at the strict coverage threshold, with 4,466/6,250 lines,
 454/728 functions, 4,551/7,025 regions and 552/686 branch outcomes covered.
@@ -66,6 +83,12 @@ strict coverage result has been measured for that test delta.
 [Exact TSan](p9-tsan-audit/integrated-287828a/README.md).
 [Strict nightly gate](p9-cpu-assurance-evidence/287828a-nightly/README.md).
 [Focused CPU tests](p9-cpu-assurance-evidence/e63cadd-focused/README.md).
+
+Native mutation subpartition `255/256` at `287828a` executed all ten
+selected mutants and exited 3 with six caught, three missed and one
+timeout. The baseline passed 137/137. The other 2,573 mutants in that
+exact roster remain unrun. Full mutation acceptance stays open.
+[Exact native mutation shard](p9-mutation-audit/287828a-255-256/README.md).
 
 The same-source native CUDA and HIP release profiles linked. The CUDA
 release passed two native CPU and two physical RTX 3090 CUDA cases with
@@ -162,6 +185,12 @@ attributed to that candidate. The exact package's loaded viewer gate and
 combined viewer and lifecycle campaign remain open.
 [Exact package viewer capture](p10-viewer-package-evidence/287828a/README.md).
 [Earlier scoped viewer measurement](p10-viewer-command-evidence/README.md).
+
+A separate packaged trace diagnostic verified 12 actual viewer transitions,
+including six loaded Fuse inputs and 36 calibrated presented patches. The
+GPU stack completed. The trace had no Vulkan API tables, leaving queue
+attribution unverified. The frozen loaded result remains the package replay.
+[Vulkan trace attempt and retained witnesses](p10-vulkan-queue-trace-evidence/287828a/README.md).
 
 ### Benchmark baselines and scoped follow-ups
 
@@ -312,6 +341,18 @@ expansion stencil. These findings remain diagnostic.
 [Reverse-anchor motion study](d150-geometry-audit/motion-admission/README.md).
 [Hybrid expansion audit](../../qualification/p10-performance/evidence/hybrid-math-review-287828a/README.md).
 
+The passive D150 coordinate replay supports a bounded proxy witness
+experiment and shows the discontinuity from switching one absolute pose
+between forward and reverse history. Actual luma proxy texture, admission,
+and full-stack quality remain unverified. The separate reviewed seven-tensor
+Hybrid prototype can exceed imported wgpu bind group limits and remains
+experimental. A revised five-buffer split addresses that source-level issue.
+The split and thumbnail lattice still need physical parity. The reviewed
+lattice revision also has a stale source inventory.
+[Passive D150 witness design](d150-geometry-audit/witness-design/README.md).
+[Hybrid binding and rounding review](../../qualification/p10-performance/evidence/hybrid-fused-kernel-review/README.md).
+[Hybrid split and luma lattice review](../../qualification/p10-performance/evidence/hybrid-split-luma-review/README.md).
+
 One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
 Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
 Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
@@ -374,10 +415,13 @@ matched physical T50 diagnostic. Wall time fell from 55.539 s to 38.517 s.
 Both observed process-tree RSS peaks were about 1.55 GB with compliant RSS
 cadence. The encoded and decoded RGB16 output and all 50 identity transforms
 matched. GPU memory sample gaps were 93.134 and 116.456 ms. The launches
-started at different GPU power states and temperatures. The row-worker and
-one-copy upload effects were measured in separate A/B pairs. The combined
+started at P8/56 °C and P5/58 °C. Compiler-cache cleanup overlapped at least
+1.947 s of the serial opening and finished before the row-worker launch.
+The timing impact is unknown. The row-worker and one-copy upload effects
+were measured in separate A/B pairs. The combined
 source still needs release replay and the frozen cross-application comparison.
 [Physical TIFF worker pair](p10-tiff-row-worker/README.md).
+[Cleanup overlap bound](p10-tiff-row-worker/physical/cleanup-overlap.json).
 
 The decode overlap audit retains ordered current-frame reads. Its archived
 trace model bounds the benefit and identifies the extra memory, input-order
@@ -391,6 +435,12 @@ It has not qualified full-job cadence. Independent E9 replay measured individual
 NVIDIA compute-process queries lasting 26.972 ms on Vulkan and 30.815 ms on
 CUDA. The archived T50 pair also had GPU sample gaps above 20 ms.
 [Raw cadence replays and collector controls](../../qualification/p10-performance/evidence/resource-sampling/collector-cadence-followup.md).
+
+The synthetic NVML overlap check let a second complete query pair finish
+during an independent stall. A shared lock prevented that progress. Archive
+replay and timing controls leave physical query independence and coherent
+peak attribution unverified. Frozen cadence remains unchanged.
+[NVML overlap control and recorded bounds](../../qualification/p10-performance/evidence/resource-sampling/nvml-overlap.md).
 
 A separate private procfs diagnostic preserved the measured RSS roster and
 sum across a cgroup move. The working unprivileged namespace changed

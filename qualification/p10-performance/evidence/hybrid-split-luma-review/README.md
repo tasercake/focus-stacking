@@ -16,7 +16,8 @@ Reviewed source `3d2782e8e30a66cef1b5248d62ff6f8042c30736` and evidence
 only. All seven accompanying SHA-256 records, the updated
 `src/fusion/advanced/levels.rs` inventory hash, and all 22 reported CPU tests
 were verified against the recorded artifacts. The suite and Cargo lock are
-unchanged. [Owner's parity and replay receipts](../../../../pancake/docs/p10-r50-hybrid-band/README.md)
+unchanged. The isolated Hybrid branch retains the owner's receipt at
+`903836c:pancake/docs/p10-r50-hybrid-band/README.md`.
 
 Hybrid passes fine and lower levels to the existing `add_weighted` body.
 Its selector receives fine, lower, weight, selected coefficients and winner
@@ -84,4 +85,5 @@ its SHA-256 is
 The pinned Miri platform policy validates the source inventory and hashes.
 Refresh the reviewed entries under that policy and validate the resulting
 revision before integration. Focused CPU success is recorded separately.
-[Owner's CPU and shape receipts](../../../../pancake/docs/p10-registration-luma-lattice/README.md)
+The isolated lattice branch retains the owner's receipt at
+`4daae4d:pancake/docs/p10-registration-luma-lattice/README.md`.
