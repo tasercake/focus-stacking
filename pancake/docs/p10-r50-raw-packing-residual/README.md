@@ -10,4 +10,8 @@ The native red control extracted the existing serial executor. On 1,273,809 work
 
 Exact scoped Clippy, formatting, the reviewed source inventory, four pure RAW tests and all 40 focused native codec, export and array tests passed. The broad Clippy invocation reported 20 pre-existing diagnostics in the base’s CPU fusion contract test, which the prototype preserves. The witness temporarily instruments the chunk executor in a targeted native test invocation. The committed library retains its pure RAW test entry points for the canonical interpreter. [Scoped Clippy](clippy-scoped.log.gz) · [Pure RAW assertions](focused-unit.log.gz) · [Focused I/O suite](focused-io.log.gz) · [Inherited broad lint log](clippy.log.gz)
 
-This prototype remains on its isolated branch pending a quiet tail-only diagnostic. The per-frame substage speed and its effect on R50 wall time remain unmeasured at this point.
+## Quiet synthetic packing measurement
+
+The exact release helper ran four passes per schedule on Ryzen 9 7950X3D CPUs 0–14 with the R50 policy of 14 existing workers. The timed interval was the packing call inside the installed pool. Input construction, cloning and bit comparisons took place outside that interval. Each pass processed 51,775,488 synthetic floats near 16-bit code thresholds. All 207,101,952 candidate values matched the serial working bits.
+
+The median fell from 37.1895 ms to 5.6771 ms, a 6.55× throughput increase and a 31.5123 ms reduction per measured tail. Multiplying this difference by 50 gives 1.576 s. The real R50 result still requires an end-to-end measurement, including decoder and development work. The prototype remains isolated. [Exact measurements](quiet-tail-receipt.json) · [All eight samples](tail-quiet.tsv) · [Host census](tail-census.txt) · [Probe source archive](tail-probe-source.tar.gz)
