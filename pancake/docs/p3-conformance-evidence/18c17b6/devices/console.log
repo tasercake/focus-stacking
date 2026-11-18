@@ -1,0 +1,15 @@
+Target: pancake-rust | 13 cases | /tmp/pancake-worktrees.t3paqgWM/p3-fusion/artifacts/pancake-conformance/p3-18c17b6-devices
+[1/13] PASSED devices.cpu.weighted_average (0.17s)
+[2/13] PASSED devices.gpu.stack.weighted_average (0.98s)
+[3/13] PASSED devices.auto.cold.weighted_average (0.71s)
+[4/13] PASSED devices.gpu.aligned.weighted_average (1.13s)
+[5/13] PASSED devices.cpu.depth_map (0.15s)
+[6/13] PASSED devices.gpu.stack.depth_map (0.88s)
+[7/13] PASSED devices.auto.cold.depth_map (0.72s)
+[8/13] PASSED devices.gpu.aligned.depth_map (1.15s)
+[9/13] PASSED devices.gpu.slabs.weighted_average (0.86s)
+[10/13] PASSED devices.gpu.slabs.depth_map (0.86s)
+[11/13] PASSED devices.gpu.precision16.weighted_average (0.84s)
+[12/13] PASSED devices.gpu.precision16.depth_map (0.83s)
+[13/13] PASSED devices.gpu.weighted.zero_regions (0.71s)
+Passed: 13; failed: 0; unsupported: 0
