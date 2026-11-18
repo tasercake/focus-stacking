@@ -66,3 +66,13 @@ env -u DISPLAY -u WAYLAND_DISPLAY uv run --project pancake-conformance --frozen 
   --target pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml \
   --no-coverage --output artifacts/p10-registration/p5-replay "${case_arguments[@]}"
 ```
+
+The integration based on local `bc3458a` retained its IO, runtime and worker
+changes. The four revised production files were re-reviewed as OS-neutral
+and the unchanged Cargo lock stayed in the source inventory. The platform
+inventory guard, eight policy/classifier tests and workspace format check
+passed. The integrated `cargo test --locked --lib --test cpu_job --test
+cpu_registration_contract` passed 24 tests. The classifier retained
+`cpu_job` and `cpu_registration_contract` for CPU assurance and
+`gpu_registration_contract` for physical GPU assurance. The release
+receipts above retain their original tested source revision.
