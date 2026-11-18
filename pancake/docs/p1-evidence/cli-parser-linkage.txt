@@ -1,0 +1,14 @@
+pancake/target/release/pancake-cli: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=ac49898d9c6bef274a82538cd8027a163abb49e1, not stripped
+6680af7ddf79ea3f8601e6601647de0cc675e1657fe924a2b3d901e4fa3bf6e6  pancake/target/release/pancake-cli
+52095cb40f098ea2c59e54c36a6bcf634db233759e1aff7d57f28ecc2ff02a7c  pancake/Cargo.lock
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+   3342198:	calling init: /lib64/ld-linux-x86-64.so.2
+   3342198:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+   3342198:	calling init: /lib/x86_64-linux-gnu/libgcc_s.so.1
+   3342198:	calling init: /lib/x86_64-linux-gnu/libm.so.6
+   3342198:	calling init: /lib/x86_64-linux-gnu/libstdc++.so.6
+   3342198:	initialize program: pancake/target/release/pancake-cli
+wayland-sys v0.31.11
