@@ -23,9 +23,15 @@ entry and 45,080,652 KiB at exit. This run generated and verified
 input data. The sealed Debian package was identified by archive and package receipt
 hashes. Application and device measurements are tracked by their consumers.
 
-The isolated dual-scan CLI comparison and a prospective same-lock viewer
-trace are the named read-only borrowers of this stage. The owner removes the
-corpus after both scopes release it and the coordinator clears cleanup.
+The isolated CLI comparison completed four physical GPU jobs, verified
+identical outputs, and rehashed all 52 inputs. The same-lock viewer trace
+captured 280 events, verified all 50 focus files unchanged,
+and recorded a clean native exit. Both readers released the stage. The owner
+authenticated the directory and rehashed every TIFF before removing all 52
+files and 2,775,174,405 bytes at 22:44:39 SGT. No staged TIFFs remain.
+
+[Borrower receipts](released-borrower-roles.json) ·
+[Cleanup summary](cleanup-summary.json) · [Authenticated cleanup](cleanup.json.gz)
 
 [Stage receipt](shared-stage.json) · [Preflight](prepared-stage.json) ·
 [Complete encoded and decoded records](materialization.json.gz) ·
