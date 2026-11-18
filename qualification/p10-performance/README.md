@@ -50,6 +50,17 @@ in the frozen manifests. Keep native source names and dimensions. Regenerate
 or reacquire the original bytes using the [T50 recipe](../t50-generated/README.md)
 and the [real-corpus provenance](../../pancake/docs/p0-performance-baseline.md).
 
+For R50, the reference subprocess still develops each original CR3 with the
+pinned RawPy/LibRaw runtime and stacks it with ChimpStackr. It now uses the
+camera's recommended crop, camera white balance and saturation, and sRGB
+encoding. This models the captured camera image and avoids comparing
+different crop and transfer choices. The runner records the scoped launcher
+hash and first frame's actual camera metadata. It checks output bounds against
+that camera rectangle after orientation. The historical R50 decoder receipt
+records the original wider LibRaw rectangle. The frozen raw byte manifest and
+other reference profiles retain their existing paths and treatment.
+
+
 The common affinity mask and worker limit apply to both targets. To constrain
 both applications, run the entire command under the same `taskset` mask and
 give `--threads` the number of allowed CPUs. Keep other audits, builds, and

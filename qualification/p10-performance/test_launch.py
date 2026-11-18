@@ -5,13 +5,33 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from p10 import ADAPTERS, _assert_completion, _environment
+from p10 import (
+    ADAPTERS,
+    R50_REFERENCE,
+    _assert_completion,
+    _environment,
+    _reference_launch,
+)
 from pancake_conformance.target import TargetSpec
+from protocol import sha256
 
 REFERENCE = ADAPTERS / "chimpstackr_reference/chimpstackr.toml"
 
 
 class LaunchContracts(unittest.TestCase):
+    def test_only_r50_selects_hash_bound_camera_metadata_launcher(self):
+        target = TargetSpec.load(REFERENCE)
+        python = Path("/reference/python")
+        r50 = _reference_launch(target, python, "R50.hybrid.cpu")
+        self.assertEqual(r50["command"], [str(python), str(R50_REFERENCE)])
+        self.assertEqual(r50["raw_ingest"]["sha256"], sha256(R50_REFERENCE))
+        for profile in ("T50.hybrid.cpu", "D150.hybrid.cpu", "E9.exposure_fusion.gpu"):
+            with self.subTest(profile=profile):
+                self.assertEqual(
+                    _reference_launch(target, python, profile),
+                    {"command": target.command("cli", python=python)},
+                )
+
     def test_reference_profiler_is_absent_from_timed_environment(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
