@@ -7,21 +7,24 @@ attributed NVIDIA implementations of the same GPU profile IDs. The frozen
 comparison permits native CUDA against reference OpenCL on the same card.
 The inspected target SHA-256 is `58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc`.
 
-**No logical profile has met every frozen gate.** Five retained schedules at
-the packaged or native `12f2151` revision reached the full sample count for
-four logical profiles. They contain 170 primary launches, including 20
-warmups, and 10 separate backend diagnostics. Three of the five schedules
-used an ineligible E9 reference combiner. This leaves two full-count CPU
-schedules without that blocker. Eleven CPU and all 13 GPU profiles still
-need an eligible full schedule. The sealed `8694b55` package has no full
-frozen completed-job profile in the retained evidence.
+**One of 26 logical profiles has met every completed-job gate.** The
+corrected-reference E9 CPU campaign at exact `c1e2cac` passed its numeric
+and independent representative-image quality gates. Its 34 primary jobs
+and two backend diagnostics add to five historical full-count schedules
+at `12f2151` with 170 primary jobs and ten backend diagnostics. Three of
+the historical schedules used an ineligible E9 reference combiner. Three
+CPU profiles now have eligible full schedules. Ten CPU and all 13 GPU
+profiles still need an eligible full schedule.
+[Qualified E9 CPU campaign](integrated-e9-corrected-cpu-c1e2cac/README.md)
 
 ## Profile coverage
 
-**Full count** means two warmups, ten warm and five cold completed jobs per
-application. It records schedule coverage and leaves any numeric, telemetry
-or quality issue open. **Ineligible** identifies the E9 reference algorithm
-mismatch. **Open schedule** indicates the full matched schedule is absent.
+**Qualified** means the exact profile passed its numeric and representative
+quality gates. **Full count** means two warmups, ten warm and five cold
+completed jobs per application. It records schedule coverage and leaves
+any numeric, telemetry or quality issue open. **Ineligible** identifies the
+historical E9 reference algorithm mismatch. **Open schedule** indicates
+the full matched schedule is absent.
 
 | Workload | Frozen method ID | Explicit CPU | Explicit GPU |
 |---|---|---|---|
@@ -37,7 +40,7 @@ mismatch. **Open schedule** indicates the full matched schedule is absent.
 | D150 | `hybrid` | Full count at `12f2151` | Open schedule |
 | D150 | `weighted_average` | Open schedule | Open schedule |
 | D150 | `depth_map` | Open schedule | Open schedule |
-| E9 | `exposure_fusion` | Historical full count, ineligible | Historical full counts on Vulkan and CUDA, ineligible |
+| E9 | `exposure_fusion` | Qualified at `c1e2cac` | Corrected schedule open. Historical Vulkan and CUDA schedules ineligible. |
 
 The profile IDs are `<workload>.<method>.cpu` and
 `<workload>.<method>.gpu`. The input receipts pin 50 native generated RGB16
@@ -50,9 +53,10 @@ focus frames for D150 and nine real bracketed-exposure PNGs for E9.
 ## Retained completed-job results
 
 Ratios are Pancake/reference. Warm and each memory ratio must be at most
-0.50. Cold must be at most 1.00. The E9 entries show historical numeric
-observations from the pinned legacy combiner. These have no frozen
-comparison credit. [E9 recipe and comparator audit](e9-reference-eligibility.md)
+0.50. Cold must be at most 1.00. The `12f2151` E9 entries retain numeric
+observations from the ineligible legacy reference combiner. The
+`c1e2cac` CPU profile used the corrected equal final batch mean.
+[E9 recipe and comparator audit](e9-reference-eligibility.md)
 
 | Profile and exact Linux implementation | Warm ratio | Cold ratio | Process-tree RSS | Attributable GPU memory | Output quality |
 |---|---:|---:|---|---|---|
@@ -61,6 +65,7 @@ comparison credit. [E9 recipe and comparator audit](e9-reference-eligibility.md)
 | [E9 exposure fusion CPU, packaged `12f2151`](integrated-e9-12f2151/README.md) | 0.46036 | 0.06282 | 0.31883 | — | Ineligible comparator. RGB16 and common dimensions verified. |
 | [E9 exposure fusion Vulkan/OpenCL, packaged `12f2151`](integrated-e9-12f2151/README.md) | 0.70500 | 0.09522 | 0.71987 | Pending cadence | Ineligible comparator. |
 | [E9 exposure fusion CUDA/OpenCL, native `12f2151`](integrated-e9-cuda-12f2151/README.md) | 0.56340 | 0.08442 | 0.42523 | Pending cadence | Ineligible comparator. |
+| [E9 exposure fusion CPU, packaged `c1e2cac`](integrated-e9-corrected-cpu-c1e2cac/README.md) | 0.425874, pass | 0.057144, pass | 0.318864, pass | — | Independent review passed with residual exposure differences and 364 additional floor and 731 additional ceiling samples. |
 
 The native CUDA E9 sampled lower bound was 295,698,432 B. Half the
 cadence-valid historical reference peak of 320,864,256 B is 160,432,128 B. The strict
@@ -87,6 +92,11 @@ The scoped `6489af6` candidate passed both at 20.793 and 23.827 ms.
 [Earlier packaged viewer](../../../pancake/docs/p10-viewer-package-evidence/287828a/README.md) ·
 [Scoped viewer candidate](../../../pancake/docs/p10-viewer-command-evidence/README.md)
 
+The exact `c1e2cac` stock package measured 52.322024 ms loaded P95 in
+an ordered A/B test. The separate bounded-poll prototype measured
+66.942485 ms. Both arms missed 33 ms and the prototype stayed outside
+the product. [Stock and bounded-poll pair](../../../pancake/docs/p10-shared-poll-evidence/c1e2cac/README.md)
+
 The packaged `d6359e1` lifecycle campaign passed all 120 acknowledgements.
 The actual 64-path fixture and real D150 each contributed 30 pauses and
 30 cancellations under load. Maximum pause and cancellation times were
@@ -94,22 +104,22 @@ The actual 64-path fixture and real D150 each contributed 30 pauses and
 same-release combined viewer and lifecycle pass.
 [Exact lifecycle and settled-state evidence](native-lifecycle-d6359e1/README.md)
 
-The sealed `8694b55` Linux package passed 341 host, 34 isolated GUI and one
-physical RTX 3090 GUI case, all 376 case IDs. The native CUDA/HIP build and
-scoped CUDA execution receipts are separate. This establishes Linux
-conformance for the sealed revision. Main's subsequent registration and
-native GUI changes require release-provenance reconciliation.
-[Linux package and exact ledger](../../../pancake/docs/p9-linux-package-evidence/8694b55/summary.json) ·
-[Native Linux profiles](../../../pancake/docs/p9-linux-native-evidence/8694b55/README.md) ·
+The sealed `c1e2cac` Linux package passed 341 host, 34 isolated GUI and one
+physical RTX 3090 GUI case, all 376 case IDs. This is the product package
+used by the corrected E9 CPU campaign. The native CUDA/HIP build and
+scoped CUDA execution receipts are separate. The confirmed `c1e2cac`
+ledger and the newer suite source retain distinct provenance.
+[Linux package and exact ledger](../../../pancake/docs/p9-linux-package-evidence/c1e2cac/summary.json) ·
+[Native Linux profiles](../../../pancake/docs/p9-linux-native-evidence/c1e2cac/README.md) ·
 [Current implementation and assurance scope](../../../pancake/docs/implementation-plan.md#active-delivery-checkpoint)
 
 ## Holds and unavailable evidence
 
 - **Engineering and scheduling.** Complete the missing full matched profiles
   with the approved inputs and consistent output quality. Resolve the
-  measured R50 speed misses and D150/R50 quality gaps. E9 needs a
-  compliant reference final combiner and equal-output review before any
-  frozen comparison can qualify. Final release also needs matching full
+  measured R50 speed misses and D150/R50 quality gaps. E9 GPU needs a
+  full matched schedule and quality review with the corrected reference.
+  Final release also needs matching full
   native latency, package, conformance and assurance evidence.
 - **Host memory observation.** The full D150 and R50 CPU campaigns had
   process-tree sampling gaps above 20 ms. A dedicated collector core did

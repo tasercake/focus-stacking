@@ -61,6 +61,12 @@ verdict retains its separate source pin.
 [Exact combined TSan](p9-tsan-audit/integrated-c1e2cac/README.md).
 [Exact stable CPU coverage](p9-cpu-assurance-evidence/c1e2cac/stable/README.md).
 
+Three exact CPU GUI conformance cases passed with binary-, PID- and
+profile-bound instrumentation. The merged map reached 5,340/6,475 lines,
+559/756 functions and 5,523/7,288 regions. The augmented strict comparator
+still exited 1. Stable instrumentation supplied no branch map.
+[Native three-case coverage overlay](p9-cpu-assurance-evidence/c1e2cac/native-three-case/README.md).
+
 **The packaged `c1e2cac` Linux release passes all 376 frozen case IDs.**
 The locked workspace build, fast and dependency gates, and rootless Debian
 verification passed. The strict ledger accepted 341 host cases, 34 isolated
@@ -310,6 +316,16 @@ A scoped follow-up can distinguish lock contention from queue and
 presentation delay by timing acquisition on the same guard instance.
 [Shared-device poll and present audit](../../qualification/p10-performance/evidence/viewer-poll-lock-audit/README.md).
 
+An uninstrumented two-arm viewer experiment on the RTX 3090 measured
+52.322024 ms loaded P95 on the exact `c1e2cac` package and 66.942485 ms
+on the bounded-poll prototype. Both exceeded 33 ms. The loaded late
+count rose from 35 to 45 of 200. Each arm completed 400 ordered viewer
+events and verified 1,120 patches. The prototype stays outside the
+product. All 52 authenticated T50 TIFFs were rehashed and removed after
+both captures.
+[Exact stock and experimental viewer pair](p10-shared-poll-evidence/c1e2cac/README.md).
+[Shared T50 materialization and cleanup](../../qualification/p10-performance/evidence/t50-shared-c1e2cac/README.md).
+
 ### Benchmark baselines and scoped follow-ups
 
 **The packaged `12f2151` Linux release passes all 376 case IDs.** The
@@ -423,8 +439,9 @@ exceeded the required sampling interval, and equal output quality remains
 open.
 [Native CUDA E9 measurement](../../qualification/p10-performance/evidence/integrated-e9-cuda-12f2151/README.md).
 
-The completed-job evidence inventory covers 26 frozen profiles. None has
-passed every gate. The historical E9 CPU, Vulkan and CUDA schedules used a
+The completed-job evidence inventory covers 26 frozen profiles. One
+profile has passed, E9 exposure fusion on explicit CPU at the exact
+`c1e2cac` Debian package. The historical E9 CPU, Vulkan and CUDA schedules used a
 reference that reran the legacy exposure combiner over batch outputs. The
 frozen contract requires equal averaging of the batch outputs. Those runs
 retain their historical ratios as diagnostics.
@@ -438,14 +455,26 @@ Actual CPU and physical RTX 3090 OpenCL runs reduced the same nine
 authenticated inputs in groups of four, four and one. Both matched the
 independent float64 mean within 0.000025 on the 0–255 scale. A separate
 clean OpenCL launch repeated the encoded and decoded RGB16 SHA-256 values
-with no CPU fallback. The matched timing and resource schedules and
-representative output-quality review remain pending.
+with no CPU fallback.
 [Corrected E9 launcher and functional receipts](../../qualification/p10-performance/evidence/e9-reference-prototype/README.md).
+
+The official corrected-reference E9 CPU campaign completed all 34 primary
+jobs and two separate backend witnesses. Pancake/reference ratios were
+0.425874 warm median, 0.057144 cold median and 0.318864 peak process-tree
+RSS, all within frozen limits. Each RSS stream met the 20 ms cadence cap.
+Independent review accepted the representative RGB16 pair and its three
+fixed windows. The Pancake image had 364 additional floor samples and
+731 additional ceiling samples elsewhere, with no visible texture loss
+at native scale. The verdict covers the exact `c1e2cac` package, these
+nine E9 inputs and explicit CPU. The corrected GPU schedule and the
+other 24 logical profiles remain open.
+[Qualified E9 CPU profile](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-c1e2cac/README.md).
 
 Adding the qualification adapter advances the suite-source digest used by
 the strict Linux ledger. The `c1e2cac` 376-case ledger retains its exact
 suite digest. The frozen case roster, descriptor and contract did not
-change. The final conformance replay must use its own matching digest.
+change. The matched full `fb9c399` Linux package replay remains pending
+at this checkpoint.
 
 The same-source E9 CUDA compiler experiment on the RTX 3090 measured
 452.260 ms warm median for LLVM and 737.959 ms for C++, with exact RGB16
