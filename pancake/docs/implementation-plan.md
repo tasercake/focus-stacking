@@ -90,6 +90,15 @@ timeout. The baseline passed 137/137. The other 2,573 mutants in that
 exact roster remain unrun. Full mutation acceptance stays open.
 [Exact native mutation shard](p9-mutation-audit/287828a-255-256/README.md).
 
+Follow-up tests caught all three earlier survivors on their separately
+verified revisions. The panorama test exercised the thumbnail budget
+boundary. The two GUI tests exercised missing-source Reveal and native
+GTK panel failure in a display-free child. The original shard verdicts
+remain recorded. The forced-empty registration read timeout and full
+mutation gate remain unresolved.
+[Panorama mutation replay](p9-mutation-audit/2654813-panorama-budget/README.md).
+[Native panel and Reveal replays](p9-mutation-audit/native-panel-and-reveal/README.md).
+
 The same-source native CUDA and HIP release profiles linked. The CUDA
 release passed two native CPU and two physical RTX 3090 CUDA cases with
 matching export hashes and zero fallbacks. HIP has a retained build and link
