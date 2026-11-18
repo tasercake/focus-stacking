@@ -1,0 +1,80 @@
+"""Diagnostic-only candidate phases from actual public progress and Linux rusage."""
+import json
+import os
+import shutil
+import signal
+import subprocess
+import threading
+import time
+from pathlib import Path
+
+from p10 import CANDIDATE, ROOT, TARGETS_PATH, _candidate_binary, _environment
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames, verify_output
+
+
+def main():
+    base = ROOT / "artifacts/e9-registration-profile"
+    measurement = json.loads((base / "paired-001/report.json").read_text())
+    release = json.loads((base / "release-build.json").read_text())
+    output = base / "phase-observation"
+    output.mkdir(exist_ok=False)
+    target = TargetSpec.load(CANDIDATE)
+    binary = _candidate_binary(target)
+    if sha256(binary) != release["binary_sha256"]:
+        raise ValueError("profile candidate binary SHA changed")
+    campaign = Campaign.load(TARGETS_PATH)
+    records, _ = corpus(ROOT, campaign, "E9")
+    stage = Path("/home/krishna/Documents/focus-stacking/artifacts/pancake-corpus/p2-real-inputs")
+    inputs = verify_frames(stage, records, 9)
+    export = output / "image.tif"
+    profile = next(item for item in campaign.profiles("cpu") if item.workload == "E9")
+    env = _environment(target, output / "cache", output, len(os.sched_getaffinity(0)), None, None, False)
+    env["LD_DEBUG"] = "statistics"
+    argv = [str(binary), *target.stack_arguments(inputs, export, profile.options)]
+    rows = []
+    with (output/"loader-and-stderr.log").open("wb") as errors:
+        started = time.monotonic_ns()
+        proc = subprocess.Popen(argv, cwd=target.root, env=env, stdout=subprocess.PIPE, stderr=errors,
+                                start_new_session=True, text=True)
+        timer = threading.Timer(120, os.killpg, args=(proc.pid, signal.SIGKILL))
+        timer.start()
+        try:
+            for line in proc.stdout:
+                rows.append({"line":line.rstrip(), "observed_since_spawn_ns":time.monotonic_ns()-started})
+            _, state, usage = os.wait4(proc.pid, 0)
+            total = time.monotonic_ns()-started
+            proc.returncode=os.waitstatus_to_exitcode(state)
+        finally:
+            timer.cancel()
+            timer.join()
+            if proc.poll() is None:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait()
+    report = {"scope":"one diagnostic with dynamic loader counters; excluded from all performance statistics",
+              "source":release, "argv":argv, "exit":proc.returncode,
+              "observed_work_progress":rows,"process_exit_seen_ns":total,
+              "kernel_process_peak_rss_bytes":usage.ru_maxrss*1024,
+              "kernel_process_user_cpu_seconds":usage.ru_utime,
+              "kernel_process_system_cpu_seconds":usage.ru_stime,
+              "competing_work":"P7 compilation permitted this diagnostic; this was not a benchmark quiet window",
+              "phase_scope":"first marker includes launch and first complete input. Last marker precedes final fusion, export, and exit."}
+    try:
+        if proc.returncode:
+            raise ValueError(f"diagnostic job exited {proc.returncode}")
+        report["output"]=verify_output(export,records[0]["shape"])
+        paired = next(sample for sample in measurement["samples"] if sample["target"]=="candidate")
+        if report["output"]["pixel_sha256"]!=paired["output"]["pixel_sha256"]:
+            raise ValueError("diagnostic output pixels differ from actual measured E9 result")
+        verify_frames(stage,records,9)
+        report["unchanged_inputs_and_output_pixels_verified"]=True
+    finally:
+        export.unlink(missing_ok=True)
+        shutil.rmtree(output/"cache")
+        report["temporary_image_removed"]=not export.exists()
+        (output/"phase-observation.json").write_text(json.dumps(report,indent=2)+"\n")
+    print(json.dumps({k:v for k,v in report.items() if k not in ("source","argv","output")},indent=2))
+
+
+if __name__ == "__main__":
+    main()

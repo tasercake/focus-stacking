@@ -57,3 +57,31 @@ cleanup records.
 
 [Outcome summary and per-run memory observations](summary.json) ·
 [Original paired-run receipts](raw-paired-run.tar.gz)
+
+## Separate phase and kernel RSS observation
+
+One same-binary diagnostic captured the native CLI's published progress
+lines and glibc `LD_DEBUG=statistics` output. Parent-controlled developer
+builds could run during this observation. Its values are excluded from
+the paired timing and the memory gate.
+
+The observer saw the first completed-input line 226 ms after dispatch,
+then the last line at 576 ms and successful process exit at 607 ms.
+The three observable intervals were 226 ms through preparation and the
+first input, 350 ms for the remaining input pipeline, and 31 ms for final
+fusion, export and exit. The largest intervals between input markers
+were 111 ms for frame 2 and 95 ms for frame 4. Those markers do not resolve
+the execution-runtime qualification and initial kernel compilation
+inside the first phases. The dynamic linker reported 1,146,070 startup
+cycles.
+
+Linux `wait4` reported 121,647,104 bytes of process RSS high-water,
+4.487 s of user CPU, and 0.508 s of system CPU. This single-process metric
+cannot fill the missing concurrent process-tree gate or supply a paired
+reference ratio. The diagnostic completed with the same decoded E9
+hash as every measured candidate sample. The original source inputs were
+unchanged and its temporary TIFF and scoped cache were removed.
+
+[Phase observations and kernel counters](phase-observation.json) ·
+[Raw dynamic loader counters](dynamic-loader.log.gz) ·
+[Acquisition command](observe-phases.py.txt)
