@@ -158,9 +158,11 @@ coordinates must come from independent review of the actual scenario.
   condition, including all required actions.
 - `lifecycle` steps accept `operation` (`pause` or `cancel`) and `input`.
   The collector records actual Running before dispatch, worker-confirmed
-  Paused or Cancelling, and reusable Idle after cancellation. The timestamps
-  bound external observation, so an acknowledgement too brief to observe
-  remains unqualified. Corroborate the observed state with the production
+  Paused or Cancelling, and reusable Idle after cancellation. A fleeting
+  Cancelling transition may be observed through the retained native
+  acknowledgement marker for the same worker generation. Idle by itself
+  supplies no acknowledgement evidence. The timestamps bound external
+  observation. Corroborate the observed state with the production
   worker’s safe-boundary and resource-drain semantics and the native
   [lifecycle case](../../pancake-conformance/src/pancake_conformance/cases/interface.py).
 - Use `--workload lifecycle` for the unmodified 64-path fixture. It intentionally
@@ -188,7 +190,7 @@ observations and contribute no passing latency evidence.
 
 - Before implementation, `python -m unittest discover -s qualification/p10-performance -v`
   failed to import the absent protocol.
-- Fourteen focused tests and Ruff passed using the frozen reference environment.
+- Fifteen focused tests and Ruff passed using the frozen reference environment.
   The measurement test invokes a real local child process and verifies that
   the timed boundary reaches its output publication.
 - The pinned ChimpStackr checkout at

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 from framebuffer import Patch, XwdScreen, observe_transition
-from linux_latency import _matches_viewer_load
+from linux_latency import _cancel_observation, _matches_viewer_load
 from protocol import merge_latency_samples, verify_frames
 
 
@@ -133,3 +133,29 @@ class WorkerLoadContracts(unittest.TestCase):
             _matches_viewer_load("loaded", "paused", "Paused · Fuse · 21 of 50")
         )
         self.assertTrue(_matches_viewer_load("idle", "idle", "Idle"))
+
+
+class CancellationReceiptContracts(unittest.TestCase):
+    def test_acknowledgement_survives_idle_of_the_same_generation(self):
+        before = {
+            "generation": "Generation(2)",
+            "state": "Running",
+            "cancel_acknowledged": False,
+        }
+        after = {
+            "generation": "Generation(2)",
+            "state": "Idle",
+            "cancel_acknowledged": True,
+        }
+        self.assertEqual(
+            _cancel_observation(before, after), "latched_actual_acknowledgement"
+        )
+        self.assertEqual(
+            _cancel_observation(before, dict(after, state="Cancelling")),
+            "native_cancelling_state",
+        )
+        with self.assertRaisesRegex(ValueError, "generation"):
+            _cancel_observation(before, dict(after, generation="Generation(3)"))
+        with self.assertRaisesRegex(ValueError, "without.*acknowledgement"):
+            _cancel_observation(before, dict(after, cancel_acknowledged=False))
+        self.assertIsNone(_cancel_observation(before, before))
