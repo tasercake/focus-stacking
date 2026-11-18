@@ -23,9 +23,16 @@ entry and 44,187,780 KiB at exit. This run generated and verified
 input data. The packaged viewer was identified by archive and sealed receipt
 hashes. Application and device measurements are tracked by their consumers.
 
-Both the exact packaged baseline and the isolated bounded-poll GUI candidate
-are planned consumers of this same immutable stage. The owner removes the
-corpus after both readers release and the coordinator clears cleanup.
+The exact packaged baseline and the isolated bounded-poll candidate each
+captured 400 viewer events and confirmed the same 50 source TIFFs unchanged.
+Both native processes exited cleanly and released their read-only access.
+Both loaded p95 scores missed the frozen target, with 52.322024 ms for the
+packaged baseline and 66.942485 ms for the experimental candidate. The owner
+authenticated the directory and rehashed every TIFF before removing all 52
+files and 2,775,174,405 bytes at 21:49:45 SGT. No staged TIFFs remain.
+
+[Viewer role receipts](released-borrower-roles.json) ·
+[Cleanup summary](cleanup-summary.json) · [Authenticated cleanup](cleanup.json.gz)
 
 [Stage receipt](shared-stage.json) · [Preflight](prepared-stage.json) ·
 [Complete encoded and decoded records](materialization.json.gz) ·
