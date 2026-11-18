@@ -1,0 +1,46 @@
+{
+  "source": "18c17b6f1dd2ff2a15ccea985fe430ac1eb7a666",
+  "binary_sha256": "8c96ad652487f8628e53b44dfa014ff65b3da84da3acfa98ab0e56d26d09201a",
+  "rust_lock_sha256": "012cda6d161124eef8ecc3c5c6a4fed8db881e5f7606f4b9d7aee5f766f1a879",
+  "rust_toolchain": "1.100.0",
+  "build": "cargo +1.100.0 build --release --locked -p pancake-cli",
+  "gpu_driver": "580.178.04",
+  "gpu_pci": "0000:01:00.0",
+  "runs": {
+    "primary": {
+      "selected": 27,
+      "passed": 27,
+      "failed": 0,
+      "unsupported": 0,
+      "unrun": 0,
+      "completed_calls_by_runtime": {
+        "cpu": 31
+      },
+      "raw_report_sha256": "a9154c5aa75f40dad75539aaa88236ebc397820d7a10d1229df8ace6250f504e",
+      "raw_call_artifacts": 89
+    },
+    "devices": {
+      "selected": 13,
+      "passed": 13,
+      "failed": 0,
+      "unsupported": 0,
+      "unrun": 0,
+      "completed_calls_by_runtime": {
+        "wgpu-vulkan": 11,
+        "cpu": 10
+      },
+      "raw_report_sha256": "e35864eee84abce92caf501059b3e9cdfcd174b9fe6459e867022c60ec97bf9a",
+      "raw_call_artifacts": 55
+    },
+    "p1-regression": {
+      "selected": 25,
+      "passed": 25,
+      "failed": 0,
+      "unsupported": 0,
+      "unrun": 0,
+      "completed_calls_by_runtime": {},
+      "raw_report_sha256": "632f756828288019450bd6dee8962f7189c31f0c1cfb8a19e27ce0dfd2944010",
+      "raw_call_artifacts": 45
+    }
+  }
+}
