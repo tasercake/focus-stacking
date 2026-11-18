@@ -26,6 +26,31 @@ fn cpu_advanced_fusion() -> Result<(), String> {
     advanced_fusion_cases::check_exposure_specialization(&device)
 }
 
+/// Reject malformed caller samples before accepting the next complete frame.
+/// # Errors
+/// Returns a numerical, validation, or runtime error.
+#[test]
+fn cpu_advanced_host_frame_validation_preserves_recovery() -> Result<(), String> {
+    let device = cubecl::Device::Cpu(cubecl::cpu::CpuDevice);
+    let mut accumulator =
+        AdvancedAccumulator::new(&device, 3, 1, AdvancedMethod::Hybrid, 3, 2, BUDGET)?;
+    let valid = [0.625; 9];
+    let mut nonfinite = valid;
+    *nonfinite
+        .first_mut()
+        .ok_or("expected a nonempty RGB frame")? = f32::NAN;
+    if !matches!(accumulator.add_frame(&[0.0]), Err(error) if error == "sample count does not match packed RGB dimensions")
+        || !matches!(accumulator.add_frame(&nonfinite), Err(error) if error == "image contains a nonfinite sample")
+    {
+        return Err("advanced fusion did not reject malformed host samples".to_owned());
+    }
+    accumulator.add_frame(&valid)?;
+    if accumulator.finish()? != valid {
+        return Err("rejected samples changed the accepted Hybrid result".to_owned());
+    }
+    Ok(())
+}
+
 /// Invalid dimensions and budget fail without touching the unavailable runtime.
 ///
 /// # Panics
