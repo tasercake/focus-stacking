@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run only in an uncontended window. Paths are absolute or relative to launch.
+main_root=$(realpath "$1")
+baseline=$(realpath "$2")
+candidate=$(realpath "$3")
+calibration=$(realpath "$4")
+input_root=$(realpath "$5")
+materialization=$(realpath "$6")
+base_receipt=$(realpath "$7")
+candidate_receipt=$(realpath "$8")
+owned=$(mktemp -d "${TMPDIR:-/tmp}/pvr.XXXXXXXX")
+mkdir "$owned/artifacts"
+out=$(mktemp -d "$owned/artifacts/run.XXXX")
+printf 'Capture directory %s\n' "$out"
+ref_python="$main_root/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python"
+program=artifacts/viewer-ab-tools
+checked_in=qualification/p10-performance
+fixture=qualification/t50-generated
+source "$main_root/artifacts/p10-compare/native-tools/gui-env.sh"
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+unset SLINT_BACKEND
+
+run_tool() {
+    local root=$1
+    shift
+    PYTHONPATH="$root/pancake-conformance/src:$root/$program" "$ref_python" "$@"
+}
+
+# Preserve byte-identical runners while each locates its own exact Git source and binary.
+for source_tree in "$baseline" "$candidate"; do
+    mkdir -p "$source_tree/$program"
+    for name in linux_latency.py framebuffer.py p10.py protocol.py resources.py; do
+        install -m 0644 "$candidate/$checked_in/$name" "$source_tree/$program/$name"
+    done
+done
+(cd "$candidate" && sha256sum "$program"/*.py) > "$out/collector.sha256"
+(cd "$baseline" && sha256sum --check "$out/collector.sha256")
+cp "$base_receipt" "$out/a.build.json"
+cp "$candidate_receipt" "$out/b.build.json"
+cp "$materialization" "$out/t50-materialization.json"
+sha256sum "$materialization" > "$out/t50-materialization.sha256"
+"$ref_python" - "$input_root" "$materialization" "$candidate/$fixture/evidence/native-t50-receipt.json" <<'PYCODE'
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+root, materialization, frozen = map(Path, sys.argv[1:])
+record = json.loads(materialization.read_text())
+identity = json.loads((root / "ownership.json").read_text())
+assert record["mode"] == "materialized"
+assert record["frame_count"] == 50
+assert identity["token"] == record["ownership_token"]
+assert record["cleanup"]["owned_output_directory"] == str(root)
+assert record["reference_receipt_sha256"] == hashlib.sha256(frozen.read_bytes()).hexdigest()
+PYCODE
+
+mkdir "$out/calibration"
+cp "$calibration"/scenario.json "$calibration"/*-witness.png "$out/calibration/"
+"$ref_python" - "$out" <<'PY'
+import json
+import sys
+from collections import Counter
+from pathlib import Path
+
+output = Path(sys.argv[1])
+calibration = output / "calibration"
+original = (calibration / "scenario.json").read_text()
+for arm in ("a", "b"):
+    scenario = json.loads(original)
+    counts = Counter(
+        (event["condition"], event["action"])
+        for event in scenario["steps"]
+        if event["kind"] == "viewer"
+    )
+    expected = {
+        (condition, action): 40
+        for condition in ("idle", "loaded")
+        for action in ("source", "result", "pan", "zoom", "comparison")
+    }
+    if counts != expected:
+        raise ValueError(f"Unexpected frozen viewer actions: {counts}")
+    receipt = json.loads((output / f"{arm}.build.json").read_text())
+    for key in ("commit", "binary_sha256"):
+        scenario["physical_wgpu"][key] = receipt[key]
+    (calibration / f"scenario-{arm}.json").write_text(json.dumps(scenario) + "\n")
+PY
+capture() (
+    cd "$1" || return
+    local arm=$2 status=0 reduction=0
+    date -Iseconds > "$out/$arm.start"
+    nvidia-smi > "$out/$arm.gpu-before.txt" 2>&1 || return
+    timeout --signal=INT --kill-after=20s 900s \
+        env PYTHONPATH="$1/pancake-conformance/src:$1/$program" \
+        "$ref_python" "$program/linux_latency.py" \
+        --build-receipt "$out/$arm.build.json" \
+        --scenario "$out/calibration/scenario-$arm.json" \
+        --workload T50 --input-root "$input_root" \
+        --output "$out/$arm" > "$out/$arm.collector.log" 2>&1 || status=$?
+    printf '%s\n' "$status" > "$out/$arm.collector.exit"
+    nvidia-smi > "$out/$arm.gpu-after.txt" 2>&1
+    date -Iseconds > "$out/$arm.end"
+    if [[ -f "$out/$arm/native-latency.json" ]]; then
+        run_tool "$1" "$program/p10.py" latency "$out/$arm/native-latency.json" \
+            > "$out/$arm.frozen-reduction.json" \
+            2> "$out/$arm.frozen-reduction.stderr" || reduction=$?
+        printf '%s\n' "$reduction" > "$out/$arm.reducer.exit"
+    fi
+    return "$status"
+)
+
+status=0
+capture "$baseline" a || status=$?
+capture "$candidate" b || status=$?
+# The T50 materializer owns the borrowed input directory and its eventual cleanup.
+sha256sum --check "$out/t50-materialization.sha256" > "$out/t50-materialization-final-check.log"
+if [[ "$status" == 0 ]]; then
+    run_tool "$candidate" - "$out" > "$out/per-action.json" <<'PY'
+import json
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+from protocol import distribution
+
+output = Path(sys.argv[1])
+by_arm = {}
+for arm in ("a", "b"):
+    capture = json.loads((output / arm / "native-latency.json").read_text())
+    times = defaultdict(list)
+    for event in capture["viewer"]:
+        if not event["valid"]:
+            raise ValueError(f"Arm {arm} contains an invalid sample")
+        elapsed = event["presented_ns"] - event["dispatched_ns"]
+        times[f"{event['condition']}/{event['action']}"].append(elapsed)
+    by_arm[arm] = {key: distribution(values) for key, values in sorted(times.items())}
+print(json.dumps(by_arm, indent=2))
+PY
+fi
+exit "$status"
