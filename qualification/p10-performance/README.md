@@ -73,7 +73,11 @@ memory to its process IDs using both NVML compute and graphics lists.
 These counters are sampled at a 10 ms nominal interval.
 A gap above 20 ms or an unavailable metric leaves a memory gate pending.
 Transient peaks can escape polling, and RSS can count a shared page in multiple
-processes. The GPU measurement excludes unrelated clients. The maximum sampled
+processes. Linux `wait4` also supplies a cadence-independent kernel RSS
+high-water observation at the process boundary. The runner records that value
+separately in bytes, along with user and system CPU time. It does not replace
+the required concurrent process-tree total when processes can overlap.
+The GPU measurement excludes unrelated clients. The maximum sampled
 tree RSS and GPU residency are reported separately.
 The macOS physical-footprint lane requires equivalent measurements on Apple
 hardware.
@@ -158,9 +162,11 @@ coordinates must come from independent review of the actual scenario.
   condition, including all required actions.
 - `lifecycle` steps accept `operation` (`pause` or `cancel`) and `input`.
   The collector records actual Running before dispatch, worker-confirmed
-  Paused or Cancelling, and reusable Idle after cancellation. The timestamps
-  bound external observation, so an acknowledgement too brief to observe
-  remains unqualified. Corroborate the observed state with the production
+  Paused or Cancelling, and reusable Idle after cancellation. A fleeting
+  Cancelling transition may be observed through the retained native
+  acknowledgement marker for the same worker generation. Idle by itself
+  supplies no acknowledgement evidence. The timestamps bound external
+  observation. Corroborate the observed state with the production
   worker’s safe-boundary and resource-drain semantics and the native
   [lifecycle case](../../pancake-conformance/src/pancake_conformance/cases/interface.py).
 - Use `--workload lifecycle` for the unmodified 64-path fixture. It intentionally
@@ -188,7 +194,7 @@ observations and contribute no passing latency evidence.
 
 - Before implementation, `python -m unittest discover -s qualification/p10-performance -v`
   failed to import the absent protocol.
-- Fourteen focused tests and Ruff passed using the frozen reference environment.
+- Fifteen focused tests and Ruff passed using the frozen reference environment.
   The measurement test invokes a real local child process and verifies that
   the timed boundary reaches its output publication.
 - The pinned ChimpStackr checkout at
