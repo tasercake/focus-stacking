@@ -17,6 +17,13 @@ Full local regressions and canonical macOS assurance remain required. Rerun the 
 25 IDs with subsequent milestones. [Conformance receipts](p1-evidence/README.md)
 and [assurance receipts](p1-assurance-evidence/README.md).
 
+**P2 conformance passes for all 84 mapped host cases. P2 exit is open.**
+The locked release at `cb5e3a4` passes the accrued 109-case P1/P2 set with
+physical NVIDIA Vulkan evidence. The six 2D NumPy grayscale cases now pass.
+Retain all 109 IDs in later regressions. Canon CR3 crop/render compatibility
+and full milestone assurance remain open.
+[Conformance receipts](p2-conformance-evidence/README.md).
+
 [Consolidated P0 work log, including earlier work](p0-work-log.md) is the evidence
 entry point. Historical reports retain their original outcomes; this plan owns
 current scope and exit requirements.
