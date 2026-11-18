@@ -65,6 +65,10 @@ quality_report = '(?im)^sharpness\s+[0-9]+(?:\.[0-9]+)?'
 "advanced.open" = [{ click = "advanced" }, { key = "tab" }]
 "frames.select_first" = [{ click = "frame.0" }]
 "export.open" = [{ click = "export.start" }]
+"window.close" = [{ key = "escape" }, { key = "w", modifiers = ["command"] }]
+"frames.context_second" = [{ click = "frame.1", physical = true, button = "right" }]
+"results.select.hybrid" = [{ click = { within = { id = "results" }, role = "AXButton", text_pattern = "^Hybrid$" } }]
+"results.select.weighted_average" = [{ click = { within = { id = "results" }, role = "AXButton", text_pattern = "^Weighted average$" } }]
 
 [ui.choices]
 alignment = { off = "Off", translation = "Translation", euclidean = "Euclidean", similarity = "Similarity", affine = "Affine", breathing = "Breathing" }
@@ -79,6 +83,9 @@ selected_method = { selected = { laplacian = { id = "method.laplacian" }, hybrid
 frame_count = { selector = { id = "frames.count" }, pattern = '^(\d+) frames?$', type = "integer" }
 source_total = { selector = { id = "frames.count" }, pattern = '^(\d+) frames?$', type = "integer" }
 source_index = { selector = { id = "viewer" }, attribute = "description", json = "source_index" }
+selected_result_method = { selector = { id = "viewer" }, attribute = "description", json = "result_method" }
+result_cropped = { selector = { id = "viewer" }, attribute = "description", json = "cropped" }
+result_count = { selector = { id = "results.count" }, type = "integer" }
 
 [ui.advanced_values]
 kernel-size = 7
