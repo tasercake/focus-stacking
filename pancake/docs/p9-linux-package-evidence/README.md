@@ -1,5 +1,27 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `c1e2cac`
+
+The locked default workspace release built both executables at
+`c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb`. The fast and dependency checks and
+four packaging tests passed. The exact local archive is
+`artifacts/pancake-packages/linux-c1e2cac/pancake_0.1.0_amd64.deb` (69,508,790 bytes), with SHA-256
+`c6f39324ea4d9a29fb1a4f33253f6d988f44d1f150622bc94b728975a5f96b64`. The tested revision descends from the sanitized
+lineage. A complete Git object-membership check confirmed the excluded
+opaque object is unreachable from the tested revision.
+[Build, hardware and source receipts](c1e2cac/summary.json).
+[Ancestry verification](c1e2cac/clean-ancestry.json).
+[Rootless package verification](c1e2cac/package-verification.json).
+
+Rootless extraction verified both executable hashes, linked native libraries,
+the desktop entry, CLI help and archived source notices. The extracted
+binaries passed all 376 frozen case IDs with matching source, contract,
+descriptor and lock receipts. The strict ledger accepted 341 host cases,
+34 isolated GUI cases and the separate physical RTX 3090 GUI case on wgpu
+Vulkan. The raw reports remain under `artifacts/p9-c1e2cac/{h,g,p}`.
+Earlier package and performance evidence retains its recorded revision.
+[Strict aggregate ledger](c1e2cac/linux-ledger.json.gz).
+
 ## Integrated Linux package candidate `8694b55`
 
 The locked default workspace release built both executables at
