@@ -5,6 +5,8 @@ use std::fmt;
 use cubecl::prelude::*;
 use cubecl::std::tensor::TensorHandle;
 
+use crate::registration::ResidentRgb;
+
 mod levels;
 mod plan;
 mod pyramid;
@@ -129,11 +131,26 @@ impl AdvancedAccumulator {
     /// # Errors
     /// Returns a shape, nonfinite-sample, arithmetic or runtime completion error.
     pub fn add_frame(&mut self, rgb: &[f32]) -> Result<(), String> {
+        self.add_normalized_frame(rgb, None)
+    }
+
+    /// Add a frame and consume an eligible existing upload from registration.
+    /// # Errors
+    /// Returns a sample, device ownership, layout, or runtime completion error.
+    pub(crate) fn add_normalized_frame(
+        &mut self,
+        rgb: &[f32],
+        resident: Option<ResidentRgb>,
+    ) -> Result<(), String> {
         if let Some(error) = &self.failure {
             return Err(error.clone());
         }
         self.grid.validate(rgb)?;
-        let result = self.submit_frame(rgb);
+        let image = match resident {
+            Some(input) => input.into_tensor(&self.client, self.grid.width, self.grid.height)?,
+            None => upload(&self.client, rgb),
+        };
+        let result = self.submit_frame(image);
         if let Err(error) = &result {
             self.failure = Some(error.clone());
         }
@@ -144,9 +161,8 @@ impl AdvancedAccumulator {
     ///
     /// # Errors
     /// Returns resource, submission or completed-kernel errors.
-    fn submit_frame(&mut self, rgb: &[f32]) -> Result<(), String> {
+    fn submit_frame(&mut self, mut image: TensorHandle) -> Result<(), String> {
         let first = self.frames == 0;
-        let mut image = upload(&self.client, rgb);
         let mut weights = weights::weights(
             &self.client,
             &image,

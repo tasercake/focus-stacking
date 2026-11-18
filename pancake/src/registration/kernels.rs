@@ -3,7 +3,10 @@
 use cubecl::prelude::*;
 use cubecl::std::tensor::TensorHandle;
 
-use super::geometry::{Affine, Bounds, Extent, Frame};
+use super::{
+    ResidentRgb,
+    geometry::{Affine, Bounds, Extent, Frame},
+};
 
 /// Limit one warp output allocation to one MiB of f32 samples.
 const WARP_TILE: usize = 262_144;
@@ -120,11 +123,13 @@ pub(super) fn make_luma(
     frame: Frame<'_>,
     dimensions: Extent,
     budget: usize,
-) -> Result<Vec<f32>, String> {
+    retain_input: bool,
+) -> Result<(Vec<f32>, Option<ResidentRgb>), String> {
     let count = dimensions.area()?;
     check_budget(frame.samples.len(), count, count, budget)?;
     let client = device.client();
     let input = upload(&client, frame.samples);
+    let resident = retain_input.then(|| ResidentRgb::new(frame.extent, input.clone()));
     let output = TensorHandle::empty(&client, [count], f32::cube_type());
     let dim = CubeDim::new(&client, count);
     let cubes = cubecl::calculate_cube_count_elemwise(&client, count, dim);
@@ -142,7 +147,8 @@ pub(super) fn make_luma(
         scale_x,
         scale_y,
     );
-    read(&client, output, count)
+    let pixels = read(&client, output, count)?;
+    Ok((pixels, resident))
 }
 
 /// Device-owned prepared pair reused across all search iterations.

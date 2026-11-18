@@ -101,6 +101,19 @@ fn identity_crop_applies_only_to_aligned_jobs() -> Result<(), String> {
 /// Returns output, event or lifecycle invariant errors.
 #[test]
 fn interrupted_execution_retains_an_existing_export() -> Result<(), String> {
+    for (method, alignment) in [
+        (Method::WeightedAverage, AlignmentMode::Off),
+        (Method::Hybrid, AlignmentMode::Similarity),
+    ] {
+        verify_interrupted_execution(method, alignment)?;
+    }
+    Ok(())
+}
+
+/// Exercise real publication boundaries for either CPU accumulation route.
+/// # Errors
+/// Returns output, event or lifecycle invariant errors.
+fn verify_interrupted_execution(method: Method, alignment: AlignmentMode) -> Result<(), String> {
     let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
     let inputs = sources(directory.path())?;
     let output = directory.path().join("previous.png");
@@ -110,9 +123,22 @@ fn interrupted_execution_retains_an_existing_export() -> Result<(), String> {
         events_path: Some(events.clone()),
         ..Options::default()
     };
+    let request = || {
+        JobConfig::new(
+            &inputs,
+            Some(output.clone()),
+            JobSettings {
+                bit_depth: BitDepth::Sixteen,
+                device: DevicePreference::Cpu,
+                method,
+                alignment,
+                ..JobSettings::default()
+            },
+        )
+    };
     let control = JobControl::new(Generation::from_counter(1), inputs.len())?;
     let mut accepted = false;
-    let outcome = run_controlled(request(&inputs, &output)?, &options, &control, |progress| {
+    let outcome = run_controlled(request()?, &options, &control, |progress| {
         if progress.completed == 1 {
             accepted = control.cancel() == Ok(true);
         }
@@ -131,7 +157,7 @@ fn interrupted_execution_retains_an_existing_export() -> Result<(), String> {
     )?;
     let damaged = inputs.last().ok_or("last source missing")?;
     std::fs::write(damaged, b"truncated image").map_err(|error| error.to_string())?;
-    let outcome = run(request(&inputs, &output)?, &options, |_| {});
+    let outcome = run(request()?, &options, |_| {});
     let failure = outcome
         .err()
         .ok_or("damaged source unexpectedly succeeded")?;
