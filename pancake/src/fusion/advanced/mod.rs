@@ -134,7 +134,7 @@ impl AdvancedAccumulator {
         self.add_normalized_frame(rgb, None)
     }
 
-    /// Add a frame and consume an eligible existing upload from registration.
+    /// Add host samples or reuse a resident frame from a validated source image.
     /// # Errors
     /// Returns a sample, device ownership, layout, or runtime completion error.
     pub(crate) fn add_normalized_frame(
@@ -145,10 +145,12 @@ impl AdvancedAccumulator {
         if let Some(error) = &self.failure {
             return Err(error.clone());
         }
-        self.grid.validate(rgb)?;
         let image = match resident {
             Some(input) => input.into_tensor(&self.client, self.grid.width, self.grid.height)?,
-            None => upload(&self.client, rgb),
+            None => {
+                self.grid.validate(rgb)?;
+                upload(&self.client, rgb)
+            }
         };
         let result = self.submit_frame(image);
         if let Err(error) = &result {
