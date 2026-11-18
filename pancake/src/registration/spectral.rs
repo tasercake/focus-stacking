@@ -307,9 +307,9 @@ mod tests {
     #[test]
     fn weak_spectral_peak_abstains_before_displacement() -> Result<(), String> {
         const SIDE: usize = 64;
-        // The interleaved real slot for column 61 (wrapped to -3), row 5.
-        const REAL_PEAK_SLOT: usize = 762;
-        let extent = Extent::new(192, 128)?;
+        // The interleaved real slot for column 61 (wrapped to -3), row 8.
+        const REAL_PEAK_SLOT: usize = 1146;
+        let extent = Extent::new(192, 80)?;
         let mut surface = vec![0.0_f32; 8192];
         // Five percent of the 4096-point normalization area is 204.8.
         for (strength, expected) in [(204.75, None), (204.875, Some([-9.0_f32, 10.0_f32]))] {
