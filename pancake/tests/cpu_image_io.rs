@@ -211,7 +211,7 @@ fn large_tiled_tiff_preserves_profile_and_reports_later_tile_failure() -> TestRe
 #[test]
 fn malformed_file_diagnostics_identify_each_input() -> TestResult {
     let directory = tempfile::tempdir()?;
-    for extension in ["png", "dng", "npy", "unknown"] {
+    for extension in ["png", "dng", "cr3", "npy", "unknown"] {
         let path = directory.path().join(format!("invalid‐frame.{extension}"));
         let content = b"not a valid encoded image\x00\xff";
         fs::write(&path, content)?;
