@@ -1,0 +1,102 @@
+"""Verify all 50 reference crop/calibration records against the original files."""
+
+import json
+import platform
+import subprocess
+from pathlib import Path
+
+import rawpy
+from p10 import ROOT, TARGETS_PATH
+from pancake_conformance.adapters.pancake.cr3_reference import (
+    POLICY,
+    camera_crop,
+    camera_saturation,
+    open_cr3,
+)
+from protocol import Campaign, corpus, sha256, verify_frames
+
+scratch = ROOT / "artifacts/r50-quality"
+input_root = scratch / "inputs"
+records, provenance = corpus(ROOT, Campaign.load(TARGETS_PATH), "R50")
+paths = verify_frames(input_root, records, 50)
+tags = (
+    "SensorWidth",
+    "SensorHeight",
+    "SensorLeftBorder",
+    "SensorTopBorder",
+    "SensorRightBorder",
+    "SensorBottomBorder",
+    "CroppedImageWidth",
+    "CroppedImageHeight",
+    "Orientation",
+)
+metadata = json.loads(
+    subprocess.check_output(
+        ["exiftool", "-n", "-json", *("-" + tag for tag in tags), *paths],
+        text=True,
+    )
+)
+flips = {1: 0, 2: 1, 3: 3, 4: 2, 5: 4, 6: 6, 7: 7, 8: 5}
+outputs = []
+for source, frozen, returned in zip(paths, records, metadata, strict=True):
+    assert Path(returned["SourceFile"]) == source
+    with open_cr3(source) as image:
+        sizes = image.sizes
+        crop = camera_crop(sizes)
+        saturation = camera_saturation(image)
+        geometry = [
+            sizes.crop_left_margin,
+            sizes.crop_top_margin,
+            sizes.crop_width,
+            sizes.crop_height,
+        ]
+        independent = [returned[tag] for tag in tags[2:4]] + [
+            returned["SensorRightBorder"] + 1 - returned["SensorLeftBorder"],
+            returned["SensorBottomBorder"] + 1 - returned["SensorTopBorder"],
+        ]
+        assert geometry == independent
+        assert sizes.raw_width == returned["SensorWidth"]
+        assert sizes.raw_height == returned["SensorHeight"]
+        assert geometry[2:] == [
+            returned["CroppedImageWidth"],
+            returned["CroppedImageHeight"],
+        ]
+        assert crop.flip == flips[returned["Orientation"]]
+        assert sha256(source) == frozen["sha256"]
+        outputs.append(
+            {
+                "path": frozen["path"],
+                "bytes": frozen["size_bytes"],
+                "sha256": frozen["sha256"],
+                "camera_crop_xywh": geometry,
+                "sensor_shape_hw": [sizes.raw_height, sizes.raw_width],
+                "historical_visible_shape_hw": [sizes.height, sizes.width],
+                "oriented_shape_hwc": list(crop.shape),
+                "black_per_channel": image.black_level_per_channel,
+                "camera_white_per_channel": image.camera_white_level_per_channel,
+                "camera_whitebalance": image.camera_whitebalance,
+                "camera_saturation_after_black": saturation,
+                "rgb_xyz_matrix": image.rgb_xyz_matrix.tolist(),
+                "maker_note_orientation": returned["Orientation"],
+                "libraw_flip": crop.flip,
+            }
+        )
+summary = {
+    "environment": {
+        "platform": platform.platform(),
+        "python": platform.python_version(),
+        "rawpy": rawpy.__version__,
+        "libraw": rawpy.libraw_version,
+        "exiftool": subprocess.check_output(["exiftool", "-ver"], text=True).strip(),
+    },
+    "reference_policy": POLICY,
+    "frozen_manifest_sha256": provenance["sha256"],
+    "ordered_frame_count": len(outputs),
+    "independent_makernote_geometry_matches": len(outputs),
+    "source_hashes_unchanged": True,
+    "frames": outputs,
+}
+(scratch / "metadata.json").write_text(
+    json.dumps(summary, indent=2, allow_nan=False) + "\n"
+)
+print(f"Verified camera geometry and calibration on {len(outputs)} pinned originals")

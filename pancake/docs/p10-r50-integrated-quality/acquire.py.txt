@@ -1,0 +1,87 @@
+"""Reacquire only the exact 50 native R50 files into a fresh task-owned root."""
+
+import hashlib
+import json
+import shutil
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+from urllib.request import urlopen
+
+repo = Path.cwd()
+scratch = repo / "artifacts/r50-quality"
+target = scratch / "inputs"
+spec = json.loads((repo / "pancake/docs/performance-targets.json").read_bytes())
+pin = spec["corpus_evidence"]["R50"]
+manifest = (repo / pin["manifest_path"]).read_bytes()
+if hashlib.sha256(manifest).hexdigest() != pin["manifest_sha256"]:
+    raise ValueError("frozen R50 manifest digest differs")
+pool = json.loads(manifest)
+rows = pool["frames"]
+total = sum(frame["size_bytes"] for frame in rows)
+if (
+    len(rows) != 50
+    or total != pool["selected_native_bytes"]
+    or total > pool["native_download_budget_bytes"]
+):
+    raise ValueError("frozen R50 download bounds differ")
+if len({row["sha256"] for row in rows}) != len(rows):
+    raise ValueError("frozen R50 file hashes must be distinct")
+if shutil.disk_usage(scratch).free < 15 * 1024**3 + total:
+    raise ValueError("insufficient disk reserve for the frozen R50 set")
+target.mkdir()
+(target / "ownership.json").write_text(
+    json.dumps(
+        {
+            "task": "pancake R50 integrated quality",
+            "manifest_sha256": pin["manifest_sha256"],
+            "expected_files": len(rows),
+        }
+    )
+    + "\n"
+)
+
+
+def acquire(row):
+    relative = Path(row["path"])
+    path = target / relative
+    if not path.resolve().is_relative_to(target) or not path.suffix.upper() == ".CR3":
+        raise ValueError("invalid frozen R50 path")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    partial = path.with_suffix(".CR3.part")
+    sha = hashlib.sha256()
+    remaining = row["size_bytes"]
+    try:
+        with urlopen(row["url"], timeout=45) as provider, partial.open("xb") as file:
+            while remaining > 0:
+                data = provider.read(min(remaining, 1024**2))
+                if not data:
+                    raise ValueError(f"short source for {relative}")
+                file.write(data)
+                sha.update(data)
+                remaining -= len(data)
+            if provider.read(1) or sha.hexdigest() != row["sha256"]:
+                raise ValueError(f"different source bytes for {relative}")
+        partial.rename(path)
+    finally:
+        partial.unlink(missing_ok=True)
+    return {
+        "path": str(relative),
+        "sha256": sha.hexdigest(),
+        "bytes": path.stat().st_size,
+    }
+
+
+with ThreadPoolExecutor(max_workers=2) as downloads:
+    records = list(downloads.map(acquire, rows))
+(scratch / "acquisition.json").write_text(
+    json.dumps(
+        {
+            "manifest_sha256": pin["manifest_sha256"],
+            "ordered_files": records,
+            "downloaded_bytes": total,
+        },
+        indent=2,
+    )
+    + "\n"
+)
+print(f"Verified {len(records)} exact Canon CR3s, {total} bytes")
