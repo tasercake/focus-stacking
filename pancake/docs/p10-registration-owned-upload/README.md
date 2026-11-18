@@ -66,6 +66,21 @@ exact locked CLI. The case traces record 63 native CPU completions with zero
 fallbacks. The reviewed production-source inventory and Rust format check
 passed.
 
+## Registration and device case replay
+
+A separate exact-source run passed all 72 P6 device cases and the last P5
+physical cascade case. Together with the host replay this covers all 64 P5
+and all 72 P6 IDs, with 136 distinct passes. The targeted device replay
+matched the same `07816a2` source, frozen suite, and executable hash used by
+the T50 candidate. It verified all 90 frozen contract files.
+
+The device replay exercised 101 CLI calls. It observed 33 native CPU jobs
+and 37 physical RTX 3090 Vulkan jobs, including the five Auto requests.
+The 31 corrupt-input calls identified the offending source. Thirty
+preserved the previous export bytes. The [device receipt](device-regression.json)
+lists every selected case and its provenance. The [raw logs](device-regression-raw.tar.gz)
+and [generated file hashes](device-file-manifest.json.gz) retain the run.
+
 ## Reproduce the scoped diagnostics
 
 The exact locked build command, full-frame Linux allocation probe source,
