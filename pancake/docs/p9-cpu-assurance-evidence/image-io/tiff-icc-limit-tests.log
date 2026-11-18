@@ -1,0 +1,61 @@
+   Compiling pancake v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/resume-image-tests/pancake)
+    Finished `test` profile [unoptimized] target(s) in 3.25s
+     Running tests/cpu_array_layout.rs (target/debug/build/pancake/b97a8d4d95a1d0e5/out/cpu_array_layout-b97a8d4d95a1d0e5)
+
+running 2 tests
+test identifies_two_dimensional_arrays_without_marking_native_grayscale ... ok
+test grayscale_array_exports_keep_native_sample_layout ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/cpu_image_export.rs (target/debug/build/pancake/e0f13d624f6e6e67/out/cpu_image_export-e0f13d624f6e6e67)
+
+running 10 tests
+test failures_retain_destinations_and_remove_staging ... ok
+test losing_staging_before_publication_does_not_damage_destination ... ok
+test forbids_source_aliases_even_during_commit ... ok
+test retained_image_can_publish_after_source_disappears ... ok
+test source_inspection_error_preserves_existing_destination ... ok
+test exr_keeps_float_samples ... ok
+test jpeg_declares_and_writes_eight_bit_samples ... ok
+test staging_is_invisible_until_commit_and_cleans_on_drop ... ok
+test profiled_exports_preserve_original_icc_bytes ... ok
+test lossless_formats_keep_full_precision ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/cpu_image_io.rs (target/debug/build/pancake/dc8813fb4a62bffb/out/cpu_image_io-dc8813fb4a62bffb)
+
+running 21 tests
+test encoded_raw_size_is_limited ... ok
+test bmp_and_directory_input_paths ... ok
+test invalid_tiff_orientation_storage_reports_decode_failure ... ok
+test malformed_optional_tiff_profile_preserves_valid_samples ... ok
+test raster_constructor_validates_shape_and_samples ... ok
+test shape_caps_precede_sample_validation ... ok
+test oversized_png_is_rejected_before_pixels_are_read ... ok
+test missing_and_truncated_rasters_report_the_offending_path ... ok
+test png_codec_keeps_low_bits_and_drops_alpha ... ok
+test float_tiff_keeps_levels_on_both_input_scales ... ok
+test npy_array_decodes_endian_codes_and_requires_complete_payload ... ok
+test exr_decode_keeps_float_bits_and_rejects_nonfinite_values ... ok
+test positive_hdr_tiff_does_not_use_ordinary_integer_code_scale ... ok
+test png_input_retains_embedded_icc_without_altering_rgb ... ok
+test png_orientation_follows_each_exif_value ... ok
+test oversized_optional_tiff_profile_preserves_valid_samples ... ok
+test corrupt_bayer_payload_is_not_developed ... ok
+test malformed_file_diagnostics_identify_each_input ... ok
+test bayer_dng_develops_true_sixteen_bit_rgb ... ok
+test developed_bayer_dng_obeys_camera_orientation ... ok
+test malformed_dng_sensor_metadata_fails_preflight ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/cpu_npy.rs (target/debug/build/pancake/a0460c35e5f2441a/out/cpu_npy-a0460c35e5f2441a)
+
+running 3 tests
+test extended_versions_decode_reordered_metadata_without_trailing_commas ... ok
+test truncated_header_and_channel_reads_are_recoverable ... ok
+test invalid_metadata_reports_the_failing_field_or_shape ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
