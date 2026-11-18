@@ -52,6 +52,26 @@ parity receipts are separate from the full P10 benchmark of `12f2151`.
 [Exact RAW source and focused measurements](p10-r50-raw-audit/README.md).
 [Source-equivalent real RAW parity](p10-r50-raw-audit/f2f1bb3/README.md).
 
+At `d6359e1`, the Linux CPU ASan and TSan gates each passed 127/127 tests.
+The unchanged nightly CPU coverage gate exited 1 with 4,202/5,932 covered
+lines and 520/640 covered branch outcomes.
+[Exact CPU sanitizer tests](p9-tsan-audit/integrated-d6359e1/README.md).
+[Unchanged nightly coverage gate](p9-cpu-assurance-evidence/d6359e1-nightly/README.md).
+
+The same-source optional CUDA and HIP CLI release profiles both linked.
+The CUDA release passed two native CPU and two physical RTX 3090 CUDA cases.
+The HIP receipt covers the retained build and link. Apple hardware was
+unavailable for this release candidate, and the retained Windows native
+build remains unverified.
+[Matching native backend builds](p9-linux-native-evidence/d6359e1/README.md).
+
+The packaged `d6359e1` GUI passed all 120 physical lifecycle requests on the
+RTX 3090, with 60 pauses and 60 cancellations across the original 64-path
+fixture and real D150. Maximum acknowledgements were 150.773 ms for pause
+and 151.283 ms for cancel, both below the frozen 250 ms limit. The combined
+latency reducer exited 1 with zero viewer observations in this campaign.
+[Exact physical lifecycle campaign](../../qualification/p10-performance/evidence/native-lifecycle-d6359e1/README.md).
+
 **The packaged `12f2151` Linux release passes all 376 case IDs.** The
 locked default Linux workspace release used the rootlessly extracted Debian
 package binaries in the host, private GUI and physical RTX 3090 lanes.
@@ -76,7 +96,7 @@ Integrated mutation coverage and the remaining assurance conditions are open.
 [Integrated physical GPU ASan replay](p9-gpu-asan-evidence/fcf395b/README.md).
 [Combined CPU and GUI coverage scope](p9-cpu-assurance-evidence/native-gui-continuous/5443cdf/README.md).
 
-The matching optional Linux CUDA and HIP release profiles both linked. The
+The earlier `12f2151` Linux CUDA and HIP release profiles both linked. The
 CUDA build passed four frozen CLI cases, with two CPU completions and two
 native CUDA completions on the RTX 3090. The HIP result is a build/link
 receipt. The delivery assessment assumes Apple compatibility based on
