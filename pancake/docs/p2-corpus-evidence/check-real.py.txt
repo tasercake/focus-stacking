@@ -1,0 +1,90 @@
+import hashlib
+import json
+import platform
+from pathlib import Path
+
+import numpy as np
+import rawpy
+import PIL
+from PIL import Image
+
+root = Path("artifacts/p2-real-inputs")
+manifests = Path("pancake-conformance/src/pancake_conformance/adapters/pancake")
+
+def sha256(path):
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+def digest_bytes(digest, path, frame, size):
+    if path.stat().st_size != size or sha256(path) != frame["sha256"]:
+        raise ValueError(f"Input size or hash mismatch {path}")
+    digest.update(bytes.fromhex(frame["sha256"]))
+
+raw_manifest = manifests / "performance-raw-corpus.json"
+frames_manifest = manifests / "performance-corpus.json"
+raw = json.loads(raw_manifest.read_text())
+others = json.loads(frames_manifest.read_text())
+receipt = {
+    "platform": platform.platform(),
+    "versions": {"python": platform.python_version(), "rawpy": rawpy.__version__, "libraw": list(rawpy.libraw_version), "numpy": np.__version__, "pillow": PIL.__version__},
+    "manifests": {path.name: sha256(path) for path in (raw_manifest, frames_manifest)},
+    "verification": {},
+}
+
+source = hashlib.sha256()
+pixels = hashlib.sha256()
+low_bit_frames = 0
+for frame in raw["frames"]:
+    path = root / frame["path"]
+    digest_bytes(source, path, frame, frame["size_bytes"])
+    with rawpy.imread(str(path)) as image:
+        visible = image.raw_image_visible
+        if list(visible.shape) != frame["raw_visible_shape"] or visible.dtype.name != frame["raw_visible_dtype"] or image.white_level != frame["white_level"]:
+            raise ValueError(f"Unexpected RAW metadata in {path}")
+        low_bit_frames += bool(np.any(visible & 255))
+        rgb16 = image.postprocess(**raw["qualification"]["postprocess_parameters"])
+    if list(rgb16.shape) != frame["decoded_shape"] or rgb16.dtype.name != frame["decoded_dtype"]:
+        raise ValueError(f"Unexpected RAW developed image in {path}")
+    pixels.update(hashlib.sha256(rgb16.astype("<u2", copy=False).tobytes()).digest())
+    print(f"R50 full {path.name}", flush=True)
+if low_bit_frames != len(raw["frames"]):
+    raise ValueError("Some visible RAW planes lack genuine low bits")
+receipt["verification"]["R50"] = {
+    "files": len(raw["frames"]),
+    "frame_bytes": sum(frame["size_bytes"] for frame in raw["frames"]),
+    "full_development": raw["qualification"]["postprocess_parameters"],
+    "decoded_shape_hwc": raw["frames"][0]["decoded_shape"],
+    "decoded_dtype": raw["frames"][0]["decoded_dtype"],
+    "visible_low_bit_frame_count": low_bit_frames,
+    "white_level": raw["frames"][0]["white_level"],
+    "ordered_sha256_of_input_digests": source.hexdigest(),
+    "ordered_sha256_of_output_digests": pixels.hexdigest(),
+}
+
+for workload in others["workloads"]:
+    source = hashlib.sha256()
+    pixels = hashlib.sha256()
+    exposure_metadata_frames = 0
+    for frame in workload["frames"]:
+        path = root / frame["path"]
+        digest_bytes(source, path, frame, frame["bytes"])
+        with Image.open(path) as img:
+            if img.mode != frame["native_mode"] or img.size != (frame["shape"][1], frame["shape"][0]):
+                raise ValueError(f"Unexpected native image profile in {path}")
+            image = np.asarray(img)
+            if list(image.shape) != frame["shape"] or image.dtype.itemsize * 8 != frame["native_sample_precision_bits"]:
+                raise ValueError(f"Unexpected decoded shape or precision in {path}")
+            exposure_metadata_frames += img.getexif().get(33434) is not None
+        pixels.update(hashlib.sha256(image.tobytes()).digest())
+    key = workload["id"].split("-")[0]
+    receipt["verification"][key] = {
+        "files": len(workload["frames"]),
+        "frame_bytes": sum(frame["bytes"] for frame in workload["frames"]),
+        "decoded_shape_hwc": workload["frames"][0]["shape"],
+        "native_sample_precision_bits": workload["frames"][0]["native_sample_precision_bits"],
+        "exif_exposure_time_frame_count": exposure_metadata_frames,
+        "ordered_sha256_of_input_digests": source.hexdigest(),
+        "ordered_sha256_of_output_digests": pixels.hexdigest(),
+    }
+    print(f"{key} fully decoded {len(workload['frames'])} frames", flush=True)
+Path("artifacts/p2-real-validation.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
