@@ -71,3 +71,35 @@ and core for all Cargo target platforms and features. The compute graph
 contains the low-level `wayland-sys` loader through wgpu. The release ELF
 needs libc, libgcc_s, libstdc++ and libm. Its loader trace for `--help`
 shows no X11, Wayland, GTK, EGL, GLX or Vulkan library loaded.
+
+## Reviewed CLI and core replay
+
+Candidate `98e945f27874c2c8b162ca124d33df23b0fb71a0` passed the same
+20 selected IDs from a clean worktree using the same locked release build and
+display-free invocation. All rejection diagnostics matched the expected flag,
+value or input count. Executable SHA-256
+`38fcf360bf6818583849f1268531b880c5c564a17ab42e6417689dd79da5327b`.
+The CLI/core dependency graph test and
+`python3 scripts/miri_host_policy.py . validate` passed. The latter validates
+the pinned source inventory and tool policy. Canonical macOS Miri execution
+remains pending.
+
+Replay this stage from the workspace root after building the release binary.
+Choose a fresh output directory for each run.
+
+```sh
+adapter=pancake-conformance/src/pancake_conformance/adapters/pancake
+case_args=()
+while IFS= read -r case_id; do
+    case_args+=(--case "$case_id")
+done < <(jq -r '.cases[] | select(.primary_milestone == "P1" and
+    (.id | startswith("cli.coverage.reject.") | not)) | .id' "$adapter/case-roadmap.json")
+env -u DISPLAY -u WAYLAND_DISPLAY -u DBUS_SESSION_BUS_ADDRESS -u XDG_SESSION_TYPE \
+  uv run --project pancake-conformance --frozen pancake-conformance run \
+  --target "$adapter/pancake.toml" "${case_args[@]}" --no-coverage \
+  --output artifacts/pancake-conformance/p1-reviewed
+```
+
+[Complete selected-case report](cli-reviewed.json.gz),
+[raw suite provenance](cli-reviewed-provenance.json) and
+[executable, lock and linkage](cli-reviewed-linkage.txt).
