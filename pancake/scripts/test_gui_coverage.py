@@ -112,6 +112,24 @@ class MappingIntegrityTest(unittest.TestCase):
         merged["data"][0]["functions"][0]["regions"][0][4] = 2
         compare_mapping(self.standard, merged)
 
+    def test_adding_a_native_object_preserves_source_and_all_standard_entries(self):
+        control = deepcopy(self.standard)
+        function = deepcopy(control["data"][0]["functions"][0])
+        function["name"] = "same_source_other_instantiation"
+        function["regions"][0][4] = 0
+        control["data"][0]["functions"].append(function)
+        compare_mapping(self.standard, control, adding_mapping=True)
+
+        function["regions"][0][0] = 3
+        with self.assertRaisesRegex(ValueError, "source mapping"):
+            compare_mapping(self.standard, control, adding_mapping=True)
+
+    def test_adding_an_unused_native_object_cannot_add_baseline_counts(self):
+        control = deepcopy(self.standard)
+        control["data"][0]["totals"]["lines"]["covered"] = 2
+        with self.assertRaisesRegex(ValueError, "denominator or control counts"):
+            compare_mapping(self.standard, control, adding_mapping=True)
+
     def test_rejects_different_source_mapping_with_the_same_totals(self):
         merged = deepcopy(self.standard)
         merged["data"][0]["functions"][0]["regions"][0][0] = 3

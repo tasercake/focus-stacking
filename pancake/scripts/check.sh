@@ -83,7 +83,7 @@ case ${1:-all} in
         require_tool shellcheck "$PANCAKE_SHELLCHECK_VERSION"
         python3 -m unittest scripts/test_dependency_policy.py scripts/test_guardrail_manifest.py \
             scripts/test_assurance_targets.py scripts/test_assurance_coverage.py scripts/test_miri_host_policy.py scripts/test_pre_commit.py \
-            scripts/test_headless_dependencies.py
+            scripts/test_headless_dependencies.py scripts/test_gui_coverage.py
         python3 scripts/miri_host_policy.py "$root" validate
         dependency_policy
         cargo fmt --all -- --check
@@ -144,6 +144,11 @@ case ${1:-all} in
             python3 scripts/compare_assurance_coverage.py "$root" \
                 target/assurance/coverage-cpu.json target/assurance/coverage-native.json
         fi
+        ;;
+    coverage-cpu-gui)
+        require_tool cargo-llvm-cov
+        shift
+        python3 scripts/gui_coverage.py workflow "$@"
         ;;
     branches | branches-cpu)
         require_tool cargo-llvm-cov
@@ -271,7 +276,7 @@ case ${1:-all} in
         done 3< target/assurance/local-gates.txt
         ;;
     *)
-        printf 'Usage: check.sh [all|fast|test|test-cpu|gpu|coverage|coverage-cpu|branches|branches-cpu|deps|mutants|mutants-cpu|miri|nightly|nightly-cpu|layouts|layouts-cpu|sanitizer|sanitizer-gpu|guardrails]\n' >&2
+        printf 'Usage: check.sh [all|fast|test|test-cpu|gpu|coverage|coverage-cpu|coverage-cpu-gui|branches|branches-cpu|deps|mutants|mutants-cpu|miri|nightly|nightly-cpu|layouts|layouts-cpu|sanitizer|sanitizer-gpu|guardrails]\n' >&2
         exit 2
         ;;
 esac
