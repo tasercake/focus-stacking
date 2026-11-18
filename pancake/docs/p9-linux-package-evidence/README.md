@@ -1,5 +1,49 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `12f2151`
+
+The locked workspace release built both executables on Ubuntu 24.04.5 x86-64
+from `12f2151c8a198b5209c8f4d506dbd17fd9aaa74f` using Rust 1.100.0. The
+candidate passed `check.sh fast`, `check.sh deps`, and four package-tool
+regressions. [Build and verification summary](12f2151/summary.json).
+
+The local package is at
+`artifacts/pancake-packages/linux-12f2151/pancake_0.1.0_amd64.deb`.
+It is 69,404,690 bytes with SHA-256
+`0d5a428309fedb6de8ed741c9ba79bb75463ac219972b87c931bbac702b02123`.
+APT simulated the local installation. Rootless extraction verified the
+binaries, native dynamic libraries, desktop entry, CLI help and 1,036
+dependency notices, including both licenses from the pinned vendored
+`oneshot`. The inventory identifies 27 of 583 selected packages whose
+locked sources supplied no recognized notice. The packaging record is
+informational for redistribution review.
+[Package verification](12f2151/package-verification.json).
+[Dependency-notice inventory](12f2151/notice-inventory.json.gz).
+
+The strict verifier accepted all 376 frozen case IDs using the package
+executables. The host lane passed 341/341. Isolated GUI passed 34/34,
+including all 20 P7 and 14 P8 interface IDs. The physical GUI case passed
+on the RTX 3090 at PCI `0000:01:00.0` (driver `580.178.04`) using actual
+wgpu Vulkan. [Strict aggregate ledger](12f2151/linux-ledger.json.gz).
+
+The embedded Slint compiler call, its single toolkit import, locked Slint
+and Rowan records, and pinned Rowan tree match the earlier packaged runtime
+witness at `5216ba4`. The exact Linux CLI production graph remains
+independent of the UI graph. [Slint source and dependency comparison](12f2151/slint-source-boundary.log.gz).
+
+`artifacts/p9-12f2151/{h,g,p}` retains the raw case directories, private desktop
+logs and provenance. Both GUI lanes used a short private Xvfb path for the
+native accessibility socket. The original paths remain in the byte-for-byte
+receipts, and the verifier read the directories after relocation to the
+workspace. [Host receipt](12f2151/host-receipt.json.gz).
+[Isolated GUI receipt](12f2151/isolated-gui-receipt.json.gz).
+[Physical GPU GUI receipt](12f2151/physical-gpu-receipt.json.gz).
+[Verifier stdout](12f2151/verify.log).
+
+The package remains provisional while required Apple execution, retained
+platform build and release decisions, complete assurance and the unchanged
+performance targets remain open. See the [implementation plan](../implementation-plan.md).
+
 ## Integrated Linux package candidate `5216ba4`
 
 The Linux x86-64 Debian package for
