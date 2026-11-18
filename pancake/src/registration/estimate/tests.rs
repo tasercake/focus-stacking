@@ -1,6 +1,6 @@
 //! Native numerical contracts for registration parameter conversion.
 
-use super::{Coordinates, Extent, Model, Parameters};
+use super::{Affine, Coordinates, Extent, Model, Parameters, is_plausible};
 
 /// A Euclidean candidate rotates in pixel-center coordinates without scaling.
 ///
@@ -74,6 +74,29 @@ fn euclidean_parameters_produce_a_rigid_map() -> Result<(), String> {
         {
             return Err(format!(
                 "Euclidean map did not rotate and recover [{x}, {y}]: {transform:?}"
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// Reject translation beyond the entire scale of the search canvas on either axis.
+///
+/// # Errors
+///
+/// Returns invalid fixture geometry or a failed motion plausibility check.
+#[test]
+fn plausibility_rejects_translation_outside_search_radius() -> Result<(), String> {
+    const RADIUS: f32 = 100.0;
+    let translation = |x, y| Affine::from_matrix([[1.0, 0.0, x], [0.0, 1.0, y]]);
+    let ordinary = translation(20.0, -25.0)?;
+    if !is_plausible(ordinary, RADIUS) {
+        return Err("ordinary rigid translation was rejected".to_owned());
+    }
+    for [x, y] in [[125.0_f32, 0.0_f32], [0.0_f32, -125.0_f32]] {
+        if is_plausible(translation(x, y)?, RADIUS) {
+            return Err(format!(
+                "translation [{x}, {y}] exceeded the search radius {RADIUS} but was accepted"
             ));
         }
     }
