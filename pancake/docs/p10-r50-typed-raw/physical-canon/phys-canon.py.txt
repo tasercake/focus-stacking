@@ -1,0 +1,155 @@
+"""Check exact positive Canon parity in two genuine RTX 3090 Vulkan executions."""
+
+import argparse
+import json
+import math
+import os
+from pathlib import Path
+import struct
+import subprocess
+
+import p10
+from protocol import Campaign, corpus, sha256, verify_frames, verify_output
+from full_r50_identity import identities
+
+ICD = Path("/usr/share/vulkan/icd.d/nvidia_icd.json")
+ICD_SHA = "7bdb6f27d35b66fc848df6f94b8773bba30ea3a7f06f114100d14154a235a34b"
+PCI = "0000:01:00.0"
+GPU = "NVIDIA GeForce RTX 3090"
+GPU_UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+AFFINITY = set(range(15))
+
+
+def require(condition, failure):
+    if not condition:
+        raise ValueError(failure)
+
+
+def run_case(command, env, cwd, case, stem, timeout):
+    p10._write(case / f"{stem}-launch.json", {"argv": command, "cwd": str(cwd), "env": env})
+    with (case / f"{stem}.stdout").open("xb") as stdout, (case / f"{stem}.stderr").open("xb") as stderr:
+        run = subprocess.run(command, env=env, cwd=cwd, stdout=stdout, stderr=stderr,
+                             timeout=timeout, check=False)
+    return run.returncode
+
+
+def inventory(output, env, stem):
+    query = ["/usr/bin/nvidia-smi", "--query-gpu=name,uuid,pci.bus_id,driver_version,memory.free",
+             "--format=csv,noheader"]
+    require(run_case(query, env, output, output, stem, 20) == 0, "physical inventory failed")
+    parsed = [line.split(", ") for line in (output / f"{stem}.stdout").read_text().splitlines()]
+    matched = [row for row in parsed if len(row) == 5 and row[1] == GPU_UUID]
+    require(len(matched) == 1 and matched[0][0] == GPU
+            and p10._pci_id(matched[0][2]) == p10._pci_id(PCI), "NVIDIA card identity changed")
+    return matched[0]
+
+
+def transform_bits(completion, field, frames):
+    rows = completion[field]
+    if isinstance(rows, dict):
+        keys = [str(source) for source in frames]
+        require(set(rows) == set(keys), "wrong source identity in transforms")
+        rows = [rows[key] for key in keys]
+    require(len(rows) == len(frames), "wrong transform count")
+    encoded = b""
+    for matrix in rows:
+        require(len(matrix) == 2 and all(len(row) == 3 for row in matrix), "invalid matrix shape")
+        values = [entry for row in matrix for entry in row]
+        require(all(math.isfinite(entry) for entry in values), "nonfinite transform")
+        encoded += struct.pack("<6f", *values)
+    return encoded
+
+
+def validate_stack(arm, case, frames, images, report):
+    stdout = (case / "execute.stdout").read_text().splitlines()
+    require(stdout.count("progress 1/2") == stdout.count("progress 2/2") == 1
+            and stdout.index("progress 1/2") < stdout.index("progress 2/2"), f"{arm}: frame progress")
+    completion = p10._assert_completion(case / "events.jsonl", "gpu", "wgpu-vulkan", GPU, PCI)
+    require(completion.get("physical_gpu") is True and completion.get("fallback_reason") is None,
+            f"{arm}: missing physical execution or fallback")
+    matrix = {kind: transform_bits(completion, kind, frames)
+              for kind in ("alignment_transforms", "sequential_transforms")}
+    report.update(completion=completion, transform_f32_le_hex={k: v.hex() for k,v in matrix.items()},
+                  progress=stdout, output=verify_output(images, (3392, 5088, 3)))
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ("inputs", "output", "lease", "stock", "candidate"):
+        parser.add_argument(f"--{name}", type=Path, required=True)
+    args = parser.parse_args()
+    require(args.lease.is_file() and args.lease.stat().st_size > 0, "missing named exclusive RTX lease")
+    require(os.sched_getaffinity(0) == AFFINITY, "requires 15 distinct physical cores labelled 0–14")
+    require(sha256(ICD) == ICD_SHA, "NVIDIA ICD no longer matches the prior verified driver")
+    output = args.output.resolve()
+    output.mkdir()
+    adapter = p10.TargetSpec.load(p10.CANDIDATE)
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(item for item in campaign.profiles("cpu") if item.key == "R50.hybrid.cpu")
+    cards = {"stock": args.stock.resolve(strict=True), "candidate": args.candidate.resolve(strict=True)}
+    opt = {**profile.options, "device": "gpu", "gpu_id": 0}
+    report = {"partial_corpus": "two frozen originals only", "settings": opt,
+              "lease_sha256": sha256(args.lease), "icd": str(ICD), "icd_sha256": ICD_SHA,
+              "cpu_affinity": sorted(AFFINITY), "arms": {}}
+    try:
+        with p10._campaign_lock():
+            products = identities(cards)
+            records, source = corpus(p10.ROOT, campaign, "R50")
+            frames = verify_frames(args.inputs, [records[0], records[-1]], 2)
+            report.update(ordered_paths=[str(path) for path in frames], source=source, products=products)
+            env = {"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "VK_DRIVER_FILES": str(ICD)}
+            runtime_dir = output / "inventory-xdg"
+            runtime_dir.mkdir(mode=0o700)
+            env["XDG_RUNTIME_DIR"] = str(runtime_dir)
+            report["inventory_before"] = inventory(output, env, "nvidia-before")
+            require(run_case(["/usr/bin/vulkaninfo", "--summary"], env, output, output,
+                             "vulkan-inventory", 30) == 0, "Vulkan inventory failed")
+            vk = (output / "vulkan-inventory.stdout").read_text()
+            require(vk.count("\nGPU0:") == 1 and "\nGPU1:" not in vk and GPU in vk,
+                    "single pinned physical Vulkan selector changed")
+            try:
+                for arm, identity in products.items():
+                    case = output / arm
+                    case.mkdir()
+                    image = case / "complete.tif"
+                    private = case / "xdg"
+                    private.mkdir(mode=0o700)
+                    arm_env = p10._environment(adapter, case / "cache", case, 15, None, "wgpu", True)
+                    for key in ("VK_ICD_FILENAMES", "VK_ADD_DRIVER_FILES", "LD_LIBRARY_PATH"):
+                        arm_env.pop(key, None)
+                    arm_env.update(PATH=env["PATH"], LANG=env["LANG"],
+                                   VK_DRIVER_FILES=str(ICD), XDG_RUNTIME_DIR=str(private))
+                    arguments = [identity["path"], *adapter.stack_arguments(frames, image, opt)]
+                    require(arguments.count("--gpu") == 1 and "--cpu" not in arguments
+                            and arguments[arguments.index("--gpu-id") + 1] == "0",
+                            f"{arm}: request did not pin a GPU")
+                    status = {}
+                    report["arms"][arm] = status
+                    try:
+                        status["returncode"] = run_case(
+                            arguments, arm_env, adapter.root, case, "execute", 150)
+                        require(status["returncode"] == 0, f"{arm}: explicit Vulkan CLI failed")
+                        validate_stack(arm, case, frames, image, status)
+                    except (OSError, ValueError, subprocess.TimeoutExpired) as error:
+                        status["failure"] = str(error)
+                require(all("failure" not in arm for arm in report["arms"].values()),
+                        "at least one physical arm failed")
+                before, after = report["arms"]["stock"], report["arms"]["candidate"]
+                report["exact_pixel_file_and_map_parity"] = (
+                    before["output"] == after["output"]
+                    and before["transform_f32_le_hex"] == after["transform_f32_le_hex"])
+                require(report["exact_pixel_file_and_map_parity"], "exact physical output mismatch")
+            finally:
+                report["inventory_after"] = inventory(output, env, "nvidia-after")
+                report["inputs_unchanged"] = verify_frames(
+                    args.inputs, [records[0], records[-1]], 2) == frames
+                report["elf_identities_unchanged"] = identities(cards) == products
+    except (OSError, ValueError, subprocess.TimeoutExpired) as error:
+        report["failure"] = str(error)
+        raise
+    finally:
+        p10._write(output / "report.json", report)
+
+
+if __name__ == "__main__":
+    main()
