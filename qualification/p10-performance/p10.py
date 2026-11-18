@@ -530,6 +530,30 @@ def _run_sample(
     return record, path
 
 
+def _cleanup_outputs(directory, result, *, keep_review_images):
+    """Keep requested review images from a complete, source-verified profile."""
+    outputs = set(directory.glob("*/*/complete.tif"))
+    warm_pair = {
+        directory / "warm-01" / target / "complete.tif"
+        for target in ("candidate", "reference")
+    }
+    retain = (
+        keep_review_images
+        and "gates" in result
+        and result.get("inputs_unchanged") is True
+        and warm_pair <= outputs
+    )
+    remove = sorted(outputs - warm_pair if retain else outputs)
+    for path in remove:
+        path.unlink()
+    return {
+        "removed_partial_or_diagnostic_outputs": [
+            str(path.relative_to(directory)) for path in remove
+        ],
+        "retained_review_pair": retain,
+    }
+
+
 def run_profile(args):
     campaign = Campaign.load(TARGETS_PATH)
     device = "cpu" if args.runtime == "cpu" else "gpu"
@@ -702,22 +726,9 @@ def run_profile(args):
                         "input_verification_error": str(error),
                     }
                 )
-        removed = []
-        for path in directory.glob("*/*/complete.tif"):
-            if (
-                args.keep_review_images
-                and result["status"] != "fail"
-                and path.parent.parent.name == "warm-01"
-            ):
-                continue
-            removed.append(str(path.relative_to(directory)))
-            path.unlink()
-        result["cleanup"] = {
-            "removed_partial_or_diagnostic_outputs": removed,
-            "retained_review_pair": (
-                args.keep_review_images and result["status"] != "fail"
-            ),
-        }
+        result["cleanup"] = _cleanup_outputs(
+            directory, result, keep_review_images=args.keep_review_images
+        )
         cache = directory / "cache"
         try:
             if cache.exists():

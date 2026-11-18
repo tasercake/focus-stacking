@@ -9,6 +9,7 @@ from p10 import (
     ADAPTERS,
     R50_REFERENCE,
     _assert_completion,
+    _cleanup_outputs,
     _environment,
     _reference_launch,
 )
@@ -19,6 +20,56 @@ REFERENCE = ADAPTERS / "chimpstackr_reference/chimpstackr.toml"
 
 
 class LaunchContracts(unittest.TestCase):
+    def test_complete_pair_remains_available_after_a_numeric_miss(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            pair = [
+                root / "warm-01" / name / "complete.tif"
+                for name in ("reference", "candidate")
+            ]
+            diagnostic = root / "diagnostic-01/candidate/complete.tif"
+            for path in [*pair, diagnostic]:
+                path.parent.mkdir(parents=True)
+                path.touch()
+            report = {
+                "status": "fail",
+                "inputs_unchanged": True,
+                "gates": {"warm_median": {"status": "fail"}},
+            }
+            cleanup = _cleanup_outputs(root, report, keep_review_images=True)
+            self.assertTrue(cleanup["retained_review_pair"])
+            self.assertTrue(all(path.is_file() for path in pair))
+            self.assertFalse(diagnostic.exists())
+
+    def test_invalid_job_or_changed_inputs_remove_the_review_outputs(self):
+        for report in (
+            {
+                "status": "fail",
+                "inputs_unchanged": True,
+                "invalid_reason": "job failed",
+            },
+            {
+                "status": "fail",
+                "inputs_unchanged": False,
+                "gates": {"warm_median": {"status": "fail"}},
+            },
+        ):
+            with (
+                self.subTest(report=report),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                root = Path(temporary)
+                pair = [
+                    root / "warm-01" / name / "complete.tif"
+                    for name in ("reference", "candidate")
+                ]
+                for path in pair:
+                    path.parent.mkdir(parents=True)
+                    path.touch()
+                cleanup = _cleanup_outputs(root, report, keep_review_images=True)
+                self.assertFalse(cleanup["retained_review_pair"])
+                self.assertFalse(any(path.exists() for path in pair))
+
     def test_only_r50_selects_hash_bound_camera_metadata_launcher(self):
         target = TargetSpec.load(REFERENCE)
         python = Path("/reference/python")
