@@ -160,6 +160,8 @@ coordinates must come from independent review of the actual scenario.
   private-screen `point`. A drag has a required `to` anchor. Its terminal
   motion and release form the timed native input. Non-timed `setup` steps
   accept `inputs` and an optional lower-case `worker_phase` to wait for.
+  Set `numerical: true` with `worker_phase: running` to require actual decode,
+  registration, or fusion before the next action.
 - Viewer cases use the exact generated 24 MP T50 source. Use `idle` and
   `loaded` conditions and `source`, `result`, `pan`, `zoom`, and `comparison`
   actions. Loaded cases require a worker-confirmed Running decode,
@@ -191,8 +193,11 @@ record in `witness_provenance`, and `cohorts.idle` and `cohorts.loaded`. Each
 cohort has `setup` steps and one `trials` entry per action. Each trial supplies
 `input`, `before`, and `after` in the shape shown above, plus any non-timed
 `setup` steps to restore the precondition. The generator repeats the five
-families to reach the frozen sample counts. Preserve the witness PNGs beside
-the scenario so their relative paths resolve from it.
+families to reach the frozen sample counts. Optional `round_setup` and
+`round_finish` steps surround each group of five events. Use their actual
+start, stop, and worker status observations to keep each loaded round inside
+an ongoing numerical job. Preserve the witness PNGs beside the scenario so
+their relative paths resolve from it.
 
 Reduce full captures on the same GUI build.
 

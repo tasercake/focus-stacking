@@ -158,6 +158,7 @@ def build_viewer(manifest, root):
         for trial in trials.values():
             _fixed_pixels(root, trial)
         for _ in range(count):
+            steps.extend(group.get("round_setup", ()))
             for action in ACTIONS:
                 trial = trials[action]
                 steps.extend(trial.get("setup", ()))
@@ -169,6 +170,7 @@ def build_viewer(manifest, root):
                         **{name: trial[name] for name in ("input", "before", "after")},
                     }
                 )
+            steps.extend(group.get("round_finish", ()))
     return _scenario(manifest["identity"], "T50", steps) | {
         "witness_provenance": manifest["witness_provenance"]
     }

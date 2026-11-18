@@ -338,7 +338,13 @@ def _setup(step, context):
         with _prepare_pointer(pointer, ui, motion) as dispatch:
             dispatch()
     if "worker_phase" in step:
-        _wait_state(ui, status, {step["worker_phase"]}, 120)
+        _wait_state(
+            ui,
+            status,
+            {step["worker_phase"]},
+            120,
+            numerical=step.get("numerical", False),
+        )
 
 
 def _steps(steps, context, directory, scenario_root, ledger):

@@ -59,6 +59,11 @@ class CampaignPreparation(unittest.TestCase):
                     for condition in ("idle", "loaded")
                 },
             }
+            begin = {"kind": "setup", "inputs": [], "worker_phase": "running"}
+            end = {"kind": "setup", "inputs": [], "worker_phase": "idle"}
+            manifest["cohorts"]["loaded"].update(
+                round_setup=[begin], round_finish=[end]
+            )
             planned = build_viewer(manifest, root)
             samples = Counter(
                 (step["condition"], step["action"])
@@ -67,6 +72,8 @@ class CampaignPreparation(unittest.TestCase):
             )
             self.assertEqual(len(samples), 10)
             self.assertTrue(all(count == 40 for count in samples.values()))
+            self.assertEqual(planned["steps"].count(begin), 40)
+            self.assertEqual(planned["steps"].count(end), 40)
             trial["after"] = trial["before"]
             with self.assertRaisesRegex(ValueError, "before.*after"):
                 build_viewer(manifest, root)
