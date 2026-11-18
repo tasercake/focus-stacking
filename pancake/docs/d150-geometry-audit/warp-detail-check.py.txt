@@ -1,0 +1,81 @@
+"""Measure how native D150 sampling alone changes detail in fixed source ROIs."""
+
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+import cv2
+import numpy as np
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def laplace_p90(luma):
+    detail = luma[:-2, 1:-1] + luma[2:, 1:-1] + luma[1:-1, :-2] + luma[1:-1, 2:] - 4 * luma[1:-1, 1:-1]
+    return float(np.quantile(np.abs(detail), 0.9))
+
+
+def exact_bilinear(gray, mx, my):
+    x = np.floor(mx).astype(np.int32)
+    y = np.floor(my).astype(np.int32)
+    u = mx - x
+    v = my - y
+    a = (1-u) * gray[y, x] + u * gray[y, x+1]
+    b = (1-u) * gray[y+1, x] + u * gray[y+1, x+1]
+    return (1-v) * a + v * b
+
+
+def compare(source, map_array, roi):
+    x, y, w, h = roi
+    grid_y, grid_x = np.mgrid[y:y+h, x:x+w].astype(np.float32)
+    a, b = map_array
+    mx = a[0] * grid_x + a[1] * grid_y + a[2]
+    my = b[0] * grid_x + b[1] * grid_y + b[2]
+    assert mx.min() >= 4 and my.min() >= 4 and mx.max() < source.shape[1]-4 and my.max() < source.shape[0]-4
+    nearest = cv2.remap(source, mx, my, cv2.INTER_NEAREST)
+    bilinear = exact_bilinear(source, mx, my)
+    lanczos = cv2.remap(source, mx, my, cv2.INTER_LANCZOS4).clip(0, 1)
+    base = laplace_p90(nearest)
+    a, b = laplace_p90(bilinear), laplace_p90(lanczos)
+    return {"nearest_detail_p90": base, "bilinear_detail_p90": a, "lanczos_detail_p90": b,
+            "bilinear_to_nearest": a/base, "lanczos_to_nearest": b/base,
+            "bilinear_to_lanczos": a/b, "warp_mean_absolute_luma": float(np.mean(np.abs(bilinear-lanczos)))}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-root", type=Path, required=True)
+    parser.add_argument("--tracking", type=Path, required=True)
+    parser.add_argument("--heldout-plan", type=Path, required=True)
+    args = parser.parse_args()
+    cv2.setNumThreads(1)
+    cv2.ocl.setUseOpenCL(False)
+    corpus = Path("pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json").read_bytes()
+    assert sha(corpus) == "6d417c9c00866755bdbc8e2fafc1421de8414e1ea9e75d2cfd7e96e2161a89ac"
+    records = next(item["frames"] for item in json.loads(corpus)["workloads"] if item["id"] == "D150-native-dorsal")
+    tracking = args.tracking.read_bytes()
+    plan = args.heldout_plan.read_bytes()
+    maps = json.loads(tracking)["alignment_transforms"]
+    results = []
+    for region in json.loads(plan)["selection"]:
+        canvas_roi = region["first_canvas_xywh"]
+        for index in region["adjacent_indices"]:
+            record = records[index]
+            path = args.source_root / record["path"]
+            payload = path.read_bytes()
+            assert len(payload) == record["bytes"] and sha(payload) == record["sha256"]
+            gray = cv2.imdecode(np.frombuffer(payload, dtype=np.uint8), cv2.IMREAD_GRAYSCALE)
+            assert gray is not None and gray.shape == tuple(record["shape"][:2])
+            data = gray.astype(np.float32) / 255
+            fit = compare(data, maps[path.name], canvas_roi)
+            results.append({"source": path.name, "source_sha256": record["sha256"], "roi": canvas_roi, **fit})
+    print(json.dumps({"scope": "Independent same-source and same-map interpolation diagnostic, no fused pixels or timing",
+                      "opencv": cv2.__version__, "maps_sha256": sha(tracking), "heldout_plan_sha256": sha(plan),
+                      "source_manifest_sha256": sha(corpus), "results": results}, indent=2, allow_nan=False))
+
+
+if __name__ == "__main__":
+    main()
