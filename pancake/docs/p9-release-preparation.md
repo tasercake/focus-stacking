@@ -89,15 +89,17 @@ plist with `plutil`, verifies each executable's ARM64 slice with `lipo`,
 and records direct loader dependencies with `otool -L`. It accepts macOS
 system library and framework install names. The recipe ad-hoc signs only the
 packaged copies and checks both identities with strict `codesign` verification.
-The receipt records the exact source and lock, tool versions, the build
-command, and executable hashes before and after signing.
+The receipt records the exact source and lock, build command, selected
+developer directory and SDK, compiler and SDK linker identities, explicit
+SDK, deployment and linker overrides, and executable hashes before and
+after signing.
 
 The [portable tests](../scripts/test_package_macos.py) replay the staging
 contract with Apple-tool fixtures. They cover the plist, command and byte
 receipts, failure cleanup, and existing and concurrently created outputs.
 Run them with
 `python3 -m unittest discover -s pancake/scripts -p test_package_macos.py`.
-Five portable tests passed on Linux x86-64. The locked Apple ARM64 feature
+Six portable tests passed on Linux x86-64. The locked Apple ARM64 feature
 tree resolved `cubecl-metal` and wgpu's Metal backend on that host.
 Actual native building, signing, and application identity checks need Apple
 Silicon. Developer ID signing, a distribution package and its notice review,

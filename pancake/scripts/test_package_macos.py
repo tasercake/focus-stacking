@@ -140,10 +140,10 @@ class MacPackageTests(unittest.TestCase):
         self.assertEqual(tools["sdk_path"], "/test/MacOSX.sdk")
         self.assertEqual(tools["clang"], "Apple clang fixture version")
         self.assertEqual(tools["sdk_linker_path"], "/test/apple/ld")
-        self.assertEqual(receipt["build_overrides"], {
-            "MACOSX_DEPLOYMENT_TARGET": "15.0",
-            "CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER": "/test/custom-linker",
-        })
+        overrides = receipt["build_overrides"]
+        self.assertEqual(overrides["MACOSX_DEPLOYMENT_TARGET"], "15.0")
+        self.assertEqual(overrides["CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER"], "/test/custom-linker")
+        self.assertNotIn("UNRELATED_FIXTURE", overrides)
         self.assertEqual(receipt["files_sha256"]["Pancake.app/Contents/Info.plist"], file_sha256(plist_path))
         self.assertIn("Pancake.app/Contents/_CodeSignature/CodeResources", receipt["files_sha256"])
         for name, path in zip(BINARIES, ("pancake-cli", "Pancake.app/Contents/MacOS/pancake-gui"), strict=True):

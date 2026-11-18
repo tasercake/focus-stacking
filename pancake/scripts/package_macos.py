@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 import platform
 import plistlib
 import re
@@ -17,6 +18,10 @@ from package_notices import file_sha256
 TARGET = "aarch64-apple-darwin"
 BINARIES = ("pancake-cli", "pancake-gui")
 SYSTEM_LOCATIONS = ("/System/Library/Frameworks/", "/usr/lib/")
+BUILD_OVERRIDES = (
+    "DEVELOPER_DIR", "SDKROOT", "MACOSX_DEPLOYMENT_TARGET",
+    "CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER",
+)
 
 
 def _apple(source, *command):
@@ -28,12 +33,17 @@ def _apple(source, *command):
     return completed.stdout
 
 
-def _source_identity(source):
+def _source_identity(source, owned_scratch=None):
     """Require clean source before and after preparing the package."""
-    def git(*command):
-        return subprocess.check_output(["git", *command], cwd=source, text=True).strip()
+    def git(*command, cwd=source):
+        return subprocess.check_output(["git", *command], cwd=cwd, text=True).strip()
 
-    if git("status", "--porcelain=v1", "--untracked-files=all"):
+    repository = Path(git("rev-parse", "--show-toplevel")).resolve()
+    scope = ()
+    if owned_scratch is not None and owned_scratch.is_relative_to(repository):
+        relative = owned_scratch.relative_to(repository).as_posix()
+        scope = ("--", ".", f":(exclude,literal){relative}")
+    if git("status", "--porcelain=v1", "--untracked-files=all", *scope, cwd=repository):
         raise ValueError("Package from a clean Git worktree")
     return {
         "source_commit": git("rev-parse", "HEAD"),
@@ -125,11 +135,18 @@ def build_package(source, output, identifier, build_number):
         gui_dir.mkdir(parents=True)
         build = ["cargo", toolchain, "build", "--locked", "--release", "--workspace", "--bins",
                  "--target", TARGET, "--features", "cubecl/metal-native", "--target-dir", str(target_dir)]
+        sdk = ("xcrun", "--no-cache", "--sdk", "macosx")
         provenance = {
             "cargo": _apple(source, "cargo", toolchain, "--version"),
             "rustc": _apple(source, "rustc", toolchain, "-vV"),
             "macos": _apple(source, "sw_vers"),
+            "developer_directory": _apple(source, "xcode-select", "--print-path").strip(),
+            "sdk_version": _apple(source, *sdk, "--show-sdk-version").strip(),
+            "sdk_path": _apple(source, *sdk, "--show-sdk-path").strip(),
+            "clang": _apple(source, *sdk, "clang", "--version").strip(),
+            "sdk_linker_path": _apple(source, *sdk, "--find", "ld").strip(),
         }
+        overrides = {name: os.environ[name] for name in BUILD_OVERRIDES if name in os.environ}
         (payload / "build.log").write_text(_apple(source, *build), encoding="utf-8")
         release = target_dir / TARGET / "release"
         plist = contents / "Info.plist"
@@ -154,12 +171,13 @@ def build_package(source, output, identifier, build_number):
         executables["pancake-gui"]["signature"] = _sign_and_verify(source, app, identifier, bundle=True)
         if plistlib.loads(plist.read_bytes()) != metadata:
             raise ValueError("Info.plist changed during packaging")
-        if _source_identity(source) != identity:
+        if _source_identity(source, temporary) != identity:
             raise ValueError("Source revision or Cargo.lock changed during packaging")
         receipt = {
             **identity,
             "target": TARGET,
             "build_command": build,
+            "build_overrides": overrides,
             "tool_versions": provenance,
             "bundle_identifier": identifier,
             "bundle_metadata": metadata,
