@@ -1,0 +1,77 @@
+{
+  "target_commit": "18c17b6f1dd2ff2a15ccea985fe430ac1eb7a666",
+  "by_milestone": {
+    "P1": {
+      "passed": 25
+    },
+    "P2": {
+      "passed": 78,
+      "failed": 6
+    }
+  },
+  "verified_completion_events": {
+    "failed:cpu": 3,
+    "failed:gpu": 3,
+    "passed:cpu": 37,
+    "passed:gpu": 13
+  },
+  "physical_gpu": {
+    "device": "NVIDIA GeForce RTX 3090",
+    "runtime": "wgpu-vulkan",
+    "device_fingerprint": "spirv_4318_8708",
+    "device_pci_address": "0000:01:00.0",
+    "physical_gpu": true
+  },
+  "verified_p2_failure_paths": {
+    "cli.reject.no-files": "error: input pattern /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/cli.reject.no-files/absent-*.png matched no files",
+    "cli.reject.corrupt-images": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/cli.reject.corrupt-images/broken1.png: The image format could not be determined",
+    "cli.reject.output-parent": "error: cannot publish export /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/cli.reject.output-parent/missing-parent/output.png: No such file or directory (os error 2)",
+    "cli.export.failed-retention": "error: unsupported export format: /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/cli.export.failed-retention/existing.unsupported-conformance-format",
+    "cli.coverage.partial.png": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/cli.coverage.partial.png/000-invalid-0.png: The image format could not be determined",
+    "cli.coverage.partial.dng": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/cli.coverage.partial.dng/000-invalid-0.dng: Error: No decoder found, model '', make: '', mode: ''",
+    "cli.coverage.partial.npy": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/cli.coverage.partial.npy/000-invalid-0.npy: invalid NumPy format signature or version",
+    "cli.coverage.partial.unknown": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/cli.coverage.partial.unknown/000-invalid-0.unknown: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.laplacian.stack": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.laplacian.stack/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.laplacian.translation": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.laplacian.translation/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.laplacian.euclidean": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.laplacian.euclidean/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.laplacian.similarity": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.laplacian.similarity/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.laplacian.affine": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.laplacian.affine/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.laplacian.breathing": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.laplacian.breathing/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.hybrid.stack": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.hybrid.stack/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.hybrid.translation": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.hybrid.translation/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.hybrid.euclidean": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.hybrid.euclidean/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.hybrid.similarity": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.hybrid.similarity/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.hybrid.affine": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.hybrid.affine/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.hybrid.breathing": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.hybrid.breathing/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.weighted_average.stack": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.weighted_average.stack/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.weighted_average.translation": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.weighted_average.translation/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.weighted_average.euclidean": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.weighted_average.euclidean/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.weighted_average.similarity": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.weighted_average.similarity/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.weighted_average.affine": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.weighted_average.affine/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.weighted_average.breathing": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.weighted_average.breathing/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.depth_map.stack": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.depth_map.stack/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.depth_map.translation": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.depth_map.translation/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.depth_map.euclidean": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.depth_map.euclidean/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.depth_map.similarity": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.depth_map.similarity/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.depth_map.affine": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.depth_map.affine/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.depth_map.breathing": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.depth_map.breathing/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.exposure_fusion.stack": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.exposure_fusion.stack/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.exposure_fusion.translation": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.exposure_fusion.translation/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.exposure_fusion.euclidean": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.exposure_fusion.euclidean/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.exposure_fusion.similarity": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.exposure_fusion.similarity/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.exposure_fusion.affine": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.exposure_fusion.affine/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.partial_corrupt.exposure_fusion.breathing": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.partial_corrupt.exposure_fusion.breathing/frame_99-corrupt.png: The image format could not be determined",
+    "algorithms.coverage.no_decodable_frames.weighted_average": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.no_decodable_frames.weighted_average/unreadable-0.png: The image format could not be determined",
+    "algorithms.coverage.no_decodable_frames.depth_map": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.no_decodable_frames.depth_map/unreadable-0.png: The image format could not be determined",
+    "algorithms.coverage.no_decodable_frames.exposure_fusion": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.no_decodable_frames.exposure_fusion/unreadable-0.png: The image format could not be determined",
+    "algorithms.coverage.no_decodable_frames.sequential": "error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/report/cases/algorithms.coverage.no_decodable_frames.sequential/unreadable-0.png: The image format could not be determined"
+  },
+  "nonpassing_case_reasons": {
+    "algorithms.coverage.gray_array.hybrid.cpu": "AssertionError: Image shape (129, 193, 3), expected (129, 193)",
+    "algorithms.coverage.gray_array.hybrid.gpu": "AssertionError: Image shape (129, 193, 3), expected (129, 193)",
+    "algorithms.coverage.gray_array.weighted_average.cpu": "AssertionError: Image shape (129, 193, 3), expected (129, 193)",
+    "algorithms.coverage.gray_array.weighted_average.gpu": "AssertionError: Image shape (129, 193, 3), expected (129, 193)",
+    "algorithms.coverage.gray_array.depth_map.cpu": "AssertionError: Image shape (129, 193, 3), expected (129, 193)",
+    "algorithms.coverage.gray_array.depth_map.gpu": "AssertionError: Image shape (129, 193, 3), expected (129, 193)"
+  }
+}
