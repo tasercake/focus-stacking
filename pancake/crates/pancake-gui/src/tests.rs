@@ -6,7 +6,9 @@ use std::rc::{Rc, Weak};
 
 use num_traits::ToPrimitive as _;
 use slint::platform::software_renderer::{MinimalSoftwareWindow, RepaintBufferType};
-use slint::platform::{Platform, PlatformError, PointerEventButton, WindowAdapter, WindowEvent};
+use slint::platform::{
+    Key, Platform, PlatformError, PointerEventButton, WindowAdapter, WindowEvent,
+};
 use slint::{
     ComponentHandle as _, Image, LogicalPosition, PhysicalSize, Rgb8Pixel, SharedPixelBuffer,
 };
@@ -322,6 +324,21 @@ fn observe_fit_command(
     if photo_pixels(&fitted) != photo_pixels(&original) || window.has_active_animations() {
         return Err(
             "A Fit click must restore the photograph with no trailing skin animation.".into(),
+        );
+    }
+
+    // Fit returns focus to the canvas, then tab visits Fit and 1:1 in order.
+    for key in [Key::Tab, Key::Tab, Key::Return] {
+        let _pressed =
+            window.dispatch_event_with_result(WindowEvent::KeyPressed { text: key.into() })?;
+        let _released =
+            window.dispatch_event_with_result(WindowEvent::KeyReleased { text: key.into() })?;
+    }
+    let actual = render(adapter)?;
+    if !(12_000..=13_600).contains(&photo_pixels(&actual)) || window.has_active_animations() {
+        return Err(
+            "Keyboard activation must show the 40 × 320 photograph at 1:1 without animation."
+                .into(),
         );
     }
     Ok(())
