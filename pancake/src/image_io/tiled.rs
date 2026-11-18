@@ -10,7 +10,7 @@ use std::thread;
 use tiff::decoder::{ChunkType, Decoder, DecodingResult, DecodingSampleType};
 use tiff::tags::Tag;
 
-use super::{RgbImage, SampleEncoding, checked_pixel_count, profile_from_tiff};
+use super::{RgbImage, checked_pixel_count, profile_from_tiff};
 
 #[cfg(test)]
 mod tests;
@@ -469,12 +469,11 @@ pub(super) fn decode(input: &File) -> Result<Option<RgbImage>, String> {
         read_rows(&layout, &mut decoder, &span, &spans, &mut samples, 0)?;
     }
     // Shape comes from the checked allocation, and zero and normalized u16 samples are finite.
-    Ok(Some(RgbImage {
-        width: layout.width,
-        height: layout.height,
+    RgbImage::from_normalized_u16(
+        layout.width,
+        layout.height,
         samples,
-        sample_encoding: SampleEncoding::U16,
-        icc_profile: profile_from_tiff(decoder),
-        grayscale_array: false,
-    }))
+        profile_from_tiff(decoder),
+    )
+    .map(Some)
 }

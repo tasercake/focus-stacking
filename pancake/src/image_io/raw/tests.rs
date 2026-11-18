@@ -7,7 +7,9 @@ use image::metadata::Orientation;
 use rawler::imgop::develop::Intermediate;
 use rawler::pixarray::Color2D;
 
-use super::{developed_raster, developed_rgb, raster_to_rgb, raw_worker_count};
+use super::{
+    developed_raster, developed_rgb, normalize_raw_codes, raster_to_rgb, raw_worker_count,
+};
 
 /// Asymmetric RGB triples with explicit expected unsigned code values.
 const SAMPLE_CODES: [(f32, u16); 18] = [
@@ -30,6 +32,27 @@ const SAMPLE_CODES: [(f32, u16); 18] = [
     (0.625, 40_959),
     (0.875, 57_343),
 ];
+
+/// Reject partial and surplus code buffers before changing developed input.
+///
+/// # Errors
+///
+/// Returns an unexpected conversion or an altered sample.
+#[test]
+fn raw_normalization_requires_a_code_for_each_sample() -> Result<(), Box<dyn Error>> {
+    let original = [f32::NAN, -0.25, 10.0];
+    let mut samples = original;
+    let short = [0_u16, 2];
+    let long = [0_u16, 2, 3, 4];
+    for codes in [short.as_slice(), long.as_slice()] {
+        if normalize_raw_codes(&mut samples, codes).is_ok()
+            || samples.map(f32::to_bits) != original.map(f32::to_bits)
+        {
+            return Err("invalid RAW code buffer modified the developed samples".into());
+        }
+    }
+    Ok(())
+}
 
 /// Make the same fully developed pixels for both quantization paths.
 fn fixture() -> Intermediate {

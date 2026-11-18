@@ -18,7 +18,7 @@ use rawler::rawsource::RawSource;
 use rawler::tags::TiffCommonTag;
 use rayon::prelude::{ParallelIterator, ParallelSliceMut};
 
-use super::{RgbImage, SampleEncoding, checked_pixel_count, raster_to_rgb};
+use super::{RgbImage, checked_pixel_count, raster_to_rgb};
 
 #[cfg(test)]
 mod tests;
@@ -137,36 +137,57 @@ fn normal_developed_rgb(
 ) -> Result<RgbImage, String> {
     let dimensions = pixels.dim();
     let mut samples = pixels.into_inner().into_flattened();
-    for_each_packing_chunk(&mut samples, pool, pack_raw_rgb16_chunk);
-    let mut frame = RgbImage::new(dimensions.w, dimensions.h, samples)?;
-    frame.sample_encoding = SampleEncoding::U16;
-    Ok(frame)
+    for_each_packing_chunk(&mut samples, pool, pack_raw_rgb16_chunk)?;
+    RgbImage::from_normalized_u16(dimensions.w, dimensions.h, samples, None)
 }
 
 /// Process disjoint slices in place, parallelizing only inside the installed RAW pool.
+///
+/// # Errors
+///
+/// Returns a packing error from a chunk before publishing a working raster.
 fn for_each_packing_chunk(
     samples: &mut [f32],
     pool: Option<&rayon::ThreadPool>,
-    process: impl Fn(&mut [f32]) + Send + Sync,
-) {
+    process: impl Fn(&mut [f32]) -> Result<(), String> + Send + Sync,
+) -> Result<(), String> {
     if samples.len() >= RAW_PARALLEL_MIN_SAMPLES
         && pool.is_some_and(|pool| {
             pool.current_thread_index().is_some() && pool.current_num_threads() > 1
         })
     {
-        samples.par_chunks_mut(RAW_PACKING_CHUNK).for_each(process);
+        samples
+            .par_chunks_mut(RAW_PACKING_CHUNK)
+            .try_for_each(process)
     } else {
-        samples.chunks_mut(RAW_PACKING_CHUNK).for_each(process);
+        samples.chunks_mut(RAW_PACKING_CHUNK).try_for_each(process)
     }
 }
 
 /// Preserve the pinned Rawler quantization in one bounded working slice.
-fn pack_raw_rgb16_chunk(chunk: &mut [f32]) {
+///
+/// # Errors
+///
+/// Returns a mismatched code count from the quantizer.
+fn pack_raw_rgb16_chunk(chunk: &mut [f32]) -> Result<(), String> {
     let codes = convert_from_f32_scaled_u16(chunk, 0, u16::MAX);
+    normalize_raw_codes(chunk, &codes)
+}
+
+/// Normalize each developed code in place only if it covers the entire slice.
+///
+/// # Errors
+///
+/// Rejects a code count that would leave gaps or truncate developed RGB.
+fn normalize_raw_codes(chunk: &mut [f32], codes: &[u16]) -> Result<(), String> {
+    if chunk.len() != codes.len() {
+        return Err("RAW quantizer code count does not match the developed chunk".to_owned());
+    }
     let white = f32::from(u16::MAX);
-    for (sample, code) in chunk.iter_mut().zip(codes) {
+    for (sample, &code) in chunk.iter_mut().zip(codes) {
         *sample = f32::from(code) / white;
     }
+    Ok(())
 }
 
 /// Quantize developed RGB in its existing contiguous channel order.

@@ -74,6 +74,31 @@ impl RgbImage {
         })
     }
 
+    /// Finish a private decoder's fully normalized unsigned sixteen-bit raster.
+    ///
+    /// The caller has replaced every sample with an unsigned code divided by
+    /// the nonzero sixteen-bit white level, or initialized it to finite zero.
+    ///
+    /// # Errors
+    ///
+    /// Rejects invalid dimensions or a mismatched sample count.
+    fn from_normalized_u16(
+        width: usize,
+        height: usize,
+        samples: Vec<f32>,
+        icc_profile: Option<Vec<u8>>,
+    ) -> Result<Self, String> {
+        validate_sample_count(width, height, samples.len())?;
+        Ok(Self {
+            width,
+            height,
+            samples,
+            sample_encoding: SampleEncoding::U16,
+            icc_profile,
+            grayscale_array: false,
+        })
+    }
+
     /// The width in pixels after orientation.
     #[must_use]
     pub const fn width(&self) -> usize {
@@ -270,14 +295,24 @@ fn checked_pixel_count(width: usize, height: usize) -> Result<usize, String> {
 ///
 /// Rejects shape, sample count, and nonfinite values.
 fn validate_samples(width: usize, height: usize, samples: &[f32]) -> Result<(), String> {
+    validate_sample_count(width, height, samples.len())?;
+    if samples.iter().any(|sample| !sample.is_finite()) {
+        return Err("image contains nonfinite samples".to_owned());
+    }
+    Ok(())
+}
+
+/// Require a fully sized packed RGB raster.
+///
+/// # Errors
+///
+/// Rejects invalid dimensions, unaddressable RGB or a mismatched sample count.
+fn validate_sample_count(width: usize, height: usize, samples: usize) -> Result<(), String> {
     let count = checked_pixel_count(width, height)?
         .checked_mul(3)
         .ok_or_else(|| "RGB sample count overflowed".to_owned())?;
-    if samples.len() != count {
+    if samples != count {
         return Err("sample count does not match image dimensions".to_owned());
-    }
-    if samples.iter().any(|sample| !sample.is_finite()) {
-        return Err("image contains nonfinite samples".to_owned());
     }
     Ok(())
 }
