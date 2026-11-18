@@ -27,9 +27,9 @@ fn weighted_focus_uses_the_requested_window() -> Result<(), String> {
     // seven-tap Gaussian (sigma 1.4) stencils, then computes the weighted means.
     let first = [0.125_f32, 0.875, 0.125, 0.125, 0.125, 0.125, 0.125];
     let second = [0.625_f32, 0.625, 0.625, 0.625, 0.625, 0.375, 0.625];
-    let one = [0.125_f64, 0.875, 0.125, 0.125, 0.625, 0.375, 0.625];
-    let five = [
-        0.125_f64,
+    let one: [f64; 7] = [0.125, 0.875, 0.125, 0.125, 0.625, 0.375, 0.625];
+    let five: [f64; 7] = [
+        0.125,
         0.875,
         0.127_127_660,
         0.175,
@@ -37,8 +37,8 @@ fn weighted_focus_uses_the_requested_window() -> Result<(), String> {
         0.375,
         0.625,
     ];
-    let seven = [
-        0.125_f64,
+    let seven: [f64; 7] = [
+        0.125,
         0.874_703_393,
         0.132_032_427,
         0.175,
@@ -67,11 +67,11 @@ fn weighted_focus_uses_the_requested_window() -> Result<(), String> {
                 output.len()
             ));
         }
-        for (column, (pixel, reference)) in output.chunks_exact(3).zip(expected).enumerate() {
-            if pixel
-                .iter()
-                .any(|&sample| !sample.is_finite() || (f64::from(sample) - reference).abs() > 1e-6)
-            {
+        let (pixels, _) = output.as_chunks::<3>();
+        for (column, (pixel, reference)) in pixels.iter().zip(expected).enumerate() {
+            if pixel.iter().any(|&sample| {
+                !sample.is_finite() || (f64::from(sample) - reference).abs() > 1e-6_f64
+            }) {
                 return Err(format!(
                     "focus window {window} column {column} expected {reference}, got {pixel:?}"
                 ));
