@@ -83,6 +83,8 @@ class MacPackageTests(unittest.TestCase):
                 signatures = signed / "Contents" / "_CodeSignature"
                 signatures.mkdir()
                 (signatures / "CodeResources").write_bytes(b"resources")
+                if self.failure == "plist":
+                    (signed / "Contents" / "Info.plist").write_bytes(plistlib.dumps({}))
                 signed = signed / "Contents" / "MacOS" / "pancake-gui"
             with signed.open("ab") as binary:
                 binary.write(b" signed")
@@ -137,6 +139,7 @@ class MacPackageTests(unittest.TestCase):
             ("dependency", "@rpath/libMissing.dylib", "dependency"),
             ("dependency", "/usr/lib/../local/libBrew.dylib", "dependency"),
             ("failure", "signature", "invalid signature"),
+            ("failure", "plist", "Info.plist changed"),
             ("identity", "test.example.different", "signature identity"),
         ):
             with self.subTest(field=field, value=value):
@@ -149,6 +152,16 @@ class MacPackageTests(unittest.TestCase):
                     setattr(self, field, before)
                 self.assertFalse(self.output.exists())
                 self.assertEqual(set(self.root.iterdir()), {self.source})
+
+    def test_refuses_source_copy_mismatch_before_signing(self):
+        def corrupt_copy(source, destination):
+            destination.write_bytes(source.read_bytes() + b" changed")
+
+        with patch("package_macos.shutil.copyfile", side_effect=corrupt_copy):
+            with self.assertRaisesRegex(ValueError, "Release binary changed"):
+                self.package()
+        self.assertFalse(self.output.exists())
+        self.assertTrue(all(command[0] != "codesign" for command in self.commands))
 
     def test_leaves_an_existing_or_concurrently_created_output_untouched(self):
         self.output.mkdir()
