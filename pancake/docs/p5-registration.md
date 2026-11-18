@@ -69,3 +69,25 @@ cp pancake/docs/p5-registration-evidence/fixture-probe.rs.txt \
 
 Native CUDA, Apple, complete job recovery, end-to-end case accounting and
 workspace-wide assurance remain pending on the integrated revision.
+
+## Elongated-canvas regression
+
+The exact locked release CLI from `18c17b6f1dd2ff2a15ccea985fe430ac1eb7a666`
+(binary SHA-256 `8c96ad652487f8628e53b44dfa014ff65b3da84da3acfa98ab0e56d26d09201a`)
+failed `algorithms.recovery.cascade.cpu`. Its coarse proxy returned identity
+for a real horizontal two-pixel shift across a 4097×257 image, yielding mean
+output error 8.26937 against the limit of 1. The FFT revision also reproduced
+identity in the component probe. [Raw conformance failure](p5-registration-evidence/cascade-cli-red-report.json.gz),
+[provenance](p5-registration-evidence/cascade-cli-red-provenance.json),
+and [component failure](p5-registration-evidence/cascade-red.log).
+
+Commit `395917324fd1855ad23b581c253f8eb16801a893` retains short-axis detail on
+elongated images under the same 589,824-pixel limit. The same two lossless
+`wide-*.png` inputs from the frozen cascade fixture, decoded to packed f32 with
+the independent reader, yielded 0.004110px and 0.004358px worst interior-corner
+error on CPU high precision and RTX 3090 Vulkan ordinary precision respectively.
+[CPU trace](p5-registration-evidence/cascade-cpu.log) and
+[GPU trace](p5-registration-evidence/cascade-vulkan.log). The probe takes
+little-endian float data from those fixture PNGs, normalized by dividing
+decoded channel values by 255, in `artifacts/p5/cascade-probe/wide-{0,1}.f32`.
+[Probe source](p5-registration-evidence/cascade-probe.rs.txt).
