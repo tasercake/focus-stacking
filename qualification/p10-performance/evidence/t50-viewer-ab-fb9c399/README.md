@@ -25,8 +25,15 @@ census. The Debian package was identified by archive and package receipt
 hashes.
 
 The exact packaged stock viewer and the experimental nonblocking poll-only
-viewer are the named readers of this stage. The owner removes the corpus
-after both roles release it and the coordinator clears cleanup.
+viewer each captured 400 events and rehashed the same 50 unchanged focus
+TIFFs. Both processes stopped cleanly and released their read-only access.
+Both loaded p95 measurements missed the 40 ms target, at 42.208036 ms for
+stock and 68.006819 ms for the experimental viewer. The owner authenticated
+the directory and rehashed every TIFF before removing all 52 files and
+2,775,174,405 bytes at 23:30:00 SGT. No staged TIFFs remain.
+
+[Viewer role receipts](released-borrower-roles.json) ·
+[Cleanup summary](cleanup-summary.json) · [Authenticated cleanup](cleanup.json.gz)
 
 [Stage receipt](shared-stage.json) · [Preflight](prepared-stage.json) ·
 [Complete encoded and decoded records](materialization.json.gz) ·
