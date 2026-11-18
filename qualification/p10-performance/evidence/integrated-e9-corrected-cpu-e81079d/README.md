@@ -1,0 +1,17 @@
+# Exact e81079d Debian E9 CPU qualification
+
+The corrected frozen E9 CPU profile passes for the exact `e81079dee4078d7a1149da0f5950aab8c89f8d44` Debian package. All 34 primary jobs and both CPU witnesses completed. Both applications reproduced all ten warm output hashes in their diagnostic witness. The unchanged P10 report records all numerical gates passing and retains its original quality placeholder. This profile verdict binds the actual images to the earlier independent review of the same exact pair and to the strict 376-case ledger of this exact package. [Summary and scope](summary.json) · [All 36 observations](samples.csv) · [Raw paired evidence](raw-paired-runs.tar.gz) · [Archive digest](raw-paired-runs.sha256)
+
+| Frozen measure | Pancake | ChimpStackr | Candidate/reference | Limit | Result |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Warm median completed job | 0.372614709 s | 0.884656876 s | 0.421196872 | 0.50 | Pass |
+| Cold median completed job | 0.379837135 s | 6.533016621 s | 0.058141155 | 1.00 | Pass |
+| Peak process-tree RSS | 109,506,560 B | 346,472,448 B | 0.316061380 | 0.50 | Pass |
+
+The exclusive CPU run took place on November 19, 2026 at 00:06:28–00:07:37 Singapore time. The Ryzen 9 7950X3D used logical CPUs `0–31` and 32 threads for both applications. All primary RSS observations met the 20 ms cap. The maximum candidate and reference acquisition gaps were `10.985892 ms` and `9.861492 ms`. The original reducer replay reproduced the recorded result from all sample records. Device memory is outside this explicit CPU profile.
+
+The candidate was rootlessly extracted from package SHA-256 `8ed6e70d7552140c0257520a07ac2b9fc5f97ff82a5fb3126864df821df4507e`. CLI SHA-256 `9630572be5e637c38c604f2fcd6d7a44e31e171a5ccf17dadb1f59ba345c24f0`, the exact source, Cargo lock and descriptor match the historical e810 Debian 341 host, 34 isolated GUI and one physical-GPU GUI ledger at `c95e3f5`. The locked `ab7a927` reference used the same audited equal-final-batch adapter. No source bridge, runtime substitution, threshold change or rerun was used. [Exact Debian package and lane evidence](../../../../pancake/docs/p9-linux-package-evidence/e81079d/summary.json)
+
+All nine source files remained unchanged. An independent TIFF decoder checked the same `337×510` true RGB16 geometry and reproduced both encoded and decoded hashes from the previously independently reviewed C1 CPU pair. The fixed quality conclusions apply to these identical pixels and sources. That review found adequately comparable sampled detail and preserved the localized differences of 364 lower-endpoint blue-channel samples and 731 additional upper-endpoint channel samples in Pancake. The evidence is specific to this native exposure fixture, device mode and package. [Current fixed-window metrics](fixed-roi-review.json) · [Prior review of the same images](../integrated-e9-corrected-cpu-c1e2cac/independent-quality-review.md)
+
+The original report and 190 byte-verified raw files preserve timing, resources, typed output, target provenance and explicit allowlisted process metadata. The archive contains no original photo bytes, TIFFs, application binaries or ambient environment. Task-owned source photos remain private for the next separately authorized matched replay. [Static package preflight](preflight.py.txt) · [Exact run command](run-authorized.sh.txt) · [Offline archive and reducer tool](archive-replay.py.txt) · [Waterloo MEF source and rights](https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html)

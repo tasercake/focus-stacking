@@ -1,0 +1,140 @@
+"""Bind the exact e81079d Debian CLI to the unmodified frozen CPU runner."""
+
+import json
+from pathlib import Path
+from types import SimpleNamespace
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames
+
+SOURCE = "e81079dee4078d7a1149da0f5950aab8c89f8d44"
+PRODUCT_TREE = "bc64dc84971104a0b83c049bf3965c27bfafd151"
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
+ARCHIVE = "8ed6e70d7552140c0257520a07ac2b9fc5f97ff82a5fb3126864df821df4507e"
+CLI = "9630572be5e637c38c604f2fcd6d7a44e31e171a5ccf17dadb1f59ba345c24f0"
+PACKAGE_RECEIPT = "dc88c46f5c78b7431b08d3735a8b5cf4c94b58ad1863a74d3a53b175bd59ffa1"
+PACKAGE_VERIFICATION = (
+    "f0a6402c9d79038ef86876f91a0ae36fa526e97332746b13ee8a8ba242ea1fae"
+)
+RELEASE_LOG = "d32c64d5371da05fccd4db6b475b48c6680ebb380ae442d03bdb999e66ae9273"
+ELF_ID = "76907e38fb0f3f3225c678b098ff123b421860a8"
+PROFILE = "E9.exposure_fusion.cpu"
+
+
+def check(path, expected):
+    if not path.is_file() or path.is_symlink() or sha256(path) != expected:
+        raise ValueError(f"unexpected frozen file identity: {path}")
+    return path
+
+
+def main():
+    workspace = Path("/home/krishna/Documents/focus-stacking")
+    stage = Path(__file__).resolve().parent
+    p10._require_clean(
+        p10.ROOT, "pancake", "pancake-conformance/src", "qualification/p10-performance"
+    )
+    spec = TargetSpec.load(p10.CANDIDATE)
+    snapshot = p10._snapshot(spec, spec.root / "Cargo.lock")
+    if (
+        snapshot
+        != {"commit": SOURCE, "lock_sha256": LOCK, "descriptor_sha256": DESCRIPTOR}
+        or p10._git(p10.ROOT, "rev-parse", "HEAD:pancake") != PRODUCT_TREE
+    ):
+        raise ValueError("exact package product, descriptor or Cargo.lock changed")
+    package_dir = workspace / "artifacts/pancake-packages/linux-e81079d"
+    package = check(package_dir / "pancake_0.1.0_amd64.deb", ARCHIVE)
+    check(workspace / "artifacts/p9-e81079d/release-build.log", RELEASE_LOG)
+    receipt = json.loads(
+        check(package_dir / "package-receipt.json", PACKAGE_RECEIPT).read_text()
+    )
+    verified = json.loads(
+        check(
+            package_dir / "package-verification.json", PACKAGE_VERIFICATION
+        ).read_text()
+    )
+    executable = check(p10._candidate_binary(spec), CLI)
+    expected_artifact = {
+        "file": package.name,
+        "sha256": ARCHIVE,
+        "bytes": package.stat().st_size,
+    }
+    for record in (receipt, verified):
+        binary = record["binaries"]["pancake-cli"]
+        if (
+            record["source_commit"] != SOURCE
+            or record["cargo_lock_sha256"] != LOCK
+            or record["archive"] != expected_artifact
+            or binary["sha256"] != CLI
+            or binary["bytes"] != executable.stat().st_size
+        ):
+            raise ValueError(
+                "producer receipt does not attest the exact source and packaged CLI"
+            )
+    if (
+        executable.stat().st_mode & 0o222
+        or verified["release_build_log_sha256"] != RELEASE_LOG
+    ):
+        raise ValueError("private CLI custody or locked release-build log differs")
+    info = snapshot | {
+        "executable": str(executable),
+        "binary_sha256": CLI,
+        "elf_build_id": ELF_ID,
+        "product_tree": PRODUCT_TREE,
+        "build_package": {
+            "archive": str(package),
+            "archive_sha256": ARCHIVE,
+            "package_receipt_sha256": PACKAGE_RECEIPT,
+            "verification_sha256": PACKAGE_VERIFICATION,
+            "release_build_log_sha256": RELEASE_LOG,
+            "member": "./usr/bin/pancake-cli",
+        },
+    }
+    attachment = stage / "build-receipt.json"
+    p10._write(attachment, info)
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    if (
+        sha256(p10.TARGETS_PATH)
+        != "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc"
+    ):
+        raise ValueError("frozen target file changed")
+    records, _ = corpus(p10.ROOT, campaign, "E9")
+    inputs = stage.parent / "e9-cuda-integrated-replay/input-stage/input"
+    frames = verify_frames(inputs, records, 9)
+    if frames != sorted(frames):
+        raise ValueError("input ordering differs from the pinned public CLIs")
+    _, targets = p10._prepared_targets(
+        SimpleNamespace(profile=PROFILE, build_receipt=attachment), campaign
+    )
+    if (
+        targets["reference"]["exposure_combiner"]["sha256"]
+        != "47f2c63bfc635e53e886e9bbd6b66944a95f97c719fad26ed88f6c222594cb94"
+    ):
+        raise ValueError("corrected pinned CPU launcher changed")
+    p10._write(
+        stage / "no-device-preflight.json",
+        {
+            "targets": targets,
+            "profile": PROFILE,
+            "jobs": campaign.schedule(),
+            "timed_jobs_launched": 0,
+            "device_queries": 0,
+            "source_and_reference_verified": True,
+        },
+    )
+    print(
+        json.dumps(
+            {
+                "source": SOURCE,
+                "cli": CLI,
+                "pairs": len(campaign.schedule()) // 2,
+                "no_device_or_job_launch": True,
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
