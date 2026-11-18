@@ -1,7 +1,15 @@
 {
   "profile": "E9.exposure_fusion.cpu",
   "runner_verdict": "pending",
-  "release_independent_quality_review": "pending",
+  "release_independent_quality_review": {
+    "status": "pass",
+    "narrative_sha256": "b60891d3267b35bba32b1678345edfdb9461c5dd576940d6d09bc05d376f4b12",
+    "metrics_sha256": "81e7efd5ccb2d4b3cdfb323f1b342d281b21b838cadc60790c5e8746e17b8ccf",
+    "residual_candidate_only_endpoint_samples": {
+      "floor": 364,
+      "ceiling": 731
+    }
+  },
   "hardware": {
     "cpu": "AMD Ryzen 9 7950X3D 16-Core Processor",
     "cpu_affinity": [
@@ -348,5 +356,11 @@
       "XDG_CONFIG_HOME",
       "__GL_SHADER_DISK_CACHE_PATH"
     ]
-  }
+  },
+  "profile_verdict": {
+    "status": "pass",
+    "file": "profile-verdict.json",
+    "sha256": "284ee626038695b536265367c65803ce130efe7c7ef75bef0213e7a8b8176627"
+  },
+  "cleanup_sha256": "2798d2db080bb2345e87cf6149888306a6eb813e555b3e2277d3c1dc4dad9b02"
 }

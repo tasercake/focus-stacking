@@ -10,7 +10,9 @@ The exact Debian Pancake CLI from `c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb` and
 
 The exclusive CPU campaign ran on November 18, 2026 at 21:35:20.972926–21:36:29.838861 Singapore time. Both jobs used logical CPUs `0–31`, 32 threads and the same Ryzen 9 7950X3D Linux host and `powersave` frequency policy. Process-tree RSS used an 8 ms nominal observation interval. The largest measured acquisition gap across all 17 primary jobs per target was 11.209162 ms for Pancake and 11.751608 ms for ChimpStackr, below the frozen 20 ms maximum. The raw report records heat observations, resource traces, fresh-cache checks, full job endpoints and distinct diagnostic completions. [Summary](summary.json) · [All 36 job rows](samples.csv) · [Raw archive](raw-paired-runs.tar.gz) · [Archive digest](raw-paired-runs.sha256)
 
-Every export had the same `337×510` geometry and genuine RGB16 depth. The corresponding first-warm images reproduced the earlier functional receipt hashes. Full-image MAE was 510.171 unsigned 16-bit levels. Fixed upper-left, center and lower-right window MAEs were 302.447, 260.205 and 649.201 levels, with zero floor or ceiling fractions in both images within these windows. The runner retains its original `pending` quality gate while the separate representative-region assessment is recorded. [First-warm review inputs and metrics](fixed-roi-review.json) · [Exact Linux package and conformance evidence](../../../../pancake/docs/p9-linux-package-evidence/c1e2cac/summary.json)
+Every export had the same `337×510` geometry and genuine RGB16 depth. The first-warm images reproduced the earlier functional receipt hashes. Full-image MAE was 510.171 unsigned 16-bit levels. Fixed upper-left, center and lower-right window MAEs were 302.447, 260.205 and 649.201 levels, with zero floor or ceiling fractions in both images within these windows. Independent native-scale and enlarged review found comparable sampled detail, no new registration or reconstruction artifacts, and residual exposure differences. The Pancake output reached the lower endpoint in 364 additional blue-channel samples in the right balloon artwork and the upper endpoint in 731 additional channel samples around the sun and clouds. The reviewer found no visible texture loss at native scale. [First-warm ROI metrics](fixed-roi-review.json) · [Independent review](independent-quality-review.md) · [Independent metrics](independent-quality-metrics.json)
+
+**The corrected E9 CPU profile passes for the exact `c1e2cac` Linux package.** The verdict combines the unmodified numeric report, the independent quality receipt and the strict Linux conformance ledger with 341 host, 34 isolated GUI and one physical-GPU GUI case. The verdict covers this one native exposure fixture and CPU profile. The pinned per-batch BGR weighting convention and separate Apple assurance remain recorded in their owning evidence. [Profile verdict](profile-verdict.json) · [Exact Linux package and conformance evidence](../../../../pancake/docs/p9-linux-package-evidence/c1e2cac/summary.json)
 
 ## Reproduction
 
@@ -32,3 +34,13 @@ taskset -c 0-31 "$QUAL_PY" "$bind" --run --package "$PACKAGE" --release-log "$RE
 ```
 
 The archive retains the explicitly selected launch and observation files. It includes the build attachment and preflight, raw per-job traces and statuses, original timestamps and data and tool hashes. Its 189 members were verified byte-for-byte against staged originals. The recorded process environment is limited to the runner's explicit allowlist and case-specific configuration. The original photos and TIFFs are excluded from the archive. [Binding implementation](bind_c1_candidate.py.txt) · [Waterloo MEF dataset and rights](https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html)
+
+After independent review, the nine originals, both first-warm TIFFs and the privately extracted executable were rehashed and removed. The old source archive and case-owned caches had already been removed. Reproduce the verdict offline with the original reducer, verified lane inventory and independent quality receipt. For this command, use the integrated repository as `ROOT` and this report folder as `EVIDENCE`.
+
+```sh
+"$QUAL_PY" "$EVIDENCE/reduce_verified_profile.py.txt" \
+  --p9-dir "$ROOT/pancake/docs/p9-linux-package-evidence/c1e2cac" \
+  --targets "$ROOT/pancake/docs/performance-targets.json"
+```
+
+[Cleanup receipt](cleanup.json)
