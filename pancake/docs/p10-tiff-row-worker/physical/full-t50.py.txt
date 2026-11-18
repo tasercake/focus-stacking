@@ -1,0 +1,115 @@
+"""Check two exact Pancake releases on one frozen T50 diagnostic pair."""
+import json
+import os
+from pathlib import Path
+import runpy
+import sys
+from types import SimpleNamespace
+
+from p10 import CANDIDATE, ROOT, TARGETS_PATH, _campaign_lock, _git, _hardware, _run_sample, _write
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, pinned_json, sha256, verify_frames
+from resources import NvidiaMemory
+
+GPU_UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+BASELINE = "287828aac07ffad2252785b73a52a59fc07b3409"
+BASE_BINARY = "874c8683623131b5619858a9cba61cb6219bc2eae6d6bdb30ed1bc5d8634ce8e"
+CARGO_LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+FROZEN = "8881a4968bb95f5a911b040a6ebc9635a9cbdc5a759ac0443605de33f700849c"
+MATERIALIZATION = "62200bca0567ae06e2b6d3eba406aea259e601904c756b64ea7b245ede2625a4"
+TARGETS = "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc"
+EXPECTED_ENCODED = "6160722086e2153b4dd3d8e3810dd22e156669fcafaa15fc72a3e88968b39302"
+EXPECTED_PIXELS = "f54746784bcc278da2df734e9f034053a3b54105ddb2a30046baf6dab07a80a3"
+
+
+def compare(p2, stage, serial_binary, rows_binary, output):
+    revision = (p2 / "revision.txt").read_text().strip()
+    rows_sha = (p2 / "build-identity.txt").read_text().splitlines()[0].split()[0]
+    if _git(ROOT, "rev-parse", "HEAD") != revision or _git(ROOT, "status", "--porcelain"):
+        raise ValueError("expected the exact clean tested release source")
+    if sha256(rows_binary) != rows_sha or sha256(serial_binary) != BASE_BINARY:
+        raise ValueError("one release binary failed its checksum")
+    if sha256(ROOT / "pancake/Cargo.lock") != CARGO_LOCK or sha256(TARGETS_PATH) != TARGETS:
+        raise ValueError("release lock or frozen performance settings changed")
+    receipt = pinned_json(stage / "materialization.json", MATERIALIZATION)
+    if receipt["reference_receipt_sha256"] != FROZEN:
+        raise ValueError("incorrect frozen T50 receipt")
+    campaign = Campaign.load(TARGETS_PATH)
+    records, source = corpus(ROOT, campaign, "T50")
+    frozen = pinned_json(Path(source["path"]), FROZEN)
+    identity_fields = ("name", "role", "focus", "bytes", "file_sha256", "decoded_pixel_sha256")
+    frozen_ids = [tuple(x[field] for field in identity_fields) for x in frozen["files"]]
+    staged_ids = [tuple(x[field] for field in identity_fields) for x in receipt["files"]]
+    if frozen_ids != staged_ids:
+        raise ValueError("materialized files differ from frozen encoded or decoded identities")
+    all_inputs = [dict(row, path=row["name"], sha256=row["file_sha256"]) for row in frozen["files"]]
+    input_root = stage / "inputs"
+    all_files = verify_frames(input_root, all_inputs, 52)
+    frames = verify_frames(input_root, records, 50)
+    if frames != sorted(frames) or frames != all_files[:50]:
+        raise ValueError("expected ordered original 50 T50 focus inputs")
+    if sorted(os.sched_getaffinity(0)) != list(range(32)):
+        raise ValueError("T50 comparison requires the original 32 logical CPU affinity")
+    profile = next(item for item in campaign.profiles("gpu") if item.key == "T50.hybrid.gpu")
+    args = SimpleNamespace(runtime="wgpu-vulkan", gpu_uuid=GPU_UUID, candidate_gpu_index=0,
+                           threads=32, timeout=900, cuda_library_path=None, rss_sampler_cpu=None)
+    identities = {
+        "serial": {"commit": BASELINE, "executable": str(serial_binary), "binary_sha256": BASE_BINARY},
+        "rows": {"commit": revision, "executable": str(rows_binary), "binary_sha256": rows_sha},
+    }
+    report = {"scope": "one physical T50 pair outside the frozen acceptance schedule",
+              "identities": identities, "lock_sha256": CARGO_LOCK, "targets_sha256": TARGETS,
+              "descriptor_sha256": sha256(CANDIDATE), "runner_sha256": sha256(ROOT / "qualification/p10-performance/p10.py"),
+              "materialization_sha256": MATERIALIZATION, "frozen_receipt_sha256": FROZEN,
+              "settings": profile.options, "source_frames": 50, "arms": {}, "status": "running"}
+    output.mkdir(exist_ok=False)
+    _write(output / "report.json", report)
+    target = TargetSpec.load(CANDIDATE)
+    try:
+        with _campaign_lock():
+            resource_guard = runpy.run_path(str(ROOT / "qualification/p10-performance/evidence/t50-12f2151-preflight/paired-diagnostic.py.txt"))["resource_guard"]
+            guard = resource_guard(GPU_UUID)
+            hardware = _hardware(GPU_UUID)
+            report.update(resource_guard=guard, hardware=hardware)
+            if (guard["initial_host_available_bytes"] < guard["required_host_available_bytes"]
+                    or guard["initial_device_free_mib"] < guard["required_device_free_mib"]):
+                raise ValueError("insufficient host or RTX starting headroom")
+            gpu_info = hardware["gpu"]
+            if gpu_info["pci.bus_id"] != "00000000:01:00.0" or gpu_info["driver_version"] != "580.178.04":
+                raise ValueError("physical RTX or NVIDIA driver differs from pinned diagnostic")
+            gpu = NvidiaMemory(GPU_UUID)
+            try:
+                for ordinal, (label, identity) in enumerate(identities.items(), start=1):
+                    observed, _ = _run_sample(profile, ("diagnostic", ordinal, "candidate"), "candidate",
+                                              target, identity, args, frames, (4000, 6000, 3), output, gpu)
+                    report["arms"][label] = observed
+                    _write(output / "report.json", report)
+                    if not observed["valid"]:
+                        raise ValueError(observed["invalid_reason"])
+                    event = observed["completion"]
+                    maps = event["alignment_transforms"]
+                    if (not event["physical_gpu"] or event.get("fallback_reason") is not None
+                            or {Path(name).name for name in maps} != {frame.name for frame in frames}
+                            or any(matrix != [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]] for matrix in maps.values())):
+                        raise ValueError("expected full physical completion and 50 unchanged transforms")
+                    export = observed["output"]
+                    if (export["shape"] != [3998, 5998, 3] or export["dtype"] != "uint16"
+                            or export["sha256"] != EXPECTED_ENCODED or export["pixel_sha256"] != EXPECTED_PIXELS):
+                        raise ValueError("full exported T50 identity differs")
+            finally:
+                gpu.close()
+            report["status"] = "completed_exact_identity"
+    except (OSError, RuntimeError, ValueError) as error:
+        report.update(status="failed", failure=str(error))
+    finally:
+        try:
+            report["all_52_inputs_unchanged"] = verify_frames(input_root, all_inputs, 52) == all_files
+        except (OSError, RuntimeError, ValueError) as error:
+            report.update(status="failed", input_verification_error=str(error))
+        _write(output / "report.json", report)
+    print(report["status"])
+    return 0 if report["status"] == "completed_exact_identity" and report["all_52_inputs_unchanged"] else 1
+
+
+if __name__ == "__main__":
+    sys.exit(compare(*(Path(value).resolve() for value in sys.argv[1:])))

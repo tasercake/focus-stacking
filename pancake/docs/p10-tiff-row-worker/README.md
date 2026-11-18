@@ -10,8 +10,28 @@ The first matched Linux CPU diagnostic used candidate `3529ea4` and baseline `28
 | Frame 024 peak process RSS | 285,440 KiB | 287,664 KiB |
 | One-core frame 024 median of three decodes | 0.521138 s | 0.520237 s |
 
-The four-core candidate reached 3.36× serial throughput. Linux observed three extra TIFF worker threads. There were zero extra threads on one core, and another 216 million candidate samples matched the baseline. The end-to-end T50 comparison and frozen P10 qualification are pending. [Receipt](receipt.json) · [Paired samples](alternating.tsv) · [One-core samples](one-core-parity.tsv) · [Live workers](threads-rows.json) · [Source archive](probe-source.tar.gz)
+The four-core candidate reached 3.36× serial throughput. Linux observed three extra TIFF worker threads. There were zero extra threads on one core, and another 216 million candidate samples matched the baseline. [Receipt](receipt.json) · [Paired samples](alternating.tsv) · [One-core samples](one-core-parity.tsv) · [Live workers](threads-rows.json) · [Source archive](probe-source.tar.gz)
 
 The test-first witness failed when the seek was omitted inside the shared input lock, returning the wrong tile bytes. The follow-up production revision `1a88701` retains this test on an in-memory cursor and exercises the real filesystem TIFF path in the native integration lane. The independently encoded 1025×1027 fixture preserves every normalized code, partial edge pixels and its ICC profile. A one-byte compressed length in the last tile row reports the source path and tile 288. The native fixture is little-endian contiguous RGB16 with 64×64 tiles, horizontal predictor and the row-major sample code sequence `index % 65536`. [Exact pure red log](cursor-pure-red.log.gz) · [Pure tests](miri-boundary-unit.log.gz) · [Native regressions](miri-boundary-integration.log.gz) · [Strict Clippy](clippy-miri-boundary.log.gz)
+
+Independent review at `a5cd3ce57516a0b80aa10fa26f521a1240539dfa` checked the worker source and passed both exact copied pure tests with pinned Linux Miri isolation. Its command, logs and source hashes are under `pancake/docs/p10-tiff-row-workers-review`. The directory checks anchor each worker to its validated band. An external in-place write can still change bytes after that check, so both diagnostics verified source hashes before and after the read-only use.
+
+## Locked CPU and RTX P2 replay
+
+The exact locked `e228c68472767f6ddd71a1de5e585f200685812e` release passed all 84 frozen P2 cases. The 68 CPU-only cases produced 27 verified CPU completions. The 16 GPU-bearing cases produced 16 verified CPU comparisons and 16 physical RTX 3090 Vulkan completions at PCI `0000:01:00.0`. Every completion matched the original backend and fallback roster, with zero failed, unsupported or unrun cases. The executable SHA-256 is `5dfc816274c2f8651d503c7a1a7bdacc7ae3664e98d61d0c1d9d2f2964e28dbb`. [Build and verification](p2/qualification.json) · [CPU report](p2/p2-cpu-report.json.gz) · [RTX report](p2/p2-gpu-report.json.gz) · [Provenance checksums](p2/SHA256SUMS)
+
+## Matched physical T50 pair
+
+The sealed CLI from the `287828a` Debian package and the exact `e228c68` release used one Rust dependency lock, one frozen Hybrid profile and the same resident-input, registration, fusion, and export source. Each processed the same 50 ordered 6000×4000 RGB16 inputs on the physical RTX 3090 with driver `580.178.04`, 32 allowed logical CPUs and a 28 GiB no-swap host scope. Both completed with zero fallback and with all 50 exact identity transforms. The 3998×5998×3 uint16 exports had the same encoded SHA-256 `6160722086e2153b4dd3d8e3810dd22e156669fcafaa15fc72a3e88968b39302` and decoded hash `f54746784bcc278da2df734e9f034053a3b54105ddb2a30046baf6dab07a80a3`. All 52 authenticated source and truth files matched again after the pair. [Source lineage](physical/source-lineage.json) · [Summary](physical/summary.json) · [Raw report and commands](physical/report.json)
+
+| Diagnostic measurement | Serial | Row workers |
+| --- | ---: | ---: |
+| Wall through export and exit | 55.539127 s | 38.517180 s |
+| Observed process-tree peak RSS | 1,549,021,184 B | 1,549,971,456 B |
+| Maximum RSS sample gap | 10.672 ms | 9.876 ms |
+| Observed attributable VRAM peak | 2,518,323,200 B | 2,518,323,200 B |
+| Maximum GPU sample gap | 93.134 ms | 116.456 ms |
+
+Wall time fell by 30.65% in this sequential pair. Each arm had a fresh application cache. Initial GPU state differed, with P8 at 56 °C before the baseline and P5 at 58 °C before the candidate. A separate branch's cache cleanup completion was reported during the diagnostic, with its exact terminal time unavailable. The initial host census and all resource samples are retained. Both GPU sampling gaps exceed the frozen 20 ms limit, so formal VRAM and P10 performance qualification remain open. [Host census](physical/full-t50-census.txt) · [Serial samples](physical/serial/sample.json) · [Worker samples](physical/rows/sample.json) · [Evidence checksums](physical/SHA256SUMS)
 
 The source archive captures the exact two TIFF decoders and build lock used in the decode-only diagnostic. The reproduction script records the materialization receipt hash and selected affinity. [Probe commands](matched.sh.txt) · [Hardware and background processes](match-environment.txt) · [Input hashes](input-sha256.txt)
