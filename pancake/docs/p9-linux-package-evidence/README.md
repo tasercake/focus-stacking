@@ -1,5 +1,29 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `8694b55`
+
+The locked default workspace release built both executables at
+`8694b555666a1ddf4051e2839bbced4bcc625859`. The dependency gate and four
+packaging tests passed. The exact local archive is
+`artifacts/pancake-packages/linux-8694b55/pancake_0.1.0_amd64.deb` (69,494,350 bytes), with SHA-256
+`7dbc969e1813bc62aa4df206bb77982e3f7705298f753e12b7a493ae89ce3784`.
+[Build, hardware and source receipts](8694b55/summary.json).
+[Rootless package verification](8694b55/package-verification.json).
+
+The exact fast gate exited 101. Strict Clippy reported
+19 default numeric fallbacks and one constant-size `chunks_exact` in
+`pancake/tests/cpu_fusion_contract.rs`. The full fast gate remains open on
+this revision. [Original fast-gate log](8694b55/check-fast.log.gz).
+
+Rootless extraction verified both executable hashes, linked native libraries,
+the desktop entry, CLI help and archived source notices. The extracted
+binaries passed all 376 frozen case IDs with matching source, contract,
+descriptor and lock receipts. The strict ledger accepted 341 host cases,
+34 isolated GUI cases and the separate physical RTX 3090 GUI case on wgpu
+Vulkan. The raw reports remain under `artifacts/p9-8694b55/{h,g,p}`.
+Earlier package and performance evidence retains its recorded revision.
+[Strict aggregate ledger](8694b55/linux-ledger.json.gz).
+
 ## Integrated Linux package candidate `287828a`
 
 The locked default workspace release built both executables at
