@@ -81,6 +81,52 @@ fn weighted_focus_uses_the_requested_window() -> Result<(), String> {
     Ok(())
 }
 
+/// Depth-map center selection compares normalized focus across box scales.
+/// # Errors
+/// Returns a native launch, readback, or selected source mismatch.
+#[test]
+fn depth_map_compares_normalized_focus_scales_in_both_axes() -> Result<(), String> {
+    // Each isolated impulse supplies one unit of modified-Laplacian energy.
+    // At the center all three box widths see the centered impulse's energy,
+    // while only the widest box sees both remote impulses. The normalized
+    // focus scores are 1/5 + 1/3 + 1/11 and 2/11, respectively.
+    let centered: [[f32; 3]; 13] =
+        std::array::from_fn(|index| [if index == 6 { 0.375 } else { 0.125 }; 3]);
+    let remote: [[f32; 3]; 13] = std::array::from_fn(|index| {
+        [if matches!(index, 2 | 10) {
+            0.375
+        } else {
+            0.125
+        }; 3]
+    });
+    let device = cubecl::Device::Cpu(cubecl::cpu::CpuDevice);
+    let [row, column] = [(13, 1), (1, 13)].map(|(width, height)| {
+        let mut accumulator =
+            FocusAccumulator::new(&device, width, height, FocusMethod::DepthMap, 3, 4096)?;
+        accumulator.add_frame(remote.as_flattened())?;
+        accumulator.add_frame(centered.as_flattened())?;
+        let output = accumulator.finish()?;
+        if output.len() != centered.as_flattened().len() {
+            return Err(format!(
+                "depth-map output shape changed for {width} by {height}"
+            ));
+        }
+        let (pixels, _) = output.as_chunks::<3>();
+        pixels
+            .get(6)
+            .copied()
+            .ok_or_else(|| "missing focus center".to_owned())
+    });
+    let (row, column) = (row?, column?);
+    let expected = [0.375_f32.to_bits(); 3];
+    if row.map(f32::to_bits) == expected && column.map(f32::to_bits) == expected {
+        return Ok(());
+    }
+    Err(format!(
+        "depth map selected row {row:?} and column {column:?}, expected the centered source"
+    ))
+}
+
 /// Invalid shape, resource budget and sample count are recoverable errors.
 /// # Errors
 /// Returns a description if invalid data reached a runtime or was accepted.
