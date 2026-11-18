@@ -36,3 +36,34 @@ The CPU verification leaves its TIFFs in temporary directories that are removed 
 ## Physical OpenCL validation pending
 
 Use one instrumented run and one clean, direct reference launch under an exclusive GPU lease. Identify the pinned selection’s PCI address and UUID on the same RTX 3090, verify the queue’s device and prove the CLI stayed on OpenCL. Observe actual `ExposureGPU._flush` results after `4+4+1` and evaluate their independent float64 mean against the normal pre-crop output. Verify the physical result’s registration, RGB16 encoding and BGR-to-RGB conversion. Require file and decoded pixel hashes to match the clean run with the same arguments and input hashes. Retain any fallback or disagreement as failure evidence. Physical OpenCL remains unrun in this receipt.
+
+The [physical observer](verify_opencl.py.txt) has a CPU-only `--self-test` mode for the reducer and fixed-window metrics. The actual mode holds the repository performance lock, verifies OpenCL index 0 against the archived PCI and UUID, and uses two serial subprocesses with private caches. One observes the real fuser queue and output. Its exit releases the OpenCL context before the second starts. The second runs the corrected pinned launcher directly with the same settings. Both subprocesses use the physical NVIDIA ICD. Run on the pinned reference checkout under an approved exclusive device window:
+
+```sh
+export PYTHONPATH="$ROOT/pancake-conformance/src:$ROOT/qualification/p10-performance:$PWD"
+export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1
+observer="$ROOT/qualification/p10-performance/evidence/e9-reference-prototype/verify_opencl.py.txt"
+taskset -c 15 "$REF_PY" "$observer" --self-test
+timeout --signal=TERM --kill-after=5s 75s taskset -c 14,15 "$REF_PY" "$observer" \
+  --run --input-root "$PRIVATE/real/input" --nvidia-icd /etc/OpenCL/vendors/nvidia.icd \
+  > "$PRIVATE/physical-opencl.json" 2> "$PRIVATE/physical-opencl.stderr"
+```
+
+## Pending matched CPU campaign
+
+The corrected reference first needs independent functional review on both supported routes. The future paired CPU schedule uses the exact nine ordered native images, the adopted adapter hash, the unchanged pin and the packaged candidate from the same authorized, locked release checkout. The qualification runner verifies the build receipt against the checkout revision, binary, `Cargo.lock` and descriptor. The `c1e2cac` CPU pilot used verified equivalent product files and remains separately labeled. A future official run needs a build receipt for its actual release checkout.
+
+On this Linux host the earlier E9 CPU schedule used CPUs `0–31` and 32 worker threads in both applications. Retain that common affinity, the usual power mode and the prescribed 20 ms full process-tree observation. Run two complete warmups, ten fresh-process warm samples and five fresh-process cold samples per target in the frozen alternating order. Cold samples receive new per-run caches. Diagnostic CPU backend completions stay separate. Preserve invalid or missed-cadence observations and keep the gates pending if complete qualified evidence is unavailable. The existing runner uses the same fixed settings as the pilot and preserves the first warm pair for independent review:
+
+```sh
+taskset -c 0-31 "$QUAL_PY" "$ROOT/qualification/p10-performance/p10.py" run \
+  --profile E9.exposure_fusion.cpu --runtime cpu --threads 32 --timeout 120 \
+  --input-root "$PRIVATE/real/input" --build-receipt "$BUILD_RECEIPT" \
+  --keep-review-images --output "$PAIRED"
+
+"$QUAL_PY" "$observer" --review-pair \
+  "$PAIRED/warm-01/reference/complete.tif" "$PAIRED/warm-01/candidate/complete.tif" \
+  > "$PAIRED/fixed-roi-review.json"
+```
+
+The ROI tool reads the identical coordinates from both historical receipts and reports the unchanged three `48×48` windows on the verified `337×510` first-reference grid. Upper-left starts at `(103, 60)`, center at `(231, 144)` and lower-right at `(358, 228)`. It records per-channel ranges and means, clipping and paired pixel errors. A separate reviewer still needs to assess corresponding patches for relative exposure, saturation, clipping and visible detail. The numerical receipt cannot declare that review complete. Rehash and remove the two review TIFFs and the task-owned corpus when their consumers finish. [Historical CPU windows](../integrated-e9-12f2151/cpu-review.json) · [Historical OpenCL windows](../integrated-e9-12f2151/vulkan-review.json)
