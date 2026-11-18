@@ -1,0 +1,4 @@
+Target: pancake-rust | 1 cases | /tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/native-profile-bc19261/case
+[1/1] PASSED interface.recovery.close-unsaved (5.90s)
+Desktop phase finished; keyboard and pointer are free.
+Passed: 1; failed: 0; unsupported: 0
