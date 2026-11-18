@@ -37,6 +37,9 @@ const TILED_RGB16_OLD_DEFLATE: &[u8] = include_bytes!("data/tiled-rgb16-old-defl
 /// The same encoded sample codes with big-endian storage and EXIF orientation 6.
 const TILED_RGB16_ROTATED: &[u8] = include_bytes!("data/tiled-rgb16-zip-rotated.tif");
 
+/// A profiled DEFLATE frame large enough for the production row-worker route.
+const TILED_RGB16_WORKER_BANDS: &[u8] = include_bytes!("data/tiled-rgb16-worker-bands.tif");
+
 /// Check actual test behavior without panicking in a fallible test.
 ///
 /// # Errors
@@ -150,6 +153,54 @@ fn tiled_tiff_rejects_invalid_compressed_spans() -> TestResult {
         require(error.contains(name) && error.contains("tile"), &error)?;
     }
     Ok(())
+}
+
+/// Whole-frame imports preserve RGB and ICC and report corruption in the last tile row.
+///
+/// # Errors
+///
+/// Returns file, ICC, sample precision, or accepted corruption errors.
+#[test]
+fn large_tiled_tiff_preserves_profile_and_reports_later_tile_failure() -> TestResult {
+    let directory = tempfile::tempdir()?;
+    let valid = directory.path().join("many-tile-rows.tif");
+    fs::write(&valid, TILED_RGB16_WORKER_BANDS)?;
+    let frame = decode(&valid)?;
+    require(
+        (frame.width(), frame.height(), frame.samples().len()) == (1025, 1027, 3_158_025),
+        "tiled row output changed the RGB dimensions",
+    )?;
+    require(
+        frame.sample_encoding() == SampleEncoding::U16,
+        "tiled row output changed the source sample width",
+    )?;
+    require(
+        frame.icc_profile() == Some(include_bytes!("data/srgb.png.icc").as_slice()),
+        "tiled row output lost the original ICC profile",
+    )?;
+    for (index, value) in frame.samples().iter().enumerate() {
+        let code = u16::try_from(index % 65_536)?;
+        require(
+            value.to_bits() == (f32::from(code) / 65_535.0).to_bits(),
+            "tiled row output changed an encoded sample",
+        )?;
+    }
+
+    let mut corrupt = TILED_RGB16_WORKER_BANDS.to_vec();
+    // The final LONG in the TileByteCounts array describes tile 288.
+    corrupt
+        .get_mut(2560..2564)
+        .ok_or_else(|| io::Error::other("missing the last TIFF tile count"))?
+        .copy_from_slice(&1_u32.to_le_bytes());
+    let path = directory.path().join("short-last-tile.tif");
+    fs::write(&path, corrupt)?;
+    let diagnostic = decode(&path)
+        .err()
+        .ok_or_else(|| io::Error::other("a short tile produced a complete frame"))?;
+    require(
+        diagnostic.contains("short-last-tile.tif") && diagnostic.contains("TIFF tile 288"),
+        &diagnostic,
+    )
 }
 
 /// Corrupt paths are individually diagnosed without returning a decoded frame.

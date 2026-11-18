@@ -1,18 +1,10 @@
-//! Same-handle cursor and row-band contracts for real TIFF decoding.
+//! Pure cursor and process-budget contracts for TIFF decoding.
 
 use std::cell::Cell;
 use std::error::Error;
-use std::fs::File;
-use std::io::{self, Read, Seek, SeekFrom};
+use std::io::{self, Cursor, Read, Seek, SeekFrom};
 
-use super::{
-    FileSource, Layout, MAX_TIFF_WORKERS, PARALLEL_MIN_PIXELS, lane_count, read_parallel,
-    tile_spans,
-};
-use crate::image_io::profile_from_tiff;
-
-/// Existing independent deflated RGB16 fixture with five partial-edged tile rows.
-const TILED_RGB16: &[u8] = include_bytes!("../../../tests/data/tiled-rgb16-zip.tif");
+use super::{MAX_TIFF_WORKERS, PARALLEL_MIN_PIXELS, PositionalInput, lane_count};
 
 /// Test failures include both source decoding errors and contract mismatches.
 type TestResult = Result<(), Box<dyn Error>>;
@@ -37,10 +29,7 @@ fn require(condition: bool, diagnostic: &str) -> TestResult {
 /// Reports source I/O or a cursor returning bytes from another tile.
 #[test]
 fn shared_cursors_keep_independent_positions_and_read_bounds() -> TestResult {
-    let tmp = tempfile::NamedTempFile::new()?;
-    std::fs::write(tmp.path(), b"abcdEFGH1234")?;
-    let handle = File::open(tmp.path())?;
-    let source = FileSource::new(&handle)?;
+    let source = PositionalInput::with_length(Cursor::new(b"abcdEFGH1234"), 12);
     let left_span = Cell::new(Some((2, 5)));
     let right_span = Cell::new(Some((7, 11)));
     let mut left = source.cursor(&left_span);
@@ -82,57 +71,6 @@ fn lanes_respect_low_affinity_small_images_and_row_count() -> TestResult {
             lane_count(pixels, rows, cpus) == expected,
             "TIFF lane allocation exceeded its useful resource bounds",
         )?;
-    }
-    Ok(())
-}
-
-/// Three actual decode lanes preserve the edge rows and propagate a later corrupt tile.
-///
-/// # Errors
-///
-/// Reports fixture setup, malformed data acceptance or a wrong normalized RGB code.
-#[test]
-fn row_workers_match_every_sample_and_report_later_tile_failure() -> TestResult {
-    let tmp = tempfile::NamedTempFile::new()?;
-    for corrupt in [false, true] {
-        let mut content = TILED_RGB16.to_vec();
-        if corrupt {
-            // First IFD count array starts at 364. Its last LONG belongs to tile 24.
-            content
-                .get_mut(460..464)
-                .ok_or_else(|| io::Error::other("fixture is missing its last tile count"))?
-                .copy_from_slice(&1_u32.to_le_bytes());
-        }
-        std::fs::write(tmp.path(), content)?;
-        let handle = File::open(tmp.path())?;
-        let source = FileSource::new(&handle)?;
-        let cap = Cell::new(None);
-        let mut decoder = source.decoder(&cap)?;
-        let layout = Layout::read(&mut decoder)?
-            .ok_or_else(|| io::Error::other("fixture is ineligible for tiled decoding"))?;
-        let spans = tile_spans(&mut decoder, &layout, source.length)?;
-        let mut working = vec![0.0_f32; 199_689];
-        let completed = read_parallel(&source, &layout, &spans, &mut working, 3);
-        if corrupt {
-            let diagnostic = completed
-                .err()
-                .ok_or_else(|| io::Error::other("a later lane accepted a short compressed tile"))?;
-            require(diagnostic.contains("TIFF tile 24"), &diagnostic)?;
-        } else {
-            require(completed?, "three available lanes were not used")?;
-            require(
-                profile_from_tiff(decoder).as_deref()
-                    == Some(include_bytes!("../../../tests/data/srgb.png.icc").as_slice()),
-                "the original decoder lost the ICC profile after adjacent band reads",
-            )?;
-            for (index, value) in working.into_iter().enumerate() {
-                let code = u16::try_from(index % 65_536)?;
-                require(
-                    value.to_bits() == (f32::from(code) / 65_535.0).to_bits(),
-                    "row-band output changed an encoded RGB16 sample",
-                )?;
-            }
-        }
     }
     Ok(())
 }

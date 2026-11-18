@@ -31,38 +31,26 @@ static PARALLEL_TIFF: Mutex<()> = Mutex::new(());
 type TileSpan = (u64, u64);
 
 /// One pinned TIFF decoder with its own logical, bounded and buffered file cursor.
-type TileDecoder<'source, 'file> = Decoder<BufReader<TileInput<'source, 'file>>>;
+type TileDecoder<'source, 'file> = Decoder<BufReader<TileInput<'source, &'file File>>>;
 
-/// One opened input shared across independently buffered decode lanes.
+/// The original opened file shared by every production tile decoder.
+type FileSource<'file> = PositionalInput<&'file File>;
+
+/// A seekable input shared across independently buffered decode lanes.
 #[derive(Debug)]
-struct FileSource<'file> {
-    /// Serialize only the seek and compressed-byte read on the shared OS handle.
-    input: Mutex<&'file File>,
+struct PositionalInput<R> {
+    /// Serialize only the seek and compressed-byte read on the shared input.
+    input: Mutex<R>,
     /// Initial source size used to validate offsets and resolve logical end seeks.
     length: u64,
 }
 
-impl<'file> FileSource<'file> {
+impl<'file> PositionalInput<&'file File> {
     /// Record the size of the existing input handle.
     /// # Errors
     /// Fails if the original handle cannot report file metadata.
     fn new(input: &'file File) -> io::Result<Self> {
-        Ok(Self {
-            input: Mutex::new(input),
-            length: input.metadata()?.len(),
-        })
-    }
-
-    /// Create an independent logical cursor with an initially caller-selected span.
-    const fn cursor<'source>(
-        &'source self,
-        span: &'source Cell<Option<TileSpan>>,
-    ) -> TileInput<'source, 'file> {
-        TileInput {
-            source: self,
-            position: 0,
-            span,
-        }
+        Ok(Self::with_length(input, input.metadata()?.len()))
     }
 
     /// Parse a TIFF directory using an independent buffer over the opened input.
@@ -73,6 +61,28 @@ impl<'file> FileSource<'file> {
         span: &'source Cell<Option<TileSpan>>,
     ) -> tiff::TiffResult<TileDecoder<'source, 'file>> {
         Decoder::new(BufReader::with_capacity(65_536, self.cursor(span)))
+    }
+}
+
+impl<R: Read + Seek> PositionalInput<R> {
+    /// Pair the source with its validated byte length.
+    const fn with_length(input: R, length: u64) -> Self {
+        Self {
+            input: Mutex::new(input),
+            length,
+        }
+    }
+
+    /// Create an independent logical cursor with an initially caller-selected span.
+    const fn cursor<'source>(
+        &'source self,
+        span: &'source Cell<Option<TileSpan>>,
+    ) -> TileInput<'source, R> {
+        TileInput {
+            source: self,
+            position: 0,
+            span,
+        }
     }
 
     /// Seek and read together, leaving other cursors' logical positions unaffected.
@@ -90,16 +100,16 @@ impl<'file> FileSource<'file> {
 
 /// Bounds TIFF decompression reads to the current declared compressed tile.
 #[derive(Debug)]
-struct TileInput<'source, 'file> {
+struct TileInput<'source, R> {
     /// Original source handle, reused for metadata, tiles and ICC.
-    source: &'source FileSource<'file>,
+    source: &'source PositionalInput<R>,
     /// Logical position for this lane's compressed input buffer.
     position: u64,
     /// Apply the current cap before reading any bytes into the lane buffer.
     span: &'source Cell<Option<TileSpan>>,
 }
 
-impl Read for TileInput<'_, '_> {
+impl<R: Read + Seek> Read for TileInput<'_, R> {
     fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
         let bound = if let Some((start, end)) = self.span.get() {
             if self.position < start || self.position > end {
@@ -129,7 +139,7 @@ impl Read for TileInput<'_, '_> {
     }
 }
 
-impl Seek for TileInput<'_, '_> {
+impl<R> Seek for TileInput<'_, R> {
     fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
         let position = match position {
             SeekFrom::Start(offset) => Some(offset),
