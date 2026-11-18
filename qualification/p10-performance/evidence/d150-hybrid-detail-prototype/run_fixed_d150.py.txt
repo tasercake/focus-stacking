@@ -1,0 +1,254 @@
+"""Replay identical registered D150 pixels through stock and prototype CPU Hybrid."""
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tarfile
+
+import cv2
+import numpy as np
+import tifffile
+
+
+ROOT = Path.cwd()
+SEALED = ROOT / "qualification/p10-performance/evidence/integrated-d150-12f2151"
+MANIFEST_SHA = "6d417c9c00866755bdbc8e2fafc1421de8414e1ea9e75d2cfd7e96e2161a89ac"
+STOCK_SHA = "32caffd65ed785b1883c39ec69cfd726f2a6f836e42c653a6385dacf80267055"
+PROTOTYPE_SHA = "7d14496e76b0f6b678bc306f6b4cb80505e4823b98d249d5644bcc909da6694e"
+WIDTH, HEIGHT = 2304, 1728
+SAMPLES = 65535
+IDENTITY = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]
+
+
+def sha(path):
+    """Digest a bounded artifact without loading it into process memory."""
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def authenticated_inputs(directory):
+    """Read the frozen order and verify all original sizes and digest values."""
+    manifest = ROOT / "pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json"
+    if sha(manifest) != MANIFEST_SHA:
+        raise ValueError("frozen corpus manifest changed")
+    entries = next(
+        corpus["frames"] for corpus in json.loads(manifest.read_bytes())["workloads"]
+        if corpus["id"] == "D150-native-dorsal"
+    )
+    files = [(directory / item["path"]).resolve(strict=True) for item in entries]
+    if len(files) != 150 or len(set(files)) != 150 or files != sorted(files):
+        raise ValueError("D150 original identities or order differ")
+    for path, item in zip(files, entries, strict=True):
+        if (
+            not path.is_relative_to(directory)
+            or path.stat().st_size != item["bytes"]
+            or sha(path) != item["sha256"]
+        ):
+            raise ValueError(f"frozen D150 byte witness differs for {path}")
+    return files
+
+
+def pinned_maps(files):
+    """Read the already-observed reference coordinates from the sealed archive."""
+    archive = SEALED / "raw-paired-runs.tar.gz"
+    if sha(archive) != (SEALED / "raw-paired-runs.sha256").read_text().split()[0]:
+        raise ValueError("historical reference event archive changed")
+    with tarfile.open(archive, "r:gz") as bundle:
+        entry = bundle.getmember("paired/diagnostic-01/reference/events.jsonl")
+        if entry.size > 250_000:
+            raise ValueError("unexpected reference events length")
+        event_file = bundle.extractfile(entry)
+        if event_file is None:
+            raise ValueError("reference events were not a regular file")
+        (complete,) = [
+            event for line in event_file
+            if (event := json.loads(line))["event"] == "stack_complete"
+        ]
+    if (
+        not complete["completed"]
+        or complete["actual_backend"] != "cpu"
+        or [Path(name).name for name in complete["input_order"]] != [path.name for path in files]
+    ):
+        raise ValueError("reference transforms are from a different job")
+    matrices = {Path(name).name: value for name, value in complete["alignment_transforms"].items()}
+    return [matrices[path.name] for path in files]
+
+
+def cropped(pixels, bounds):
+    """Read a preregistered native region in common first-source coordinates."""
+    x, y, width, height = bounds
+    return pixels[y : y + height, x : x + width]
+
+
+def features(pixels):
+    """Measure actual luma Laplacian and keep the signed spatial phase."""
+    luma = (
+        0.2126 * pixels[..., 0] + 0.7152 * pixels[..., 1] + 0.0722 * pixels[..., 2]
+    ) / SAMPLES
+    laplace = (
+        luma[:-2, 1:-1] + luma[2:, 1:-1] + luma[1:-1, :-2] + luma[1:-1, 2:]
+        - 4 * luma[1:-1, 1:-1]
+    )
+    return float(np.quantile(np.abs(laplace), 0.9)), laplace.ravel()
+
+
+def prepare(directory, originals, matrices, indices, regions):
+    """Use one common fixed-map resampler and select phase witnesses from inputs."""
+    directory.mkdir()
+    paths, registrations = [], []
+    best = [None for _ in regions]
+    for index in indices:
+        source = originals[index]
+        original = cv2.imread(str(source), cv2.IMREAD_UNCHANGED)
+        if original is None or original.shape != (HEIGHT, WIDTH, 3) or original.dtype != np.uint8:
+            raise ValueError(f"expected original RGB8 dimensions {source}")
+        matrix = matrices[index]
+        if matrix is None:
+            matrix = IDENTITY
+        affine = np.asarray(matrix, dtype=np.float64)
+        if affine.shape != (2, 3) or not np.isfinite(affine).all():
+            raise ValueError(f"invalid fixed map for {source}")
+        rgb = cv2.cvtColor(original, cv2.COLOR_BGR2RGB).astype(np.float32)
+        warped = cv2.warpAffine(
+            rgb, affine, (WIDTH, HEIGHT),
+            flags=cv2.INTER_LANCZOS4 | cv2.WARP_INVERSE_MAP,
+            borderMode=cv2.BORDER_REPLICATE,
+        )
+        pixels = np.around(np.clip(warped, 0, 255) * 257).astype(np.uint16)
+        target = directory / f"source-{index:03}.tif"
+        tifffile.imwrite(target, pixels, photometric="rgb")
+        paths.append(target)
+        registrations.append({
+            "original": source.name, "frame_index": index, "map": matrix,
+            "common_tiff_sha256": sha(target),
+        })
+        for region, bounds in enumerate(regions):
+            patch = cropped(pixels, bounds)
+            score, phase = features(patch)
+            if best[region] is None or score > best[region][0]:
+                best[region] = (score, index, source.name, phase, patch.copy())
+    return paths, registrations, best
+
+
+def run(binary, output_dir, images):
+    """Produce one forced CPU Hybrid result with no internal registration or crop."""
+    output_dir.mkdir()
+    output = output_dir / "complete.tif"
+    event_log = output_dir / "events.jsonl"
+    argv = [
+        "taskset", "-c", "0-15", str(binary), "--input", *map(str, images),
+        "--output", str(output), "--cpu", "--method", "hybrid", "--kernel-size", "6",
+        "--pyramid-levels", "8", "--scale-factor", "6", "--slab-size", "40",
+        "--slab-overlap", "4", "--bit-depth", "16",
+    ]
+    env = {
+        **os.environ,
+        "OMP_NUM_THREADS": "16",
+        "RAYON_NUM_THREADS": "16",
+        "PANCAKE_COMPUTE_CACHE_DIR": str(output_dir / "cache"),
+        "CONFORMANCE_EVENTS_PATH": str(event_log),
+    }
+    for name in ("DISPLAY", "WAYLAND_DISPLAY", "PANCAKE_RUNTIME"):
+        env.pop(name, None)
+    with (output_dir / "stdout.txt").open("x") as stdout, (output_dir / "stderr.txt").open("x") as stderr:
+        subprocess.run(argv, env=env, stdout=stdout, stderr=stderr, check=True, timeout=120)
+    (event,) = [json.loads(line) for line in event_log.read_text().splitlines()]
+    if (
+        event["event"] != "stack_complete"
+        or not event["completed"]
+        or event["actual_backend"] != "cpu"
+        or event["runtime"] != "cpu"
+        or event["physical_gpu"]
+        or event["fallback_reason"] is not None
+        or set(event["alignment_transforms"]) != set(map(str, images))
+        or any(transform != IDENTITY for transform in event["alignment_transforms"].values())
+    ):
+        raise ValueError("fixed-input replay did not complete CPU work on the common canvas")
+    pixels = tifffile.imread(output)
+    if pixels.shape != (HEIGHT, WIDTH, 3) or pixels.dtype != np.uint16:
+        raise ValueError("expected native full-canvas RGB16")
+    return pixels, {
+        "argv": argv, "binary_sha256": sha(binary), "tiff_sha256": sha(output),
+        "events_sha256": sha(event_log), "shape": pixels.shape,
+    }
+
+
+def phase_comparison(patch, anchor):
+    """Quantify true-detail response separately from unsigned texture magnitude."""
+    score, phase = features(patch)
+    _, _, _, reference, _ = anchor
+    dot = float(np.dot(phase, reference))
+    output_energy = float(np.dot(phase, phase))
+    source_energy = float(np.dot(reference, reference))
+    if output_energy == 0 or source_energy == 0:
+        raise ValueError("input or fused ROI lacked phase evidence")
+    return {
+        "luma_laplacian_absolute_p90": score,
+        "signed_projection_on_source": dot / source_energy,
+        "signed_phase_correlation": dot / np.sqrt(source_energy * output_energy),
+    }
+
+
+def main():
+    """Run a single fixed 40-image cohort and optionally its exact two-slab tail."""
+    stock, prototype, original_root, destination = [
+        Path(arg).resolve() for arg in sys.argv[1:5]
+    ]
+    end = int(sys.argv[5])
+    if end not in (148, 150) or sha(stock) != STOCK_SHA or sha(prototype) != PROTOTYPE_SHA:
+        raise ValueError("unexpected fixed comparison range or executable identity")
+    images = authenticated_inputs(original_root)
+    maps = pinned_maps(images)
+    regions = [row["source_xywh"] for row in json.loads(
+        (SEALED / "focus-comparison.json").read_bytes()
+    )["focus_regions"]]
+    destination.mkdir()
+    if shutil.disk_usage(destination).free < 15 * 1024**3 + 42 * WIDTH * HEIGHT * 6:
+        raise ValueError("fixed D150 scratch reserve would be exceeded")
+    cv2.setNumThreads(2)
+    prepared, registered, anchors = prepare(
+        destination / "common", images, maps, range(108, end), regions,
+    )
+    stock_pixels, stock_record = run(stock, destination / "stock", prepared)
+    candidate_pixels, candidate_record = run(prototype, destination / "prototype", prepared)
+    verified = [sha(path) for path in prepared]
+    if verified != [row["common_tiff_sha256"] for row in registered]:
+        raise ValueError("a compared product changed common registered input pixels")
+    if authenticated_inputs(original_root) != images:
+        raise ValueError("D150 originals changed during replay")
+    report = {
+        "scope": "fixed registration, real D150 inputs, diagnostic only",
+        "selection": [108, end], "manifest_sha256": MANIFEST_SHA,
+        "reference_events_archive_sha256": sha(SEALED / "raw-paired-runs.tar.gz"),
+        "input_format": "native-canvas genuine RGB16 with one fixed Lanczos4 warp and replicate border",
+        "stock": stock_record, "prototype": candidate_record,
+        "registered_input_unchanged": True, "all_originals_unchanged": True,
+        "registered_frames": registered, "regions": [],
+    }
+    panels = []
+    for bounds, anchor in zip(regions, anchors, strict=True):
+        stock_patch = cropped(stock_pixels, bounds)
+        candidate_patch = cropped(candidate_pixels, bounds)
+        report["regions"].append({
+            "first_canvas_xywh": bounds,
+            "phase_source": {"index": anchor[1], "filename": anchor[2], "detail_p90": anchor[0]},
+            "stock": phase_comparison(stock_patch, anchor),
+            "prototype": phase_comparison(candidate_patch, anchor),
+            "stock_prototype_mae_u16": float(np.abs(
+                stock_patch.astype(np.int32) - candidate_patch.astype(np.int32)
+            ).mean()),
+        })
+        panels.append(np.hstack([anchor[4], stock_patch, candidate_patch]))
+    panel = (np.vstack(panels) // 257).astype(np.uint8)
+    if not cv2.imwrite(str(destination / "focus-phase-panel.png"), cv2.cvtColor(panel, cv2.COLOR_RGB2BGR)):
+        raise ValueError("could not save fixed phase review")
+    (destination / "report.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
+    print(json.dumps(report["regions"], indent=2))
+
+
+if __name__ == "__main__":
+    main()
