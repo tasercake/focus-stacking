@@ -1,0 +1,185 @@
+{
+  "revision": "bc192616ecebad47fef0ced154ca4361c2f0b994",
+  "command": [
+    "uv",
+    "run",
+    "--project",
+    "pancake-conformance",
+    "--frozen",
+    "pancake-conformance",
+    "run",
+    "--target",
+    "/tmp/pancake-worktrees.t3paqgWM/assurance/pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml",
+    "--case",
+    "interface.recovery.close-unsaved",
+    "--no-coverage",
+    "--output",
+    "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/native-profile-bc19261/case"
+  ],
+  "compiled_profile": "dev, Rust LLVM -C instrument-coverage",
+  "descriptor_sha256": "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac",
+  "binaries": {
+    "pancake-cli": "44669bffad858acf64dff77d69714ac1a8bf5eeb676ee46b036571f8241c7491",
+    "pancake-gui": "591c49b4a1100ec4666632eb3ac0f9b45041fba85c41ae5b338679304f2295e4"
+  },
+  "sessions": [
+    {
+      "pid": 308644,
+      "returncode": 0,
+      "forced": false,
+      "status": "clean"
+    }
+  ],
+  "stack_completion_events": [
+    {
+      "actual_backend": "cpu",
+      "alignment_transforms": {
+        "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/native-profile-bc19261/case/cases/interface.recovery.close-unsaved/fixtures/focus/focus/frame_00.png": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/native-profile-bc19261/case/cases/interface.recovery.close-unsaved/fixtures/focus/focus/frame_01.png": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/native-profile-bc19261/case/cases/interface.recovery.close-unsaved/fixtures/focus/focus/frame_02.png": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ]
+      },
+      "completed": true,
+      "device": "AMD Ryzen 9 7950X3D 16-Core Processor",
+      "device_fingerprint": "cpu_x86_64_load-512_f16-chain",
+      "device_pci_address": null,
+      "event": "stack_complete",
+      "fallback_reason": null,
+      "physical_gpu": false,
+      "runtime": "cpu",
+      "sequential_transforms": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ]
+      ]
+    }
+  ],
+  "only_pid_matched_raw": {
+    "pancake-308644-14783798515309643925_0.profraw": {
+      "sha256": "e91edbae73dc62d2f30baa252c6b8de8cd692df409dbb584bef653f5cfe07900",
+      "size": 76808
+    }
+  },
+  "gui_line_contributions": {
+    "crates/pancake-gui/src/delivery/mod.rs": {
+      "count": 62,
+      "covered": 0,
+      "percent": 0
+    },
+    "crates/pancake-gui/src/desktop_menu.rs": {
+      "count": 197,
+      "covered": 0,
+      "percent": 0
+    },
+    "crates/pancake-gui/src/history.rs": {
+      "count": 77,
+      "covered": 42,
+      "percent": 54.54545454545454
+    },
+    "crates/pancake-gui/src/main.rs": {
+      "count": 93,
+      "covered": 64,
+      "percent": 68.81720430107528
+    },
+    "crates/pancake-gui/src/panel/linux.rs": {
+      "count": 119,
+      "covered": 0,
+      "percent": 0
+    },
+    "crates/pancake-gui/src/panel/mod.rs": {
+      "count": 25,
+      "covered": 4,
+      "percent": 16
+    },
+    "crates/pancake-gui/src/panel/pointer.rs": {
+      "count": 81,
+      "covered": 18,
+      "percent": 22.22222222222222
+    },
+    "crates/pancake-gui/src/preferences/mod.rs": {
+      "count": 61,
+      "covered": 27,
+      "percent": 44.26229508196721
+    },
+    "crates/pancake-gui/src/preview.rs": {
+      "count": 79,
+      "covered": 62,
+      "percent": 78.48101265822784
+    },
+    "crates/pancake-gui/src/session.rs": {
+      "count": 774,
+      "covered": 393,
+      "percent": 50.775193798449614
+    },
+    "crates/pancake-gui/src/sources/mod.rs": {
+      "count": 84,
+      "covered": 29,
+      "percent": 34.523809523809526
+    }
+  }
+}

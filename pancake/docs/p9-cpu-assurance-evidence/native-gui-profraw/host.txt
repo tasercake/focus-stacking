@@ -1,0 +1,11 @@
+Linux 6.8.0-147-generic x86_64
+Ubuntu 24.04.5 LTS
+Model name:                              AMD Ryzen 9 7950X3D 16-Core Processor
+NVIDIA GeForce RTX 3090, 580.178.04
+3.24.41
+2.52.0
+uv 0.6.4
+Python 3.12.3
+    Build ID: 5fc4d79498671b752d5a8e7775403154b1758969
+    Build ID: fa3ced4c01a58614e5b33032be02fef2402d8e9a
+a4abf3f639464b5e3647e9db3ecdbd68f464a6890cebd03e844da9f78a04ccfb  /tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gui-env.sh

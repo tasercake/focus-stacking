@@ -230,23 +230,98 @@ def _viewer(step, context, sample, output, scenario_root):
         )
 
 
+def _worker_metadata(ui, status):
+    node = find_node(ui.snapshot(), status["control"])
+    data = json.loads(node["description"])
+    if not isinstance(data, dict):
+        raise TypeError(
+            "native worker status lacks structured acknowledgement evidence"
+        )
+    return data
+
+
+def _cancel_observation(before, after):
+    """Accept the current or latched native acknowledgement from the same job."""
+    generation = before.get("generation")
+    if not generation or after.get("generation") != generation:
+        raise ValueError("native generation changed during cancellation observation")
+    if (
+        before.get("state") != "Running"
+        or before.get("cancel_acknowledged") is not False
+    ):
+        raise ValueError(
+            "cancel requires an active generation without a stale acknowledgement"
+        )
+    state = after.get("state")
+    acknowledged = after.get("cancel_acknowledged") is True
+    if acknowledged and state == "Cancelling":
+        return "native_cancelling_state"
+    if acknowledged and state == "Idle":
+        return "latched_actual_acknowledgement"
+    if state in {"Idle", "Completed", "Failed"}:
+        raise ValueError(
+            f"native worker entered {state} without a cancellation acknowledgement"
+        )
+    if acknowledged:
+        raise ValueError(
+            f"native worker reported cancellation acknowledgement in inconsistent state {state}"
+        )
+    return None
+
+
+def _wait_cancel(ui, status, before, timeout, *, settled=False):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        current = _worker_metadata(ui, status)
+        observed = time.monotonic_ns()
+        kind = _cancel_observation(before, current)
+        if kind and (not settled or current["state"] == "Idle"):
+            return observed, kind, current
+        time.sleep(0.001)
+    raise TimeoutError(
+        "native worker did not expose the requested same-generation cancellation evidence"
+    )
+
+
 def _lifecycle(step, context, sample):
     ui, _, pointer, status = context
     operation = step["operation"]
-    acknowledgements = {"pause": "paused", "cancel": "cancelling"}
-    if operation not in acknowledgements:
+    if operation not in ("pause", "cancel"):
         raise ValueError(f"unknown lifecycle operation: {operation}")
     sample["operation"] = operation
+    before = None
     with _prepare_pointer(pointer, ui, step["input"]) as dispatch:
         _, sample["worker_before"] = _wait_state(ui, status, {"running"}, 10)
+        if operation == "cancel":
+            before = _worker_metadata(ui, status)
+            _cancel_observation(before, before)
+            sample["native_job_before"] = before
         sample["dispatched_ns"] = time.monotonic_ns()
         dispatch()
-    ack, label = _wait_state(ui, status, {acknowledgements[operation]}, 4)
-    sample.update({"acknowledged_ns": ack, "worker_at_acknowledgement": label})
-    settled = ack
-    if operation == "cancel":
-        settled, label = _wait_state(ui, status, {"idle"}, 120)
-    sample.update({"settled_ns": settled, "worker_settled": label})
+    if before is None:
+        ack, label = _wait_state(ui, status, {"paused"}, 4)
+        sample.update(
+            {
+                "acknowledged_ns": ack,
+                "settled_ns": ack,
+                "worker_at_acknowledgement": label,
+                "worker_settled": label,
+                "ack_observation": "native_paused_state",
+            }
+        )
+    else:
+        ack, observed_kind, acknowledged = _wait_cancel(ui, status, before, 4)
+        sample.update(
+            {
+                "acknowledged_ns": ack,
+                "ack_observation": observed_kind,
+                "worker_at_acknowledgement": acknowledged,
+            }
+        )
+        settled, terminal = ack, acknowledged
+        if acknowledged["state"] != "Idle":
+            settled, _, terminal = _wait_cancel(ui, status, before, 120, settled=True)
+        sample.update({"settled_ns": settled, "worker_settled": terminal})
 
 
 def _setup(step, context):
@@ -379,6 +454,7 @@ def collect(args):
         AssertionError,
         OSError,
         RuntimeError,
+        TypeError,
         ValueError,
         subprocess.SubprocessError,
     ) as error:
