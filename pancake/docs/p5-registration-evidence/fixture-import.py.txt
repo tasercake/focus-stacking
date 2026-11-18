@@ -1,0 +1,13 @@
+from pathlib import Path
+import numpy as np
+from pancake_conformance.fixtures import generate_fixture
+from pancake_conformance.validators import read_image
+out = Path("artifacts/p5/oracles").resolve()
+for name in ("translation", "rotation", "similarity", "affine", "breathing", "deep", "deep_nonrepeating"):
+    f = generate_fixture(name, out)
+    for i,p in enumerate(f.paths):
+        data = read_image(p).astype(np.float32)/255
+        data.astype('<f4').tofile(out / name / f"{i}.f32")
+    if "source_transforms" in f.metadata:
+        truth = np.array(f.metadata["source_transforms"],dtype='<f4')
+        truth.tofile(out / name / "expected.f32")
