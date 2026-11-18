@@ -1,0 +1,313 @@
+"""One bounded functional job. It records no elapsed or resource comparison."""
+
+import argparse
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+import numpy as np
+from p10 import (
+    CANDIDATE,
+    ROOT,
+    TARGETS_PATH,
+    _assert_completion,
+    _environment,
+    _gpu_state,
+    _hardware,
+)
+from pancake_conformance.target import TargetSpec
+from protocol import (
+    Campaign,
+    _read_rgb16,
+    corpus,
+    pinned_json,
+    sha256,
+    verify_frames,
+    verify_output,
+)
+
+
+def summary(output):
+    pixels = _read_rgb16(output)
+    sampled = pixels[::16, ::16].astype(np.float32)
+    luma = np.mean(sampled, axis=2)
+    edges = np.abs(np.diff(luma, axis=0))
+    return {
+        "channel_1_50_99_percentiles_u16": np.percentile(
+            sampled, [1, 50, 99], axis=(0, 1)
+        ).tolist(),
+        "mean_adjacent_luma_difference_sampled_u16": float(edges.mean()),
+        "all_zero_pixel_fraction_sampled": float(np.mean(np.all(sampled == 0, axis=2))),
+        "scope": "output structure and descriptive pixel checks, not independent equal-quality review",
+    }
+
+
+def generated_oracle(output, root, campaign):
+    pin = campaign.raw["corpus_evidence"]["T50"]
+    frozen = pinned_json(ROOT / pin["receipt_path"], pin["receipt_sha256"])
+    truth_record = next(
+        item for item in frozen["files"] if item["role"] == "sharp_truth"
+    )
+    truth_path = root / truth_record["name"]
+    if sha256(truth_path) != truth_record["file_sha256"]:
+        raise ValueError("T50 sharp truth byte hash mismatch")
+    truth = _read_rgb16(truth_path)
+    pixels = _read_rgb16(output)
+    y0 = (truth.shape[0] - pixels.shape[0]) // 2
+    x0 = (truth.shape[1] - pixels.shape[1]) // 2
+    # Symmetric crop is the job's normal geometry. Sample the center of each
+    # known focus-depth strip against independently generated sharp truth.
+    regions = []
+    for depth in range(50):
+        center = (2 * depth + 1) * truth.shape[1] // 100
+        if not x0 + 16 <= center <= x0 + pixels.shape[1] - 16:
+            continue
+        y = truth.shape[0] // 2 - 64
+        if not y0 <= y < y + 128 <= y0 + pixels.shape[0]:
+            continue
+        expected = truth[y : y + 128, center - 16 : center + 16].astype(np.float32)
+        candidate = pixels[
+            y - y0 : y - y0 + 128, center - x0 - 16 : center - x0 + 16
+        ].astype(np.float32)
+        gray_truth = expected.mean(axis=2)
+        gray_candidate = candidate.mean(axis=2)
+        truth_detail = np.diff(gray_truth, n=2, axis=0).var()
+        candidate_detail = np.diff(gray_candidate, n=2, axis=0).var()
+        regions.append(
+            {
+                "depth": depth,
+                "truth_roi_xywh": [center - 16, y, 32, 128],
+                "mae_u16": float(np.abs(expected - candidate).mean()),
+                "vertical_second_difference_variance_ratio": float(
+                    candidate_detail / truth_detail
+                )
+                if truth_detail
+                else None,
+            }
+        )
+    total_absolute = 0
+    total_squared = 0.0
+    maximum_absolute = 0
+    changed_samples = 0
+    for start in range(0, pixels.shape[0], 64):
+        stop = min(pixels.shape[0], start + 64)
+        expected = truth[y0 + start : y0 + stop, x0 : x0 + pixels.shape[1]]
+        differences = np.abs(expected.astype(np.int32) - pixels[start:stop])
+        total_absolute += int(differences.sum(dtype=np.uint64))
+        total_squared += float(np.square(differences, dtype=np.float64).sum())
+        maximum_absolute = max(maximum_absolute, int(differences.max()))
+        changed_samples += int(np.count_nonzero(differences))
+    whole = {
+        "compared_samples": int(pixels.size),
+        "mean_absolute_error_u16": total_absolute / pixels.size,
+        "rms_error_u16": float(np.sqrt(total_squared / pixels.size)),
+        "maximum_absolute_error_u16": maximum_absolute,
+        "changed_sample_fraction": changed_samples / pixels.size,
+    }
+    return {
+        "sharp_truth_sha256": truth_record["file_sha256"],
+        "whole_centered_overlap": whole,
+        "assumed_symmetric_crop_origin": [x0, y0],
+        "kind": "generated sharp-truth diagnostic; metrics are descriptive, not P10 equal-quality acceptance",
+        "regions": regions,
+    }
+
+
+def geometry(event, ordered):
+    transforms = event.get("alignment_transforms", {})
+    if set(transforms) != {str(path) for path in ordered}:
+        raise ValueError(
+            "completed event did not account for every ordered source path"
+        )
+    matrices = np.asarray([transforms[str(path)] for path in ordered], dtype=np.float64)
+    if matrices.shape != (len(ordered), 2, 3) or not np.isfinite(matrices).all():
+        raise ValueError("invalid or nonfinite reference-to-source affine evidence")
+    near_identity = (
+        np.max(np.abs(matrices - [[1, 0, 0], [0, 1, 0]]), axis=(1, 2)) <= 1e-6
+    )
+    magnitude = np.linalg.norm(matrices[:, :, 2], axis=1)
+    determinant = np.linalg.det(matrices[:, :, :2])
+    reported = [
+        (path.name, matrix.tolist())
+        for path, matrix, identity in zip(ordered, matrices, near_identity, strict=True)
+        if not identity
+    ]
+    return {
+        "nonidentity_matrices": reported,
+        "matrix_count": len(ordered),
+        "identity_count_at_1e-6": int(near_identity.sum()),
+        "maximum_translation_norm": float(magnitude.max()),
+        "determinant_range": [float(determinant.min()), float(determinant.max())],
+    }
+
+
+def git_blob(revision, path):
+    blob = subprocess.check_output(["git", "show", f"{revision}:{path}"], cwd=ROOT)
+    return hashlib.sha256(blob).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("workload", choices=("D150", "T50", "R50"))
+    parser.add_argument("input_root", type=Path)
+    parser.add_argument("output", type=Path)
+    parser.add_argument("--runtime", choices=("cpu", "wgpu-vulkan"), required=True)
+    parser.add_argument("--gpu-uuid")
+    parser.add_argument("--timeout", type=int, required=True)
+    parser.add_argument("--binary", type=Path, required=True)
+    parser.add_argument("--binary-sha", required=True)
+    parser.add_argument("--target-cwd", type=Path)
+    parser.add_argument("--revision", required=True)
+    args = parser.parse_args()
+    args.output = args.output.resolve()
+    args.output.mkdir(parents=True, exist_ok=False)
+    binary = args.binary.resolve(strict=True)
+    if sha256(binary) != args.binary_sha:
+        raise ValueError("release artifact digest differs from verified candidate")
+    pinned_descriptor = git_blob(args.revision, str(CANDIDATE.relative_to(ROOT)))
+    if sha256(CANDIDATE) != pinned_descriptor:
+        raise ValueError("launch descriptor differs from verified candidate")
+    candidate = TargetSpec.load(CANDIDATE)
+    campaign = Campaign.load(TARGETS_PATH)
+    records, source = corpus(ROOT, campaign, args.workload)
+    spec = next(
+        item for item in campaign.raw["workloads"] if item["id"] == args.workload
+    )
+    ordered = verify_frames(args.input_root, records, spec["frames"])
+    device = "gpu" if args.runtime == "wgpu-vulkan" else "cpu"
+    profile = next(
+        p
+        for p in campaign.profiles(device)
+        if p.workload == args.workload and p.method == "hybrid"
+    )
+    export = args.output / "export.tif"
+    env = _environment(
+        candidate,
+        args.output / "cache",
+        args.output,
+        len(os.sched_getaffinity(0)),
+        args.gpu_uuid,
+        "wgpu" if device == "gpu" else None,
+        True,
+    )
+    settings = profile.options | ({"gpu_id": 0} if device == "gpu" else {})
+    target_argv = [str(binary), *candidate.stack_arguments(ordered, export, settings)]
+    argv = [
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=10s",
+        str(args.timeout),
+        *target_argv,
+    ]
+    host = _hardware(args.gpu_uuid)
+    actual_inputs = [item.get("shape", item.get("decoded_shape")) for item in records]
+    expected_bound = tuple(actual_inputs[0])
+    report = {
+        "purpose": "single functional diagnostic, no elapsed or resource comparison",
+        "profile": profile.key,
+        "expected_runtime": args.runtime,
+        "revision": args.revision,
+        "binary_sha256": args.binary_sha,
+        "cargo_lock_sha256": git_blob(args.revision, "pancake/Cargo.lock"),
+        "descriptor_sha256": pinned_descriptor,
+        "performance_targets_sha256": sha256(TARGETS_PATH),
+        "ordered_input_manifest": source,
+        "input_root": str(args.input_root.resolve()),
+        "input_count": len(ordered),
+        "reference_decoded_canvas": expected_bound,
+        "argv": argv,
+        "target_cwd": str(args.target_cwd.resolve())
+        if args.target_cwd
+        else str(binary.parents[3] / "pancake"),
+        "hardware": host,
+        "benchmark_environment": {
+            key: value
+            for key, value in env.items()
+            if key.startswith(("PANCAKE_", "CONFORMANCE_"))
+        },
+        "status": "incomplete",
+    }
+    try:
+        with (
+            (args.output / "stdout.txt").open("wb") as out,
+            (args.output / "stderr.txt").open("wb") as err,
+        ):
+            process = subprocess.run(
+                argv,
+                cwd=report["target_cwd"],
+                env=env,
+                stdout=out,
+                stderr=err,
+                check=False,
+            )
+        report["returncode"] = process.returncode
+        if process.returncode:
+            last = (
+                (args.output / "stderr.txt")
+                .read_text(errors="replace")
+                .splitlines()[-10:]
+            )
+            raise ValueError(f"release CLI exited {process.returncode}: {last}")
+        report["output"] = verify_output(export, expected_bound)
+        report["descriptive_quality"] = summary(export)
+        if args.workload == "T50":
+            report["generated_sharp_truth"] = generated_oracle(
+                export, args.input_root, campaign
+            )
+        gpu_expected = _gpu_state(args.gpu_uuid) if args.gpu_uuid else None
+        event = _assert_completion(
+            args.output / "events.jsonl",
+            device,
+            args.runtime,
+            gpu_expected["name"] if gpu_expected else None,
+            gpu_expected["pci.bus_id"] if gpu_expected else None,
+        )
+        report["registration"] = geometry(event, ordered)
+        report["observed_runtime"] = {
+            k: event.get(k)
+            for k in ("actual_backend", "runtime", "device", "device_pci_address")
+        }
+        report["status"] = "functional_pass"
+    except (OSError, ValueError, RuntimeError) as error:
+        report["status"] = "functional_fail"
+        report["error"] = str(error)
+    finally:
+        verify_frames(args.input_root, records, spec["frames"])
+        report["inputs_unchanged"] = True
+        report["last_stderr"] = (
+            (args.output / "stderr.txt").read_text(errors="replace").splitlines()[-10:]
+        )
+        for name in ("stdout.txt", "stderr.txt", "events.jsonl"):
+            path = args.output / name
+            if path.is_file():
+                report[name + "_sha256"] = sha256(path)
+        export.unlink(missing_ok=True)
+        shutil.rmtree(args.output / "cache")
+        report["temporary_output_removed"] = not export.exists()
+        (args.output / "receipt.json").write_text(json.dumps(report, indent=2) + "\n")
+    print(
+        json.dumps(
+            {
+                k: report[k]
+                for k in (
+                    "profile",
+                    "status",
+                    "returncode",
+                    "output",
+                    "registration",
+                    "observed_runtime",
+                    "error",
+                )
+                if k in report
+            },
+            indent=2,
+        )
+    )
+    return 0 if report["status"] == "functional_pass" else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

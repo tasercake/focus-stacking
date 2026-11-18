@@ -152,8 +152,8 @@ coordinates must come from independent review of the actual scenario.
   accept `inputs` and an optional lower-case `worker_phase` to wait for.
 - Viewer cases use the exact generated 24 MP T50 source. Use `idle` and
   `loaded` conditions and `source`, `result`, `pan`, `zoom`, and `comparison`
-  actions. The actual native worker status must remain Running around the
-  pixel interval for loaded cases. Setup steps use real controls to start
+  actions. Loaded cases require a worker-confirmed Running decode,
+  registration or fusion stage around the pixel interval. Setup steps use real controls to start
   actual jobs and restore preconditions. Retain at least 200 samples per
   condition, including all required actions.
 - `lifecycle` steps accept `operation` (`pause` or `cancel`) and `input`.
@@ -188,7 +188,7 @@ observations and contribute no passing latency evidence.
 
 - Before implementation, `python -m unittest discover -s qualification/p10-performance -v`
   failed to import the absent protocol.
-- Thirteen focused tests and Ruff passed using the frozen reference environment.
+- Fourteen focused tests and Ruff passed using the frozen reference environment.
   The measurement test invokes a real local child process and verifies that
   the timed boundary reaches its output publication.
 - The pinned ChimpStackr checkout at
