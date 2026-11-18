@@ -67,18 +67,30 @@ profile-bound instrumentation. The merged map reached 5,340/6,475 lines,
 still exited 1. Stable instrumentation supplied no branch map.
 [Native three-case coverage overlay](p9-cpu-assurance-evidence/c1e2cac/native-three-case/README.md).
 
-**The packaged `c1e2cac` Linux release passes all 376 frozen case IDs.**
+An ordinary CPU integration test exercised real native About on the exact
+`fb9c399` application. Its PID- and build-ID-matched profile added 205
+covered lines, 22 functions and 210 regions through the existing exporter.
+The stable strict comparator still exited 1 on uncovered lines. The local
+test prototype remains separate from the integrated suite.
+[Native About coverage evidence](p9-cpu-assurance-evidence/fb9c399/native-about-target/README.md).
+
+**The packaged `fb9c399` Linux release passes all 376 frozen case IDs.**
 The locked workspace build, fast and dependency gates, and rootless Debian
 verification passed. The strict ledger accepted 341 host cases, 34 isolated
-GUI cases and one physical RTX 3090 Vulkan GUI case. All three receipts bind
-the same source, lock, descriptor, frozen contract and packaged executables.
-The exact archive is 69,508,790 bytes with SHA-256
-`c6f39324ea4d9a29fb1a4f33253f6d988f44d1f150622bc94b728975a5f96b64`.
-[Exact package and lane summary](p9-linux-package-evidence/c1e2cac/summary.json).
-[Strict 376-case ledger](p9-linux-package-evidence/c1e2cac/linux-ledger.json.gz).
-[Clean-lineage receipt](p9-linux-package-evidence/c1e2cac/clean-ancestry.json).
+GUI cases and one physical RTX 3090 Vulkan GUI case at PCI `0000:01:00.0`
+with no fallback. All three receipts bind the same source, locks, descriptor,
+frozen contract and packaged executables. The exact archive is 69,508,808
+bytes with SHA-256
+`b8f707ca5812ce2137b49feee2888b50de53825e160aa9ccb0e30f55b02a62de`.
+The rebuilt executable bytes match `c1e2cac`. The qualification adapter
+advances the suite-source digest to
+`ddc59d4d3c77bdfdb36e323020aaf678f41309fd11b0bde673268f05a230e351`,
+and the frozen case roster, descriptor and contract match the earlier replay.
+[Exact package and lane summary](p9-linux-package-evidence/fb9c399/summary.json).
+[Strict 376-case ledger](p9-linux-package-evidence/fb9c399/linux-ledger.json.gz).
+[Clean-lineage receipt](p9-linux-package-evidence/fb9c399/clean-ancestry.json).
 
-The same `c1e2cac` source compiled and linked the native Linux CUDA and HIP
+The `c1e2cac` source compiled and linked the native Linux CUDA and HIP
 CLI profiles. Two CPU and two physical RTX 3090 CUDA cases ran through the
 hashed CUDA release with zero fallback, and all four export digests matched
 the previous native replay. The retained HIP receipt covers compilation
@@ -469,12 +481,6 @@ at native scale. The verdict covers the exact `c1e2cac` package, these
 nine E9 inputs and explicit CPU. The corrected GPU schedule and the
 other 24 logical profiles remain open.
 [Qualified E9 CPU profile](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-c1e2cac/README.md).
-
-Adding the qualification adapter advances the suite-source digest used by
-the strict Linux ledger. The `c1e2cac` 376-case ledger retains its exact
-suite digest. The frozen case roster, descriptor and contract did not
-change. The matched full `fb9c399` Linux package replay remains pending
-at this checkpoint.
 
 The same-source E9 CUDA compiler experiment on the RTX 3090 measured
 452.260 ms warm median for LLVM and 737.959 ms for C++, with exact RGB16
