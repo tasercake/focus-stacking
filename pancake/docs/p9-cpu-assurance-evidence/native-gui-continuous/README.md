@@ -28,11 +28,12 @@ the result.
 
 From the `pancake` directory with the frozen project's prerequisites
 and a private desktop available, run the explicit check with a fresh
-ignored evidence directory.
+evidence directory. Select a short absolute path so GTK can open its private sockets.
 
 ```bash
+coverage_dir="$(mktemp -d /tmp/pcg.XXXXXXXX)"
 bash scripts/check.sh coverage-cpu-gui \
-  --output target/assurance/gui-example \
+  --output "$coverage_dir/run" \
   --case interface.about \
   --case interface.recovery.close-unsaved
 ```

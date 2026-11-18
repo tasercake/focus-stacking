@@ -11,8 +11,9 @@ GPU case and explicit GPU request case belong to their own execution lanes.
 All 33 selected cases passed with zero failures, skips or unsupported cases.
 All 36 GUI processes exited cleanly and produced 2,590,560 bytes of
 individually authenticated raw profiles. Their production events record 22
-completed jobs on the CPU. The 14 CLI comparison profiles are archived
-separately by executable identity and are outside the merged GUI counters.
+completed jobs on the CPU. The raw archive identifies the 14 CLI
+comparison profiles by their executable build ID. The merge uses the GUI
+profiles listed in the capture receipt.
 
 | Coverage scope | Standard CPU | Standard CPU with GUI |
 | --- | ---: | ---: |
