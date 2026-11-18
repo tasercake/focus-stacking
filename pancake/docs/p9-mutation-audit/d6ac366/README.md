@@ -67,6 +67,18 @@ as a separate class for review. Keep the same source scope, test selectors,
 baseline and per-mutant deadlines. The current workflow has no such artifact
 aggregate and did not run this matrix.
 
+The opt-in [local verifier](../../../scripts/verify_mutation_shards.py) checks
+a separately generated full `--list --json` artifact and directories with
+`list.json` and `outcomes.json`, in zero-based shard order. It reconciles the
+ordered expected partitions and exact outcome identities, checks successful
+baselines, rejects survivors and timeouts, and reports compiler-unviable
+outcomes separately. Retain the pinned build/source provenance, per-job exit
+codes and raw compiler diagnostics for the release review.
+
+```bash
+python3 scripts/verify_mutation_shards.py "$records/full.json" "$records"/shard-{00..15}
+```
+
 Reproduce a listing from `pancake` with the pinned tool and the locked local
 registry. Using an empty `shard` array lists the full roster.
 
