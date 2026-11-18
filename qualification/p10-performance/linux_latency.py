@@ -32,6 +32,7 @@ from p10 import (
     _snapshot,
     _write,
 )
+from pancake_conformance.desktop import DesktopLease
 from pancake_conformance.fixtures import generate_fixture
 from pancake_conformance.linux_ui import LinuxUISession
 from pancake_conformance.macos_ui import MacOSUISession, find_node
@@ -421,6 +422,7 @@ def collect(args):
     resources = ExitStack()
     try:
         resources.enter_context(_campaign_lock())
+        resources.enter_context(DesktopLease())
         target, receipt = _gui_target(args.build_receipt)
         physical = scenario.get("physical_wgpu")
         residency = None
