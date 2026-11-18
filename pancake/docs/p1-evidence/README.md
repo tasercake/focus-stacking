@@ -103,3 +103,55 @@ env -u DISPLAY -u WAYLAND_DISPLAY -u DBUS_SESSION_BUS_ADDRESS -u XDG_SESSION_TYP
 [Complete selected-case report](cli-reviewed.json.gz),
 [raw suite provenance](cli-reviewed-provenance.json) and
 [executable, lock and linkage](cli-reviewed-linkage.txt).
+
+## All 25 P1 cases on the decoder-wired release
+
+The locked release from clean `6b38e6a3d80b86eba80e568dbd8a20299b4b18ee`
+passed 25 of 25 selected host cases with zero failed, unsupported or unrun P1
+IDs. Build, tools, host and headless environment match the preceding stage.
+The frozen catalog and 90-file contract audit passed again. The release
+links and launches help without loading a window-system or GPU library.
+The CLI/core graph and canonical Miri inventory checks passed. Canonical
+macOS Miri execution is a separate gate.
+
+Use the preceding release build and replay commands, selecting every P1 ID.
+
+```sh
+jq -r '.cases[] | select(.primary_milestone == "P1") | .id' "$adapter/case-roadmap.json"
+```
+
+The independent check matched each rejection to its expected flag, value,
+input count or offending decoder input. The oversize case reported the size
+limit for all three invocations using CPU, GPU and breathing-alignment options.
+Those invocations ended during decode preflight. The report retains fixture
+requests, input hashes where available, each verdict and elapsed times.
+No P1 rejection published a partial result or a completion event.
+
+- [Original report](cli-p1-all.json.gz)
+- [Raw provenance](cli-p1-all-provenance.json)
+- [Checked diagnostic output](cli-p1-all-diagnostics.txt)
+- [Release build](cli-p1-all-build.txt)
+- [Executable, lock and loaded libraries](cli-p1-all-linkage.txt)
+
+The pre-wiring release at `4da760a` served as a negative control. The frozen
+runner returned 25 reported passes because the five image cases accept
+generic rejection. The semantic check failed on DNG with the diagnostic
+`stack processing is not available in this build`. This control supplies zero
+additional qualifying passes. [Original control report](cli-p1-unwired-control.json.gz),
+[provenance](cli-p1-unwired-control-provenance.json) and
+[semantic failure](cli-p1-unwired-control-diagnostic.txt).
+
+The `fast` gate passed at `6b38e6a` with 40 Python policy tests, locked workspace
+Clippy, private rustdoc, ShellCheck and actionlint. `deps` passed at `4da760a`
+with the same lock and declared dependency graph before decoder wiring.
+[Wired fast log](cli-p1-fast.txt) and [earlier dependency log](cli-p1-earlier-deps.txt).
+
+The exact wired source ran `bash scripts/check.sh coverage-cpu` in the assurance
+worktree. The CPU tests passed and the coverage gate exited 1 with 522/824
+lines, 60/128 functions and 524/893 regions covered. The stable report collects
+no branch data. The P1 milestone remains open for source coverage and the other
+required assurance checks. [Assurance receipts](../p1-assurance-evidence/README.md).
+
+The candidate matches local integration `e1bac3a` across the workspace Cargo
+manifest and lock, source, tests, assurance scripts and frozen conformance
+tree. The candidate's clean worktree supplies the raw run provenance.
