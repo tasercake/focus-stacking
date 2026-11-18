@@ -1,0 +1,171 @@
+"""Collect one unscored, bounded T50 Hybrid pair using the release runner."""
+
+import argparse
+import json
+import os
+import runpy
+import subprocess
+import time
+from contextlib import ExitStack
+from pathlib import Path
+from types import SimpleNamespace
+
+from p10 import (
+    ROOT,
+    TARGETS_PATH,
+    _campaign_lock,
+    _hardware,
+    _opencl_preflight,
+    _prepared_targets,
+    _run_sample,
+    _write,
+)
+from protocol import Campaign, corpus, pinned_json, pixel_metrics, sha256, verify_frames
+from resources import NvidiaMemory
+
+
+def resource_guard(gpu_uuid):
+    """Read the actual case-owned host limit and confirm starting headroom."""
+    unified = Path("/proc/self/cgroup").read_text().strip()
+    if not unified.startswith("0::/"):
+        raise ValueError("the diagnostic requires a Linux cgroup-v2 memory scope")
+    cgroup = Path("/sys/fs/cgroup") / unified.removeprefix("0::/")
+    memory_limit = int((cgroup / "memory.max").read_text())
+    swap_limit = int((cgroup / "memory.swap.max").read_text())
+    if memory_limit != 28 * 1024**3 or swap_limit != 0:
+        raise ValueError("the diagnostic scope requires MemoryMax=28G MemorySwapMax=0")
+    available = next(
+        int(line.split()[1]) * 1024
+        for line in Path("/proc/meminfo").read_text().splitlines()
+        if line.startswith("MemAvailable:")
+    )
+    device_free_mib = int(subprocess.check_output(
+        ["nvidia-smi", "-i", gpu_uuid, "--query-gpu=memory.free",
+         "--format=csv,noheader,nounits"],
+        text=True,
+    ))
+    record = {
+        "cgroup": unified.removeprefix("0::"),
+        "memory_max_bytes": memory_limit,
+        "memory_swap_max_bytes": swap_limit,
+        "initial_host_available_bytes": available,
+        "required_host_available_bytes": 40 * 1024**3,
+        "initial_device_free_mib": device_free_mib,
+        "required_device_free_mib": 8192,
+        "per_job_timeout_seconds": 900,
+    }
+    return record
+
+
+def run(options):
+    """Continue to full sampling only after both exports and their geometry agree."""
+    args = SimpleNamespace(
+        profile="T50.hybrid.gpu",
+        runtime="wgpu-vulkan",
+        gpu_uuid="GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac",
+        reference_gpu_index=0,
+        candidate_gpu_index=0,
+        cuda_library_path=None,
+        threads=len(os.sched_getaffinity(0)),
+        timeout=900,
+        build_receipt=options.build_receipt,
+    )
+    campaign = Campaign.load(TARGETS_PATH)
+    profile = next(item for item in campaign.profiles("gpu") if item.key == args.profile)
+    review = runpy.run_path(str(options.truth_review))
+    output = options.output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    report = {
+        "scope": "one diagnostic pair before any scheduled measurements",
+        "profile": profile.key,
+        "settings": profile.options,
+        "performance_targets_sha256": sha256(TARGETS_PATH),
+        "runner_sha256": sha256(ROOT / "qualification/p10-performance/p10.py"),
+        "truth_review_sha256": sha256(options.truth_review),
+        "diagnostic_sha256": sha256(Path(__file__)),
+        "status": "pending",
+        "jobs": {},
+        "started_at_unix_ns": time.time_ns(),
+    }
+    original = None
+    try:
+        with _campaign_lock(), ExitStack() as context:
+            guard = resource_guard(args.gpu_uuid)
+            report["resource_guard"] = guard
+            if (guard["initial_host_available_bytes"] < guard["required_host_available_bytes"]
+                    or guard["initial_device_free_mib"] < guard["required_device_free_mib"]):
+                raise ValueError("insufficient starting host or GPU headroom")
+            specs, identities = _prepared_targets(args, campaign)
+            candidate = identities["candidate"]
+            if candidate["commit"] != "12f2151c8a198b5209c8f4d506dbd17fd9aaa74f":
+                raise ValueError("candidate source does not match the sealed release")
+            if candidate["binary_sha256"] != (
+                "32caffd65ed785b1883c39ec69cfd726f2a6f836e42c653a6385dacf80267055"
+            ):
+                raise ValueError("candidate binary does not match the sealed default package")
+            records, source = corpus(ROOT, campaign, "T50")
+            frozen = pinned_json(Path(source["path"]), source["sha256"])
+            every_image = [
+                {**item, "path": item["name"], "sha256": item["file_sha256"]}
+                for item in frozen["files"]
+            ]
+            observed = verify_frames(options.input_root, every_image, 52)
+            original = every_image, observed
+            frames = verify_frames(options.input_root, records, 50)
+            if frames != sorted(frames) or frames != observed[:50]:
+                raise ValueError("focus inputs do not follow the frozen CLI order")
+            hardware = _hardware(args.gpu_uuid)
+            hardware["reference_opencl"] = _opencl_preflight(
+                args, specs["reference"], identities["reference"], hardware["gpu"], output,
+            )
+            gpu = NvidiaMemory(args.gpu_uuid)
+            context.callback(gpu.close)
+            report.update(targets=identities, hardware=hardware, corpus=source)
+            _write(output / "pair-report.json", report)
+            bounds = (4000, 6000, 3)
+            exports = {}
+            for target in ("reference", "candidate"):
+                record, path = _run_sample(
+                    profile, ("diagnostic", 1, target), target, specs[target],
+                    identities[target], args, frames, bounds, output, gpu,
+                )
+                report["jobs"][target] = record
+                _write(output / "pair-report.json", report)
+                if not record["valid"]:
+                    raise ValueError(record["invalid_reason"])
+                exports[target] = path
+                geometry = review["geometry"](record["completion"], frames)
+                record["native_geometry"] = geometry
+                record["generated_truth"] = review["generated_oracle"](
+                    path, options.input_root, campaign,
+                )
+                if (record["output"]["shape"] != [3998, 5998, 3]
+                        or geometry["identity_count_at_1e-6"] != 50):
+                    raise ValueError(f"{target} departed from the stationary T50 canvas")
+            report["comparison"] = pixel_metrics(exports["reference"], exports["candidate"], bounds)
+            report["status"] = "functional_pair_completed"
+    except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as error:
+        report.update(status="failed", failure=str(error))
+        raise
+    finally:
+        if original is not None:
+            try:
+                report["all_52_unchanged"] = verify_frames(
+                    options.input_root, original[0], 52,
+                ) == original[1]
+            except (OSError, ValueError) as error:
+                report.update(status="failed", input_verification_error=str(error))
+        if report["status"] == "functional_pair_completed" and not report["all_52_unchanged"]:
+            report.update(status="failed", failure="post-run verification changed the input set")
+        report["finished_at_unix_ns"] = time.time_ns()
+        _write(output / "pair-report.json", report)
+    return 0 if report.get("all_52_unchanged") else 1
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input-root", type=Path, required=True)
+    parser.add_argument("--build-receipt", type=Path, required=True)
+    parser.add_argument("--truth-review", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    raise SystemExit(run(parser.parse_args()))
