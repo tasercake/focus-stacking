@@ -130,9 +130,12 @@ def native_identity():
         tuple(field.strip() for field in line.split(","))
         for line in output.splitlines()
     ]
-    name, uuid, pci, driver = next(
+    selected_nvidia = [
         row for row in native if p10._pci_id(row[2]) == p10._pci_id(GPU_PCI)
-    )
+    ]
+    if len(selected_nvidia) != 1:
+        raise ValueError(f"expected one NVIDIA device at pinned PCI {GPU_PCI}")
+    name, uuid, pci, driver = selected_nvidia[0]
     if uuid != GPU_UUID or "RTX 3090" not in name:
         raise ValueError(
             "target PCI no longer identifies the archived physical RTX 3090"
@@ -430,7 +433,8 @@ def verify(directory, input_root, icd):
     clean_receipt.update(argv=clean_argv, export=verify_output(clean_path, BOUNDS))
     if clean_receipt["export"] != instrumented["export"]:
         raise ValueError(
-            "clean OpenCL CLI did not reproduce the observed file and decoded RGB16 hashes"
+            "clean OpenCL CLI did not reproduce the observed file and decoded RGB16 hashes\n"
+            f"instrumented: {instrumented['export']}\nclean: {clean_receipt['export']}"
         )
     verify_frames(input_root, records, 9)
     return {
@@ -523,6 +527,26 @@ class WitnessControl(unittest.TestCase):
         ):
             with self.assertRaisesRegex(ValueError, "fell back"):
                 check_cli_logs(good_stdout, failure)
+
+    def test_opencl_identity_must_match_archived_uuid_at_physical_pci(self):
+        smi = f"NVIDIA GeForce RTX 3090, {GPU_UUID}, 00000000:01:00.0, 580.178.04\n"
+        opencl = {"name": "NVIDIA GeForce RTX 3090", "uuid": GPU_UUID}
+        with (
+            patch.object(subprocess, "check_output", return_value=smi),
+            patch(f"{__name__}.reference_opencl", return_value=opencl) as selected,
+        ):
+            self.assertEqual(native_identity()["uuid"], GPU_UUID)
+            selected.assert_called_once_with(0)
+            opencl["uuid"] = "GPU-other-device"
+            with self.assertRaisesRegex(ValueError, "same physical RTX"):
+                native_identity()
+        with (
+            patch.object(
+                subprocess, "check_output", return_value=smi.replace("01:00", "02:00")
+            ),
+            self.assertRaisesRegex(ValueError, "pinned PCI"),
+        ):
+            native_identity()
 
     def test_historical_pair_windows_keep_positions_and_rgb16_metrics(self):
         with tempfile.TemporaryDirectory() as temporary:
