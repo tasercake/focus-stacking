@@ -1,5 +1,33 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `e81079d`
+
+The locked default workspace release built both executables at
+`e81079dee4078d7a1149da0f5950aab8c89f8d44`. The fast and dependency checks and
+four packaging tests passed. The exact local archive is
+`artifacts/pancake-packages/linux-e81079d/pancake_0.1.0_amd64.deb` (69,568,056 bytes), with SHA-256
+`8ed6e70d7552140c0257520a07ac2b9fc5f97ff82a5fb3126864df821df4507e`. The tested revision descends from the sanitized
+lineage. A complete Git object-membership check confirmed the excluded
+opaque object is unreachable from the tested revision.
+[Build, hardware and source receipts](e81079d/summary.json).
+[Ancestry verification](e81079d/clean-ancestry.json).
+[Rootless package verification](e81079d/package-verification.json).
+
+Rootless extraction verified both executable hashes, linked native libraries,
+the desktop entry, CLI help and archived source notices. The extracted
+binaries passed all 376 frozen case IDs with matching source, contract,
+descriptor and lock receipts. The strict ledger accepted 341 host cases,
+34 isolated GUI cases and the separate physical RTX 3090 GUI case on wgpu
+Vulkan. The raw reports remain under `artifacts/p9-e81079d/{h,g,p}`.
+The frozen case contract, descriptor and suite digest match `fb9c399`.
+The build and replay bind the later dual-scan and spectral LUT product to
+its exact source, package and executable hashes.
+This archive uses the historical Linux packaging recipe. The later
+native LLVM notice packaging requires its own receipt.
+[Source and roster preflight](e81079d/source-contract-preflight.json).
+Earlier package and performance evidence retains its recorded revision.
+[Strict aggregate ledger](e81079d/linux-ledger.json.gz).
+
 ## Integrated Linux package candidate `fb9c399`
 
 The locked default workspace release built both executables at
