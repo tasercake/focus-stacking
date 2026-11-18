@@ -28,7 +28,7 @@ The control comparison must recover a supported nonidentity alternative at `64鈫
 
 The prior owner removed the authenticated archive and all nine originals. The new `D03` download is exactly 53,459,291 bytes before extraction and the 11 verified originals total 3,582,818 bytes. ZIP and originals can temporarily coexist at 57,042,109 bytes. Use the exact ordered entries and SHA-256 values in `plan.json`. The frozen manifest, source revision, rights, archive digest and download limit are locked there. The manifest describes the intended stage. [Previous cleanup](../witness-batching/real-cleanup.json).
 
-`anchor_skip_trial.py prepare` validates the exact preregistration and seven pinned files. It generates an exclusive stage containing a copy of the old bounded acquisition with an eleven-record guard and a CPU probe that uses the existing Rust decode, thumbnail and estimator functions. The original scripts stay pinned. `verify-inputs` checks the exact order, canonical owned paths, byte counts and SHA-256. `score` reuses the bilateral and independent native tracker, rehashes the originals after scoring and emits an optional packed input list. Edges without three actual distinct maps stay visible as unavailable for the fixed packed implementation. The packed control patch changes the diagnostic input roster and omits repeated timings. The original serial and packed moments keep their bit comparisons. [Existing bounded acquisition](../motion-admission/acquire-probe.py.txt) 路 [Existing product probe](../motion-admission/probe.rs.txt) 路 [Pinned overlay](../witness-batching/real-overlay.patch.gz).
+`anchor_skip_trial.py prepare` validates the exact preregistration and seven pinned files. It generates an exclusive stage containing a copy of the old bounded acquisition with an eleven-record guard and a CPU probe that uses the existing Rust decode, thumbnail and estimator functions. The original scripts stay pinned. `verify-inputs` checks the exact order, canonical owned paths, byte counts and SHA-256. `score` reuses the bilateral and independent native tracker, rehashes the originals after scoring and emits an optional packed input list. Edges without three actual distinct maps stay visible as unavailable for the fixed packed implementation. The packed control patch changes the diagnostic input roster and omits repeated timings. The original serial and packed moments keep their bit comparisons. A three-map edge with zero common bidirectional cells records `no_common_bidirectional_cells` and zero dispatches, then the scorer continues through the remaining edges. [Existing bounded acquisition](../motion-admission/acquire-probe.py.txt) 路 [Existing product probe](../motion-admission/probe.rs.txt) 路 [Pinned overlay](../witness-batching/real-overlay.patch.gz).
 
 The following commands are for the later authorized trial from a clean review checkout. Use the exact reference Python with OpenCV 4.14.0 and the granted CPU list. Build the case-owned example as a locked debug target before acquiring any data.
 
@@ -73,12 +73,19 @@ jq -e '.controls.status == "controls_reproduced"' "$scratch/native-holdouts.json
 jq -e '.results | length > 0' "$scratch/packed-directions.json"
 archived="$PWD/pancake/docs/d150-geometry-audit/witness-batching/real-overlay.patch.gz"
 control="$folder/packed-control.patch.gz"
+zero_overlap="$folder/packed-zero-overlap.patch.gz"
 python3 "$trial" --plan "$plan" verify-inputs
 (
   set -e -o pipefail
   gzip -dc "$archived" | git apply
   if ! gzip -dc "$control" | git apply; then gzip -dc "$archived" | git apply -R; exit 1; fi
+  if ! gzip -dc "$zero_overlap" | git apply; then
+    gzip -dc "$control" | git apply -R
+    gzip -dc "$archived" | git apply -R
+    exit 1
+  fi
   cleanup() {
+    gzip -dc "$zero_overlap" | git -C "$repo" apply -R
     gzip -dc "$control" | git -C "$repo" apply -R
     gzip -dc "$archived" | git -C "$repo" apply -R
   }
