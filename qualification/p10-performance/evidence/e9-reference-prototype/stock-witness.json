@@ -1,0 +1,30 @@
+{
+  "source": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "cv2": "4.14.0",
+  "numpy": "2.5.4",
+  "cpus": [
+    14,
+    15
+  ],
+  "stock_rgb_red": [
+    255.0,
+    0.0,
+    1.650687225795977e-10
+  ],
+  "stock_rgb_green": [
+    0.0,
+    255.0,
+    1.650687225795977e-10
+  ],
+  "independent_equal_mean_rgb_red": [
+    85,
+    0,
+    85
+  ],
+  "independent_equal_mean_rgb_green": [
+    0,
+    85,
+    85
+  ]
+}

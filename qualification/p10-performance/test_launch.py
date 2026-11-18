@@ -110,12 +110,23 @@ class LaunchContracts(unittest.TestCase):
         r50 = _reference_launch(target, python, "R50.hybrid.cpu")
         self.assertEqual(r50["command"], [str(python), str(R50_REFERENCE)])
         self.assertEqual(r50["raw_ingest"]["sha256"], sha256(R50_REFERENCE))
-        for profile in ("T50.hybrid.cpu", "D150.hybrid.cpu", "E9.exposure_fusion.gpu"):
+        for profile in ("T50.hybrid.cpu", "D150.hybrid.cpu"):
             with self.subTest(profile=profile):
                 self.assertEqual(
                     _reference_launch(target, python, profile),
                     {"command": target.command("cli", python=python)},
                 )
+
+    def test_e9_selects_hash_bound_equal_final_combiner_for_both_devices(self):
+        target = TargetSpec.load(REFERENCE)
+        interpreter = Path("/reference/python")
+        launcher = ADAPTERS / "pancake/e9_reference.py"
+        for device in ("cpu", "gpu"):
+            with self.subTest(device=device):
+                result = _reference_launch(target, interpreter, f"E9.exposure_fusion.{device}")
+                self.assertEqual(result["command"], [str(interpreter), str(launcher)])
+                self.assertEqual(result["exposure_combiner"]["sha256"], sha256(launcher))
+                self.assertEqual(result["exposure_combiner"]["policy"], "equal-final-batch-mean-v1")
 
     def test_reference_profiler_is_absent_from_timed_environment(self):
         with tempfile.TemporaryDirectory() as temporary:

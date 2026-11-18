@@ -34,6 +34,8 @@ TARGETS_PATH = ROOT / "pancake/docs/performance-targets.json"
 ADAPTERS = ROOT / "pancake-conformance/src/pancake_conformance/adapters"
 REFERENCE = ADAPTERS / "chimpstackr_reference/chimpstackr.toml"
 R50_REFERENCE = ADAPTERS / "pancake/cr3_reference.py"
+E9_REFERENCE = ADAPTERS / "pancake/e9_reference.py"
+E9_PROFILES = {"E9.exposure_fusion.cpu", "E9.exposure_fusion.gpu"}
 CANDIDATE = ADAPTERS / "pancake/pancake.toml"
 RUNTIMES = {"cpu": None, "wgpu-vulkan": "wgpu", "cuda": "cuda"}
 
@@ -131,7 +133,16 @@ def prepare_candidate(options):
 
 
 def _reference_launch(target, interpreter, profile_key):
-    """Use the camera-corrected launcher only for the R50 RAW workload."""
+    """Bind the scoped reference launcher for the frozen R50 or E9 profile."""
+    if profile_key in E9_PROFILES:
+        return {
+            "command": [str(interpreter), str(E9_REFERENCE)],
+            "exposure_combiner": {
+                "path": str(E9_REFERENCE.relative_to(ROOT)),
+                "sha256": sha256(E9_REFERENCE),
+                "policy": "equal-final-batch-mean-v1",
+            },
+        }
     if profile_key.partition(".")[0] != "R50":
         return {"command": target.command("cli", python=interpreter)}
     return {
@@ -151,6 +162,8 @@ def _prepared_targets(options, campaign):
     )
     if options.profile.partition(".")[0] == "R50":
         _require_clean(ROOT, str(R50_REFERENCE))
+    if options.profile in E9_PROFILES:
+        _require_clean(ROOT, str(E9_REFERENCE))
     _require_clean(reference.root)
     expected_reference = _snapshot(reference, ROOT / lock_pin["runtime_lock_path"])
     pinned_reference = {

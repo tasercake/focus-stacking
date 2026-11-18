@@ -1,0 +1,436 @@
+{
+  "reference_source": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "reference_launcher_sha256": "47f2c63bfc635e53e886e9bbd6b66944a95f97c719fad26ed88f6c222594cb94",
+  "reference_descriptor_sha256": "e3e951b674bc0103f267575a99533cc33ead40e2af56671766f4fc71f3f12b76",
+  "reference_lock_sha256": "fda57ac5eea063aebcc278eb57a90228e6da32fe2d8f67d7025ac367f4b51036",
+  "frozen_targets_sha256": "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+  "cpu_affinity": [
+    14,
+    15
+  ],
+  "diagnostic_only": true,
+  "profile": "E9.exposure_fusion.cpu",
+  "settings": {
+    "device": "cpu",
+    "method": "exposure_fusion",
+    "align": true,
+    "alignment_mode": "euclidean",
+    "alignment_reference": "first",
+    "kernel_size": 6,
+    "pyramid_levels": 8,
+    "scale_factor": 6,
+    "slab_size": 0,
+    "slab_overlap": 0,
+    "bit_depth": 16,
+    "auto": false,
+    "auto_crop": true,
+    "quality_report": false
+  },
+  "reference": {
+    "argv": [
+      "e9_reference.py",
+      "--input",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0163.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0164.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0165.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0166.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0167.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0168.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0169.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0170.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0171.png",
+      "--output",
+      "/tmp/e9-reference-cpu-oracle-cvdia74s/result.tif",
+      "--cpu",
+      "--method",
+      "exposure_fusion",
+      "--align",
+      "--alignment-mode",
+      "euclidean",
+      "--alignment-ref",
+      "first",
+      "--kernel-size",
+      "6",
+      "--pyramid-levels",
+      "8",
+      "--scale-factor",
+      "6",
+      "--slab-size",
+      "0",
+      "--slab-overlap",
+      "0",
+      "--bit-depth",
+      "16",
+      "--auto-crop"
+    ],
+    "source_hashes_unchanged": [
+      "65bef59ae2cffaac5a0401780c884fc1f0cb87c3fb6ba7057213bbb03b775f9d",
+      "37094f4247a7e5cac3af1876137f42c88263ace0d075d99daec7b1e796e33ad0",
+      "8582dc34b2035c4daafc5784a9f7191a6aff3161a7fd54b4d493c45145d6a8e6",
+      "5fc9ade7715c0110ec5b4d18777ce2718c2f70946fa23833222b98b425b2ca7c",
+      "530a91ac82e4406acc23913088efb0ab0d056e686345088e41f60e4fc6176f60",
+      "5c7ed4b5bba42b52c93eeaaf462b1531717d1abd43938445a1e6bea9c19c1ae3",
+      "4f26850b1aee4fe40ab0f060fc24568f54e637d9b5158b74c4a99a865c991e35",
+      "e20b37e52a492042647c15edb5e9f45990e5bd585f38d1fc14282e95752597da",
+      "029ae94dfcc2d105a2ee2f91e5d535820c00e9e73c6b4bdf7b0ba690df670c32"
+    ],
+    "source_frame_count": 9,
+    "aligned_nonreference_frames": 8,
+    "pinned_multisample_batches": [
+      4,
+      4
+    ],
+    "singleton_frames": 1,
+    "partial_float32_bgr_pixel_hashes": [
+      "9e3e1df1333826df4d91561c6d3ab69b34ac65750d947fb680cfdbb2884d9726",
+      "1f7d41b89fdf57a477b88f1b6628c1ae4460ff26eca77356f8a620a2b9145aaf",
+      "aedf5fe7816d22801f20e3f0dc51b70a286db1f9147caff041009234500769de"
+    ],
+    "mean_max_float32_vs_float64_abs_error": 1.9073486328125e-05,
+    "crop_top_bottom_left_right": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "alignment_transforms": {
+      "DSC_0163.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0164.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0165.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0166.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0167.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0168.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0169.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0170.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0171.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    "export": {
+      "shape": [
+        337,
+        510,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "e0e479e0a2314dd615e190a6051c669f6689bd23dc7803cfdb4ecbcfd16f90f7",
+      "pixel_sha256": "99730d98e77d47221cb857a2de54245d914333329e634e1b8d332366d1b126ac",
+      "bytes": 1064222,
+      "minimum": 275,
+      "maximum": 65535
+    },
+    "independent_bgr_to_rgb_export_matches": true,
+    "device": "Device: CPU",
+    "reference_errors_or_warnings": []
+  },
+  "package_sha256": "c6f39324ea4d9a29fb1a4f33253f6d988f44d1f150622bc94b728975a5f96b64",
+  "corpus": {
+    "source": {
+      "id": "D28",
+      "name": "Waterloo MEF subjective database",
+      "primary_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+      "rights_evidence": "Explicit creator reuse/attribution terms",
+      "revision": null,
+      "selected_downloads": {
+        "evaluation_domain": "exposure_fusion_only",
+        "files": [
+          {
+            "path": "MEFDatabase.rar",
+            "sha256": "02939e5eb63d0536793e467848c9381e41c71ca1642b9f0291e2fc0843744242",
+            "size": 69869523,
+            "url": "https://ivc.uwaterloo.ca/database/MEF/MEFDatabase.rar"
+          }
+        ],
+        "id": "D28",
+        "layout": "exposure_stacks",
+        "link_pattern": "(?i)\\.(zip|rar|mat)(\\?|$)",
+        "name": "Waterloo MEF subjective database",
+        "original_split": "No original independent split verified",
+        "page_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+        "primary_url": "https://ivc.uwaterloo.ca/database/MEF/MEF-Database.html",
+        "provider": "files",
+        "reference_semantics": "MOS 1 to 10; exposure quality only",
+        "reference_type": "human_MOS",
+        "rights_evidence": "Explicit creator reuse/attribution terms",
+        "selection": ".bokehforge/state/download-plan.json",
+        "status": "available",
+        "transfer": "srgb_assumed"
+      }
+    },
+    "encoding": "Native photographic 8-bit images; no resize, replication, or precision promotion",
+    "path": "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json",
+    "sha256": "6d417c9c00866755bdbc8e2fafc1421de8414e1ea9e75d2cfd7e96e2161a89ac"
+  },
+  "candidate": {
+    "argv": [
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/package/usr/bin/pancake-cli",
+      "--input",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0163.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0164.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0165.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0166.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0167.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0168.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0169.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0170.png",
+      "/tmp/pancake-worktrees.t3paqgWM/e9-equal-reference/artifacts/e9-equal-reference/real/input/datasets/.bokehforge/work/D28/MEFDatabase-02939e5eb63d/MEFDatabase/source image sequences/Balloons_Erik Reinhard/DSC_0171.png",
+      "--output",
+      "/tmp/e9-reference-cpu-oracle-cvdia74s/candidate.tif",
+      "--cpu",
+      "--method",
+      "exposure_fusion",
+      "--align",
+      "--alignment-mode",
+      "euclidean",
+      "--alignment-ref",
+      "first",
+      "--kernel-size",
+      "6",
+      "--pyramid-levels",
+      "8",
+      "--scale-factor",
+      "6",
+      "--slab-size",
+      "0",
+      "--slab-overlap",
+      "0",
+      "--bit-depth",
+      "16",
+      "--auto-crop"
+    ],
+    "source": "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb",
+    "binary_sha256": "a69427103f9a1ef20ce576269feeceffab58aff7944f4b5cd08be2b11220af33",
+    "cargo_lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+    "device": "AMD Ryzen 9 7950X3D 16-Core Processor",
+    "actual_runtime": "cpu",
+    "events_sha256": "1ba552343f347bea47447fbba4b534d948f7ed87e77ae5b3eb8bc7aaf2baa3a3",
+    "alignment_transforms": {
+      "DSC_0163.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0164.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0165.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0166.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0167.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0168.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0169.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0170.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "DSC_0171.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    "export": {
+      "shape": [
+        337,
+        510,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "e0365735dcf4b39bb65afa9187648935ca710ffc62340d5f9e9cff1ad4324528",
+      "pixel_sha256": "93baae1566df73152da06b6aa4753ff94c9c819191b84db4556ce1f9573bbed1",
+      "bytes": 1031446,
+      "minimum": 0,
+      "maximum": 65535
+    },
+    "warnings": [],
+    "same_first_reference_grid_pixels": {
+      "status": "decoded_pair",
+      "mean_absolute_u16": 510.170555264638,
+      "maximum_absolute_u16": 4999,
+      "rms_u16": 634.8977988435901,
+      "changed_sample_fraction": 0.9980644285409515
+    }
+  }
+}
