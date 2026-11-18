@@ -36,3 +36,5 @@ including a 395.75-second cold baseline build and 6.63-second baseline test
 run. The working target occupied 7,331,131,392 allocated bytes after the
 run. The full P9 mutation gate remains open.
 [Replay command](run-historical-ten.sh.txt) · [Native reconciliation](reconcile-native.py.txt).
+
+[Next complete CPU shard projection](full-shard-projection.md).
