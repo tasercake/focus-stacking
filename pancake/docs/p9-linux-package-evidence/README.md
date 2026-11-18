@@ -1,5 +1,35 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `0a9ae85`
+
+The locked default workspace release built both executables at
+`0a9ae85b88519a795e3b6ba90860c3b3e664bcaa`. The fast and dependency checks and
+nine packaging tests passed. The exact local archive is
+`artifacts/pancake-packages/linux-0a9ae85/pancake_0.1.0_amd64.deb` (69,494,276 bytes), with SHA-256
+`c3516a65762b58889858857c8163744e86e82c9427a953730c0450580c5cc4c4`. The tested revision descends from the sanitized
+lineage. A complete Git object-membership check confirmed the excluded
+opaque object is unreachable from the tested revision.
+[Build, hardware and source receipts](0a9ae85/summary.json).
+[Ancestry verification](0a9ae85/clean-ancestry.json).
+[Rootless package verification](0a9ae85/package-verification.json).
+
+Rootless extraction verified both executable hashes, linked native libraries,
+the desktop entry, CLI help and archived source notices. The extracted
+binaries passed all 376 frozen case IDs with matching source, contract,
+descriptor and lock receipts. The strict ledger accepted 341 host cases,
+34 isolated GUI cases and the separate physical RTX 3090 GUI case on wgpu
+Vulkan. The raw reports remain under `artifacts/p9-0a9ae85/{h,g,p}`.
+The frozen case contract, descriptor and suite digest match `e81079d`.
+The locked build and replay bind the selected Exposure and typed RAW changes to
+this exact package and executable hashes. Rootless extraction verified the
+shared first-party GPL notice and all five native LLVM files. The LLVM receipt
+binds 112 static archive inputs and verified native object membership to the
+same release binaries.
+[Exact native LLVM build receipt](0a9ae85/llvm-build-provenance.json.gz).
+[Source and roster preflight](0a9ae85/source-contract-preflight.json).
+Earlier package and performance evidence retains its recorded revision.
+[Strict aggregate ledger](0a9ae85/linux-ledger.json.gz).
+
 ## Integrated Linux package candidate `e81079d`
 
 The locked default workspace release built both executables at
