@@ -106,3 +106,7 @@ Preserve the exact binaries, commands, environment, exit codes, stage hashes and
 ## Adapter verification
 
 The old synthetic screen admitted the 0.75 px rival and failed the new abstention witness. The new screen passed all seven native-render and identity controls. The generated product probe passed the locked offline debug check. The pinned serial-versus-packed native CPU test preserved its exact decisions after applying both diagnostic overlays. The real edges and inputs remain unrun. [Verification receipt](adapter-verification.json) · [Raw logs and generated controls](adapter-verification.tar.gz).
+
+## Empty common support
+
+The exact 384×288 diagnostic grid has no common cell for the synthetic three-map comparison containing the inverse of `0.953 y − 124`. The old path stopped the report with the one-to-54-record error. The new diagnostic guard records an unresolved edge with zero dispatches and continues. Both native synthetic tests pass. The nine-cell neighbor reproduces all 540 serial/packed moment bits and its complete report is byte-identical before and after the guard. The same result follows the empty edge in the new run. The base overlay, packed kernel, fixed grid and preregistration retain their earlier hashes. [Native proof](zero-overlap-verification.json) · [Raw red and green](zero-overlap-verification.tar.gz).
