@@ -299,7 +299,17 @@ def _cache_inventory(cache):
     return {"files": len(files), "bytes": sum(entry.stat().st_size for entry in files)}
 
 
-def _environment(target, cache, artifact_dir, threads, gpu_uuid, runtime, diagnostics):
+def _environment(
+    target,
+    cache,
+    artifact_dir,
+    threads,
+    gpu_uuid,
+    runtime,
+    diagnostics,
+    *,
+    cuda_library_path=None,
+):
     # Start without coverage, injected Python code, arbitrary device overrides or user caches.
     keys = {
         "PATH",
@@ -341,6 +351,8 @@ def _environment(target, cache, artifact_dir, threads, gpu_uuid, runtime, diagno
         env["CUDA_VISIBLE_DEVICES"] = gpu_uuid
     if runtime:
         env["PANCAKE_RUNTIME"] = runtime
+    if runtime == "cuda" and cuda_library_path is not None:
+        env["LD_LIBRARY_PATH"] = str(cuda_library_path.resolve(strict=True))
     if diagnostics:
         events = artifact_dir / "events.jsonl"
         hooks = target.adapter_hooks()
@@ -467,7 +479,14 @@ def _run_sample(
     path = case / "complete.tif"
     runtime = RUNTIMES[args.runtime] if name == "candidate" else None
     env = _environment(
-        spec, cache, case, args.threads, args.gpu_uuid, runtime, kind == "diagnostic"
+        spec,
+        cache,
+        case,
+        args.threads,
+        args.gpu_uuid,
+        runtime,
+        kind == "diagnostic",
+        cuda_library_path=args.cuda_library_path,
     )
     command = (
         identity["command"]
@@ -566,6 +585,12 @@ def run_profile(args):
     if args.runtime == "cuda" and args.candidate_gpu_index != 0:
         raise ValueError(
             "the explicitly selected CUDA UUID is device index 0 inside the benchmark process"
+        )
+    if args.cuda_library_path is not None and (
+        args.runtime != "cuda" or not args.cuda_library_path.is_dir()
+    ):
+        raise ValueError(
+            "--cuda-library-path requires a directory and the cuda runtime"
         )
     if sys.platform != "linux":
         raise ValueError("Linux process counters required for this campaign")
@@ -778,6 +803,11 @@ def main():
     run.add_argument("--gpu-uuid")
     run.add_argument("--reference-gpu-index", type=int, default=0)
     run.add_argument("--candidate-gpu-index", type=int, default=0)
+    run.add_argument(
+        "--cuda-library-path",
+        type=Path,
+        help="Toolkit library directory for the CUDA candidate child",
+    )
     run.add_argument(
         "--keep-review-images",
         action="store_true",

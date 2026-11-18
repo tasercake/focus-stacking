@@ -20,6 +20,40 @@ REFERENCE = ADAPTERS / "chimpstackr_reference/chimpstackr.toml"
 
 
 class LaunchContracts(unittest.TestCase):
+    def test_cuda_library_path_leaves_the_reference_loader_unchanged(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            target = TargetSpec.load(REFERENCE)
+            cuda = root / "cuda-libraries"
+            cuda.mkdir()
+            candidate = _environment(
+                target,
+                root / "candidate",
+                root,
+                8,
+                None,
+                "cuda",
+                False,
+                cuda_library_path=cuda,
+            )
+            reference = _environment(
+                target,
+                root / "reference",
+                root,
+                8,
+                None,
+                None,
+                False,
+                cuda_library_path=cuda,
+            )
+            baseline = _environment(
+                target, root / "baseline", root, 8, None, None, False
+            )
+            self.assertEqual(candidate["LD_LIBRARY_PATH"], str(cuda))
+            self.assertEqual(
+                reference.get("LD_LIBRARY_PATH"), baseline.get("LD_LIBRARY_PATH")
+            )
+
     def test_complete_pair_remains_available_after_a_numeric_miss(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
