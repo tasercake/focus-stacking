@@ -21,9 +21,15 @@ ordinary work includes the authorized cleanup of R50 scratch. Available host
 memory was 46,441,680 KiB at entry and 44,957,144 KiB at exit. The shared lock
 covered the complete generation. No application or GPU benchmark ran here.
 
-The [stage receipt](shared-stage.json) identifies the read-only corpus for
-the packaged 400-event viewer and matched full-product diagnostic. Each
-borrower verifies the same input manifest and releases its reads
-before the owner authenticates cleanup. [Preflight](prepared-stage.json) ·
-[Complete encoded and decoded records](materialization.json.gz) ·
+The [stage receipt](shared-stage.json) records the temporary corpus used by
+the matched full-product Hybrid pair, the packaged 400-event viewer, and the
+full-stack 80-event loaded attribution trace. All three terminal receipts
+identify this materialization and verify the source inputs after use. The
+two borrowers released all reads. The owner authenticated the directory
+and rehashed every file before removing all 52 TIFFs and 2,775,174,405 bytes
+at 20:52:47 SGT. No staged TIFF remains.
+[Matched role proofs](released-borrower-roles.json) ·
+[Cleanup summary](cleanup-summary.json) · [Authenticated cleanup](cleanup.json.gz)
+
+[Preflight](prepared-stage.json) · [Complete encoded and decoded records](materialization.json.gz) ·
 [Exact command, resource logs and ownership](raw-stage.tar.gz)
