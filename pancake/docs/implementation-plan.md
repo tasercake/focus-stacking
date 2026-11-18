@@ -51,6 +51,21 @@ only three E9 trace evidence files. Product sources, test sources and
 locks match. Retained runtime receipts still identify their original
 tested revisions and binaries.
 
+The exact combined `c1e2cac` source passed the unchanged Linux CPU ASan and
+TSan gates. Each ran 146 passing tests across 19 groups with no diagnostics.
+The same 146 tests passed under stable CPU coverage. The strict coverage
+comparator exited 1 with 4,658 of 6,475 required lines covered. Stable
+instrumentation supplied no branch map. The earlier nightly coverage
+verdict retains its separate source pin.
+[Exact combined ASan](p9-cpu-assurance-evidence/c1e2cac/address/README.md).
+[Exact combined TSan](p9-tsan-audit/integrated-c1e2cac/README.md).
+[Exact stable CPU coverage](p9-cpu-assurance-evidence/c1e2cac/stable/README.md).
+
+The same-source Debian release built and passed rootless verification.
+Its fast and dependency gates passed. The host lane passed 341 cases and
+the physical RTX Vulkan lane passed one. The isolated GUI lane and strict
+aggregate remain pending at this checkpoint.
+
 **The packaged `8694b55` Linux release passes all 376 case IDs.** The strict
 ledger matched 341 host, 34 isolated GUI and one physical RTX 3090 Vulkan
 GUI case to the exact locked source and extracted Debian binaries. The
@@ -243,6 +258,23 @@ launcher exited 1 after the shutdown wait timed out. This verifies API
 transport and leaves loaded queue attribution and clean shutdown open.
 [Direct Vulkan transport smoke](p10-vulkan-direct-smoke-evidence/287828a/README.md).
 
+The exact packaged `8694b55` GUI passed idle P95 at 23.811137 ms and
+missed loaded P95 at 59.597912 ms against 33 ms. It completed all 400
+ordered events, with 1,120 independently validated pixel patches and 33
+loaded events over the limit. A separate 12-input instrumented observation
+verified Vulkan API capture during load. The frozen viewer result remains
+the full uninstrumented package run, and the combined lifecycle campaign
+remains open.
+[Exact `8694b55` viewer replay](p10-viewer-package-evidence/8694b55/README.md).
+[Scoped loaded Vulkan trace](p10-vulkan-loaded-trace-evidence/8694b55/README.md).
+
+The later retained-result trace kept 200 idle and 80 loaded inputs and
+verified all 784 observed pixel patches. Four late transitions showed
+71.6–100.7 ms between Vulkan submit return and present entry alongside
+long semaphore waits on another thread. The trace establishes this host
+interval. The responsible Rust lock remains unverified.
+[Instrumented retained-result attribution](p10-vulkan-retained-result-evidence/8694b55/README.md).
+
 ### Benchmark baselines and scoped follow-ups
 
 **The packaged `12f2151` Linux release passes all 376 case IDs.** The
@@ -343,19 +375,27 @@ combined package replay remain open.
 
 At the packaged `12f2151` CLI, the aligned real E9 comparison completed 17
 launches per application in each CPU and physical NVIDIA lane. CPU warm,
-cold and peak RSS ratios against the reference were 0.4604, 0.0628 and 0.3188,
-meeting their numeric limits. Vulkan/OpenCL warm and RSS ratios of 0.7050
-and 0.7199 missed their 0.50 limits. The cold ratio of 0.0952 met its 1.00
-limit. GPU-memory sampling gaps and cross-application output-quality
-alignment remain open.
+cold and peak RSS ratios against the historical reference were 0.4604,
+0.0628 and 0.3188. Vulkan/OpenCL warm, cold and RSS ratios were 0.7050,
+0.0952 and 0.7199. GPU-memory sampling gaps and cross-application
+output-quality alignment remain open.
 [Exact E9 measurement and quality witnesses](../../qualification/p10-performance/evidence/integrated-e9-12f2151/README.md).
 
 The separate `12f2151` native CUDA release completed the matched real E9
-campaign on the same RTX 3090. The CUDA/OpenCL warm ratio of 0.5634 missed
-the 0.50 limit. Cold and peak RSS ratios of 0.0844 and 0.4252 met their limits.
-The candidate GPU-memory traces exceeded the required sampling interval, and
-equal output quality remains open.
+campaign on the same RTX 3090. The historical CUDA/OpenCL warm, cold and
+peak RSS ratios were 0.5634, 0.0844 and 0.4252. Candidate GPU-memory traces
+exceeded the required sampling interval, and equal output quality remains
+open.
 [Native CUDA E9 measurement](../../qualification/p10-performance/evidence/integrated-e9-cuda-12f2151/README.md).
+
+The completed-job evidence inventory covers 26 frozen profiles. None has
+passed every gate. The historical E9 CPU, Vulkan and CUDA schedules used a
+reference that reran the legacy exposure combiner over batch outputs. The
+frozen contract requires equal averaging of the batch outputs. Those runs
+retain their historical ratios as diagnostics. E9 qualification requires an
+eligible reference and a new matched schedule.
+[Full P10 profile accounting](../../qualification/p10-performance/evidence/release-completeness.md).
+[E9 reference eligibility audit](../../qualification/p10-performance/evidence/e9-reference-eligibility.md).
 
 The same-source E9 CUDA compiler experiment on the RTX 3090 measured
 452.260 ms warm median for LLVM and 737.959 ms for C++, with exact RGB16
@@ -435,6 +475,14 @@ lattice revision also has a stale source inventory.
 [Hybrid binding and rounding review](../../qualification/p10-performance/evidence/hybrid-fused-kernel-review/README.md).
 [Hybrid split and luma lattice review](../../qualification/p10-performance/evidence/hybrid-split-luma-review/README.md).
 
+The experimental D150 CPU witness checked six intervals across nine
+authenticated originals. On the genuine step it found inverse-reverse
+support in eight of nine cells. The false direct jump was contradicted
+where the three hypotheses had comparable losses. The sparse support left
+the full-canvas replacement unresolved. The product path retains its current
+registration behavior.
+[Actual D150 proxy observations](d150-geometry-audit/witness-pilot/README.md).
+
 One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
 Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
 Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
@@ -442,6 +490,18 @@ Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
 while warping and fusion completed on the GPU. The diagnostic carries no
 frozen warm or cold timing credit. Resource and equal-quality gates remain open.
 [Generated T50 diagnostic and cleanup](../../qualification/p10-performance/evidence/t50-12f2151-preflight/pair-001/README.md).
+
+One later physical T50 Hybrid diagnostic compared the exact `8694b55`
+Vulkan package with the pinned reference OpenCL job on the same RTX 3090.
+Pancake completed in 22.171825 s and the reference in 26.301475 s. The
+reference used CPU alignment after helper failures and retained GPU warping
+and fusion. Each RGB16 export repeated its own historical digest. Reference
+RSS and both GPU-memory streams missed frozen cadence. Equal quality and
+the full frozen timing schedule remain open. All 52 authenticated TIFFs
+were rehashed and removed after the three borrowers finished.
+[Exact T50 physical pair](../../qualification/p10-performance/evidence/t50-hybrid-pair-8694b55/README.md).
+[Reference alignment audit](../../qualification/p10-performance/evidence/t50-reference-alignment-audit/README.md).
+[Shared input and cleanup](../../qualification/p10-performance/evidence/t50-shared-8694b55/README.md).
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
@@ -524,6 +584,13 @@ during an independent stall. A shared lock prevented that progress. Archive
 replay and timing controls leave physical query independence and coherent
 peak attribution unverified. Frozen cadence remains unchanged.
 [NVML overlap control and recorded bounds](../../qualification/p10-performance/evidence/resource-sampling/nvml-overlap.md).
+
+Four physical E9 diagnostic launches compared serial and overlapping NVML
+acquisition on the RTX 3090. The Vulkan overlap arm produced zero complete
+bypasses, and the CUDA serial control did not reproduce a compute call
+longer than 20 ms. Every arm exceeded the memory sampling limit. Frozen
+device-memory qualification remains open.
+[Physical E9 overlap observations](../../qualification/p10-performance/evidence/resource-sampling/nvml-overlap-runner.md).
 
 A separate private procfs diagnostic preserved the measured RSS roster and
 sum across a cgroup move. The working unprivileged namespace changed
