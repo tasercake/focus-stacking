@@ -4,8 +4,9 @@ use std::path::Path;
 use std::process::Command;
 
 use clap as _;
-use pancake::config::BitDepth;
+use pancake::config::{BitDepth, DevicePreference};
 use pancake::image_io::{RgbImage, SampleEncoding, decode, export};
+use pancake::runtime::select_runtime;
 
 /// Environment mistakes fail before numerical processing and preserve exports.
 ///
@@ -44,7 +45,7 @@ fn invalid_or_conflicting_runtime_preserves_the_export() -> Result<(), String> {
     Ok(())
 }
 
-/// A successful numeric stack reports measured sharpness and actual JPEG depth.
+/// A successful numeric stack reports sharpness, JPEG depth and actual runtime identity.
 ///
 /// # Errors
 ///
@@ -53,7 +54,9 @@ fn invalid_or_conflicting_runtime_preserves_the_export() -> Result<(), String> {
 fn jpeg_depth_warning_and_quality_describe_a_real_export() -> Result<(), String> {
     let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
     write_sources(directory.path())?;
+    let events = directory.path().join("completion.jsonl");
     let outcome = cmd(directory.path())
+        .env("CONFORMANCE_EVENTS_PATH", &events)
         .args([
             "--output",
             "stack.jpg",
@@ -90,6 +93,17 @@ fn jpeg_depth_warning_and_quality_describe_a_real_export() -> Result<(), String>
         return Err(
             "published JPEG did not have the requested geometry and eight-bit precision".to_owned(),
         );
+    }
+    let cpu = select_runtime(DevicePreference::Cpu, None, 1024, None)?;
+    let client = cpu.device().client();
+    let fingerprint = &client.properties().identity.fingerprint;
+    let completion = std::fs::read_to_string(events).map_err(|error| error.to_string())?;
+    if fingerprint.trim().is_empty()
+        || !completion.contains(r#""event":"stack_complete""#)
+        || !completion.contains(r#""actual_backend":"cpu""#)
+        || !completion.contains(&format!(r#""device_fingerprint":"{fingerprint}""#))
+    {
+        return Err("completed CPU export lost its runtime compilation identity".to_owned());
     }
     Ok(())
 }
