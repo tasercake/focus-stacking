@@ -26,6 +26,8 @@ from p10 import (
     _campaign_lock,
     _candidate_binary,
     _environment,
+    _hardware,
+    _pci_id,
     _require_clean,
     _snapshot,
     _write,
@@ -36,6 +38,7 @@ from pancake_conformance.macos_ui import MacOSUISession, find_node
 from pancake_conformance.target import TargetSpec
 from PIL import Image
 from protocol import Campaign, corpus, sha256, verify_frames
+from resources import NvidiaMemory
 
 
 def _gui_target(receipt_path):
@@ -165,12 +168,14 @@ def _state(ui, status):
     return label.split(maxsplit=1)[0].rstrip(":").casefold(), label
 
 
-def _wait_state(ui, status, expected, timeout):
+def _wait_state(ui, status, expected, timeout, *, numerical=False):
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         phase, label = _state(ui, status)
         observed = time.monotonic_ns()
-        if phase in expected:
+        if phase in expected and (
+            not numerical or _matches_viewer_load("loaded", phase, label)
+        ):
             return observed, label
         time.sleep(0.001)
     raise TimeoutError(f"native worker did not report any of {sorted(expected)}")
@@ -291,7 +296,9 @@ def _lifecycle(step, context, sample):
     sample["operation"] = operation
     before = None
     with _prepare_pointer(pointer, ui, step["input"]) as dispatch:
-        _, sample["worker_before"] = _wait_state(ui, status, {"running"}, 10)
+        _, sample["worker_before"] = _wait_state(
+            ui, status, {"running"}, 10, numerical=True
+        )
         if operation == "cancel":
             before = _worker_metadata(ui, status)
             _cancel_observation(before, before)
@@ -355,6 +362,32 @@ def _steps(steps, context, directory, scenario_root, ledger):
             _write(output / "sample.json", sample)
 
 
+def _physical_execution_proof(path, pci):
+    events = [
+        json.loads(line) for line in path.read_text().splitlines() if line.strip()
+    ]
+    completions = [event for event in events if event.get("event") == "stack_complete"]
+    if not completions or any(
+        event.get("event") in {"observer_error", "backend_fallback"} for event in events
+    ):
+        raise ValueError(
+            "native capture lacks successful physical wgpu completion evidence"
+        )
+    for event in completions:
+        if (
+            event.get("completed") is not True
+            or event.get("actual_backend") != "gpu"
+            or event.get("runtime") != "wgpu-vulkan"
+            or event.get("physical_gpu") is not True
+            or event.get("fallback_reason")
+            or _pci_id(event.get("device_pci_address")) != _pci_id(pci)
+        ):
+            raise ValueError(
+                "native job did not complete on the matched physical wgpu device"
+            )
+    return completions
+
+
 def collect(args):
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -362,6 +395,8 @@ def collect(args):
     scenario = json.loads(scenario_path.read_text())
     if scenario.get("schema_version") != 1:
         raise ValueError("unsupported native scenario schema")
+    if scenario.get("workload", args.workload) != args.workload:
+        raise ValueError("native scenario uses a different frozen input set")
     if (
         any(step["kind"] == "viewer" for step in scenario["steps"])
         and args.workload != "T50"
@@ -387,22 +422,41 @@ def collect(args):
     try:
         resources.enter_context(_campaign_lock())
         target, receipt = _gui_target(args.build_receipt)
+        physical = scenario.get("physical_wgpu")
+        residency = None
+        gpu_uuid = physical["gpu_uuid"] if physical else None
+        if physical:
+            if any(
+                physical.get(key) != receipt.get(key)
+                for key in ("commit", "binary_sha256")
+            ):
+                raise ValueError(
+                    "physical view scenario uses a different exact GUI build"
+                )
+            residency = NvidiaMemory(gpu_uuid)
+            resources.callback(residency.close)
+        hardware = _hardware(gpu_uuid)
         staged = _workload(args, output)
         root, records, count, proof = staged
         frames = verify_frames(
             root, records, count, distinct_content=args.workload != "lifecycle"
         )
         ledger.update(
-            {"candidate": receipt, "input_manifest": proof, "ordered_inputs": records}
+            {
+                "candidate": receipt,
+                "input_manifest": proof,
+                "ordered_inputs": records,
+                "hardware": hardware,
+            }
         )
         env = _environment(
             target,
             output / "cache",
             output,
             len(os.sched_getaffinity(0)),
-            None,
-            None,
-            False,
+            gpu_uuid,
+            "wgpu" if physical else None,
+            bool(physical),
         )
         env.update(
             {
@@ -438,6 +492,17 @@ def collect(args):
                             "size": [screen.width, screen.height],
                         }
                     )
+                    if residency is not None:
+                        observed = residency.sample({process.pid})
+                        if not observed:
+                            raise ValueError(
+                                "visible GUI did not show residency on the selected physical GPU before jobs"
+                            )
+                        ledger["physical_wgpu_run"] = {
+                            "gpu_uuid": gpu_uuid,
+                            "display_backend": "default automatic shared wgpu",
+                            "process_gpu_residency_at_visible_launch_bytes": observed,
+                        }
                     _steps(
                         scenario["steps"],
                         (ui, screen, pointer, scenario["worker_status"]),
@@ -447,6 +512,12 @@ def collect(args):
                     )
             finally:
                 MacOSUISession._reap(process)
+        if physical:
+            ledger["physical_wgpu_run"]["stack_completions"] = (
+                _physical_execution_proof(
+                    output / "events.jsonl", hardware["gpu"]["pci.bus_id"]
+                )
+            )
         if _gui_target(args.build_receipt)[1] != receipt:
             raise ValueError("candidate GUI provenance changed during capture")
         ledger["status"] = "captured"
@@ -476,7 +547,14 @@ def collect(args):
                     }
                 )
         try:
-            for name in ("lifecycle-inputs", "cache", "screen", "bin"):
+            for name in (
+                "lifecycle-inputs",
+                "cache",
+                "screen",
+                "bin",
+                "home",
+                "runtime",
+            ):
                 owned = output / name
                 if owned.is_dir():
                     shutil.rmtree(owned)

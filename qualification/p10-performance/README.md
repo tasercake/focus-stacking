@@ -110,17 +110,23 @@ observed correct patches give a conservative upper bound on virtual-screen
 presentation time. The receipt records the largest observation gap.
 Physical monitor refresh and scanout are outside this virtual-display receipt.
 
-Prepare a GUI build receipt and an ordered scenario whose PNG witnesses were
-checked independently against the real source and expected viewport geometry.
+Prepare an exact GUI build receipt and an ordered scenario whose PNG witnesses
+were checked independently against the real source and expected viewport geometry.
 Use visible patches that distinguish the requested state, pan center, zoom,
 selection, or comparison position. Keep patches clear of the native cursor.
 The pre-action patches must be on screen and the post-action patches must
 differ visibly at dispatch. The observer writes the actual matched patches
 after the timer and records their hashes and maximum channel errors.
+The physical recipe records the selected GPU UUID, positive app-process GPU
+residency at the first visible GUI before jobs, and a real successful stack on
+that device over Vulkan. The app starts with its normal presentation backend
+selection. Set GPU for compute through its native Preferences controls.
 
 ```sh
 "$ref_python" "$runner" prepare-candidate --component gui \
   --receipt artifacts/pancake-performance/gui-release-build.json
+"$ref_python" qualification/p10-performance/native_campaign.py viewer \
+  --manifest /path/to/pixel-witnesses.json --output /path/to/reviewed-viewer-scenario.json
 "$ref_python" qualification/p10-performance/linux_latency.py \
   --scenario /path/to/reviewed-viewer-scenario.json --workload T50 \
   --input-root /path/to/materialized-T50 \
@@ -171,9 +177,22 @@ coordinates must come from independent review of the actual scenario.
   [lifecycle case](../../pancake-conformance/src/pancake_conformance/cases/interface.py).
 - Use `--workload lifecycle` for the unmodified 64-path fixture. It intentionally
   shares source bytes across distinct hardlinks. The other inputs require
-  distinct frozen content. Also capture selected R50/D150/E9 cases and keep
-  every observation from each trial. Target setup and stage selection happen
-  through real native controls and the GUI launch inputs.
+  distinct frozen content. The lifecycle generator prepares the original fixture
+  or real D150. It accepts `lifecycle --identity <release-identity.json>
+  --workload <lifecycle|D150> --output <scenario.json>`. The release identity
+  supplies `commit`, `binary_sha256`, and `gpu_uuid`. Each workload uses real
+  start, pause, resume, and stop controls. After the requests, the scenario
+  completes another stack to verify that the worker remains reusable on the same
+  physical card. Keep every observation from each trial.
+
+For the viewer generator, supply `identity` with the same three fields,
+`renderer` set to `physical-wgpu-vulkan`, the source and renderer calibration
+record in `witness_provenance`, and `cohorts.idle` and `cohorts.loaded`. Each
+cohort has `setup` steps and one `trials` entry per action. Each trial supplies
+`input`, `before`, and `after` in the shape shown above, plus any non-timed
+`setup` steps to restore the precondition. The generator repeats the five
+families to reach the frozen sample counts. Preserve the witness PNGs beside
+the scenario so their relative paths resolve from it.
 
 Reduce full captures on the same GUI build.
 
@@ -184,8 +203,8 @@ Reduce full captures on the same GUI build.
   artifacts/pancake-performance/real-lifecycle-001/native-latency.json
 ```
 
-The reducer rejects mixed build/frozen-target provenance, incomplete captures,
-and duplicate samples. It applies the frozen counts and thresholds. Keep the
+The reducer rejects mixed build/frozen-target/device provenance, incomplete
+captures, and duplicate samples. It applies the frozen counts and thresholds. Keep the
 native action trace, independent witness files, actual presented patches,
 and input and build receipts together. Partial captures retain their original
 observations and contribute no passing latency evidence.
