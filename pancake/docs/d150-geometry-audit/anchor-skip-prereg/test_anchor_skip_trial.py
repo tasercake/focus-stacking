@@ -1,13 +1,17 @@
 """Generated red/green controls for the preregistered D150 diagnostic."""
 
+import hashlib
+import json
 from pathlib import Path
 import runpy
+import tempfile
 import unittest
+from unittest.mock import patch
 
 import cv2
 import numpy as np
 
-from anchor_skip_trial import PLAN, load_plan, proposal_screen
+from anchor_skip_trial import PLAN, edge_proposals, load_plan, proposal_screen, verified_inputs
 
 
 AUDIT = Path(__file__).resolve().parent.parent
@@ -45,6 +49,52 @@ class TrialWitnesses(unittest.TestCase):
         self.assertEqual(len(rows), 11)
         self.assertEqual(sum(row["bytes"] for row in rows), 3_582_818)
         self.assertEqual(len(self.plan["comparison_roster"]), 12)
+
+    def test_modified_plan_is_rejected_by_identity(self):
+        with tempfile.TemporaryDirectory() as folder:
+            modified = Path(folder) / "plan.json"
+            modified.write_bytes(PLAN.read_bytes() + b" ")
+            with self.assertRaisesRegex(ValueError, "differs from preregistration"):
+                load_plan(modified)
+
+    def test_owned_manifest_rehash_rejects_changed_payload(self):
+        with tempfile.TemporaryDirectory() as folder:
+            owner = Path(folder)
+            stage = owner / "trial/materialized"
+            inputs = stage / "inputs"
+            inputs.mkdir(parents=True)
+            source = inputs / "synthetic.bin"
+            payload = b"synthetic control data"
+            source.write_bytes(payload)
+            row = {"path": "frozen/synthetic.bin", "frame_index": 0, "bytes": len(payload),
+                   "sha256": hashlib.sha256(payload).hexdigest()}
+            expected = {"frozen_manifest_sha256": "fixture", "records": [row]}
+            plan = {"acquisition": {"scratch_subdirectory": "trial", "archive": {"name": "fixture"}},
+                    "minimal_probe": expected}
+            receipt = {"records": [{**row, "acquired_path": str(source)}], "original_count": 1,
+                       "manifest_sha256": expected["frozen_manifest_sha256"],
+                       "archive": plan["acquisition"]["archive"], "archive_verified_and_removed": True}
+            (stage / "acquisition.json").write_text(json.dumps(receipt))
+            with patch("anchor_skip_trial.ROOT", owner):
+                self.assertEqual(verified_inputs(plan), {"synthetic.bin": (source, row)})
+                source.write_bytes(payload.replace(b"control", b"changed"))
+                with self.assertRaisesRegex(ValueError, "original bytes differ"):
+                    verified_inputs(plan)
+
+    def test_zero_and_duplicate_proposals_leave_no_fabricated_map(self):
+        edge = {"files": ["first", "second"], "role": "fresh_bidirectional_fit"}
+        direct = [[1, 0, 2], [0, 1, -3]]
+        reverse = [[1, 0, -2], [0, 1, 3]]
+        fits = {("first", "second"): {"confidence": 0.0, "transform": direct},
+                ("second", "first"): {"confidence": None, "transform": reverse}}
+        proposals, audit = edge_proposals(edge, fits, {}, BILATERAL, 0.05)
+        self.assertEqual(list(proposals), ["identity_baseline"])
+        self.assertEqual([row["status"] for row in audit.values()], ["unavailable", "unavailable"])
+        for row in fits.values():
+            row["confidence"] = 0.5
+        proposals, audit = edge_proposals(edge, fits, {}, BILATERAL, 0.05)
+        self.assertEqual(list(proposals), ["identity_baseline", "direct"])
+        self.assertEqual(audit["inverse_reverse"]["status"], "duplicate")
 
     def test_known_two_axis_motion_survives_native_holdouts(self):
         before, after, known = rendered(3.43, -2.63)

@@ -1,6 +1,6 @@
 # Preregistered 11-source D150 anchor and skip-edge diagnostic
 
-This plan pins the investigation from `af964f5dab976a276e1b91cf4db0b2d63e8063c1`. It tests whether the independent optical witness sees a link to the First anchor and whether the existing shared matcher can produce supported alternatives across the late ambiguous interval. It gives no full D150, production geometry, quality, or performance result. No image or archive was acquired, no diagnostic adapter was written, and no executable was built or run. [Anchor evidence](../anchored-recovery-review/README.md) · [Exact manifest and evaluation plan](plan.json).
+This plan pins the investigation from `af964f5dab976a276e1b91cf4db0b2d63e8063c1`. It tests whether the independent optical witness sees a link to the First anchor and whether the existing shared matcher can produce supported alternatives across the late ambiguous interval. It gives no full D150, production geometry, quality, or performance result. The adapters have synthetic and compile-check evidence. Real data execution remains pending. [Anchor evidence](../anchored-recovery-review/README.md) · [Exact manifest and evaluation plan](plan.json).
 
 ## Inputs and allowed comparisons
 
@@ -26,24 +26,76 @@ The control comparison must recover a supported nonidentity alternative at `64�
 
 ## Owned stage and later commands
 
-The prior owner removed the authenticated archive and all nine originals. The new `D03` download is exactly 53,459,291 bytes before extraction and the 11 verified originals total 3,582,818 bytes. ZIP and originals can temporarily coexist at 57,042,109 bytes. Use the exact ordered entries and SHA-256 values in `plan.json`. The frozen manifest, source revision, rights, archive SHA and download limit are recorded there. The retained manifest authenticates an intended stage. It does not establish that a staged file currently exists. [Previous cleanup](../witness-batching/real-cleanup.json).
+The prior owner removed the authenticated archive and all nine originals. The new `D03` download is exactly 53,459,291 bytes before extraction and the 11 verified originals total 3,582,818 bytes. ZIP and originals can temporarily coexist at 57,042,109 bytes. Use the exact ordered entries and SHA-256 values in `plan.json`. The frozen manifest, source revision, rights, archive digest and download limit are locked there. The manifest describes the intended stage. [Previous cleanup](../witness-batching/real-cleanup.json).
 
-The existing acquisition helper accepts exactly nine entries. A later reviewed copy can require exactly the eleven listed plan rows while reusing its bounded byte-and-hash download and extraction. The original helper stays pinned. The old product probe accepts nine files and computes 28 directed fits in two windows. Its later adapter should read the registered graph and call the same decode, thumbnail and estimate functions on only the 12 fresh directions. The prior bilateral CLI also hard-codes nine records, 28 fits and six adjacent edges. A later adapter should call `bilateral()` on the 12 listed pairs, then apply the fixed native screen. The packed overlay consumes a fixed three-map batch and six archived intervals. Reuse its record kernel and serial-versus-packed bit checks. A later test-only adapter needs to take the new edge plan, skip its old repeat-timing loop and handle unavailable candidates by explicit abstention. Do not pad missing slots with a fabricated map or change the original archived tool. [Existing bounded acquisition](../motion-admission/acquire-probe.py.txt) · [Existing product probe](../motion-admission/probe.rs.txt) · [Pinned overlay](../witness-batching/real-overlay.patch.gz).
+`anchor_skip_trial.py prepare` validates the exact preregistration and seven pinned files. It generates an exclusive stage containing a copy of the old bounded acquisition with an eleven-record guard and a CPU probe that uses the existing Rust decode, thumbnail and estimator functions. The original scripts stay pinned. `verify-inputs` checks the exact order, canonical owned paths, byte counts and SHA-256. `score` reuses the bilateral and independent native tracker, rehashes the originals after scoring and emits an optional packed input list. Edges without three actual distinct maps stay visible as unavailable for the fixed packed implementation. The packed control patch changes the diagnostic input roster and omits repeated timings. The original serial and packed moments keep their bit comparisons. [Existing bounded acquisition](../motion-admission/acquire-probe.py.txt) · [Existing product probe](../motion-admission/probe.rs.txt) · [Pinned overlay](../witness-batching/real-overlay.patch.gz).
 
-After independent adapter review and a separate execution grant, the proposed exact invocation is below from the owned checkout. Adapter files named here are proposed case-owned copies. They do not exist at this revision. Build any later native probe as a locked debug example in a separate target before running it, without release or GPU targets. The CPU list requires the scheduler's grant.
+The following commands are for the later authorized trial from a clean review checkout. Use the exact reference Python with OpenCV 4.14.0 and the granted CPU list. Build the case-owned example as a locked debug target before acquiring any data.
 
 ```bash
-plan="$PWD/pancake/docs/d150-geometry-audit/anchor-skip-prereg/plan.json"
+set -euo pipefail
+repo="$PWD"
+folder="$PWD/pancake/docs/d150-geometry-audit/anchor-skip-prereg"
+plan="$folder/plan.json"
+trial="$folder/anchor_skip_trial.py"
 scratch="$PWD/artifacts/d150-anchor-skip-011/run-001"
 acquisition="$scratch/materialized/acquisition.json"
+export CARGO_TARGET_DIR="$scratch/cargo-target" CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0
+export CARGO_PROFILE_DEV_DEBUG=0 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+python3 "$trial" --plan "$plan" prepare
+mkdir -p pancake/examples "$scratch/bin"
+example="$repo/pancake/examples/d150_anchor_skip_probe.rs"
+(
+  test ! -e "$example"
+  cp "$scratch/d150_anchor_skip_probe.rs" "$example"
+  trap 'rm "$example"' EXIT
+  cd pancake
+  taskset --cpu-list 4,5 cargo +1.100.0 build --locked --offline --example d150_anchor_skip_probe
+)
+cp "$CARGO_TARGET_DIR/debug/examples/d150_anchor_skip_probe" "$scratch/bin/"
+sha256sum "$scratch/bin/d150_anchor_skip_probe" > "$scratch/probe.sha256"
 timeout --signal=TERM --kill-after=5s 180s python3 "$scratch/acquire-probe-011.py" \
   --audit "$plan" --output "$scratch/materialized"
-timeout --signal=TERM --kill-after=5s 150s taskset --cpu-list 20,21 \
-  "$scratch/bin/d150-anchor-skip-probe" --plan "$plan" --acquisition "$acquisition" \
+python3 "$trial" --plan "$plan" verify-inputs
+timeout --signal=TERM --kill-after=5s 150s taskset --cpu-list 4,5 \
+  "$scratch/bin/d150_anchor_skip_probe" --plan "$plan" --acquisition "$acquisition" \
   --output "$scratch/product-proposals.json"
-timeout --signal=TERM --kill-after=5s 150s taskset --cpu-list 20,21 \
-  "$reference_python" "$scratch/bilateral-011.py" --plan "$plan" --acquisition "$acquisition" \
-  --trace "$scratch/product-proposals.json" --output "$scratch/native-holdouts.json"
+timeout --signal=TERM --kill-after=5s 150s taskset --cpu-list 4,5 \
+  "$reference_python" "$trial" --plan "$plan" score --trace "$scratch/product-proposals.json" \
+  --output "$scratch/native-holdouts.json"
 ```
 
-The single packed corroboration replay follows native screening under a separate test-only command. Its adapter is unimplemented. Before any prospective repeat, seal the exact binaries, commands, environment, exit codes, stage hashes and all abstentions. The previous six-edge CPU development diagnostic completed in 8.92 seconds including proxy preparation and 42 repeated parity samples. Allow a cold two-job debug build of roughly 2–5 minutes and plan 15–90 seconds for the expanded CPU observations, with the stated watchdogs. Transfer time depends on the authorized source connection. These are scheduling estimates. The named owner checks every reader is terminal, rehashes the 11 originals, removes the owned ZIP and originals, and retains only input receipts, bounded output records and reproducible diagnostic source. No original file enters Git.
+Only consider packed corroboration if the native controls reproduced and the emitted list has actual distinct triples. Run it in the same clean, disposable checkout. Restore both overlays before any production or assurance work in that checkout.
+
+```bash
+set -euo pipefail
+jq -e '.controls.status == "controls_reproduced"' "$scratch/native-holdouts.json"
+jq -e '.results | length > 0' "$scratch/packed-directions.json"
+archived="$PWD/pancake/docs/d150-geometry-audit/witness-batching/real-overlay.patch.gz"
+control="$folder/packed-control.patch.gz"
+python3 "$trial" --plan "$plan" verify-inputs
+(
+  set -e -o pipefail
+  gzip -dc "$archived" | git apply
+  if ! gzip -dc "$control" | git apply; then gzip -dc "$archived" | git apply -R; exit 1; fi
+  cleanup() {
+    gzip -dc "$control" | git -C "$repo" apply -R
+    gzip -dc "$archived" | git -C "$repo" apply -R
+  }
+  trap cleanup EXIT
+  cd pancake
+  PANCAKE_WITNESS_ACQUISITION="$acquisition" \
+  PANCAKE_WITNESS_DIRECTIONS="$scratch/packed-directions.json" \
+  PANCAKE_WITNESS_OUTPUT="$scratch/packed-corroboration.json" \
+    taskset --cpu-list 4,5 cargo +1.100.0 test --locked --offline --lib \
+      packed_witness_real_d150_proxy_diagnostic -- --test-threads=1
+  cd ..
+)
+python3 "$trial" --plan "$plan" verify-inputs
+```
+
+Preserve the exact binaries, commands, environment, exit codes, stage hashes and all abstentions. The previous six-edge CPU diagnostic completed in 8.92 seconds including proxy preparation and repeated parity samples. Allow a cold two-job debug build of roughly 2–5 minutes and plan 15–90 seconds for the expanded CPU observations. The separate authorized archive transfer has a 180-second watchdog. These are scheduling estimates. The named owner checks that every reader is terminal, rehashes the originals, removes only the owned ZIP and originals, and retains the input receipts, output records and diagnostic source. No original file enters Git.
+
+## Adapter verification
+
+The old synthetic screen admitted the 0.75 px rival and failed the new abstention witness. The new screen passed all seven native-render and identity controls. The generated product probe passed the locked offline debug check. The pinned serial-versus-packed native CPU test preserved its exact decisions after applying both diagnostic overlays. The real edges and inputs remain unrun. [Verification receipt](adapter-verification.json) · [Raw logs and generated controls](adapter-verification.tar.gz).
