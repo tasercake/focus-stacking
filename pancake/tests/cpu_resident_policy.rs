@@ -132,9 +132,17 @@ fn observe(root: &Path, inputs: &[PathBuf], slab_size: u32) -> Result<Witness, S
         return Err("expected one complete CPU event".into());
     };
     let event: serde_json::Value = serde_json::from_str(line).map_err(|error| error.to_string())?;
-    if event["runtime"] != "cpu"
-        || event["completed"] != true
-        || !event["fallback_reason"].is_null()
+    if event.get("runtime").and_then(serde_json::Value::as_str) != Some("cpu")
+        || event
+            .get("actual_backend")
+            .and_then(serde_json::Value::as_str)
+            != Some("cpu")
+        || event.get("completed").and_then(serde_json::Value::as_bool) != Some(true)
+        || event
+            .get("physical_gpu")
+            .and_then(serde_json::Value::as_bool)
+            != Some(false)
+        || event.get("fallback_reason") != Some(&serde_json::Value::Null)
     {
         return Err("CPU residency observation did not complete on the selected runtime".into());
     }
