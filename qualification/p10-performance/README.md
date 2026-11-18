@@ -148,8 +148,8 @@ coordinates must come from independent review of the actual scenario.
       "condition": "idle",
       "action": "source",
       "input": {"kind": "click", "at": {"control": "frame.1"}},
-      "before": [{"point": [700, 450], "png": "witness/source-0.png"}],
-      "after": [{"point": [700, 450], "png": "witness/source-1.png"}]
+      "before": [{"point": [700, 450], "png": "witness/source-0.png", "max_channel_error": 2}],
+      "after": [{"point": [700, 450], "png": "witness/source-1.png", "max_channel_error": 2}]
     }
   ]
 }

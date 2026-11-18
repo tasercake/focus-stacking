@@ -141,6 +141,8 @@ def _prepare_pointer(pointer, ui, motion):
 def _witnesses(scenario_root, records):
     patches, identity = [], []
     for record in records:
+        if "tolerance" in record:
+            raise ValueError("native witnesses use the max_channel_error field")
         path = (scenario_root / record["png"]).resolve(strict=True)
         if not path.is_relative_to(scenario_root):
             raise ValueError(f"witness PNG is outside the scenario directory: {path}")

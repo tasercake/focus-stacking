@@ -6,7 +6,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 
-from linux_latency import _physical_execution_proof
+from linux_latency import _physical_execution_proof, _witnesses
 from native_campaign import build_lifecycle, build_viewer
 from PIL import Image
 
@@ -18,6 +18,17 @@ IDENTITY = {
 
 
 class CampaignPreparation(unittest.TestCase):
+    def test_declared_witness_error_is_applied_and_typo_fails_early(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            Image.new("RGB", (2, 2), (10, 20, 30)).save(root / "patch.png")
+            record = {"point": [10, 20], "png": "patch.png", "max_channel_error": 2}
+            entries, _ = _witnesses(root, [record])
+            self.assertEqual(entries[0].tolerance, 2)
+            record["tolerance"] = record.pop("max_channel_error")
+            with self.assertRaisesRegex(ValueError, "max_channel_error"):
+                _witnesses(root, [record])
+
     def test_exact_native_lifecycle_sequence_and_counts(self):
         fixture = build_lifecycle(IDENTITY, "lifecycle")
         real = build_lifecycle(IDENTITY, "D150")
