@@ -501,6 +501,7 @@ def _run_sample(
         "argv": argv,
         "cwd": str(spec.root),
         "environment": env,
+        "rss_sampler_cpu": args.rss_sampler_cpu,
         "gpu_before": _gpu_state(args.gpu_uuid) if gpu else None,
         "cpu_temperature_before_millidegrees": _cpu_thermal_state(),
         "cache_before": _cache_inventory(cache),
@@ -516,6 +517,7 @@ def _run_sample(
                 directory=case,
                 timeout=args.timeout,
                 gpu=gpu,
+                rss_sampler_cpu=args.rss_sampler_cpu,
             )
         )
         record["gpu_after"] = _gpu_state(args.gpu_uuid) if gpu else None
@@ -594,10 +596,15 @@ def run_profile(args):
         )
     if sys.platform != "linux":
         raise ValueError("Linux process counters required for this campaign")
-    if args.threads != len(os.sched_getaffinity(0)) or args.timeout <= 0:
+    job_affinity = os.sched_getaffinity(0)
+    if args.threads != len(job_affinity) or args.timeout <= 0:
         raise ValueError(
             "--threads must match the common CPU affinity width and timeout must be positive"
         )
+    if args.rss_sampler_cpu is not None and (
+        args.rss_sampler_cpu < 0 or args.rss_sampler_cpu in job_affinity
+    ):
+        raise ValueError("--rss-sampler-cpu must be outside the common job affinity")
     profile = next(
         (item for item in campaign.profiles(device) if item.key == args.profile), None
     )
@@ -799,6 +806,11 @@ def main():
     )
     run.add_argument(
         "--timeout", type=float, required=True, help="Per-job deadline in seconds"
+    )
+    run.add_argument(
+        "--rss-sampler-cpu",
+        type=int,
+        help="Pin only the RSS sampler to a logical CPU outside the common job affinity",
     )
     run.add_argument("--gpu-uuid")
     run.add_argument("--reference-gpu-index", type=int, default=0)
