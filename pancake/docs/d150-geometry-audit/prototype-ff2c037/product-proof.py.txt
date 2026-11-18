@@ -1,0 +1,85 @@
+"""Reissue the exact D150 CPU launch with the tested CLI and new owned output paths."""
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+
+
+ROOT = Path.cwd()
+CORPUS = ROOT / "pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json"
+REFERENCE_MANIFEST_SHA = "6d417c9c00866755bdbc8e2fafc1421de8414e1ea9e75d2cfd7e96e2161a89ac"
+
+
+def file_sha(path):
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def verify_inputs(root):
+    assert file_sha(CORPUS) == REFERENCE_MANIFEST_SHA
+    workloads = json.loads(CORPUS.read_bytes())["workloads"]
+    records = next(item["frames"] for item in workloads if item["id"] == "D150-native-dorsal")
+    assert len(records) == 150
+    inputs = []
+    for record in records:
+        path = root / record["path"]
+        assert path.resolve(strict=True) == path and path.stat().st_size == record["bytes"]
+        assert file_sha(path) == record["sha256"], path
+        inputs.append(str(path))
+    assert len(set(inputs)) == len(records)
+    return inputs
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-root", type=Path, required=True)
+    parser.add_argument("--baseline-launch", type=Path, required=True)
+    parser.add_argument("--binary", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    inputs = verify_inputs(args.source_root.resolve(strict=True))
+    output = args.output.resolve()
+    output.mkdir(exist_ok=False)
+    old_launch = json.loads(args.baseline_launch.read_bytes())
+    old_argv = old_launch["argv"]
+    first_input, output_flag = old_argv.index("--input") + 1, old_argv.index("--output")
+    assert [Path(path).name for path in old_argv[first_input:output_flag]] == [Path(path).name for path in inputs]
+    binary = args.binary.resolve(strict=True)
+    export = output / "complete.tif"
+    argv = [str(binary), *old_argv[1:first_input], *inputs, "--output", str(export), *old_argv[output_flag + 2:]]
+    old_cache = old_launch["environment"]["HOME"].removesuffix("/home")
+    scratch = output / "cache"
+    cache_labels = ("home", "cache", "config", "tmp", "cuda", "nvidia", "numba", "mesa")
+    for label in cache_labels:
+        (scratch / label).mkdir(parents=True)
+    env = {key: value.replace(old_cache, str(scratch))
+           for key, value in old_launch["environment"].items()}
+    events = output / "events.jsonl"
+    env["CONFORMANCE_EVENTS_PATH"] = str(events)
+    env.pop("COVERAGE_PROCESS_START", None)
+    record = {"scope": "single traced product geometry diagnostic; no timing credit",
+              "argv": argv, "env": env, "cwd": str(ROOT / "pancake"),
+              "source_revision": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "binary_sha256": file_sha(binary), "cargo_lock_sha256": file_sha(ROOT / "pancake/Cargo.lock"),
+              "corpus_manifest_sha256": file_sha(CORPUS), "baseline_launch_sha256": file_sha(args.baseline_launch)}
+    with (output / "stdout.txt").open("x") as out, (output / "stderr.txt").open("x") as err:
+        result = subprocess.run(argv, cwd=record["cwd"], env=env, stdout=out, stderr=err,
+                                timeout=900, check=False)
+    record["returncode"] = result.returncode
+    if result.returncode == 0:
+        assert export.is_file() and events.is_file()
+        assert len([line for line in events.read_text().splitlines() if json.loads(line).get("event") == "stack_complete"]) == 1
+        record["export_sha256"] = file_sha(export)
+        record["events_sha256"] = file_sha(events)
+    assert verify_inputs(args.source_root.resolve(strict=True)) == inputs
+    assert file_sha(binary) == record["binary_sha256"]
+    record["input_hashes_unchanged"] = True
+    (output / "receipt.json").write_text(json.dumps(record, indent=2) + os.linesep)
+    result.check_returncode()
+
+
+if __name__ == "__main__":
+    main()

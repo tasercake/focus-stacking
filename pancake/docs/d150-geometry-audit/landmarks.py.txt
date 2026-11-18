@@ -1,0 +1,179 @@
+"""Compare held-out native D150 patches around a measured geometry jump."""
+import argparse
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import statistics
+
+import cv2
+import numpy as np
+
+CORPUS = Path("pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json")
+ARCHIVE = Path("qualification/p10-performance/evidence/scale-functional/d150-cpu-events.jsonl.gz")
+HALF_SIDE = 36
+RADIUS = 96
+MIN_SIGNAL = 0.008
+MIN_CORRELATION = 0.80
+MIN_PEAK_GAP = 0.025
+MAX_RETURN_ERROR = 2
+
+
+def file_sha(path):
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def frames(root, sources):
+    candidates = json.loads(CORPUS.read_bytes())["workloads"]
+    workload = next(record for record in candidates if record["id"] == "D150-native-dorsal")
+    files = {Path(record["path"]).name: record for record in workload["frames"]}
+    decoded, hashes = {}, {}
+    for name in sources:
+        record = files[name]
+        path = root / record["path"]
+        assert path.stat().st_size == record["bytes"]
+        digest = file_sha(path)
+        assert digest == record["sha256"]
+        gray = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
+        assert gray is not None and gray.shape == (1728, 2304)
+        blurred = cv2.GaussianBlur(gray.astype(np.float32) / 255.0, (0, 0), 1.5)
+        decoded[name] = blurred
+        hashes[name] = {"path": str(path), "sha256": digest}
+    return decoded, hashes
+
+
+def trace(path):
+    op = gzip.open if path.suffix == ".gz" else open
+    with op(path, "rt") as stream:
+        completion = [item for line in stream if (item := json.loads(line)).get("event") == "stack_complete"]
+    assert len(completion) == 1
+    matrices = completion[0]["alignment_transforms"]
+    return {Path(key).name: np.vstack((np.asarray(value, dtype=np.float64), [0.0, 0.0, 1.0]))
+            for key, value in matrices.items()}
+
+
+def window(image, x, y, radius):
+    return image[y-radius:y+radius, x-radius:x+radius]
+
+
+def best_match(src, dst, x, y):
+    template = window(src, x, y, HALF_SIDE)
+    if float(np.std(template)) < MIN_SIGNAL:
+        return None
+    search = window(dst, x, y, HALF_SIDE + RADIUS)
+    if search.shape != (2 * (HALF_SIDE + RADIUS),) * 2:
+        return None
+    response = cv2.matchTemplate(search, template, cv2.TM_CCOEFF_NORMED)
+    row, col = (int(value) for value in np.unravel_index(np.argmax(response), response.shape))
+    peak = float(response[row, col])
+    rows, cols = np.ogrid[:response.shape[0], :response.shape[1]]
+    sidelobe = float(np.max(response[(rows-row)**2 + (cols-col)**2 >= 64]))
+    if peak < MIN_CORRELATION or peak - sidelobe < MIN_PEAK_GAP:
+        return None
+    return (x + col - RADIUS, y + row - RADIUS, peak, peak - sidelobe)
+
+
+def landmarks(before, after, dense=False):
+    width, height = before.shape[1], before.shape[0]
+    grid = tuple(0.16 + index * 0.085 for index in range(9)) if dense else (0.24, 0.37, 0.50, 0.63, 0.76)
+    points = [(int(x * width), int(y * height))
+              for y in grid for x in grid]
+    witnesses = []
+    for x, y in points:
+        match = best_match(before, after, x, y)
+        if match is None:
+            continue
+        new_x, new_y, score, gap = match
+        reverse = best_match(after, before, new_x, new_y)
+        if reverse is None or np.hypot(reverse[0] - x, reverse[1] - y) > MAX_RETURN_ERROR:
+            continue
+        witnesses.append({"before": [x, y], "after": [new_x, new_y],
+                          "dx": new_x-x, "dy": new_y-y, "ncc": score, "gap": gap})
+    return witnesses
+
+
+def residuals(mappings, before, after, witnesses):
+    residual = {}
+    for name, maps in mappings.items():
+        jump = maps[after] @ np.linalg.inv(maps[before])
+        errors = []
+        for row in witnesses:
+            predicted = (jump @ [*row["before"], 1.0])[:2]
+            errors.append(float(np.linalg.norm(predicted - row["after"])))
+        residual[name] = {"step": jump[:2].tolist(), "median_residual_px": statistics.median(errors),
+                          "min_residual_px": min(errors), "max_residual_px": max(errors)}
+    return residual
+
+
+def project_export(path, extent):
+    digest = file_sha(path)
+    pixels = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
+    assert pixels is not None and pixels.dtype == np.uint16
+    height, width, channels = pixels.shape
+    dx, dy = extent[0] - width, extent[1] - height
+    assert channels == 3 and 0 <= dx and 0 <= dy and dx % 2 == 0 and dy % 2 == 0
+    assert file_sha(path) == digest
+    return pixels, (dx // 2, dy // 2), {"path": str(path), "sha256": digest,
+                                      "shape": list(pixels.shape), "native_origin": [dx // 2, dy // 2]}
+
+
+def compare_exports(reference_path, candidate_path, input_frame):
+    height, width = input_frame.shape
+    extent = (width, height)
+    reference, (rx, ry), reference_info = project_export(reference_path, extent)
+    candidate, (cx, cy), candidate_info = project_export(candidate_path, extent)
+    coordinates = [(int(x * width), int(y * height))
+                   for x, y in ((0.37, 0.37), (0.63, 0.37), (0.50, 0.50), (0.37, 0.63), (0.63, 0.63))]
+    samples = []
+    for px, py in coordinates:
+        a = window(reference, px-rx, py-ry, HALF_SIDE).astype(np.float32)
+        b = window(candidate, px-cx, py-cy, HALF_SIDE).astype(np.float32)
+        assert a.shape == b.shape == (2 * HALF_SIDE, 2 * HALF_SIDE, 3)
+        delta = a - b
+        gray_a, gray_b = (cv2.cvtColor(block, cv2.COLOR_BGR2GRAY) for block in (a, b))
+        correlation = float(cv2.matchTemplate(gray_b, gray_a, cv2.TM_CCOEFF_NORMED).item())
+        samples.append({"native_center": [px, py], "size": 2 * HALF_SIDE,
+                        "mean_absolute_u16": float(np.abs(delta).mean(dtype=np.float64)),
+                        "rms_u16": float(np.sqrt(np.mean(np.square(delta), dtype=np.float64))),
+                        "luminance_ncc": correlation})
+    return {"reference": reference_info, "candidate": candidate_info, "regions": samples,
+            "note": "Native first-source coordinates with symmetric crop offsets; no stretching or replacement acceptance threshold."}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source-root", type=Path, required=True)
+    parser.add_argument("--first-source", type=int, default=576)
+    parser.add_argument("--dense", action="store_true", help="Evaluate a separate 9×9 grid with identical acceptance rules")
+    parser.add_argument("--candidate", type=Path)
+    parser.add_argument("--reference", type=Path)
+    parser.add_argument("--exports", nargs=2, type=Path, metavar=("REFERENCE_TIFF", "CANDIDATE_TIFF"))
+    args = parser.parse_args()
+    sources = tuple(f"P916{i:04d}_d2.jpg" for i in range(args.first_source, args.first_source + 4))
+    cv2.ocl.setUseOpenCL(False)
+    cv2.setNumThreads(1)
+    images, hashes = frames(args.source_root, sources)
+    mappings = {"identity": {name: np.eye(3) for name in sources},
+                "archive_cb5e3a4": trace(ARCHIVE)}
+    traces = {"archive_cb5e3a4": {"path": str(ARCHIVE), "sha256": file_sha(ARCHIVE)}}
+    for name in ("candidate", "reference"):
+        if (path := getattr(args, name)) is not None:
+            mappings[name] = trace(path)
+            traces[name] = {"path": str(path), "sha256": file_sha(path)}
+    result = {"scope": "held-out geometry diagnostic, not a frozen acceptance threshold",
+              "grid": "supplemental 9x9" if args.dense else "initial 5x5",
+              "opencv": cv2.__version__, "inputs": hashes, "traces": traces, "pairs": []}
+    for before, after in zip(sources, sources[1:]):
+        points = landmarks(images[before], images[after], args.dense)
+        results = residuals(mappings, before, after, points) if len(points) >= 3 else None
+        result["pairs"].append({"before": before, "after": after, "matches": points,
+                                "fits": results, "witness_status": "reported" if results else "inconclusive"})
+    if args.exports:
+        result["paired_exports"] = compare_exports(*args.exports, images[sources[0]])
+    assert all(file_sha(Path(entry["path"])) == entry["sha256"] for entry in hashes.values())
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()
