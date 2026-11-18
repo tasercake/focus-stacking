@@ -262,8 +262,10 @@ def _cpu_thermal_state():
 
 
 def _compress_trace(directory):
-    path = directory / "resources.jsonl"
-    if path.is_file():
+    for name in ("resources.jsonl", "gpu-resources.jsonl"):
+        path = directory / name
+        if not path.is_file():
+            continue
         with (
             path.open("rb") as source,
             gzip.open(path.with_suffix(".jsonl.gz"), "xb") as destination,

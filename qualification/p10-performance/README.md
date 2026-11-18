@@ -68,17 +68,31 @@ directories. Cache inventories expose how much the tools persisted.
 Instrumentation runs separately after primary samples. Their wall durations
 are excluded from the benchmark statistics.
 
-Resource samples collect RSS across the child session and attribute NVIDIA
-memory to its process IDs using both NVML compute and graphics lists.
-These counters are sampled at a 10 ms nominal interval.
-A gap above 20 ms or an unavailable metric leaves a memory gate pending.
-Transient peaks can escape polling, and RSS can count a shared page in multiple
-processes. Linux `wait4` also supplies a cadence-independent kernel RSS
-high-water observation at the process boundary. The runner records that value
-separately in bytes, along with user and system CPU time. It does not replace
-the required concurrent process-tree total when processes can overlap.
-The GPU measurement excludes unrelated clients. The maximum sampled
-tree RSS and GPU residency are reported separately.
+Resource samples collect RSS across the new child session. The RSS sampler
+uses the kernel session ID to screen unrelated PIDs before reading their
+`/proc` entries. A separate NVIDIA sampler attributes the pinned device’s
+NVML compute and graphics lists to actual session members, counting a PID
+that appears on both lists once. The separate raw traces record each
+collector’s own start and completion times, observed PIDs, and bytes.
+
+Both samplers use an 8 ms nominal interval on the same monotonic clock as
+the job. The reducer checks each counter independently from launch through
+observed exit, including the first and last gaps. An observation that
+completes after exit cannot cover a gap. A gap above 20 ms or any unavailable
+value leaves that metric pending. The raw peak is retained as a lower bound
+along with maximum acquisition time and sampler thread CPU cost. Transient
+peaks can escape polling, and RSS can count a shared page in multiple
+processes. [Linux procfs reference](https://docs.kernel.org/filesystems/proc.html) ·
+[NVML process queries](https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlDeviceQueries.html)
+
+Linux `wait4` reports the waited process’s RSS high water separately. A
+cgroup `memory.peak` includes charged file cache and kernel data. NVIDIA
+accounting reports an individual process’s allocation high water when enabled.
+The required metrics are concurrent process-tree RSS and attributable GPU
+memory over the same measured job, so the runner retains the sampled aggregates
+as its basis for both gates.
+[Linux cgroup memory controller](https://docs.kernel.org/admin-guide/cgroup-v2.html) ·
+[NVIDIA accounting stats](https://docs.nvidia.com/deploy/nvml-api/latest/api/structnvmlAccountingStats__t.html)
 The macOS physical-footprint lane requires equivalent measurements on Apple
 hardware.
 
