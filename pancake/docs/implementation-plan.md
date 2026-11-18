@@ -49,7 +49,9 @@ The integrated local branch uses the audited clean base `8410863`.
 Compared with the original warp integration checkpoint, the base changed
 only three E9 trace evidence files. Product sources, test sources and
 locks match. Retained runtime receipts still identify their original
-tested revisions and binaries.
+tested revisions and binaries. The current locked release and native E9
+builds use the exact product at `e81079d`. This checkpoint adds
+documentation evidence on the same product tree.
 
 The exact combined `c1e2cac` source passed the unchanged Linux CPU ASan and
 TSan gates. Each ran 146 passing tests across 19 groups with no diagnostics.
@@ -362,6 +364,15 @@ both captures.
 [Exact stock and experimental viewer pair](p10-shared-poll-evidence/c1e2cac/README.md).
 [Shared T50 materialization and cleanup](../../qualification/p10-performance/evidence/t50-shared-c1e2cac/README.md).
 
+The separate nonblocking poll experiment measured 42.208 ms loaded P95
+on the stock `fb9c399` package and 68.007 ms on the prototype. Both
+missed 33 ms. The two arms completed 400 events each and validated
+1,120 patches each with one physical Vulkan completion per arm.
+The product retains its existing polling behavior. The T50 owner
+rehashed and removed all 52 staged files after both readers finished.
+[Nonblocking viewer comparison](p10-shared-poll-evidence/fb9c399/README.md).
+[Exact input and cleanup receipt](../../qualification/p10-performance/evidence/t50-viewer-ab-fb9c399/README.md).
+
 ### Benchmark baselines and scoped follow-ups
 
 **The packaged `12f2151` Linux release passes all 376 case IDs.** The
@@ -622,6 +633,14 @@ crop, fused output, GPU cost and frozen D150 timing remain open.
 [Batched witness replay](d150-geometry-audit/witness-batching/README.md).
 [Connected pose and required evidence](d150-geometry-audit/connected-pose/README.md).
 
+The anchored D150 review confirmed that the first of 149 consecutive
+edges is the only one without four independent witnesses. The measured
+short and long spans leave the first anchor and the late skip edges
+unresolved. The false jump remains contradicted by nine native matches.
+The predeclared recovery probe leaves output quality and performance
+open.
+[Exact anchor and skip-edge review](d150-geometry-audit/anchored-recovery-review/README.md).
+
 One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
 Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
 Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
@@ -740,6 +759,14 @@ bypasses, and the CUDA serial control did not reproduce a compute call
 longer than 20 ms. Every arm exceeded the memory sampling limit. Frozen
 device-memory qualification remains open.
 [Physical E9 overlap observations](../../qualification/p10-performance/evidence/resource-sampling/nvml-overlap-runner.md).
+
+The corrected E9 audit reproduced 17 exit-boundary CUDA gaps and four
+interior OpenCL gaps above 20 ms from the 34 primary traces. The largest
+gaps were 34.085 and 39.221 ms. Terminal per-PID high-water accounting
+was disabled on the recorded device. A qualified job peak still needs
+verified complete GPU-process ownership and symmetric peak counters,
+or a cadence-valid attributed series.
+[Corrected E9 GPU memory attribution audit](../../qualification/p10-performance/evidence/resource-sampling/e9-corrected-nvidia-peak-audit.md).
 
 A separate private procfs diagnostic preserved the measured RSS roster and
 sum across a cgroup move. The working unprivileged namespace changed
