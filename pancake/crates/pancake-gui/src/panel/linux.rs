@@ -196,6 +196,7 @@ mod tests {
         let _configured = child
             .env_clear()
             .envs(env::var_os("LD_LIBRARY_PATH").map(|paths| ("LD_LIBRARY_PATH", paths)))
+            .envs(env::var_os("LLVM_PROFILE_FILE").map(|path| ("LLVM_PROFILE_FILE", path)))
             .env(CHILD, "1")
             .env("GDK_BACKEND", "x11")
             .env("HOME", private.path())
