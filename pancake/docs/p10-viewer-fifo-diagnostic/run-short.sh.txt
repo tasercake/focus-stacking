@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Diagnostic only. The frozen gate still requires 200 events per condition.
+set -euo pipefail
+arm=$1
+case "$arm" in original|fifo-one) ;; *) exit 2 ;; esac
+work=/tmp/pancake-worktrees.t3paqgWM/resume-viewer
+corpus=/home/krishna/Documents/focus-stacking/artifacts/p10-vcache
+out="$corpus/fifo-probe"
+reference_python=/home/krishna/Documents/focus-stacking/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python
+source /home/krishna/Documents/focus-stacking/artifacts/p10-compare/native-tools/gui-env.sh
+unset SLINT_BACKEND
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+export PYTHONPATH="$work/pancake-conformance/src:$work/qualification/p10-performance"
+cd "$work"
+date -Iseconds > "$out/$arm.start"
+nvidia-smi > "$out/$arm.gpu"
+status=0
+timeout --signal=INT --kill-after=15s 280s "$reference_python" qualification/p10-performance/linux_latency.py   --workload T50 --input-root "$corpus/inputs" --build-receipt "$out/$arm.build.json"   --scenario "$corpus/calibration/$arm.short.json" --output "$out/$arm"   > "$out/$arm.run.log" 2>&1 || status=$?
+printf '%s\n' "$status" > "$out/$arm.exit"
+date -Iseconds > "$out/$arm.end"
+exit "$status"
