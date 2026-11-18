@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="pancake-conformance" tests="2" failures="2" skipped="0" time="73.75260215398157"><testcase name="interface.import.recent-folders" classname="interface" time="35.7716"><failure message="TimeoutError: Timed out after 30s waiting for visible recent submenu">Traceback (most recent call last):
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/runner.py", line 40, in run_cases
+    case.run(context)
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py", line 140, in _recent_folders
+    _clear_recent_folders(ui)
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py", line 120, in _clear_recent_folders
+    assert not _recent_item(ui, "recent.empty", require_visible=False)["enabled"], "Recent history was not cleared"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py", line 109, in _recent_item
+    _recent_menu(ui)
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py", line 104, in _recent_menu
+    ui.wait(lambda snap: _visible_menu_item(snap, "recent.open"), description="visible recent submenu")
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/ui.py", line 86, in wait
+    return self.native.wait(lambda snapshot: condition(self.normalize(snapshot)), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/macos_ui.py", line 300, in wait
+    raise TimeoutError(f"Timed out after {timeout}s waiting for {description}")
+TimeoutError: Timed out after 30s waiting for visible recent submenu
+</failure></testcase><testcase name="interface.sprint.frame-context" classname="interface" time="37.9810"><failure message="TimeoutError: Timed out after 30s waiting for application refocused after reveal">Traceback (most recent call last):
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/runner.py", line 40, in run_cases
+    case.run(context)
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/cases/coverage_sprint.py", line 37, in _frame_context
+    ui.wait(lambda snap: snap.get("frontmost") is True, description="application refocused after reveal")
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/ui.py", line 86, in wait
+    return self.native.wait(lambda snapshot: condition(self.normalize(snapshot)), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pancake-worktrees.t3paqgWM/p8-desktop/pancake-conformance/src/pancake_conformance/macos_ui.py", line 300, in wait
+    raise TimeoutError(f"Timed out after {timeout}s waiting for {description}")
+TimeoutError: Timed out after 30s waiting for application refocused after reveal
+</failure></testcase></testsuite>

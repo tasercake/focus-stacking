@@ -1,0 +1,4 @@
+93eb2527fefbbdec46f92778220abb7bbf5cacc1762864235c9dada342cbccfd  pancake/target/debug/pancake-gui
+c9bb66741cd83d31b7fe88c2b40c71101738df13a8289c77f4284a66835f536a  pancake/target/debug/pancake-cli
+4e705dc47a6fcc2ff46a9c0ace4307605463a9d57d3e1e4a916caf8b72c8da18  pancake/Cargo.lock
+84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac  pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml
