@@ -51,8 +51,9 @@ only three E9 trace evidence files. Product sources, test sources and
 locks match. Retained runtime receipts identify their original tested
 revisions and binaries. The latest sealed Debian package is `0a9ae85`.
 It includes checked Exposure Fusion upload reuse and the private U16
-completion for normalized RAW. Full assurance, platform and performance
-acceptance remain open.
+completion for normalized RAW. The subsequent Weighted Average upload
+reuse needs a matching packaged replay and combined assurance. Final
+platform and performance acceptance remain open.
 
 The exact combined `c1e2cac` source passed the unchanged Linux CPU ASan and
 TSan gates. Each ran 146 passing tests across 19 groups with no diagnostics.
@@ -109,14 +110,14 @@ comparator still exited 1. This receipt covers the registration test on
 its own tested revision.
 [Native registration abstention and nightly coverage](p9-cpu-assurance-evidence/registration-abstention/README.md).
 
-The first combined test tranche at `870f7f9` passed canonical fast and
-all 151 CPU dev tests. The second, at `5b98890`, passed canonical fast
-and all 160 CPU dev tests. Supplemental strict Linux Miri passed all 26
-library tests on that second revision. The later Pearson and spectral
-tests have isolated native receipts and still need a combined replay.
+The exact `870f7f9`, `5b98890` and `54e3a8d` revisions passed canonical
+fast and all 151, 160 and 162 CPU dev tests, respectively. Supplemental
+strict Linux Miri passed 26 tests on `5b98890` and 27 on `54e3a8d`. The
+latest receipts precede the Weighted Average production change.
 [First combined fast and CPU replay](p9-cpu-assurance-evidence/870f7f9/README.md).
 [Second combined fast and CPU replay](p9-cpu-assurance-evidence/5b98890/README.md).
-[Supplemental Linux Miri](p9-cpu-assurance-evidence/5b98890-linux-miri/README.md).
+[Third combined fast and CPU replay](p9-cpu-assurance-evidence/54e3a8d/README.md).
+[Latest supplemental Linux Miri](p9-cpu-assurance-evidence/54e3a8d-linux-miri/README.md).
 
 At exact `0a9ae85`, both Linux CPU randomized layout seeds passed all 148
 tests, with 38 fingerprinted executable paths across the two builds.
@@ -354,6 +355,15 @@ Both original mutations failed, and both restored controls passed. Full
 mutation acceptance remains open.
 [Pearson variance replay](p9-mutation-audit/pearson-variance-0a9ae85/README.md).
 [Weak spectral peak replay](p9-mutation-audit/spectral-weak-peak/README.md).
+
+The CPU Hybrid transpose and blue-detail Laplacian tests caught five
+further exact operators. The physical Vulkan ordinal test rejected an
+absent adapter on stock and caught the mutant selecting the actual RTX
+3090 for that ordinal. The Vulkan result covers physical execution. The
+original CPU-only shard verdict retains its own recorded scope.
+[Four Hybrid pyramid operators](p9-mutation-audit/pyramid-axis-0a9ae85/README.md).
+[Advanced blue luminance](p9-mutation-audit/advanced-blue-luma-0a9ae85/README.md).
+[Physical Vulkan ordinal replay](p9-mutation-audit/0a9ae85-vulkan-ordinal/README.md).
 
 Follow-up tests caught all three earlier survivors on their separately
 verified revisions. The panorama test exercised the thumbnail budget
@@ -951,6 +961,24 @@ RGB staging accounted for 18.921 s of traced host-call intervals. The
 two RGB16 exports and all maps matched exactly. This attributes time to
 staging calls and leaves eventual savings and frozen performance open.
 [Measured stock Weighted CPU phases](../../qualification/p10-performance/evidence/t50-weighted-phase-measured/README.md).
+
+The adopted `a49ce69` Weighted Average change reuses the checked
+registration RGB allocation for slab-free inputs that match the canvas
+and have an exact identity transform. The native CPU cohort passed 49
+tests. Six physical Vulkan pairs and six native CUDA pairs preserved
+exact f32 samples, RGB16 TIFF bytes and all transforms on the RTX 3090.
+The nine-frame identity controls eliminated all nine redundant uploads.
+The warp, resize, unaligned and slab controls kept their existing routes.
+[Weighted Average host, Vulkan and CUDA evidence](../../qualification/p10-performance/evidence/t50-weighted-resident/README.md).
+
+The authenticated 50-frame CPU T50 triplet took 65.067805 s on the pinned
+reference, 43.381687 s on the sealed `0a9ae85` package and 25.506298 s on
+the standalone `a49ce69` candidate. Pancake's two exports and both map
+families matched exactly. Independent review decoded all three outputs
+and checked 50 fixed regions. The candidate took 0.391996 of reference
+wall time in this single diagnostic. The reference RSS gap exceeded
+20 ms. Full warm, cold, memory and quality qualification remains open.
+[Authenticated T50 Weighted Average CPU triplet](../../qualification/p10-performance/evidence/t50-weighted-triplet-0a9ae85-a49ce69/README.md).
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF

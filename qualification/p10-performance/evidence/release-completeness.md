@@ -100,6 +100,14 @@ RGB staging call sites. Both stock executions matched the TIFF bytes and
 transforms. This diagnostic leaves the full T50 schedule open.
 [Measured stock Weighted CPU phases](t50-weighted-phase-measured/README.md).
 
+The authenticated T50 Weighted Average CPU triplet ran in 65.067805 s
+on the pinned reference, 43.381687 s on the sealed `0a9ae85` package and
+25.506298 s on standalone `a49ce69`. Both Pancake outputs and both map
+families were exact matches. Independent review decoded all three RGB16
+exports. The reference RSS acquisition exceeded 20 ms. This single
+diagnostic leaves the full schedule and aggregate memory open.
+[Exact Weighted Average CPU triplet](t50-weighted-triplet-0a9ae85-a49ce69/README.md).
+
 ## Native latency and matching release
 
 The exact `8694b55` packaged viewer measured 200 idle and 200 loaded
@@ -143,7 +151,8 @@ The newest exact notice-bearing `0a9ae85` Debian package passed all 376
 frozen cases and supplied the latest E9 CPU binary above. Two exact
 standalone `0a9ae85` CUDA smoke jobs also completed on physical RTX 3090
 with zero fallback. These verify native CUDA execution. The full matched
-GPU schedule and device-memory outcome remain open.
+GPU schedule and device-memory outcome remain open. The later Weighted
+Average change needs its own matched package and conformance campaign.
 [Exact `0a9ae85` package and strict ledger](../../../pancake/docs/p9-linux-package-evidence/0a9ae85/summary.json).
 [Physical RTX CUDA smoke](native-cuda-0a9ae85-real-e9/README.md).
 
