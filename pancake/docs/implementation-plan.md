@@ -89,6 +89,25 @@ passed, with 19 test executables and zero skipped. Strict coverage and
 the full mutation campaign remain open.
 [Canonical fast and CPU receipts](p9-cpu-assurance-evidence/7748045/README.md).
 
+The exact integrated `0a9ae85` source passed canonical fast and all 148
+CPU dev tests across 19 executables. The unchanged Linux CPU ASan and
+TSan gates each passed all 148 with zero diagnostics. Stable coverage
+and nightly branch coverage both exited 1 at the strict comparator.
+They covered 4,730/6,516 lines, 485/760 functions and 4,849/7,328 regions.
+Nightly recorded 577/764 branch outcomes. Stable emitted no branch map.
+[Fast and CPU dev](p9-cpu-assurance-evidence/0a9ae85/README.md).
+[Stable coverage](p9-cpu-assurance-evidence/0a9ae85-stable-coverage/README.md).
+[Nightly branches](p9-cpu-assurance-evidence/0a9ae85-nightly-branches/README.md).
+[CPU ASan](p9-cpu-assurance-evidence/0a9ae85/address/README.md).
+[CPU TSan](p9-tsan-audit/integrated-0a9ae85/README.md).
+
+The exact `0a9ae85` native Linux CUDA and HIP release CLIs linked with
+their separate locked feature sets. The CUDA witness preparation binds
+the actual executable, toolchain and runtime libraries. Its real smoke
+remains unrun in this receipt. HIP execution was outside the build scope.
+[Native CUDA build and smoke preparation](../../qualification/p10-performance/evidence/native-cuda-0a9ae85/README.md).
+[Native HIP build](p9-linux-native-evidence/0a9ae85/hip/README.md).
+
 **The exact `e81079d` Debian package passed all 376 frozen case IDs.**
 The locked release build, fast and dependency checks, and rootless
 package verification passed. The strict ledger matched 341 host,
@@ -236,6 +255,12 @@ The local `e81079d` recipe specifies a fresh ordered full roster, exact
 partition, baseline and native mutant outcomes. A complete shard has
 yet to run at that revision.
 [Canonical local mutation recipe](p9-mutation-audit/e81079d-canonical-shard-plan/README.md).
+
+The exact `0a9ae85` local mutator listed 2,672 unique candidates. The
+independent list for partition 9/16 matched the 167 expected candidates
+in order. Both listings exited 0. Execution of this partition and the
+complete mutation verdict remain open.
+[Exact native mutation preflight](p9-mutation-audit/0a9ae85-canonical-preflight/README.md).
 
 Follow-up tests caught all three earlier survivors on their separately
 verified revisions. The panorama test exercised the thumbnail budget
@@ -408,6 +433,15 @@ Scheduler behavior, the frozen 33 ms target and the latency verdict
 remain unchanged.
 [Physical same-lock attribution](p10-vulkan-lock-attribution/fb9c399/README.md).
 
+The instrumented `e81079d` viewer replay captured 200 idle and 80 loaded
+actions, verified 784 pixel patches and completed a physical Vulkan job.
+Of 17 loaded actions above 33 ms, the conservative join attributed eight
+to an older draw and four to a new present waiting on the same device
+lock. Five remained ambiguous. A separate drag/release sensitivity check
+assigned those five without changing the primary verdict. The frozen
+matched viewer gate remains open.
+[Stock viewer pipeline attribution](p10-viewer-pipeline-trace/README.md).
+
 An uninstrumented two-arm viewer experiment on the RTX 3090 measured
 52.322024 ms loaded P95 on the exact `c1e2cac` package and 66.942485 ms
 on the bounded-poll prototype. Both exceeded 33 ms. The loaded late
@@ -528,6 +562,7 @@ CPU and GPU profiles and independent detail and color review remain open.
 [Positive Canon CPU replay](p10-r50-typed-raw/canon-positive/README.md).
 [Positive Canon physical Vulkan replay](p10-r50-typed-raw/physical-canon/README.md).
 [Matched full R50 CPU diagnostic](p10-r50-typed-raw/full-r50-diagnostic/README.md).
+[Verified removal of owned R50 media](p10-r50-typed-raw/full-r50-diagnostic/cleanup.json).
 [Isolated luma disposition](p10-registration-luma-lattice/README.md#full-r50-follow-up).
 
 The five-buffer Hybrid change removes a temporary RGB band while
@@ -797,6 +832,12 @@ RSS trace exceeded the 20 ms cadence cap. The full schedule, frozen
 quality judgment and paired RSS gate remain open.
 [Eight T50 profile priorities](../../qualification/p10-performance/evidence/t50-profile-priority-e810/README.md).
 [Exact T50 Weighted Average CPU diagnostic](../../qualification/p10-performance/evidence/t50-weighted-cpu-e81079d/README.md).
+
+A separate Weighted CPU attribution attempt completed its stock control
+in 43.383004 s. The runner stopped at an ordered-map schema error before
+GDB started. The fixed verifier passed five tests using the actual event
+and malformed controls. The attempt supplies no measured phase times.
+[Stock control and verifier correction](../../qualification/p10-performance/evidence/t50-weighted-phase-attempt/README.md).
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
