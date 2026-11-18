@@ -16,6 +16,72 @@ fn cpu_registration_geometry() -> Result<(), String> {
     registration_recovers_wide_shift(&device)
 }
 
+/// Recover a real centered 3% expansion and cap the supported fit at 1%.
+/// # Errors
+/// Returns a device, geometry, confidence or scale error.
+#[test]
+fn cpu_breathing_clamps_a_supported_expansion() -> Result<(), String> {
+    const WIDTH: u16 = 321;
+    const HEIGHT: u16 = 257;
+    const CENTER: [f32; 2] = [160.0, 128.0];
+    const SCALE: f32 = 1.03;
+    const INVERSE: f32 = 1.0 / SCALE;
+    const BUDGET: usize = 16_777_216;
+    let device = cubecl::Device::cpu().map_err(|error| error.to_string())?;
+    let mut reference = Vec::new();
+    let mut source = Vec::new();
+    for y in (0..HEIGHT).map(f32::from) {
+        for x in (0..WIDTH).map(f32::from) {
+            reference.extend([scene_sample(x / 2.5, y / 2.5); 3]);
+            let original_x = INVERSE.mul_add(x, (1.0 - INVERSE) * CENTER[0]);
+            let original_y = INVERSE.mul_add(y, (1.0 - INVERSE) * CENTER[1]);
+            source.extend([scene_sample(original_x / 2.5, original_y / 2.5); 3]);
+        }
+    }
+    let prepare = |samples| {
+        let [width, height] = [usize::from(WIDTH), usize::from(HEIGHT)];
+        thumbnail(
+            &device,
+            Frame::new(width, height, samples)?,
+            width,
+            height,
+            BUDGET,
+        )
+    };
+    let reference = prepare(&reference)?;
+    let source = prepare(&source)?;
+    for (maximum, expected, tolerance) in [(0.05, SCALE, 0.002), (0.01, 1.01, 0.000_01)] {
+        let estimated = estimate_pair(
+            &device,
+            &reference,
+            &source,
+            Model::Breathing,
+            maximum,
+            true,
+        )?;
+        let [[xx, xy, tx], [yx, yy, ty]] = estimated.transform.matrix();
+        let center_x = xx.mul_add(CENTER[0], xy.mul_add(CENTER[1], tx));
+        let center_y = yx.mul_add(CENTER[0], yy.mul_add(CENTER[1], ty));
+        if !estimated.confidence.is_finite()
+            || estimated.confidence <= 0.0
+            || (center_x - CENTER[0])
+                .abs()
+                .max((center_y - CENTER[1]).abs())
+                > 0.5
+        {
+            return Err(format!(
+                "Breathing lost the supported centered fit at {maximum}: {estimated:?}"
+            ));
+        }
+        if (xx - expected).abs().max((yy - expected).abs()) > tolerance {
+            return Err(format!(
+                "Breathing scale at limit {maximum} must be {expected}: {estimated:?}"
+            ));
+        }
+    }
+    Ok(())
+}
+
 /// An elongated reference canvas keeps aspect ratio within the thumbnail working budget.
 ///
 /// # Errors
