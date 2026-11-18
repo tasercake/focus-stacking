@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "failed",
+  "complete": true,
+  "selected_count": 4,
+  "completed_count": 4,
+  "counts": {
+    "passed": 1,
+    "failed": 3,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "interface.import.native-dialogs",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 33.07304895098787,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface.py\", line 129, in _native_import\n    ui.wait(lambda snap: _has(snap, \"open-panel\"), description=\"native file import\")\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/ui.py\", line 86, in wait\n    return self.native.wait(lambda snapshot: condition(self.normalize(snapshot)), **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 300, in wait\n    raise TimeoutError(f\"Timed out after {timeout}s waiting for {description}\")\nTimeoutError: Timed out after 30s waiting for native file import\n",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c11/cases/interface.import.native-dialogs"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.export.batch",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 33.97357073897729,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py\", line 51, in _batch_export\n    ui.wait(lambda snap: _has(snap, \"open-panel\"), description=\"batch export folder\")\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/ui.py\", line 86, in wait\n    return self.native.wait(lambda snapshot: condition(self.normalize(snapshot)), **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 300, in wait\n    raise TimeoutError(f\"Timed out after {timeout}s waiting for {description}\")\nTimeoutError: Timed out after 30s waiting for batch export folder\n",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c11/cases/interface.export.batch"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.import.recent-folders",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 35.69140662701102,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py\", line 140, in _recent_folders\n    _clear_recent_folders(ui)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py\", line 120, in _clear_recent_folders\n    assert not _recent_item(ui, \"recent.empty\", require_visible=False)[\"enabled\"], \"Recent history was not cleared\"\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py\", line 109, in _recent_item\n    _recent_menu(ui)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/coverage_interface.py\", line 104, in _recent_menu\n    ui.wait(lambda snap: _visible_menu_item(snap, \"recent.open\"), description=\"visible recent submenu\")\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/ui.py\", line 86, in wait\n    return self.native.wait(lambda snapshot: condition(self.normalize(snapshot)), **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 300, in wait\n    raise TimeoutError(f\"Timed out after {timeout}s waiting for {description}\")\nTimeoutError: Timed out after 30s waiting for visible recent submenu\n",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c11/cases/interface.import.recent-folders"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.sprint.frame-context",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 3.53602195403073,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c11/cases/interface.sprint.frame-context"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}

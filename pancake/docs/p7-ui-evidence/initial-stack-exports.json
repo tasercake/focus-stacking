@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "failed",
+  "complete": true,
+  "selected_count": 3,
+  "completed_count": 3,
+  "counts": {
+    "passed": 2,
+    "failed": 1,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "interface.algorithm.weighted_average",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 24.83077196998056,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "gui_image": {
+          "shape": [
+            129,
+            193,
+            3
+          ],
+          "dtype": "uint16",
+          "range": 60372.0,
+          "mean": 29806.014914782238,
+          "sharpness": 2035067984.3452332
+        },
+        "requests": [
+          {
+            "options": {
+              "device": "cpu",
+              "kernel_size": 3,
+              "pyramid_levels": 4,
+              "scale_factor": 6,
+              "method": "weighted_average",
+              "bit_depth": 16
+            },
+            "output_format": "tif",
+            "input_names": [
+              "frame_00.png",
+              "frame_01.png",
+              "frame_02.png"
+            ],
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        ],
+        "surface_parity": {
+          "mean_absolute_error": 0.0,
+          "max_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "fraction_above_threshold": 0.0
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c08/cases/interface.algorithm.weighted_average"
+      },
+      "outputs": {
+        "gui": "gui.tif",
+        "output-02.tif": "output-02.tif"
+      },
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.startup.empty",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 2.7261885630432516,
+      "error": "",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c08/cases/interface.startup.empty"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.import.native-dialogs",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 33.7437576999655,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface.py\", line 130, in _native_import\n    ui.choose_file(paths[0])\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/linux_ui.py\", line 184, in choose_file\n    self._file_path(path)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/linux_ui.py\", line 171, in _file_path\n    self._request('file_path', path=str(path))\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 107, in _request\n    raise RuntimeError(f\"{result[\"error\"]} (target exit status: {self.process.poll()})\")\nRuntimeError: Expected one file-name entry, found 2 (target exit status: None)\n",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c08/cases/interface.import.native-dialogs"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}

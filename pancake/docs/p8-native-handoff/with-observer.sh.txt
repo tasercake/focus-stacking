@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ ${PANCAKE_CONFORMANCE_LINUX_DESKTOP:-} != 1 || ${DISPLAY:-} != :* || ${XDG_RUNTIME_DIR:-} != */artifacts/*/runtime ]]; then
+    printf '%s\n' 'Refusing to observe outside a case-owned X11 desktop.' >&2
+    exit 1
+fi
+observer_source="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+observer_directory="${PANCAKE_X11_OBSERVATIONS:?Select an ignored test trace directory}"
+mkdir -p -- "$observer_directory"
+/usr/bin/python3 "$observer_source/observe.py" "$$" "$observer_directory/x11-$$.jsonl" </dev/null >"$observer_directory/observer-$$.log" 2>&1 &
+exec "$@"

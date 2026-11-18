@@ -1,0 +1,96 @@
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+from PIL import Image
+
+from pancake_conformance.linux_ui import LinuxUISession, isolated_desktop
+
+run = Path(sys.argv[1]).resolve()
+program = Path(sys.argv[2]).resolve()
+run.mkdir(parents=True)
+inputs = run / "输入 café"
+inputs.mkdir()
+source = inputs / "source-🌄.png"
+Image.new("RGB", (17, 13), (50, 140, 220)).save(source)
+original_bytes = source.read_bytes()
+profile = run / "profile"
+ui_directory = run / "gui"
+ui_directory.mkdir()
+
+def shown(ui, identifier):
+    return ui.wait(lambda tree: next((node for node in tree["nodes"]
+                   if node["id"] == identifier and all(node["size"])), None),
+                   description=f"visible native control {identifier}")
+
+def result(ui, expected):
+    ui.wait(lambda tree: any(node["id"] == "operation.result" and node["title"] == expected
+                            for node in tree["nodes"]), description=f"committed result {expected}")
+
+def recent(ui):
+    ui.click("file.menu")
+    item = shown(ui, "recent.open")
+    result(ui, "File menu open")
+    assert item["role"] == "AXMenuItem", item
+    ui.click({"path": item["path"]})
+
+with isolated_desktop(run / "desktop", os.environ) as environment:
+    environment["CONFORMANCE_UI_SETTINGS_DIR"] = str(profile)
+    with (run / "app.log").open("w") as log:
+        process = subprocess.Popen([program, source], env=environment, stdout=log, stderr=log, start_new_session=True)
+        with LinuxUISession(process, ui_directory, environment) as ui:
+            ui.click("open")
+            shown(ui, "open-panel")
+            result(ui, "Picker open")
+            ui.click("CancelButton")
+            result(ui, "Cancelled")
+            ui.click("open")
+            shown(ui, "open-panel")
+            result(ui, "Picker open")
+            ui.choose_file(source)
+            result(ui, str(source))
+            ui.click("folder")
+            shown(ui, "open-panel")
+            result(ui, "Picker open")
+            ui.navigate_folder(inputs)
+            ui.click("OKButton", physical=False)
+            result(ui, str(inputs))
+            ui.click("save")
+            shown(ui, "save-panel")
+            result(ui, "Picker open")
+            output = ui.save_file(run / "selected 出力🌄.png")
+            assert output.read_bytes() == b"native chooser probe"
+            result(ui, str(output))
+            (run / "panels.json").write_text(json.dumps({"cancel": True, "open": str(source), "folder": str(inputs), "save": str(output)}, indent=2))
+            recent(ui)
+            row = ui.wait(lambda tree: next((node for node in tree["nodes"] if node["role"] == "AXMenuItem" and
+                                           node["title"] == inputs.name and all(node["size"])), None),
+                          description="real recent folder row")
+            ui.click({"path": row["path"]})
+            result(ui, str(inputs))
+            recent(ui)
+            ui.click({"path": shown(ui, "recent.clear")["path"]})
+            result(ui, "History cleared")
+            recent(ui)
+            empty = shown(ui, "recent.empty")
+            assert not empty["enabled"], empty
+            ui.key("escape")
+            ui.key("escape")
+            ui.click("source")
+            reveal = shown(ui, "frames.reveal")
+            result(ui, "Source menu open")
+            assert reveal["role"] == "AXMenuItem", reveal
+            ui.click({"path": reveal["path"]})
+            ui.wait(lambda tree: not tree["frontmost"], description="native file manager focused")
+            result(ui, "Source revealed")
+            active = subprocess.check_output(["xdotool", "getactivewindow", "getwindowname"],
+                                             env=environment, text=True).strip()
+            ui.click("file.menu")
+            ui.click({"path": shown(ui, "window.close")["path"]})
+            assert process.wait(timeout=5) == 0
+            assert source.read_bytes() == original_bytes
+            assert json.loads((profile / "recent-folders.json").read_text()) == []
+            (run / "menus.json").write_text(json.dumps({"recent": row, "disabled_empty": empty,
+                                                          "reveal": reveal, "active_file_manager": active}, indent=2))

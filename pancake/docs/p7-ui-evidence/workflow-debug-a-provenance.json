@@ -1,0 +1,34 @@
+{
+  "contract_version": 2,
+  "target": "pancake-rust",
+  "target_root": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake",
+  "target_commit": "8f1da27b65c2138768d2b118ee7701501368c2ca",
+  "target_dirty": "M pancake/crates/pancake-gui/src/delivery/mod.rs\n M pancake/crates/pancake-gui/src/main.rs\n M pancake/crates/pancake-gui/src/panel/mod.rs\n M pancake/crates/pancake-gui/src/preview.rs\n M pancake/crates/pancake-gui/src/session.rs\n?? pancake/crates/pancake-gui/src/preview/",
+  "suite_commit": "8f1da27b65c2138768d2b118ee7701501368c2ca",
+  "suite_dirty": "M pancake/crates/pancake-gui/src/delivery/mod.rs\n M pancake/crates/pancake-gui/src/main.rs\n M pancake/crates/pancake-gui/src/panel/mod.rs\n M pancake/crates/pancake-gui/src/preview.rs\n M pancake/crates/pancake-gui/src/session.rs\n?? pancake/crates/pancake-gui/src/preview/",
+  "suite_source_sha256": "73f51014ab281903f43c270579d8c0de32fc1cee5a99c1e84febc0979c702f89",
+  "target_descriptor_sha256": "1f079292324ee1850d9d94086e160e725992c199b73903056541c80195c42a46",
+  "coverage_scope_sha256": null,
+  "cli_command": [
+    "./target/debug/pancake-cli"
+  ],
+  "gui_command": [
+    "./target/debug/pancake-gui"
+  ],
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:14) [Clang 21.1.4 ]",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "uv_lock_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
+  "cases": [
+    "interface.import.native-dialogs",
+    "interface.export.formats",
+    "interface.viewer.navigation-comparison",
+    "interface.lifecycle.pause-cancel",
+    "interface.portability.retained-results",
+    "interface.portability.unicode-paths",
+    "interface.export.batch",
+    "interface.result.manual-crop",
+    "interface.sprint.viewport-export",
+    "interface.recovery.close-unsaved",
+    "interface.recovery.missing-source"
+  ]
+}
