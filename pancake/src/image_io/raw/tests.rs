@@ -74,7 +74,7 @@ fn packed_raw_preserves_oriented_working_samples() -> Result<(), Box<dyn Error>>
         expected.apply_orientation(orientation);
 
         let expected = raster_to_rgb(expected, None, None)?;
-        let actual = developed_rgb(fixture(), Some(orientation))?;
+        let actual = developed_rgb(fixture(), Some(orientation), None)?;
         if (
             expected.width(),
             expected.height(),
@@ -153,6 +153,7 @@ fn normal_raw_preserves_u16_working_values_in_the_developed_allocation()
     let working = developed_rgb(
         Intermediate::ThreeColor(Color2D::new_with(pixels, width, height)),
         Some(Orientation::NoTransforms),
+        None,
     )?;
     if working.sample_encoding() != reference.sample_encoding()
         || !working

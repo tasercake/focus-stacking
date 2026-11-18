@@ -16,6 +16,7 @@ use rawler::imgop::develop::{Intermediate, RawDevelop};
 use rawler::pixarray::RgbF32;
 use rawler::rawsource::RawSource;
 use rawler::tags::TiffCommonTag;
+use rayon::prelude::{ParallelIterator, ParallelSliceMut};
 
 use super::{RgbImage, SampleEncoding, checked_pixel_count, raster_to_rgb};
 
@@ -30,6 +31,9 @@ const MAX_RAW_WORKERS: usize = 15;
 
 /// Channel count per temporary code buffer, limited to 128 KiB of RGB16 codes.
 const RAW_PACKING_CHUNK: usize = 64 * 1024;
+
+/// Avoid scheduling work for a developed raster with fewer than sixteen full chunks.
+const RAW_PARALLEL_MIN_SAMPLES: usize = 16 * RAW_PACKING_CHUNK;
 
 /// One process-wide pool bounds nested decoder and developer parallelism.
 static RAW_POOL: LazyLock<Result<rayon::ThreadPool, String>> = LazyLock::new(|| {
@@ -70,7 +74,7 @@ pub(super) fn decode(file: File, path: &Path) -> Result<RgbImage, String> {
     let pool = RAW_POOL.as_ref().map_err(Clone::clone)?;
     // Protect the application boundary from unwinding third-party decoders.
     panic::catch_unwind(panic::AssertUnwindSafe(|| {
-        pool.install(|| develop(&source))
+        pool.install(|| develop(&source, Some(pool)))
     }))
     .map_err(|_| "camera RAW decoder failed on malformed input".to_owned())?
 }
@@ -80,7 +84,7 @@ pub(super) fn decode(file: File, path: &Path) -> Result<RgbImage, String> {
 /// # Errors
 ///
 /// Returns unsupported camera, sensor metadata, or development errors.
-fn develop(source: &RawSource) -> Result<RgbImage, String> {
+fn develop(source: &RawSource, pool: Option<&rayon::ThreadPool>) -> Result<RgbImage, String> {
     let decoder = rawler::get_decoder(source).map_err(|error| error.to_string())?;
     match decoder.format_hint() {
         FormatHint::DNG => preflight_dng(&*decoder)?,
@@ -95,7 +99,7 @@ fn develop(source: &RawSource) -> Result<RgbImage, String> {
         .develop_intermediate(&raw)
         .map_err(|error| error.to_string())?;
     let orientation = u8::try_from(raw.orientation.to_u16()).map_err(|error| error.to_string())?;
-    developed_rgb(intermediate, Orientation::from_exif(orientation))
+    developed_rgb(intermediate, Orientation::from_exif(orientation), pool)
 }
 
 /// Convert developed camera samples into the oriented working raster.
@@ -106,10 +110,11 @@ fn develop(source: &RawSource) -> Result<RgbImage, String> {
 fn developed_rgb(
     intermediate: Intermediate,
     orientation: Option<Orientation>,
+    pool: Option<&rayon::ThreadPool>,
 ) -> Result<RgbImage, String> {
     let intermediate = match (intermediate, orientation) {
         (Intermediate::ThreeColor(pixels), None | Some(Orientation::NoTransforms)) => {
-            return normal_developed_rgb(pixels);
+            return normal_developed_rgb(pixels, pool);
         }
         (intermediate, _) => intermediate,
     };
@@ -126,19 +131,42 @@ fn developed_rgb(
 /// # Errors
 ///
 /// Returns a sample count or dimensions inconsistent with the developed raster.
-fn normal_developed_rgb(pixels: RgbF32) -> Result<RgbImage, String> {
+fn normal_developed_rgb(
+    pixels: RgbF32,
+    pool: Option<&rayon::ThreadPool>,
+) -> Result<RgbImage, String> {
     let dimensions = pixels.dim();
     let mut samples = pixels.into_inner().into_flattened();
-    let white = f32::from(u16::MAX);
-    for chunk in samples.chunks_mut(RAW_PACKING_CHUNK) {
-        let codes = convert_from_f32_scaled_u16(chunk, 0, u16::MAX);
-        for (sample, code) in chunk.iter_mut().zip(codes) {
-            *sample = f32::from(code) / white;
-        }
-    }
+    for_each_packing_chunk(&mut samples, pool, pack_raw_rgb16_chunk);
     let mut frame = RgbImage::new(dimensions.w, dimensions.h, samples)?;
     frame.sample_encoding = SampleEncoding::U16;
     Ok(frame)
+}
+
+/// Process disjoint slices in place, parallelizing only inside the installed RAW pool.
+fn for_each_packing_chunk(
+    samples: &mut [f32],
+    pool: Option<&rayon::ThreadPool>,
+    process: impl Fn(&mut [f32]) + Send + Sync,
+) {
+    if samples.len() >= RAW_PARALLEL_MIN_SAMPLES
+        && pool.is_some_and(|pool| {
+            pool.current_thread_index().is_some() && pool.current_num_threads() > 1
+        })
+    {
+        samples.par_chunks_mut(RAW_PACKING_CHUNK).for_each(process);
+    } else {
+        samples.chunks_mut(RAW_PACKING_CHUNK).for_each(process);
+    }
+}
+
+/// Preserve the pinned Rawler quantization in one bounded working slice.
+fn pack_raw_rgb16_chunk(chunk: &mut [f32]) {
+    let codes = convert_from_f32_scaled_u16(chunk, 0, u16::MAX);
+    let white = f32::from(u16::MAX);
+    for (sample, code) in chunk.iter_mut().zip(codes) {
+        *sample = f32::from(code) / white;
+    }
 }
 
 /// Quantize developed RGB in its existing contiguous channel order.
