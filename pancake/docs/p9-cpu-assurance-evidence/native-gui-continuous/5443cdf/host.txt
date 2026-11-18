@@ -1,0 +1,11 @@
+Linux 6.8.0-147-generic x86_64
+Ubuntu 24.04.5 LTS
+Model name:                              AMD Ryzen 9 7950X3D 16-Core Processor
+NVIDIA GeForce RTX 3090, 580.178.04
+3.24.41
+2.52.0
+uv 0.6.4
+cargo-llvm-cov 0.9.1
+a4abf3f639464b5e3647e9db3ecdbd68f464a6890cebd03e844da9f78a04ccfb  /home/krishna/Documents/focus-stacking/artifacts/p10-compare/native-tools/gui-env.sh
+7bdb6f27d35b66fc848df6f94b8773bba30ea3a7f06f114100d14154a235a34b  /usr/share/vulkan/icd.d/nvidia_icd.json
+CARGO_BUILD_JOBS=4 CARGO_INCREMENTAL=0 VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json

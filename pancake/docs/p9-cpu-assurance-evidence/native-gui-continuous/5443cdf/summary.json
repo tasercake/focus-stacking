@@ -1,0 +1,139 @@
+{
+  "revision": "5443cdf066df120de96ac3258d7beabe843cb1fd",
+  "suite_source_sha256": "73f51014ab281903f43c270579d8c0de32fc1cee5a99c1e84febc0979c702f89",
+  "cargo_lock_sha256": "639c5c88b9286e5583174f05168412db19f39dc3f651b6682b685d1db801e0dd",
+  "standard_assurance_status": 1,
+  "standard_suites": 19,
+  "standard_tests": {
+    "passed": 106,
+    "failed": 0,
+    "ignored": 0
+  },
+  "native_conformance_status": 0,
+  "native_report": {
+    "complete": true,
+    "selected_count": 33,
+    "completed_count": 33,
+    "counts": {
+      "passed": 33,
+      "failed": 0,
+      "unsupported": 0
+    }
+  },
+  "native_sessions": {
+    "clean": 36
+  },
+  "native_profile_bytes": 2590560,
+  "native_completed_cpu_jobs": 22,
+  "known_separate_cli_profiles": 14,
+  "standard": {
+    "branches": {
+      "covered": 0,
+      "count": 0
+    },
+    "functions": {
+      "covered": 402,
+      "count": 670
+    },
+    "lines": {
+      "covered": 4019,
+      "count": 5775
+    },
+    "regions": {
+      "covered": 4106,
+      "count": 6554
+    }
+  },
+  "combined": {
+    "lines": {
+      "covered": 5315,
+      "count": 5775
+    },
+    "functions": {
+      "covered": 550,
+      "count": 670
+    },
+    "regions": {
+      "covered": 5489,
+      "count": 6554
+    },
+    "branches": {
+      "covered": 0,
+      "count": 0
+    }
+  },
+  "native_gui_lines": {
+    "standard": 330,
+    "combined": 1580,
+    "total": 1742
+  },
+  "remaining_gui_files": [
+    {
+      "file": "crates/pancake-gui/src/session.rs",
+      "covered": 716,
+      "uncovered": 58,
+      "count": 774
+    },
+    {
+      "file": "crates/pancake-gui/src/main.rs",
+      "covered": 77,
+      "uncovered": 19,
+      "count": 96
+    },
+    {
+      "file": "crates/pancake-gui/src/desktop_menu.rs",
+      "covered": 182,
+      "uncovered": 15,
+      "count": 197
+    },
+    {
+      "file": "crates/pancake-gui/src/panel/linux.rs",
+      "covered": 104,
+      "uncovered": 15,
+      "count": 119
+    },
+    {
+      "file": "crates/pancake-gui/src/sources/mod.rs",
+      "covered": 69,
+      "uncovered": 15,
+      "count": 84
+    },
+    {
+      "file": "crates/pancake-gui/src/history.rs",
+      "covered": 152,
+      "uncovered": 12,
+      "count": 164
+    },
+    {
+      "file": "crates/pancake-gui/src/panel/pointer.rs",
+      "covered": 72,
+      "uncovered": 9,
+      "count": 81
+    },
+    {
+      "file": "crates/pancake-gui/src/preferences/mod.rs",
+      "covered": 53,
+      "uncovered": 8,
+      "count": 61
+    },
+    {
+      "file": "crates/pancake-gui/src/preview.rs",
+      "covered": 72,
+      "uncovered": 7,
+      "count": 79
+    },
+    {
+      "file": "crates/pancake-gui/src/delivery/mod.rs",
+      "covered": 60,
+      "uncovered": 2,
+      "count": 62
+    },
+    {
+      "file": "crates/pancake-gui/src/panel/mod.rs",
+      "covered": 23,
+      "uncovered": 2,
+      "count": 25
+    }
+  ],
+  "combined_assurance_status": 1
+}
