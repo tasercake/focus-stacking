@@ -3,6 +3,8 @@
 use std::error::Error;
 use std::fs;
 use std::rc::{Rc, Weak};
+use std::sync::Mutex;
+use std::thread;
 
 use num_traits::ToPrimitive as _;
 use slint::platform::software_renderer::{MinimalSoftwareWindow, RepaintBufferType};
@@ -15,6 +17,26 @@ use slint::{
 use slint_interpreter::{ComponentInstance, Value};
 
 use super::preferences::{Preferences, Store};
+
+/// Own access to system fonts for the lifetime of one offscreen GUI thread.
+static OFFSCREEN_UI: Mutex<()> = Mutex::new(());
+
+/// Run one offscreen workspace with its own Slint context.
+///
+/// Keep font discovery, use, and thread-local destruction inside the lock.
+///
+/// # Errors
+/// Returns a thread setup, synchronization, or workspace test error.
+fn run_offscreen_test(exercise: fn() -> Result<(), Box<dyn Error>>) -> Result<(), Box<dyn Error>> {
+    let _ownership = OFFSCREEN_UI.lock()?;
+    let owner = thread::Builder::new()
+        .name("pancake-offscreen-ui".into())
+        .spawn(move || exercise().map_err(|error| error.to_string()))?;
+    owner
+        .join()
+        .map_err(|_| "The offscreen GUI test thread panicked.")??;
+    Ok(())
+}
 
 /// An offscreen window using the same renderer as the software desktop backend.
 struct Offscreen(Weak<MinimalSoftwareWindow>);
@@ -100,6 +122,13 @@ fn check_pixel(
 /// Returns window, input dispatch, or framebuffer observation errors.
 #[test]
 fn comparison_clips_source_to_left_of_split() -> Result<(), Box<dyn Error>> {
+    run_offscreen_test(exercise_comparison)
+}
+
+/// Show the comparison workspace, check its pixels, and verify its release.
+/// # Errors
+/// Returns a window, input dispatch, or framebuffer observation error.
+fn exercise_comparison() -> Result<(), Box<dyn Error>> {
     let adapter = MinimalSoftwareWindow::new(RepaintBufferType::NewBuffer);
     // The window holds the Slint context, which owns this platform.
     let platform_window = Rc::downgrade(&adapter);
@@ -236,6 +265,13 @@ fn observe_comparison(
 /// Returns a window, input, or rendered-image regression.
 #[test]
 fn viewer_fit_updates_without_decorative_animation() -> Result<(), Box<dyn Error>> {
+    run_offscreen_test(exercise_viewer_fit)
+}
+
+/// Observe the fit command and verify that its workspace is released.
+/// # Errors
+/// Returns a window, input, or rendered-image regression.
+fn exercise_viewer_fit() -> Result<(), Box<dyn Error>> {
     let adapter = MinimalSoftwareWindow::new(RepaintBufferType::NewBuffer);
     let platform_window = Rc::downgrade(&adapter);
     slint::platform::set_platform(Box::new(Offscreen(platform_window.clone())))?;
@@ -361,6 +397,13 @@ fn preference_error(workspace: &ComponentInstance) -> Result<slint::SharedString
 /// Returns a fixture, binding, persistence, or observed state error.
 #[test]
 fn preference_callback_reports_storage_errors_and_recovers() -> Result<(), Box<dyn Error>> {
+    run_offscreen_test(exercise_preference_recovery)
+}
+
+/// Exercise profile recovery through the actual dialog callbacks.
+/// # Errors
+/// Returns a fixture, binding, persistence, or observed state error.
+fn exercise_preference_recovery() -> Result<(), Box<dyn Error>> {
     let sandbox = tempfile::tempdir()?;
     let profile = sandbox.path().to_path_buf();
     let destination = profile.join("preferences.json");
