@@ -1,0 +1,318 @@
+"""Bind exact c1 package provenance to the unchanged E9 CPU benchmark runner."""
+
+import argparse
+import json
+import os
+import sys
+import unittest
+from pathlib import Path
+from types import FunctionType, SimpleNamespace
+from unittest.mock import patch
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames
+
+PRODUCT = "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb"
+RUNNER = "e9b20f47ffb69fe7366e8dfe7c4907086d1fc014"
+PRODUCT_TREE = "9b3a0b85ab11544cfd5484402f57a3cc177c2dad"
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
+DEB = "c6f39324ea4d9a29fb1a4f33253f6d988f44d1f150622bc94b728975a5f96b64"
+CLI = "a69427103f9a1ef20ce576269feeceffab58aff7944f4b5cd08be2b11220af33"
+P9_VERIFICATION = "f8e9653b68b64a98e36f3ea86036fec49576e7f0206c5613020e917389b65ff9"
+P9_RELEASE_LOG = "df93fc06bc516f59af3db383f139a2192d4a47ae5a4450c417923511530e12c6"
+PROFILE = "E9.exposure_fusion.cpu"
+LOCKED_CORE = {
+    "qualification/p10-performance/p10.py": "a63d678cc437bd94d297ab9164c71d549de55dc74a4c4fc1ddd497c64b462e10",
+    "qualification/p10-performance/protocol.py": "e4868f65418eaf6604d3b0d2c0f5a259566939ff2a5f2bfcb2a8bce23dcfdbac",
+    "qualification/p10-performance/resources.py": "20fa18abed5d48a6b8fd6a9c2bd3b5b7f26c716b3e4bd1e80f63409a8239e231",
+    "pancake/docs/performance-targets.json": "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+    "pancake-conformance/src/pancake_conformance/adapters/pancake/e9_reference.py": "47f2c63bfc635e53e886e9bbd6b66944a95f97c719fad26ed88f6c222594cb94",
+}
+
+
+def require_digest(path, expected):
+    if not path.is_file() or path.is_symlink() or sha256(path) != expected:
+        raise ValueError(f"frozen file identity mismatch: {path}")
+
+
+def agree(producer, current, checkout, descriptor_blob, producer_descriptor_blob):
+    if checkout != RUNNER:
+        raise ValueError("benchmark checkout must be the exact audited e9b20f47")
+    if producer != PRODUCT_TREE or current != producer:
+        raise ValueError(
+            "candidate source tree differs from immutable c1e2cac producer"
+        )
+    if descriptor_blob != producer_descriptor_blob:
+        raise ValueError("candidate descriptor differs from c1e2cac producer")
+
+
+def source_proof():
+    p10._require_clean(
+        p10.ROOT, "pancake", "qualification/p10-performance", "pancake-conformance/src"
+    )
+    checkout = p10._git(p10.ROOT, "rev-parse", "HEAD")
+    producer_tree, current_tree = [
+        p10._git(p10.ROOT, "rev-parse", f"{source}:pancake")
+        for source in (PRODUCT, checkout)
+    ]
+    descriptor = p10.CANDIDATE.relative_to(p10.ROOT)
+    current_descriptor, producer_descriptor = [
+        p10._git(p10.ROOT, "rev-parse", f"{source}:{descriptor}")
+        for source in (checkout, PRODUCT)
+    ]
+    agree(
+        producer_tree, current_tree, checkout, current_descriptor, producer_descriptor
+    )
+    for name, expected in LOCKED_CORE.items():
+        require_digest(p10.ROOT / name, expected)
+    require_digest(p10.CANDIDATE, DESCRIPTOR)
+    require_digest(p10.ROOT / "pancake/Cargo.lock", LOCK)
+    return {
+        "producer_commit": PRODUCT,
+        "runner_commit": checkout,
+        "complete_identical_pancake_tree": current_tree,
+        "identical_candidate_descriptor_blob": current_descriptor,
+        "runner_files_sha256": LOCKED_CORE,
+    }
+
+
+def package_proof(options):
+    verify_path = options.package.with_name("package-verification.json")
+    require_digest(options.package, DEB)
+    require_digest(verify_path, P9_VERIFICATION)
+    require_digest(options.release_log, P9_RELEASE_LOG)
+    verified = json.loads(verify_path.read_text())
+    size = verified["binaries"]["pancake-cli"]["bytes"]
+    if (
+        verified["source_commit"] != PRODUCT
+        or verified["cargo_lock_sha256"] != LOCK
+        or verified["release_build_log_sha256"] != P9_RELEASE_LOG
+        or verified["archive"]["file"] != options.package.name
+        or verified["archive"]["sha256"] != DEB
+        or verified["archive"]["bytes"] != options.package.stat().st_size
+        or verified["binaries"]["pancake-cli"]["sha256"] != CLI
+    ):
+        raise ValueError(
+            "P9 verification does not attest this c1 package and release binary"
+        )
+    target = TargetSpec.load(p10.CANDIDATE)
+    executable = target.root / target.command("cli")[0]
+    require_digest(executable, CLI)
+    if (
+        executable.resolve() != executable
+        or executable.stat().st_size != size
+        or executable.stat().st_mode & 0o222
+    ):
+        raise ValueError(
+            "candidate CLI must be the private read-only exact staged package member"
+        )
+    return {
+        "commit": PRODUCT,
+        "lock_sha256": LOCK,
+        "descriptor_sha256": DESCRIPTOR,
+        "executable": str(executable),
+        "binary_sha256": CLI,
+        "build_package": {
+            "archive": str(options.package),
+            "archive_sha256": DEB,
+            "verification_receipt": str(verify_path),
+            "verification_receipt_sha256": P9_VERIFICATION,
+            "build_log_sha256": P9_RELEASE_LOG,
+            "binary_bytes": size,
+            "binary_package_member": "./usr/bin/pancake-cli",
+        },
+    }
+
+
+def clone_binding(function, **bindings):
+    """Inject a dependency into a private namespace without mutating the runner."""
+    return FunctionType(
+        function.__code__,
+        function.__globals__ | bindings,
+        function.__name__,
+        function.__defaults__,
+        function.__closure__,
+    )
+
+
+def candidate_binding(original, target, lock):
+    observed = original(target, lock)
+    if target.descriptor != p10.CANDIDATE:
+        return observed
+    if target.root != p10.ROOT / "pancake" or observed != {
+        "commit": RUNNER,
+        "lock_sha256": LOCK,
+        "descriptor_sha256": DESCRIPTOR,
+    }:
+        raise ValueError(
+            "candidate target changed after binding exact product provenance"
+        )
+    source_proof()
+    return observed | {"commit": PRODUCT}
+
+
+def prepare(options):
+    sources = source_proof()
+    package = package_proof(options)
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    records, _ = corpus(p10.ROOT, campaign, "E9")
+    frames = verify_frames(options.input_root, records, 9)
+    if frames != sorted(frames):
+        raise ValueError("real E9 input order differs from both public CLIs")
+    schedule = campaign.schedule()
+    if len(schedule) != 34 or sorted(
+        {(kind, number) for kind, number, _ in schedule}
+    ) != sorted(
+        (kind, number)
+        for kind, count in (("warmup", 2), ("warm", 10), ("cold", 5))
+        for number in range(1, count + 1)
+    ):
+        raise ValueError("pinned E9 full schedule size changed")
+    receipt = package | {
+        "independent_benchmark_source": sources,
+        "private_binding_sha256": sha256(Path(__file__)),
+    }
+    if options.receipt.exists():
+        if json.loads(options.receipt.read_text()) != receipt:
+            raise ValueError(
+                "existing candidate receipt differs from verified build and runner"
+            )
+    else:
+        p10._write(options.receipt, receipt)
+    return campaign, receipt
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--self-test", action="store_true")
+    mode.add_argument("--preflight", action="store_true")
+    mode.add_argument("--run", action="store_true")
+    parser.add_argument("--package", type=Path)
+    parser.add_argument("--release-log", type=Path)
+    parser.add_argument("--input-root", type=Path)
+    parser.add_argument("--receipt", type=Path)
+    parser.add_argument("--output", type=Path)
+    options = parser.parse_args()
+    if options.self_test:
+        result = unittest.TextTestRunner(verbosity=2).run(
+            unittest.defaultTestLoader.loadTestsFromTestCase(Control)
+        )
+        return 0 if result.wasSuccessful() else 1
+    required = ("package", "release_log", "input_root", "receipt")
+    if any(getattr(options, name) is None for name in required):
+        parser.error("package, release log, input root and receipt paths are required")
+    for name in required:
+        setattr(options, name, getattr(options, name).absolute())
+    campaign, candidate = prepare(options)
+    original_snapshot = p10._snapshot
+    bound_prepare = clone_binding(
+        p10._prepared_targets,
+        _snapshot=lambda target, lock: candidate_binding(
+            original_snapshot, target, lock
+        ),
+    )
+    if options.preflight:
+        _, identities = bound_prepare(
+            SimpleNamespace(profile=PROFILE, build_receipt=options.receipt), campaign
+        )
+        print(
+            json.dumps(
+                {
+                    "targets": identities,
+                    "schedule": campaign.schedule(),
+                    "timed_jobs_launched": 0,
+                },
+                indent=2,
+            )
+        )
+        return 0
+    if options.output is None or os.sched_getaffinity(0) != set(range(32)):
+        parser.error(
+            "official E9 CPU run requires --output and the original CPUs 0-31 mask"
+        )
+    bound_run = clone_binding(p10.run_profile, _prepared_targets=bound_prepare)
+    bound_cli = clone_binding(p10.main, run_profile=bound_run)
+    argv = [
+        p10.__file__,
+        "run",
+        "--profile",
+        PROFILE,
+        "--runtime",
+        "cpu",
+        "--threads",
+        "32",
+        "--timeout",
+        "120",
+        "--input-root",
+        str(options.input_root),
+        "--build-receipt",
+        str(options.receipt),
+        "--keep-review-images",
+        "--output",
+        str(options.output),
+    ]
+    with patch.object(sys, "argv", argv):
+        result = bound_cli()
+    if source_proof() != candidate["independent_benchmark_source"] or package_proof(
+        options
+    ) != {
+        key: candidate[key]
+        for key in (
+            "commit",
+            "lock_sha256",
+            "descriptor_sha256",
+            "executable",
+            "binary_sha256",
+            "build_package",
+        )
+    }:
+        raise ValueError("candidate package or benchmark sources changed")
+    return result
+
+
+class Control(unittest.TestCase):
+    def test_exact_source_only(self):
+        agree(PRODUCT_TREE, PRODUCT_TREE, RUNNER, "same", "same")
+        for values in (
+            ("other", PRODUCT_TREE, RUNNER, "same", "same"),
+            (PRODUCT_TREE, "other", RUNNER, "same", "same"),
+            (PRODUCT_TREE, PRODUCT_TREE, PRODUCT, "same", "same"),
+            (PRODUCT_TREE, PRODUCT_TREE, RUNNER, "same", "other"),
+        ):
+            with self.assertRaises(ValueError):
+                agree(*values)
+
+    def test_candidate_only_and_unchanged_runner_namespaces(self):
+        original_snapshot = p10._snapshot
+        observed = {
+            "commit": RUNNER,
+            "lock_sha256": LOCK,
+            "descriptor_sha256": DESCRIPTOR,
+        }
+        candidate = SimpleNamespace(root=p10.ROOT / "pancake", descriptor=p10.CANDIDATE)
+        reference = SimpleNamespace(
+            root=Path("/reference"), descriptor=Path("/reference.toml")
+        )
+        with patch(f"{__name__}.source_proof") as proof:
+            self.assertEqual(
+                candidate_binding(lambda *_: observed, candidate, None)["commit"],
+                PRODUCT,
+            )
+            self.assertEqual(
+                candidate_binding(lambda *_: observed, reference, None), observed
+            )
+            proof.assert_called_once()
+            candidate.root = Path("/wrong")
+            with self.assertRaisesRegex(ValueError, "candidate target changed"):
+                candidate_binding(lambda *_: observed, candidate, None)
+        bound = clone_binding(p10._prepared_targets, _snapshot=lambda *_: None)
+        self.assertIsNot(bound.__globals__, p10._prepared_targets.__globals__)
+        self.assertIs(bound.__code__, p10._prepared_targets.__code__)
+        self.assertIs(p10._snapshot, original_snapshot)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
