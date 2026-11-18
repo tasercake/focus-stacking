@@ -106,6 +106,48 @@ fn cpu_hybrid_retains_selected_fine_detail_across_scales() -> Result<(), String>
     }
 }
 
+/// In-phase blue detail strengthens the luminance contrast of a red pattern.
+///
+/// # Errors
+/// Returns a device error or an incorrect focus winner.
+#[test]
+fn cpu_laplacian_prefers_in_phase_blue_detail() -> Result<(), String> {
+    let (width, height) = (9_usize, 7_usize);
+    let mut red = Vec::new();
+    let mut red_blue = Vec::new();
+    for y in 0..height {
+        for x in 0..width {
+            let sample = if x % 2 == y % 2 { 0.25_f32 } else { 0.75 };
+            red.extend([sample, 0.5, 0.5]);
+            red_blue.extend([sample, 0.5, sample]);
+        }
+    }
+
+    let device = cubecl::Device::cpu().map_err(|error| error.to_string())?;
+    for (first, second) in [(&red, &red_blue), (&red_blue, &red)] {
+        // With no reductions, the winning focus coefficient is the input RGB.
+        let mut accumulator = AdvancedAccumulator::new(
+            &device,
+            width,
+            height,
+            AdvancedMethod::Laplacian,
+            3,
+            0,
+            BUDGET,
+        )?;
+        accumulator.add_frame(first)?;
+        accumulator.add_frame(second)?;
+        let output = accumulator.finish()?;
+        if output != red_blue {
+            return Err(format!(
+                "expected the stronger red-and-blue detail, got first pixel {:?}",
+                output.get(..3)
+            ));
+        }
+    }
+    Ok(())
+}
+
 /// Reject malformed caller samples before accepting the next complete frame.
 /// # Errors
 /// Returns a numerical, validation, or runtime error.
