@@ -61,3 +61,14 @@ The tested application source is `a5965a2`, identical to the harness commit
 events report 43 CPU jobs and 16 physical NVIDIA RTX 3090 jobs via wgpu Vulkan
 on driver 580.178.04. The release assurance receipt is separate.
 [Command and binary receipt](p2-replay-receipt.json) · [Harness provenance](p2-provenance.json) · [Case report](p2-report.json.gz) · [Completion events](p2-completion-events.json.gz)
+
+## Nightly branch check
+
+The unchanged `bash scripts/check.sh branches-cpu` ran at `cfc2037` on the
+pinned `nightly-2026-11-15`. Application code and tests match the stable
+candidate. All 110 tests passed. The required gate returned exit 1 for
+uncovered CPU lines and the nightly report counted 477/614 covered branches.
+Export improved from 31/38 to 35/38 branches, NumPy from 20/22 to 22/22, and
+RAW from 6/8 to 7/8 with identical source files and denominators. The changed
+image input module went from 22/24 to 26/26.
+[Branch comparison](branches-comparison.json) · [Nightly log](branches-cpu.log.gz) · [Nightly LLVM report](branches-cpu.json.gz)
