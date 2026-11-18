@@ -1,0 +1,211 @@
+"""Verify two completed real E9 CUDA jobs after an explicit physical-device lease."""
+
+import argparse
+import json
+import os
+import subprocess
+from pathlib import Path
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames, verify_output
+
+SOURCE = "0a9ae85b88519a795e3b6ba90860c3b3e664bcaa"
+P10_TARGETS_SHA256 = "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc"
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
+BINARY = "0734a90ba35ef3534fd6a66a86682ef98662e87a9f0ecc8b25c42b3fccdbdad3"
+GPU_UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+GPU_PCI = "0000:01:00.0"
+GPU_NAME = "NVIDIA GeForce RTX 3090"
+CUDA_LIB = Path("/usr/local/cuda-12.5/lib64")
+RGB16 = {
+    "shape": [337, 510, 3],
+    "dtype": "uint16",
+    "sha256": "614c7a9701c5d4757df95852e03a7b5eccaab6abafb222901f3525725da6da84",
+    "pixel_sha256": "00370e27a5da2a592572ca13cfcae3206ba33feec51b1f3d0333c5be14920d57",
+}
+MAP = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]
+
+
+def require(value, detail):
+    if not value:
+        raise ValueError(detail)
+
+
+def authenticate(args):
+    target = TargetSpec.load(p10.CANDIDATE)
+    p10._require_clean(p10.ROOT, "pancake", str(p10.CANDIDATE))
+    require(
+        p10._snapshot(target, target.root / "Cargo.lock")
+        == {"commit": SOURCE, "lock_sha256": LOCK, "descriptor_sha256": DESCRIPTOR},
+        "candidate checkout differs from the sealed native source",
+    )
+    require(
+        sha256(args.binary) == BINARY
+        and args.binary.is_file()
+        and not args.binary.is_symlink(),
+        "native CUDA binary differs",
+    )
+    retained = json.loads(args.receipt.read_text())
+    require(
+        retained["source"] == SOURCE
+        and retained["cargo_lock_sha256"] == LOCK
+        and retained["native_cuda_artifact"]["sha256"] == BINARY,
+        "native build receipt identity differs",
+    )
+    for path, digest in retained["runtime_libraries_sha256"].items():
+        require(sha256(Path(path)) == digest, f"native runtime library changed: {path}")
+    require(sha256(p10.TARGETS_PATH) == P10_TARGETS_SHA256, "frozen settings changed")
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    entries, _ = corpus(p10.ROOT, campaign, "E9")
+    frames = verify_frames(args.input_root, entries, 9)
+    require(
+        frames == sorted(frames),
+        "physical E9 inputs must follow the frozen public sorting order",
+    )
+    profile = next(
+        item
+        for item in campaign.profiles("gpu")
+        if item.key == "E9.exposure_fusion.gpu"
+    )
+    return target, frames, profile
+
+
+def witness(args, artifact, target, frames, profile):
+    output = artifact / "complete.tif"
+    env = p10._environment(
+        target,
+        artifact / "cache",
+        artifact,
+        2,
+        GPU_UUID,
+        "cuda",
+        True,
+        cuda_library_path=CUDA_LIB,
+    )
+    command = [
+        str(args.binary),
+        *target.stack_arguments(frames, output, profile.options | {"gpu_id": 0}),
+    ]
+    p10._write(
+        artifact / "launch.json",
+        {
+            "argv": command,
+            "environment": env,
+            "binary_sha256": BINARY,
+            "source": SOURCE,
+        },
+    )
+    with (
+        (artifact / "stdout.txt").open("xb") as stdout,
+        (artifact / "stderr.txt").open("xb") as stderr,
+    ):
+        completed = subprocess.run(
+            command,
+            cwd=target.root,
+            env=env,
+            stdout=stdout,
+            stderr=stderr,
+            timeout=30,
+            check=False,
+        )
+    result = {"returncode": completed.returncode, "status": "fail"}
+    try:
+        require(
+            completed.returncode == 0, "exact CUDA E9 process did not exit successfully"
+        )
+        event = p10._assert_completion(
+            artifact / "events.jsonl", "gpu", "cuda", GPU_NAME, GPU_PCI
+        )
+        result["completion"] = event
+        require(
+            event["physical_gpu"] is True
+            and event["fallback_reason"] is None
+            and event["device_fingerprint"] == "ptx_sm86",
+            "physical CUDA or fallback evidence differs",
+        )
+        require(
+            event["alignment_transforms"] == {str(path): MAP for path in frames}
+            and event["sequential_transforms"] == [MAP] * 9,
+            "registration maps differ from the prior exact E9 witnesses",
+        )
+        result["export"] = verify_output(output, (339, 512))
+        require(
+            all(result["export"].get(key) == value for key, value in RGB16.items()),
+            "decoded or encoded RGB16 E9 output changed",
+        )
+        result["status"] = "pass"
+        output.unlink()
+    except (OSError, ValueError) as error:
+        result["reason"] = str(error)
+    p10._write(artifact / "result.json", result)
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("mode", choices=("preflight", "run"))
+    for name in ("binary", "receipt", "input-root"):
+        parser.add_argument(f"--{name}", required=True, type=Path)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    target, frames, profile = authenticate(args)
+    if args.mode == "preflight":
+        print(
+            json.dumps(
+                {
+                    "source": SOURCE,
+                    "cuda_sha256": BINARY,
+                    "input_bytes_verified": len(frames),
+                    "gpu_queries": 0,
+                    "product_launches": 0,
+                },
+                indent=2,
+            )
+        )
+        return 0
+    if args.output is None:
+        parser.error("run requires a fresh --output directory")
+    require(
+        os.sched_getaffinity(0) == {12, 13},
+        "this bounded functional witness uses CPUs 12 and 13",
+    )
+    require(
+        not os.getenv("LD_LIBRARY_PATH") and not os.getenv("LD_PRELOAD"),
+        "unset ambient library overrides",
+    )
+    root = args.output.resolve()
+    root.mkdir()
+    with p10._campaign_lock():
+        hardware = p10._gpu_state(GPU_UUID)
+        require(
+            p10._pci_id(hardware["pci.bus_id"]) == p10._pci_id(GPU_PCI)
+            and hardware["name"] == GPU_NAME
+            and hardware["driver_version"] == "580.178.04",
+            "same physical RTX PCI or driver did not match",
+        )
+        result = {
+            "source": SOURCE,
+            "binary_sha256": BINARY,
+            "hardware": hardware,
+            "witnesses": [],
+            "performance_credit": False,
+        }
+        for index in (1, 2):
+            case = root / f"witness-{index:02}"
+            case.mkdir()
+            observed = witness(args, case, target, frames, profile)
+            result["witnesses"].append(observed)
+            p10._write(root / "summary.json", result)
+            if observed["status"] != "pass":
+                return 1
+        _, after, _ = authenticate(args)
+        require(after == frames, "source order changed")
+        result["source_and_binary_reauthenticated_after_both_jobs"] = True
+        p10._write(root / "summary.json", result)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
