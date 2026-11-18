@@ -48,10 +48,10 @@ raw report and provenance record.
 The integrated local branch uses the audited clean base `8410863`.
 Compared with the original warp integration checkpoint, the base changed
 only three E9 trace evidence files. Product sources, test sources and
-locks match. Retained runtime receipts still identify their original
-tested revisions and binaries. The current locked release and native E9
-builds use the exact product at `e81079d`. This checkpoint adds
-documentation evidence on the same product tree.
+locks match. Retained runtime receipts identify their original tested
+revisions and binaries. The latest sealed Debian package is `e81079d`.
+The current product adds the checked Exposure Fusion upload reuse described
+below. It needs a matching package build, full case replay and assurance.
 
 The exact combined `c1e2cac` source passed the unchanged Linux CPU ASan and
 TSan gates. Each ran 146 passing tests across 19 groups with no diagnostics.
@@ -80,7 +80,7 @@ The scoped headless GTK child now keeps the compiler's profile path.
 The same filtered test hits the error path once and emits separate
 PID-bound parent and child profiles. Production code is unchanged
 outside this test module. Strict full coverage and branch results remain
-open, and the current release package replay stays pinned to `e81079d`.
+open. The latest sealed package replay identifies `e81079d`.
 [Scoped GTK child profiles](p9-cpu-assurance-evidence/gtk-child-profile/README.md).
 
 At `7748045`, the full fast gate and all 147 selected CPU dev tests
@@ -340,6 +340,13 @@ and 151.283 ms for cancel, both below the frozen 250 ms limit. The combined
 latency reducer exited 1 with zero viewer observations in this campaign.
 [Exact physical lifecycle campaign](../../qualification/p10-performance/evidence/native-lifecycle-d6359e1/README.md).
 
+The exact `e81079d` Debian GUI also passed all 120 physical lifecycle
+requests across the same 64-path fixture and real D150. Worst observed
+acknowledgements were 211.515 ms for pause and 212.889 ms for cancel,
+both within 250 ms. The capture supplied no viewer observations, so the
+combined latency gate remains open.
+[Exact package lifecycle replay](../../qualification/p10-performance/evidence/native-lifecycle-e81079d/README.md).
+
 The exact packaged `287828a` GUI recorded all 400 physical viewer
 observations with independent pixel validation. Idle P95 passed at
 21.713240 ms and loaded P95 missed at 33.817853 ms against the 33 ms limit.
@@ -569,6 +576,13 @@ at native scale. The verdict covers the exact `c1e2cac` package, these
 nine E9 inputs and explicit CPU.
 [Qualified E9 CPU profile](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-c1e2cac/README.md).
 
+The sealed `e81079d` Debian package qualified the same E9 CPU profile
+with 34 primary jobs and two CPU witnesses. Warm, cold and process-tree
+RSS ratios were 0.421197, 0.058141 and 0.316061. The exact input and
+RGB16 hashes match the independently reviewed CPU pair. This remains
+one qualified logical profile of 26.
+[Exact packaged E9 CPU result](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-e81079d/README.md).
+
 The corrected E9 physical CUDA/OpenCL campaign also completed all 34
 primary jobs and two backend witnesses. The warm ratio of 0.521168
 missed 0.50. Cold and process-tree RSS passed at 0.078821 and 0.426292.
@@ -586,6 +600,22 @@ The first warm pair reproduced the prior independently reviewed RGB16
 images and inputs exactly. The frozen GPU profile remains failed and
 the completed-job inventory stays at one qualified profile out of 26.
 [Exact integrated E9 CUDA/OpenCL result](../../qualification/p10-performance/evidence/integrated-e9-corrected-cuda-e81079d/README.md).
+
+The adopted registration upload reuse extends the checked, frame-local
+RGB handoff to slab-free Exposure Fusion. The exact `481d805` change
+passed 48 scoped CPU tests and reproduced f32 channels, TIFF bytes and
+transforms across 20 physical RTX 3090 CUDA and Vulkan jobs. The nine-frame
+identity fixture eliminated all nine extra fusion uploads. The translated
+and mismatched-canvas controls kept the upload each required.
+[Physical upload and parity evidence](../../qualification/p10-performance/evidence/e9-exposure-resident/README.md).
+
+The standalone `481d805` CUDA comparison completed 34 primary jobs and
+two witnesses against corrected OpenCL. Warm, cold and process-tree RSS
+passed at 0.494304, 0.074387 and 0.410362. The reviewed RGB16 pair repeated
+exactly. Device-memory gaps exceeded 20 ms on 17 CUDA and four OpenCL
+traces, so the GPU profile remains pending. The integrated product still
+requires its own package, strict conformance and assurance receipts.
+[Scoped E9 CUDA/OpenCL result](../../qualification/p10-performance/evidence/integrated-e9-cuda-exposure-481d805/README.md).
 
 The same-source E9 CUDA compiler experiment on the RTX 3090 measured
 452.260 ms warm median for LLVM and 737.959 ms for C++, with exact RGB16

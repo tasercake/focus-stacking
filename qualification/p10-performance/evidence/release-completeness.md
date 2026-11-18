@@ -8,16 +8,16 @@ comparison permits native CUDA against reference OpenCL on the same card.
 The inspected target SHA-256 is `58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc`.
 
 **One of 26 logical profiles has met every completed-job gate.** The
-corrected-reference E9 CPU campaign at exact `c1e2cac` passed its numeric
-and independent representative-image quality gates. Its 34 primary jobs
-and two backend diagnostics add to five historical full-count schedules
-at `12f2151` with 170 primary jobs and ten backend diagnostics. Three of
-the historical schedules used an ineligible E9 reference combiner. The
-two corrected native CUDA/OpenCL E9 campaigns each add 34 primary jobs
-and two backend diagnostics. Both missed the warm target and device cadence.
+corrected-reference E9 CPU profile qualified at `c1e2cac` and `e81079d`,
+each with 34 primary jobs, two CPU witnesses and the same independently
+reviewed RGB16 pair. Five historical full-count schedules at `12f2151`
+recorded 170 primary jobs and ten witnesses. Three used an ineligible E9
+reference combiner. Three corrected E9 CUDA/OpenCL runs each completed
+34 primary jobs and two witnesses. The standalone `481d805` run passed
+warm, cold and process-tree RSS. Attributable GPU memory remains pending.
 Three CPU profiles and one GPU profile have eligible full schedules.
 Ten CPU and twelve GPU profiles lack a full eligible schedule.
-[Qualified E9 CPU campaign](integrated-e9-corrected-cpu-c1e2cac/README.md)
+[Exact `e81079d` E9 CPU qualification](integrated-e9-corrected-cpu-e81079d/README.md).
 
 ## Profile coverage
 
@@ -42,7 +42,7 @@ the full matched schedule is absent.
 | D150 | `hybrid` | Full count at `12f2151` | Open schedule |
 | D150 | `weighted_average` | Open schedule | Open schedule |
 | D150 | `depth_map` | Open schedule | Open schedule |
-| E9 | `exposure_fusion` | Qualified at `c1e2cac` | Corrected CUDA/OpenCL full counts at `c1e2cac` and `e81079d`. Latest warm ratio failed at 0.505452 and device cadence remains open. |
+| E9 | `exposure_fusion` | Qualified at `c1e2cac` and `e81079d` | Corrected full CUDA/OpenCL schedules at `c1e2cac`, `e81079d` and standalone `481d805`. The latest warm ratio passed at 0.494304. Device cadence and integrated release verification remain open. |
 
 The profile IDs are `<workload>.<method>.cpu` and
 `<workload>.<method>.gpu`. The input receipts pin 50 native generated RGB16
@@ -69,11 +69,14 @@ observations from the ineligible legacy reference combiner. The
 | [E9 exposure fusion CUDA/OpenCL, native `12f2151`](integrated-e9-cuda-12f2151/README.md) | 0.56340 | 0.08442 | 0.42523 | Pending cadence | Ineligible comparator. |
 | [E9 exposure fusion CPU, packaged `c1e2cac`](integrated-e9-corrected-cpu-c1e2cac/README.md) | 0.425874, pass | 0.057144, pass | 0.318864, pass | — | Independent review passed with residual exposure differences and 364 additional floor and 731 additional ceiling samples. |
 | [E9 exposure fusion CUDA/OpenCL, native `c1e2cac`](integrated-e9-corrected-cuda-c1e2cac/README.md) | 0.521168, fail | 0.078821, pass | 0.426292, pass | Pending cadence | Same sampled representative detail with residual exposure and endpoint differences. |
+| [E9 exposure fusion CPU, packaged `e81079d`](integrated-e9-corrected-cpu-e81079d/README.md) | 0.421197, pass | 0.058141, pass | 0.316061, pass | — | The independently reviewed `c1e2cac` CPU pair repeated exactly. |
 | [E9 exposure fusion CUDA/OpenCL, native `e81079d`](integrated-e9-corrected-cuda-e81079d/README.md) | 0.505452, fail | 0.074855, pass | 0.420741, pass | Pending cadence | Exact prior independently reviewed RGB16 pair and inputs. |
+| [E9 exposure fusion CUDA/OpenCL, standalone `481d805`](integrated-e9-cuda-exposure-481d805/README.md) | 0.494304, pass | 0.074387, pass | 0.410362, pass | Pending cadence | Same reviewed RGB16 images and inputs. Integrated package and conformance remain open. |
 
-The native CUDA E9 sampled lower bound was 295,698,432 B. Half the
-cadence-valid historical reference peak of 320,864,256 B is 160,432,128 B. The strict
-candidate peak and ratio remain unavailable. Earlier repeated E9 campaigns
+The latest E9 campaign sampled device-memory lower bounds of 291,504,128 B
+on CUDA and 320,864,256 B on OpenCL. Seventeen CUDA and four OpenCL traces
+exceeded the 20 ms cadence ceiling. The strict paired peak and ratio remain
+unavailable. Earlier repeated E9 campaigns
 and backend/phase experiments cover the same logical IDs and add no profile
 coverage. The [R50 packaged pair and phase diagnosis](../../../pancake/docs/p10-r50-phase-287828a/README.md)
 and the [earlier physical T50 pair](t50-12f2151-preflight/pair-001/README.md)
@@ -108,6 +111,12 @@ The actual 64-path fixture and real D150 each contributed 30 pauses and
 same-release combined viewer and lifecycle pass.
 [Exact lifecycle and settled-state evidence](native-lifecycle-d6359e1/README.md)
 
+The `e81079d` Debian GUI passed all 120 physical acknowledgements on the
+same workloads. Maximum pause and cancellation times were 211.515 ms and
+212.889 ms. Its reducer had zero viewer observations. The matching native
+latency gate remains open.
+[Exact `e81079d` packaged lifecycle](native-lifecycle-e81079d/README.md).
+
 The sealed `c1e2cac` Linux package passed 341 host, 34 isolated GUI and one
 physical RTX 3090 GUI case, all 376 case IDs. This is the product package
 used by the corrected E9 CPU campaign. The native CUDA/HIP build and
@@ -117,13 +126,18 @@ ledger and the newer suite source retain distinct provenance.
 [Native Linux profiles](../../../pancake/docs/p9-linux-native-evidence/c1e2cac/README.md) ·
 [Current implementation and assurance scope](../../../pancake/docs/implementation-plan.md#active-delivery-checkpoint)
 
+The newer exact `e81079d` Debian package also passed all 376 frozen cases
+and supplied the exact E9 CPU binary above. The later Exposure Fusion
+reuse changes the app and needs a matching release package and full replay.
+[Exact `e81079d` package and strict ledger](../../../pancake/docs/p9-linux-package-evidence/e81079d/summary.json).
+
 ## Holds and unavailable evidence
 
 - **Engineering and scheduling.** Complete the missing full matched profiles
   with the approved inputs and consistent output quality. Resolve the
-  measured R50 speed misses and D150/R50 quality gaps. E9 GPU needs a
-  passing warm comparison and cadence-valid device memory observation
-  with the corrected reference. Final release also needs matching full
+  measured R50 speed misses and D150/R50 quality gaps. E9 GPU needs
+  cadence-valid device memory observation and a passing comparison at
+  the matching release scope. Final release also needs matching full
   native latency, package, conformance and assurance evidence.
 - **Host memory observation.** The full D150 and R50 CPU campaigns had
   process-tree sampling gaps above 20 ms. A dedicated collector core did
