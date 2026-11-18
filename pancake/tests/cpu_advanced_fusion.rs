@@ -26,6 +26,86 @@ fn cpu_advanced_fusion() -> Result<(), String> {
     advanced_fusion_cases::check_exposure_specialization(&device)
 }
 
+/// Keep selected detail at two spatial scales when sources have equal focus.
+///
+/// # Errors
+/// Returns a numerical, geometry, or runtime failure.
+#[test]
+fn cpu_hybrid_retains_selected_fine_detail_across_scales() -> Result<(), String> {
+    const STRIP_WIDTH: usize = 64;
+    let device = cubecl::Device::Cpu(cubecl::cpu::CpuDevice);
+    let second_difference = |&[left, _, _, center, _, _, right, _, _]: &[f32; 9]| {
+        2.0_f64.mul_add(-f64::from(center), f64::from(left) + f64::from(right))
+    };
+    let mut failures = Vec::new();
+
+    // Phase opposition gives equal focus magnitude and cancels the signed
+    // detail in the weighted mean. Two- and four-pixel periods disappear
+    // after one and two Gaussian reductions respectively, away from edges.
+    let patterns: [&[f32]; 2] = [&[0.0, 1.0], &[0.0, 0.5, 1.0, 0.5]];
+    for pattern in patterns {
+        let first: Vec<_> = pattern
+            .iter()
+            .copied()
+            .cycle()
+            .take(STRIP_WIDTH)
+            .flat_map(|sample| [sample; 3])
+            .collect();
+        let opposite: Vec<_> = first.iter().map(|sample| 1.0 - sample).collect();
+        let mut accumulator = AdvancedAccumulator::new(
+            &device,
+            STRIP_WIDTH,
+            1,
+            AdvancedMethod::Hybrid,
+            6,
+            3,
+            BUDGET,
+        )?;
+        accumulator.add_frame(&first)?;
+        accumulator.add_frame(&opposite)?;
+        let output = accumulator.finish()?;
+        if output.len() != first.len() {
+            return Err("Hybrid changed the dimensions of the detail strip".to_owned());
+        }
+
+        let (mut source_power, mut fused_power, mut covariance) = (0.0_f64, 0.0_f64, 0.0_f64);
+        // Center x=24..40 stays clear of both image edges through three reductions.
+        for (source, fused) in first
+            .array_windows::<9>()
+            .zip(output.array_windows::<9>())
+            .step_by(3)
+            .skip(23)
+            .take(16)
+        {
+            let source = second_difference(source);
+            let fused = second_difference(fused);
+            source_power = source.mul_add(source, source_power);
+            fused_power = fused.mul_add(fused, fused_power);
+            covariance = fused.mul_add(source, covariance);
+        }
+
+        // The public numerical focus oracle requires 65% of true Laplacian
+        // variance. Whole periods have zero mean interior second difference.
+        // Positive covariance also verifies deterministic earlier-source detail.
+        if source_power <= 0.0_f64 || !fused_power.is_finite() {
+            return Err("Hybrid detail fixture has invalid second differences".to_owned());
+        }
+        let retained = fused_power / source_power;
+        if retained < 0.65_f64 || covariance <= 0.0_f64 {
+            failures.push(format!(
+                "{}-pixel period retained {retained:.3} of detail power (covariance {covariance:.3})",
+                pattern.len()
+            ));
+        }
+    }
+
+    if failures.is_empty() {
+        Ok(())
+    } else {
+        Err(failures.join(", "))
+    }
+}
+
 /// Reject malformed caller samples before accepting the next complete frame.
 /// # Errors
 /// Returns a numerical, validation, or runtime error.
