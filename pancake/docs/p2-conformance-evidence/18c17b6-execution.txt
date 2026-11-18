@@ -1,0 +1,36 @@
+Source commit 18c17b6f1dd2ff2a15ccea985fe430ac1eb7a666
+Exported from /tmp/pancake-worktrees.t3paqgWM/p6-job/artifacts/pancake-conformance/18c17b6/pancake-cli
+8c96ad652487f8628e53b44dfa014ff65b3da84da3acfa98ab0e56d26d09201a  /tmp/pancake-worktrees.t3paqgWM/p6-job/artifacts/pancake-conformance/18c17b6/pancake-cli
+8c96ad652487f8628e53b44dfa014ff65b3da84da3acfa98ab0e56d26d09201a  pancake/target/release/pancake-cli
+012cda6d161124eef8ecc3c5c6a4fed8db881e5f7606f4b9d7aee5f766f1a879  pancake/Cargo.lock
+30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b  pancake-conformance/uv.lock
+f774e9e080fb49e2f82f11923668db6212ccea83f2924b370dbba1d508c2bfc8  pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml
+PANCAKE_RUNTIME=<default> VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json XDG_RUNTIME_DIR=/tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p2-18c17b6-host/xdg-runtime
+Linux 6.8.0-147-generic x86_64 GNU/Linux
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           48 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  32
+On-line CPU(s) list:                     0-31
+Vendor ID:                               AuthenticAMD
+Model name:                              AMD Ryzen 9 7950X3D 16-Core Processor
+CPU family:                              25
+Model:                                   97
+Thread(s) per core:                      2
+Core(s) per socket:                      16
+Socket(s):                               1
+Stepping:                                2
+CPU(s) scaling MHz:                      56%
+CPU max MHz:                             5759.0000
+CPU min MHz:                             545.0000
+BogoMIPS:                                8383.89
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt pdpe1gb rdtscp lm constant_tsc rep_good amd_lbr_v2 nopl nonstop_tsc cpuid extd_apicid aperfmperf rapl pni pclmulqdq monitor ssse3 fma cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx f16c rdrand lahf_lm cmp_legacy svm extapic cr8_legacy abm sse4a misalignsse 3dnowprefetch osvw ibs skinit wdt tce topoext perfctr_core perfctr_nb bpext perfctr_llc mwaitx cpb cat_l3 cdp_l3 hw_pstate ssbd mba perfmon_v2 ibrs ibpb stibp ibrs_enhanced vmmcall fsgsbase bmi1 avx2 smep bmi2 erms invpcid cqm rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local user_shstk avx512_bf16 clzero irperf xsaveerptr rdpru wbnoinvd cppc amd_ibpb_ret arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid decodeassists pausefilter pfthreshold avic vgif x2avic v_spec_ctrl vnmi avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid overflow_recov succor smca fsrm flush_l1d ibpb_exit_to_user
+Virtualization:                          AMD-V
+L1d cache:                               512 KiB (16 instances)
+L1i cache:                               512 KiB (16 instances)
+L2 cache:                                16 MiB (16 instances)
+L3 cache:                                128 MiB (2 instances)
+NUMA node(s):                            1
+NVIDIA GeForce RTX 3090, 00000000:01:00.0, 580.178.04, 24576 MiB
+uv 0.6.4

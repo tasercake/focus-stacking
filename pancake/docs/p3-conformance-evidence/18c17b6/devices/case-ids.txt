@@ -1,0 +1,13 @@
+devices.cpu.weighted_average
+devices.gpu.stack.weighted_average
+devices.auto.cold.weighted_average
+devices.gpu.aligned.weighted_average
+devices.cpu.depth_map
+devices.gpu.stack.depth_map
+devices.auto.cold.depth_map
+devices.gpu.aligned.depth_map
+devices.gpu.slabs.weighted_average
+devices.gpu.slabs.depth_map
+devices.gpu.precision16.weighted_average
+devices.gpu.precision16.depth_map
+devices.gpu.weighted.zero_regions
