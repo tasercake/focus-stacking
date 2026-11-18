@@ -70,3 +70,5 @@ full T50 timing require their own runs.
 
 [Raw host and build records](raw-host-records.tar.gz)
 [Archive checksum](raw-host-records.sha256)
+
+[Physical Vulkan replay](physical-vulkan/README.md)
