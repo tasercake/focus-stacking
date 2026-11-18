@@ -71,6 +71,9 @@ candidate warm TIFFs, baseline focus JSON, and preserved held-out landmarks.
 The width, height and center comparisons reuse first-source coordinates and
 perform no image resampling. Baseline diagnostic and warm files are matched
 by the hashes retained in the sealed paired-run archive and witness lease.
+After comparison, the exact 150 temporary originals and three TIFFs were
+authenticated and removed. The CLI and raw evidence retain their verified
+hashes. [Ownership and cleanup receipt](cleanup.json).
 
 ## Further regression scope
 
