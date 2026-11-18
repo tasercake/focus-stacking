@@ -15,6 +15,7 @@ P10_TARGETS_SHA256 = "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b700
 LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
 DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
 BINARY = "0734a90ba35ef3534fd6a66a86682ef98662e87a9f0ecc8b25c42b3fccdbdad3"
+BUILD_RECEIPT = "3af2da3e79df00dbd7ec9783a3e7276b9f79556b26db81406ad6b48572936b7d"
 GPU_UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
 GPU_PCI = "0000:01:00.0"
 GPU_NAME = "NVIDIA GeForce RTX 3090"
@@ -46,6 +47,9 @@ def authenticate(args):
         and args.binary.is_file()
         and not args.binary.is_symlink(),
         "native CUDA binary differs",
+    )
+    require(
+        sha256(args.receipt) == BUILD_RECEIPT, "sealed native build receipt differs"
     )
     retained = json.loads(args.receipt.read_text())
     require(
@@ -97,21 +101,22 @@ def witness(args, artifact, target, frames, profile):
             "source": SOURCE,
         },
     )
-    with (
-        (artifact / "stdout.txt").open("xb") as stdout,
-        (artifact / "stderr.txt").open("xb") as stderr,
-    ):
-        completed = subprocess.run(
-            command,
-            cwd=target.root,
-            env=env,
-            stdout=stdout,
-            stderr=stderr,
-            timeout=30,
-            check=False,
-        )
-    result = {"returncode": completed.returncode, "status": "fail"}
+    result = {"returncode": None, "status": "fail"}
     try:
+        with (
+            (artifact / "stdout.txt").open("xb") as stdout,
+            (artifact / "stderr.txt").open("xb") as stderr,
+        ):
+            completed = subprocess.run(
+                command,
+                cwd=target.root,
+                env=env,
+                stdout=stdout,
+                stderr=stderr,
+                timeout=30,
+                check=False,
+            )
+        result["returncode"] = completed.returncode
         require(
             completed.returncode == 0, "exact CUDA E9 process did not exit successfully"
         )
@@ -137,7 +142,7 @@ def witness(args, artifact, target, frames, profile):
         )
         result["status"] = "pass"
         output.unlink()
-    except (OSError, ValueError) as error:
+    except (OSError, ValueError, subprocess.TimeoutExpired) as error:
         result["reason"] = str(error)
     p10._write(artifact / "result.json", result)
     return result
