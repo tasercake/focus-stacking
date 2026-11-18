@@ -83,7 +83,22 @@ outside this test module. Strict full coverage and branch results remain
 open, and the current release package replay stays pinned to `e81079d`.
 [Scoped GTK child profiles](p9-cpu-assurance-evidence/gtk-child-profile/README.md).
 
-**The packaged `fb9c399` Linux release passes all 376 frozen case IDs.**
+At `7748045`, the full fast gate and all 147 selected CPU dev tests
+passed, with 19 test executables and zero skipped. Strict coverage and
+the full mutation campaign remain open.
+[Canonical fast and CPU receipts](p9-cpu-assurance-evidence/7748045/README.md).
+
+**The exact `e81079d` Debian package passed all 376 frozen case IDs.**
+The locked release build, fast and dependency checks, and rootless
+package verification passed. The strict ledger matched 341 host,
+34 isolated GUI and one physical RTX 3090 Vulkan case with no fallback.
+The 69,568,056-byte archive has SHA-256
+`8ed6e70d7552140c0257520a07ac2b9fc5f97ff82a5fb3126864df821df4507e`.
+This ledger identifies the package before the new native notice staging.
+[Exact package and lane receipt](p9-linux-package-evidence/e81079d/summary.json).
+[Strict aggregate ledger](p9-linux-package-evidence/e81079d/linux-ledger.json.gz).
+
+**The earlier packaged `fb9c399` Linux release passed all 376 frozen case IDs.**
 The locked workspace build, fast and dependency gates, and rootless Debian
 verification passed. The strict ledger accepted 341 host cases, 34 isolated
 GUI cases and one physical RTX 3090 Vulkan GUI case at PCI `0000:01:00.0`
@@ -215,6 +230,11 @@ projection contributes a verified roster and cost estimate. Full native
 mutation acceptance remains open.
 [Exact historical-operation replay](p9-mutation-audit/c1e2cac-historical-ten/README.md).
 [Next-shard projection](p9-mutation-audit/c1e2cac-historical-ten/full-shard-projection.md).
+
+The local `e81079d` recipe specifies a fresh ordered full roster, exact
+partition, baseline and native mutant outcomes. A complete shard has
+yet to run at that revision.
+[Canonical local mutation recipe](p9-mutation-audit/e81079d-canonical-shard-plan/README.md).
 
 Follow-up tests caught all three earlier survivors on their separately
 verified revisions. The panorama test exercised the thumbnail budget
@@ -719,6 +739,11 @@ The owner rehashed and removed all 52 TIFFs after both diagnostics
 released their reads. The frozen matched-reference schedule remains open.
 [Exact ABBA diagnostic](p10-dual-scan-evidence/e5b6260/README.md).
 [Shared input and owner cleanup](../../qualification/p10-performance/evidence/t50-shared-fb9c399/README.md).
+
+The exact-package T50 priority review prepared a Weighted Average CPU
+diagnostic against the pinned reference. No stage, executions or
+measurements were produced by that preparation.
+[Eight T50 profile priorities and prepared diagnostic](../../qualification/p10-performance/evidence/t50-profile-priority-e810/README.md).
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
