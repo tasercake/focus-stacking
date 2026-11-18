@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+scratch=$(realpath "$1")
+test -s "$scratch/quiet-lease.txt"
+test ! -e "$scratch/matched-full-pair"
+test ! -e "$scratch/external-candidate-stage-probe"
+ref=pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference
+export PYTHONPATH="$PWD/qualification/p10-performance"
+export TZ=Asia/Singapore
+runner=(/usr/bin/prlimit --as=34359738368 -- /usr/bin/taskset -c 0-14
+    "$ref/.venv/bin/python" "$scratch/diagnose.py" "$scratch")
+{
+    date --iso-8601=seconds
+    uname -a
+    lscpu -e=CPU,CORE,SOCKET,NODE,ONLINE
+    awk '/^MemAvailable|^SwapFree/' /proc/meminfo
+    gdb --version | sed -n '1p'
+} > "$scratch/window-start.txt"
+trap 'result=$?
+    {
+        date --iso-8601=seconds
+        awk "/^MemAvailable|^SwapFree/" /proc/meminfo
+        printf "diagnostic_runner_exit=%s\n" "$result"
+    } > "$scratch/window-end.txt"
+' EXIT
+"${runner[@]}"
+"${runner[@]}" --stage-probe "$scratch/external-stages.py"
+python3 "$scratch/summarize-stages.py" "$scratch" > "$scratch/stages.json"
