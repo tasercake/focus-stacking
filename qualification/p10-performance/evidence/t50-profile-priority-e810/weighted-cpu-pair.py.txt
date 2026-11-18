@@ -1,0 +1,183 @@
+"""Replay one explicit CPU T50 Weighted Average diagnostic pair after authorization."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import runpy
+import stat
+import subprocess
+import time
+
+import p10
+from protocol import Campaign, corpus, pinned_json, pixel_metrics, sha256, verify_frames
+
+SOURCE = "e81079dee4078d7a1149da0f5950aab8c89f8d44"
+CLI = "9630572be5e637c38c604f2fcd6d7a44e31e171a5ccf17dadb1f59ba345c24f0"
+DEB = "8ed6e70d7552140c0257520a07ac2b9fc5f97ff82a5fb3126864df821df4507e"
+PACKAGE_RECEIPT = "f0a6402c9d79038ef86876f91a0ae36fa526e97332746b13ee8a8ba242ea1fae"
+TARGETS = "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc"
+BOUNDS = (4000, 6000, 3)
+
+
+def materialization(options, frozen):
+    """Confirm ownership and bind the fresh stage to all 52 frozen image records."""
+    receipt = pinned_json(options.materialization, options.materialization_sha256)
+    root = options.input_root.resolve(strict=True)
+    if (
+        receipt["mode"] != "materialized"
+        or receipt["reference_receipt_sha256"] != frozen
+        or receipt["cleanup"]["owned_output_directory"] != str(root)
+        or receipt["total_generated_tiff_bytes"] != 2_775_174_405
+    ):
+        raise ValueError("materialization does not match the frozen owned stage")
+    marker = root / "ownership.json"
+    if not stat.S_ISREG(marker.lstat().st_mode) or json.loads(marker.read_bytes()) != {
+        "kind": receipt["dataset_kind"],
+        "token": receipt["ownership_token"],
+    }:
+        raise ValueError("stage ownership marker differs")
+    return receipt
+
+
+def package_identity(options, candidate):
+    """Bind the executable to the exact sealed Debian release."""
+    proof = pinned_json(options.package_receipt, PACKAGE_RECEIPT)
+    if (
+        options.package.stat().st_size != 69_568_056
+        or proof["archive"]["bytes"] != 69_568_056
+        or sha256(options.package) != DEB
+        or proof["archive"]["sha256"] != DEB
+        or proof["source_commit"] != SOURCE
+        or candidate["commit"] != SOURCE
+        or candidate["binary_sha256"] != CLI
+        or proof["binaries"]["pancake-cli"]["sha256"] != CLI
+        or candidate["lock_sha256"] != proof["cargo_lock_sha256"]
+    ):
+        raise ValueError("exact e810 release source, archive, lock or ELF differs")
+    return proof
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for key in (
+        "input-root", "materialization", "build-receipt", "package",
+        "package-receipt", "quiet-receipt", "output",
+    ):
+        parser.add_argument(f"--{key}", type=Path, required=True)
+    parser.add_argument("--materialization-sha256", required=True)
+    parser.add_argument("--timeout", type=float, default=300)
+    parser.add_argument("--execute-diagnostic", action="store_true")
+    options = parser.parse_args()
+    if not options.execute_diagnostic:
+        parser.error("prepared replay only; execution requires a quiet lease and --execute-diagnostic")
+    if os.sched_getaffinity(0) != set(range(15)) or options.timeout <= 0:
+        parser.error("run both jobs with taskset -c 0-14 and a positive deadline")
+    options.profile = "T50.weighted_average.cpu"
+    options.runtime = "cpu"
+    options.threads = 15
+    options.rss_sampler_cpu = 15
+    options.gpu_uuid = options.cuda_library_path = None
+    pinned_json(p10.TARGETS_PATH, TARGETS)
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(p for p in campaign.profiles("cpu") if p.key == options.profile)
+    output = options.output.resolve()
+    quiet_digest = sha256(options.quiet_receipt)
+    output.mkdir()
+    report = {
+        "scope": "one instrumented CPU pair, no frozen campaign qualification credit",
+        "profile": profile.key,
+        "settings": profile.options,
+        "protocol_sha256": TARGETS,
+        "runner_sha256": sha256(Path(p10.__file__)),
+        "replay_sha256": sha256(Path(__file__)),
+        "quiet_receipt_sha256": quiet_digest,
+        "materialization_sha256": options.materialization_sha256,
+        "jobs": {},
+        "started_unix_ns": time.time_ns(),
+    }
+    try:
+        with p10._campaign_lock():
+            specs, identities = p10._prepared_targets(options, campaign)
+            report["targets"] = identities
+            report["package"] = package_identity(options, identities["candidate"])
+            report["hardware"] = p10._hardware(None)
+            records, source = corpus(p10.ROOT, campaign, "T50")
+            frozen = pinned_json(Path(source["path"]), source["sha256"])
+            stage = materialization(options, source["sha256"])
+            if stage["files"] != frozen["files"]:
+                raise ValueError("stage records differ from the frozen encoded or pixel records")
+            all_records = [
+                {**row, "path": row["name"], "sha256": row["file_sha256"]}
+                for row in stage["files"]
+            ]
+            original = verify_frames(options.input_root, all_records, 52)
+            frames = [options.input_root.resolve() / row["path"] for row in records]
+            if len(frames) != 50 or frames != original[:50] or frames != sorted(frames):
+                raise ValueError("invalid authenticated input order")
+            report["source"] = source
+            exports = {}
+            try:
+                for arm in ("reference", "candidate"):
+                    sample, path = p10._run_sample(
+                        profile, ("diagnostic", 1, arm), arm, specs[arm],
+                        identities[arm], options, frames, BOUNDS, output, None,
+                    )
+                    report["jobs"][arm] = sample
+                    p10._write(output / "pair-report.json", report)
+                    if not sample["valid"]:
+                        raise ValueError(f"{arm} diagnostic failed: {sample['invalid_reason']}")
+                    exports[arm] = path
+                report["children_terminal_unix_ns"] = time.time_ns()
+                p10._write(output / "children-terminal.json", {
+                    "jobs": list(exports),
+                    "finished_unix_ns": report["children_terminal_unix_ns"],
+                })
+                report["decoded_pair"] = pixel_metrics(exports["reference"], exports["candidate"], BOUNDS)
+                review_path = p10.ROOT / "qualification/p10-performance/evidence/registration-recheck/scale-recheck.py.txt"
+                review = runpy.run_path(str(review_path))
+                report["truth_review_sha256"] = sha256(review_path)
+                report["observed_registration"] = {}
+                for arm, path in exports.items():
+                    job = report["jobs"][arm]
+                    try:
+                        maps = review["geometry"](job["completion"], frames)
+                        report["observed_registration"][arm] = maps
+                        if not maps["nonidentity_matrices"] and job["output"]["shape"] == [3998, 5998, 3]:
+                            job["truth_review"] = review["generated_oracle"](path, options.input_root, campaign)
+                        else:
+                            job["truth_review_pending"] = "verify actual crop coordinates and registered overlap"
+                    except ValueError as error:
+                        job["truth_review_pending"] = str(error)
+                reference = report["jobs"]["reference"]
+                candidate = report["jobs"]["candidate"]
+                report["elapsed_candidate_over_reference"] = candidate["elapsed_ns"] / reference["elapsed_ns"]
+                rss_eligible = all(
+                    job["peak_rss_bytes"] is not None and job["maximum_rss_sample_gap_ns"] <= 20_000_000
+                    for job in (reference, candidate)
+                )
+                report["observed_peak_tree_rss_ratio"] = (
+                    candidate["observed_peak_rss_bytes"] / reference["observed_peak_rss_bytes"]
+                    if reference["observed_peak_rss_bytes"] else None
+                )
+                report["cadence_eligible_single_pair_tree_rss_ratio"] = (
+                    candidate["peak_rss_bytes"] / reference["peak_rss_bytes"] if rss_eligible else None
+                )
+            finally:
+                report["all_52_unchanged"] = verify_frames(options.input_root, all_records, 52) == original
+                report["materialization_unchanged"] = materialization(options, source["sha256"]) == stage
+                report["target_identities_unchanged"] = p10._prepared_targets(options, campaign)[1] == identities
+            if not all(report[key] for key in ("all_52_unchanged", "materialization_unchanged", "target_identities_unchanged")):
+                raise ValueError("postflight identity mismatch")
+        report["status"] = "diagnostic_pair_completed_quality_pending"
+        return 0
+    except (KeyError, OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as error:
+        report.update(status="failed", failure=str(error))
+        raise
+    finally:
+        report["finished_unix_ns"] = time.time_ns()
+        p10._write(output / "pair-report.json", report)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
