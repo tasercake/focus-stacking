@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "passed",
+  "complete": true,
+  "selected_count": 3,
+  "completed_count": 3,
+  "counts": {
+    "passed": 3,
+    "failed": 0,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "interface.startup.empty",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 3.3614853880135342,
+      "error": "",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c06/cases/interface.startup.empty"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.layout.panels",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 34.341809088015,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c06/cases/interface.layout.panels"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.sprint.viewer-input",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 4.2255114509607665,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "viewer_input": {
+          "scale_round_trip": true
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/c06/cases/interface.sprint.viewer-input"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}
