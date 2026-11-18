@@ -109,6 +109,11 @@ comparator still exited 1. This receipt covers the registration test on
 its own tested revision.
 [Native registration abstention and nightly coverage](p9-cpu-assurance-evidence/registration-abstention/README.md).
 
+The first combined test tranche at `870f7f9` passed canonical fast and
+all 151 CPU dev tests. The exact results apply to that revision. The
+second combined test tranche needs a fresh canonical run.
+[Combined fast and CPU replay](p9-cpu-assurance-evidence/870f7f9/README.md).
+
 At exact `0a9ae85`, both Linux CPU randomized layout seeds passed all 148
 tests, with 38 fingerprinted executable paths across the two builds.
 Supplemental strict Linux Miri passed all 23 library tests. The canonical
@@ -302,6 +307,39 @@ the original shard outcome and full gate separate.
 [Two sharpness operators](p9-mutation-audit/0a9ae85-sharpness-row/README.md).
 [Hybrid fine-band selection](p9-mutation-audit/hybrid-fine-band-0a9ae85/README.md).
 [Depth Map box normalization](p9-mutation-audit/0a9ae85-focus-box-normalization/README.md).
+
+The next focused native replays caught the NumPy reader cap, RAW encoded
+limit, Previous-reference progression, Breathing scale clamp and stale
+worker outcome operators. The NumPy fixture covers reader tolerance at
+the declared metadata offset. Independent NumPy accepted the exact limit.
+The exact-cap Bayer fixture retained all 53,760 working samples and used
+0.22 s and about 259 MiB more peak RSS than the unpadded decode. The
+Previous-reference test checks the real +3 and −3 ordered steps. The
+Breathing test uses an independently rendered expansion. The worker uses
+its real bounded outcome channel and a test-only module.
+[NumPy reader cap](p9-mutation-audit/npy-v2-limit/README.md).
+[RAW encoded limit](p9-mutation-audit/0a9ae85-raw-encoded-limit/README.md).
+[Previous-reference sequence](p9-mutation-audit/previous-reference-sequence/README.md).
+[Breathing scale clamp](p9-mutation-audit/breathing-clamp/README.md).
+[Native worker generations](p9-mutation-audit/worker-generation-0a9ae85/README.md).
+
+The existing repeated-registration fixture also caught the saved
+near-equal peak mutation. Its focused LLVM maps show the real ambiguity
+guard taking the identity path on stock and passing through to an
+unsupported transform under the mutant. These focused replays retain
+the original shard's recorded outcomes.
+[Near-equal registration peak replay](p9-mutation-audit/near-equal-registration-peak/README.md).
+
+Five more saved operators failed their focused native tests and passed
+after restoration. The Exposure residency test pauses a real CPU job
+and confirms one extra 9,216-byte RGB allocation only for slab size zero,
+with exact f32 and TIFF outputs in both controls. The geometry tests
+check signed shear inversion, the scaled last-pixel crop, Euclidean
+rigidity and rejection beyond the full search radius. This tranche
+changes test code only, including two guarded unit-test modules.
+[Exposure residency](p9-mutation-audit/0a9ae85-resident-rgb-retention/README.md).
+[Public P5 geometry](p9-mutation-audit/0a9ae85-p5-geometry/README.md).
+[Euclidean and search radius](p9-mutation-audit/estimator-geometry-0a9ae85/README.md).
 
 Follow-up tests caught all three earlier survivors on their separately
 verified revisions. The panorama test exercised the thumbnail budget
