@@ -162,3 +162,9 @@ independent native track, same-map interpolation controls and a second full
 CPU prototype. It recovered 54 consecutive motions and removed the false
 jump. The four fixed focus regions became softer, so the quality gap remains
 open and the production experiment stays separate.
+
+The [bounded-cubic sampling study](breathing-sampling/README.md) recovered
+subpixel signed detail in an independent analytic fixture. Its exact paired
+D150 RGB16 exports had byte-identical transforms and matching crop. The
+four historical focus regions became slightly softer, so the independent
+sampling change stays separate from the release.
