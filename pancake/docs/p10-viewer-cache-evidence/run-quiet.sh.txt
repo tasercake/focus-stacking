@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source_dir=/tmp/pancake-worktrees.t3paqgWM/resume-viewer
+out=/home/krishna/Documents/focus-stacking/artifacts/p10-vcache
+ref=/home/krishna/Documents/focus-stacking/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python
+source /home/krishna/Documents/focus-stacking/artifacts/p10-compare/native-tools/gui-env.sh
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+unset SLINT_BACKEND
+export PYTHONPATH="$source_dir/pancake-conformance/src:$source_dir/qualification/p10-performance"
+cd "$source_dir"
+[[ "$(cat "$out/calibration.exit.txt")" == 0 ]]
+test -f "$out/calibration/scenario.json"
+test ! -e "$out/timed"
+date -Iseconds > "$out/quiet-start.txt"
+nvidia-smi > "$out/initial-gpu.txt"
+ps -eo pcpu,pmem,pid,ppid,stat,comm --sort=-pcpu | head -25 > "$out/initial-host.txt" || test "$?" = 141
+status=0
+timeout --signal=INT --kill-after=20s 900s "$ref" qualification/p10-performance/linux_latency.py   --build-receipt "$out/build-receipt.json"   --scenario "$out/calibration/scenario.json" --workload T50 --input-root "$out/inputs"   --output "$out/timed" > "$out/timed.collector.log" 2>&1 || status=$?
+printf '%s\n' "$status" | tee "$out/timed.exit.txt"
+reducer=0
+"$ref" qualification/p10-performance/p10.py latency "$out/timed/native-latency.json"   > "$out/frozen-reduction.json" 2> "$out/frozen-reduction.stderr" || reducer=$?
+printf '%s\n' "$reducer" > "$out/reducer-exit.txt"
+nvidia-smi > "$out/final-gpu.txt"
+date -Iseconds > "$out/quiet-end.txt"
+exit "$status"
