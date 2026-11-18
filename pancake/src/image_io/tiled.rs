@@ -468,8 +468,13 @@ pub(super) fn decode(input: &File) -> Result<Option<RgbImage>, String> {
     if lanes == 1 || !read_parallel(&source, &layout, &spans, &mut samples, lanes)? {
         read_rows(&layout, &mut decoder, &span, &spans, &mut samples, 0)?;
     }
-    let mut frame = RgbImage::new(layout.width, layout.height, samples)?;
-    frame.sample_encoding = SampleEncoding::U16;
-    frame.icc_profile = profile_from_tiff(decoder);
-    Ok(Some(frame))
+    // Shape comes from the checked allocation, and zero and normalized u16 samples are finite.
+    Ok(Some(RgbImage {
+        width: layout.width,
+        height: layout.height,
+        samples,
+        sample_encoding: SampleEncoding::U16,
+        icc_profile: profile_from_tiff(decoder),
+        grayscale_array: false,
+    }))
 }
