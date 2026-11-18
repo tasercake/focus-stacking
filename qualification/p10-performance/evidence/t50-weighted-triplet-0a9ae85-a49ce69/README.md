@@ -57,7 +57,8 @@ Reference vertical detail ratios range from 0.840468 to 0.882494, and
 both Pancake exports repeat 0.840504 to 0.882531. The outputs represent
 final weighted RGB. An independent comparison decoded all three TIFFs,
 rechecked the full pixel equality, and reviewed the same 50 center regions
-and eight fixed crops at a common display mapping. [Independent image audit](independent-image-audit.json)
+and eight fixed crops at a common display mapping.
+[Independent review](independent-triplet-review.md) · [Image audit](independent-image-audit.json)
 
 The Stage6 owner granted a read-only loan and retained cleanup custody.
 The runner authenticated its ownership marker, materialization and all
