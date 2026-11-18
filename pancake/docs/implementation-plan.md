@@ -101,6 +101,14 @@ Nightly recorded 577/764 branch outcomes. Stable emitted no branch map.
 [CPU ASan](p9-cpu-assurance-evidence/0a9ae85/address/README.md).
 [CPU TSan](p9-tsan-audit/integrated-0a9ae85/README.md).
 
+A test-only registration fixture at `d9ea867` verified that repeated
+structure leaves a completed CPU stack unwarped. The exact nightly replay
+passed all 149 tests and exercised the ambiguity guard's true branch once.
+Branch coverage rose from 577 to 578 of 764 outcomes. The strict
+comparator still exited 1. This receipt covers the registration test on
+its own tested revision.
+[Native registration abstention and nightly coverage](p9-cpu-assurance-evidence/registration-abstention/README.md).
+
 At exact `0a9ae85`, both Linux CPU randomized layout seeds passed all 148
 tests, with 38 fingerprinted executable paths across the two builds.
 Supplemental strict Linux Miri passed all 23 library tests. The canonical
@@ -282,6 +290,18 @@ in order. Both listings exited 0. Native execution of that partition
 started on 2026-11-19 at 01:30:24 SGT. Its terminal result and the complete
 mutation verdict remain open.
 [Exact native mutation preflight](p9-mutation-audit/0a9ae85-canonical-preflight/README.md).
+
+Focused CPU replays caught five operators recorded as missed on the
+original `0a9ae85` partition. The tests verify actual CPU completion
+identity, two-dimensional sharpness, Hybrid detail at two fine scales,
+and normalized Depth Map focus in both axes. Each targeted mutant failed
+and its restored stock control passed. The test changes leave the
+application and the sealed package unchanged. The focused results leave
+the original shard outcome and full gate separate.
+[CPU completion fingerprint](p9-mutation-audit/runtime-fingerprint/README.md).
+[Two sharpness operators](p9-mutation-audit/0a9ae85-sharpness-row/README.md).
+[Hybrid fine-band selection](p9-mutation-audit/hybrid-fine-band-0a9ae85/README.md).
+[Depth Map box normalization](p9-mutation-audit/0a9ae85-focus-box-normalization/README.md).
 
 Follow-up tests caught all three earlier survivors on their separately
 verified revisions. The panorama test exercised the thumbnail budget
