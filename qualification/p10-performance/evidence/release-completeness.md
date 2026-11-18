@@ -87,6 +87,12 @@ complete RGB16 exports repeated each target's earlier hashes. Paired RSS
 and GPU coverage remain pending. Single observations supply no warm or cold
 median. [Sealed T50 Hybrid diagnostic](t50-hybrid-pair-8694b55/README.md)
 
+The exact `e81079d` T50 Weighted Average CPU pair measured 43.615742 s
+against 65.857370 s (0.662276). The reference RSS gap was 25.190 ms and
+the paired memory gate remains pending. The single diagnostic adds
+no completed-job profile coverage.
+[Measured T50 Weighted Average CPU pair](t50-weighted-cpu-e81079d/README.md).
+
 ## Native latency and matching release
 
 The exact `8694b55` packaged viewer measured 200 idle and 200 loaded

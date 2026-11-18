@@ -749,11 +749,15 @@ The predeclared recovery probe leaves output quality and performance
 open.
 [Exact anchor and skip-edge review](d150-geometry-audit/anchored-recovery-review/README.md).
 
-The follow-up D150 trial preregisters 11 authenticated originals, six
-fresh bidirectional edges and six prior controls. Its native hold-out
-screen permits abstention. The subset is unmaterialized and the probe
-remains unrun.
-[Predeclared D150 anchor and skip-edge trial](d150-geometry-audit/anchor-skip-prereg/README.md).
+The preregistered D150 CPU trial ran once on 11 authenticated originals.
+All 12 fresh directed estimates had zero confidence, leaving all six
+fresh edges unresolved. The historical jump failed the hold-out spatial
+screen, so the optional packed trial remained unrun. A separate synthetic
+native test recorded zero packed dispatches when no cells overlapped and
+preserved the following neighbor bit for bit. The diagnostic source and
+overlays stay under the evidence path. The private borrowed copies were
+rehash-verified and removed.
+[D150 anchor and skip-edge evidence](d150-geometry-audit/anchor-skip-prereg/README.md).
 
 One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
 Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
@@ -785,10 +789,14 @@ released their reads. The frozen matched-reference schedule remains open.
 [Exact ABBA diagnostic](p10-dual-scan-evidence/e5b6260/README.md).
 [Shared input and owner cleanup](../../qualification/p10-performance/evidence/t50-shared-fb9c399/README.md).
 
-The exact-package T50 priority review prepared a Weighted Average CPU
-diagnostic against the pinned reference. No stage, executions or
-measurements were produced by that preparation.
-[Eight T50 profile priorities and prepared diagnostic](../../qualification/p10-performance/evidence/t50-profile-priority-e810/README.md).
+The exact `e81079d` package completed one T50 Weighted Average CPU pair
+against the pinned reference. Pancake took 43.615742 s and the reference
+took 65.857370 s, a ratio of 0.662276. Both used the same 50 authenticated
+TIFFs and produced independently reviewed RGB16 outputs. The reference
+RSS trace exceeded the 20 ms cadence cap. The full schedule, frozen
+quality judgment and paired RSS gate remain open.
+[Eight T50 profile priorities](../../qualification/p10-performance/evidence/t50-profile-priority-e810/README.md).
+[Exact T50 Weighted Average CPU diagnostic](../../qualification/p10-performance/evidence/t50-weighted-cpu-e81079d/README.md).
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
