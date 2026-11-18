@@ -196,6 +196,7 @@ fn repeated_registration_keeps_unwarped_cpu_export() -> Result<(), String> {
 fn interrupted_execution_retains_an_existing_export() -> Result<(), String> {
     for (method, alignment) in [
         (Method::WeightedAverage, AlignmentMode::Off),
+        (Method::WeightedAverage, AlignmentMode::Similarity),
         (Method::Hybrid, AlignmentMode::Similarity),
         (Method::ExposureFusion, AlignmentMode::Euclidean),
     ] {

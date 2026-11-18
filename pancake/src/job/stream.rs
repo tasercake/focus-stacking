@@ -144,7 +144,7 @@ impl Accumulator {
     /// Returns invalid sample or device completion errors.
     fn add_frame(&mut self, samples: &[f32], resident: Option<ResidentRgb>) -> Result<(), String> {
         match self {
-            Self::Focus(accumulator) => accumulator.add_frame(samples),
+            Self::Focus(accumulator) => accumulator.add_normalized_frame(samples, resident),
             Self::Advanced(accumulator) => accumulator.add_normalized_frame(samples, resident),
         }
     }
@@ -195,8 +195,10 @@ pub(super) fn process(
     let device = runtime.device();
     let plan = Plan::new(config, &first, bytes)?;
     let settings = config.settings();
-    let retain_input = matches!(settings.method, Method::Hybrid | Method::ExposureFusion)
-        && settings.slab_size == 0;
+    let retain_input = matches!(
+        settings.method,
+        Method::Hybrid | Method::ExposureFusion | Method::WeightedAverage
+    ) && settings.slab_size == 0;
     let mut alignment = Alignment::new(
         device,
         config,
