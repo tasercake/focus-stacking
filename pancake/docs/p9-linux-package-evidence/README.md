@@ -1,5 +1,24 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `287828a`
+
+The locked default workspace release built both executables at
+`287828aac07ffad2252785b73a52a59fc07b3409`. The fast and dependency gates and
+four packaging tests passed. The exact local archive is
+`artifacts/pancake-packages/linux-287828a/pancake_0.1.0_amd64.deb` (69,551,694 bytes), with SHA-256
+`34a63edea55c411a6082924c2fbe2c50094eea98753b1f75378459da78e4db99`.
+[Build, hardware and source receipts](287828a/summary.json).
+[Rootless package verification](287828a/package-verification.json).
+
+The rootless extraction verified both executable hashes, resolved native
+libraries, desktop entry, CLI help and archived source notices. The extracted
+binaries passed all 376 frozen case IDs with matching source, contract,
+descriptor and lock receipts. The strict ledger accepted 341 host cases,
+34 isolated GUI cases and the separate physical RTX 3090 GUI case on wgpu
+Vulkan. The raw case records remain under `artifacts/p9-287828a/{h,g,p}`.
+The earlier `d6359e1` release and its evidence retain their original identities.
+[Strict aggregate ledger](287828a/linux-ledger.json.gz).
+
 ## Integrated Linux package candidate `d6359e1`
 
 The locked default-feature workspace release built both executables at
