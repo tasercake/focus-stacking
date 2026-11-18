@@ -1,0 +1,145 @@
+"""Run one attested stock/candidate R50 CPU diagnostic outside frozen sampling."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import time
+
+import p10
+from protocol import Campaign, corpus, sha256, verify_frames, verify_output
+from diagnose import measured_process
+
+from verify_three import matrices
+
+BOUNDS = (3392, 5088, 3)
+EXPECTED = (3390, 5086, 3)
+THREADS = 15
+PINS = {
+    "stock": (
+        "e81079dee4078d7a1149da0f5950aab8c89f8d44",
+        "2d3ff9afaa17d73233fd2ef2ef635f999b53186b608f412dcf8ebd367d458c55",
+    ),
+    "candidate": (
+        "c80d59abe0b47a5e831a1e2b4ccad132d96106c7",
+        "f17bc8241f776fafed9f01be42835a65293480eabb221adef6c21ae23322452d",
+    ),
+}
+HISTORICAL_PIXELS = "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492"
+HISTORICAL_MAPS = "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b"
+
+
+def require(condition, issue):
+    if not condition:
+        raise ValueError(issue)
+
+
+def identities(arm_paths):
+    records = {}
+    for arm, path in arm_paths.items():
+        revision, pin = PINS[arm]
+        require(path.is_file() and sha256(path) == pin, f"{arm} ELF identity did not match")
+        records[arm] = {"source_revision": revision, "sha256": pin, "path": str(path)}
+    return records
+
+
+def confirm_product_result(arm, case, result, frames):
+    require(not (result["returncode"] or result["timed_out"]), f"{arm} did not finish cleanly")
+    progress = result["progress"]
+    require([event["completed"] for event in progress] == list(range(1, 51))
+            and set(event["total"] for event in progress) == {50}, f"{arm} incomplete progress")
+    first = progress[0]["received_monotonic_elapsed_ns"]
+    last = progress[-1]["received_monotonic_elapsed_ns"]
+    result["public_progress_boundaries_ns"] = [first, last - first, result["elapsed_ns"] - last]
+    final = p10._assert_completion(case / "events.jsonl", "cpu", "cpu", None)
+    require(final["physical_gpu"] is False and final["fallback_reason"] is None,
+            f"{arm} is not a real CPU completion")
+    result["completion"] = final
+    result["output"] = verify_output(case / "complete.tif", BOUNDS)
+    result["transform_f32_sha256"] = {
+        kind: matrices(final[kind], frames)
+        for kind in ("alignment_transforms", "sequential_transforms")
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ("inputs", "output", "lease", "stock", "candidate"):
+        parser.add_argument(f"--{name}", type=Path, required=True)
+    args = parser.parse_args()
+    require(os.sched_getaffinity(0) == set(range(THREADS)), "requires common CPU affinity 0–14")
+    require(args.lease.is_file() and args.lease.stat().st_size > 0, "missing host quiet receipt")
+
+    out = args.output.resolve()
+    out.mkdir()
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(p for p in campaign.profiles("cpu") if p.key == "R50.hybrid.cpu")
+    adapter = p10.TargetSpec.load(p10.CANDIDATE)
+    arm_paths = {key: getattr(args, key).resolve(strict=True) for key in PINS}
+    started = time.time_ns()
+    report = {
+        "scope": "One matched stock/candidate pair. No frozen performance credit.",
+        "profile": profile.key, "profile_settings": profile.options,
+        "lease_sha256": sha256(args.lease), "arm_order": list(PINS),
+        "host": p10._hardware(None), "cpu_temperature_start": p10._cpu_thermal_state(),
+        "memory_metric": "Linux wait4 direct-child high-water RSS",
+        "cache_policy": "Fresh per-arm application caches; pre-read common OS file cache",
+        "verification_started_unix_ns": started, "arms": {},
+    }
+    try:
+        with p10._campaign_lock():
+            products = identities(arm_paths)
+            records, source = corpus(p10.ROOT, campaign, "R50")
+            frames = verify_frames(args.inputs, records, 50)
+            require(frames == sorted(frames), "manifest order differs from public CLI file order")
+            report.update(products=products, source=source,
+                          ordered_inputs=[str(frame) for frame in frames])
+            try:
+                for arm, identity in products.items():
+                    case = out / arm
+                    case.mkdir()
+                    env = p10._environment(adapter, case / "cache", case, THREADS, None, None, True)
+                    argv = [identity["path"], *adapter.stack_arguments(
+                        frames, case / "complete.tif", profile.options)]
+                    try:
+                        completed = measured_process(argv, adapter.root, env, case)
+                    except OSError as issue:
+                        completed = {"failure": str(issue)}
+                    report["arms"][arm] = completed
+                report["timed_children_ended_unix_ns"] = time.time_ns()
+                for arm, completed in report["arms"].items():
+                    try:
+                        if "failure" not in completed:
+                            confirm_product_result(arm, out / arm, completed, frames)
+                    except (OSError, ValueError) as issue:
+                        completed["failure"] = str(issue)
+                    finally:
+                        p10._write(out / arm / "process.json", completed)
+                require(all("failure" not in result for result in report["arms"].values()),
+                        "one or more real jobs failed")
+                old, new = (report["arms"][key] for key in PINS)
+                report["encoded_pixels_and_maps_exact"] = (
+                    old["output"] == new["output"]
+                    and old["transform_f32_sha256"] == new["transform_f32_sha256"]
+                )
+                report["historical_geometry_matches"] = tuple(old["output"]["shape"]) == EXPECTED
+                report["historical_pixels_match"] = old["output"]["pixel_sha256"] == HISTORICAL_PIXELS
+                report["historical_maps_match"] = set(old["transform_f32_sha256"].values()) == {
+                    HISTORICAL_MAPS}
+                require(report["encoded_pixels_and_maps_exact"],
+                        "unverified product differential in geometry, export or transforms")
+                report["candidate_to_stock_elapsed_ratio"] = new["elapsed_ns"] / old["elapsed_ns"]
+            finally:
+                report["inputs_unchanged"] = verify_frames(args.inputs, records, 50) == frames
+                report["elf_identities_unchanged"] = identities(arm_paths) == products
+    except (OSError, ValueError) as issue:
+        report["failure"] = str(issue)
+        raise
+    finally:
+        report["finished_unix_ns"] = time.time_ns()
+        report["cpu_temperature_end"] = p10._cpu_thermal_state()
+        p10._write(out / "report.json", report)
+
+
+if __name__ == "__main__":
+    main()
