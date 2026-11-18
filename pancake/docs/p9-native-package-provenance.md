@@ -63,11 +63,14 @@ pass `--native-llvm-receipt "$native_llvm_receipt"` to
 `pancake/scripts/package_linux.py`. It rejects stale source, lock or binaries,
 then stages the receipt and notices under `/usr/share/doc/pancake/native-llvm`
 and verifies all five file identities after rootless package extraction. The
-package receipt includes those paths and hashes. This handoff used the preserved
-`e81079d` application build and tested the packaging changes with local
-fixtures. A new application build and staged package will have their own
-receipt and package digest.
+package receipt includes those paths and hashes. The sealed `e81079d` Debian
+archive predates these added notices. The unchanged application build supplied
+the native-member proof. The nine package tests passed, including rootless
+build, extraction and packaged CLI launch with synthetic executables and
+notice fixtures. A new product package needs its own receipt and archive
+digest.
 
 ```sh
+python3 -B -m unittest discover -s pancake/scripts -p test_package_linux.py
 python3 -B -m unittest discover -s pancake/scripts -p test_package_native_llvm.py
 ```
