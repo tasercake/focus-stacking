@@ -1,0 +1,113 @@
+"""Validate corrected R50 software ingest through the real public stack command."""
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+from p10 import (
+    REFERENCE,
+    TARGETS_PATH,
+    _assert_completion,
+    _campaign_lock,
+    _environment,
+    _reference_launch,
+)
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, sha256, verify_output
+
+worktree = Path.cwd()
+scratch = worktree / "artifacts/cr3-reference"
+frames = [scratch / "sources" / name for name in ("frame_000.CR3", "frame_049.CR3")]
+initial = {frame.name: sha256(frame) for frame in frames}
+target = TargetSpec.load(REFERENCE)
+campaign = Campaign.load(TARGETS_PATH)
+profile = next(p for p in campaign.profiles("cpu") if p.key == "R50.hybrid.cpu")
+identity = _reference_launch(target, sys.executable, profile.key)
+geometry = json.loads(
+    subprocess.check_output(
+        [*identity["command"], "--cr3-geometry", str(frames[0])], cwd=target.root
+    )
+)
+
+
+def launch(name, inputs, preserve=False):
+    directory = scratch / name
+    directory.mkdir()
+    output = directory / "result.tif"
+    if preserve:
+        output.write_bytes(b"existing-output-sentinel")
+    env = _environment(target, directory / "cache", directory, 2, None, None, True)
+    command = [
+        *identity["command"],
+        *target.stack_arguments(inputs, output, profile.options),
+    ]
+    with (
+        (directory / "stdout.log").open("wb") as out,
+        (directory / "stderr.log").open("wb") as err,
+    ):
+        finished = subprocess.run(
+            command,
+            cwd=target.root,
+            env=env,
+            check=False,
+            stdout=out,
+            stderr=err,
+            timeout=120,
+        )
+    if preserve:
+        assert finished.returncode != 0, "corrupt input unexpectedly completed"
+        assert output.read_bytes() == b"existing-output-sentinel"
+        diagnostic = (directory / "stderr.log").read_text()
+        assert inputs[-1].name in diagnostic
+        events_path = directory / "events.jsonl"
+        if events_path.exists():
+            assert not any(
+                (event := json.loads(line))["event"] == "stack_complete"
+                and event.get("completed") is True
+                for line in events_path.read_text().splitlines()
+            )
+        return {
+            "argv": command,
+            "exit": finished.returncode,
+            "existing_output_preserved": True,
+        }
+    assert finished.returncode == 0, (directory / "stderr.log").read_text()
+    return {
+        "argv": command,
+        "exit": finished.returncode,
+        "backend": _assert_completion(directory / "events.jsonl", "cpu", None, None),
+        "result": verify_output(output, geometry["oriented_shape_hwc"]),
+    }
+
+
+bad = scratch / "sources/truncated.CR3"
+try:
+    with frames[0].open("rb") as source, bad.open("xb") as truncated:
+        truncated.write(source.read(128))
+    with _campaign_lock():
+        good = launch("replay-cpu", frames)
+        failure = launch("replay-corrupt", [frames[0], bad], preserve=True)
+finally:
+    bad.unlink(missing_ok=True)
+assert initial == {frame.name: sha256(frame) for frame in frames}
+receipt = {
+    "source_revision": subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], text=True
+    ).strip(),
+    "chimpstackr_revision": subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=target.root, text=True
+    ).strip(),
+    "runtime_lock_sha256": sha256(REFERENCE.parent / "uv.lock"),
+    "descriptor_sha256": sha256(REFERENCE),
+    "performance_targets_sha256": sha256(TARGETS_PATH),
+    "raw_reference": identity["raw_ingest"],
+    "geometry": geometry,
+    "inputs_before_after": initial,
+    "protocol": "two original CR3s, real public CLI one functional complete job, no timing claim",
+    "reference_cpu_job": good,
+    "truncated_input_job": failure,
+}
+(scratch / "replay-receipt.json").write_text(
+    json.dumps(receipt, indent=2, allow_nan=False) + "\n"
+)

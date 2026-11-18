@@ -1,0 +1,13 @@
+ChimpStackr CLI - Focus Stacking
+  Input: 2 images
+  Output: /tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/replay-cpu/result.tif
+  Mode: Align + Stack
+  Method: hybrid
+  Kernel size: 6, Pyramid levels: 8
+  Alignment: ref=first, scale=6, mode=similarity
+  Device: CPU
+
+  Auto-cropped: 1px top, 1px bottom, 1px left, 1px right
+  Output saved: /tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/replay-cpu/result.tif (16-bit, 102814 KB)
+  Total time: 3.53s
+  Output shape: (3390, 5086, 3)

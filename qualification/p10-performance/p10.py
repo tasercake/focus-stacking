@@ -33,6 +33,7 @@ ROOT = Path(__file__).resolve().parents[2]
 TARGETS_PATH = ROOT / "pancake/docs/performance-targets.json"
 ADAPTERS = ROOT / "pancake-conformance/src/pancake_conformance/adapters"
 REFERENCE = ADAPTERS / "chimpstackr_reference/chimpstackr.toml"
+R50_REFERENCE = ADAPTERS / "pancake/cr3_reference.py"
 CANDIDATE = ADAPTERS / "pancake/pancake.toml"
 RUNTIMES = {"cpu": None, "wgpu-vulkan": "wgpu", "cuda": "cuda"}
 
@@ -129,12 +130,27 @@ def prepare_candidate(options):
     _write(output, receipt)
 
 
+def _reference_launch(target, interpreter, profile_key):
+    """Use the camera-corrected launcher only for the R50 RAW workload."""
+    if profile_key.partition(".")[0] != "R50":
+        return {"command": target.command("cli", python=interpreter)}
+    return {
+        "command": [str(interpreter), str(R50_REFERENCE)],
+        "raw_ingest": {
+            "path": str(R50_REFERENCE.relative_to(ROOT)),
+            "sha256": sha256(R50_REFERENCE),
+        },
+    }
+
+
 def _prepared_targets(options, campaign):
     reference, candidate = (TargetSpec.load(path) for path in (REFERENCE, CANDIDATE))
     lock_pin = campaign.raw["reference"]
     _require_clean(
         ROOT, "pancake", str(CANDIDATE), str(REFERENCE), lock_pin["runtime_lock_path"]
     )
+    if options.profile.partition(".")[0] == "R50":
+        _require_clean(ROOT, str(R50_REFERENCE))
     _require_clean(reference.root)
     expected_reference = _snapshot(reference, ROOT / lock_pin["runtime_lock_path"])
     pinned_reference = {
@@ -168,7 +184,7 @@ def _prepared_targets(options, campaign):
         {
             "python": str(reference_python),
             "python_sha256": sha256(reference_python),
-            "command": reference.command("cli", python=reference_python),
+            **_reference_launch(reference, reference_python, options.profile),
             "packages": environment.splitlines(),
         }
     )
@@ -574,6 +590,19 @@ def run_profile(args):
                 )
             first = records[0]
             bounds = first.get("shape", first.get("decoded_shape"))
+            if profile.workload == "R50":
+                capture = json.loads(
+                    _output(
+                        [
+                            *identities["reference"]["command"],
+                            "--cr3-geometry",
+                            str(frames[0]),
+                        ],
+                        specs["reference"].root,
+                    )
+                )
+                bounds = capture["oriented_shape_hwc"]
+                result["reference_raw_source_geometry"] = capture
             gpu = None
             if args.gpu_uuid:
                 hardware["reference_opencl"] = _opencl_preflight(

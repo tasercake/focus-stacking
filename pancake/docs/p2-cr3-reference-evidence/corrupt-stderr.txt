@@ -1,0 +1,1 @@
+  ███████████████░░░░░░░░░░░░░░░  50.0% [1/2] 0.0s/img ETA 0s   Error: CR3 decode failed for /tmp/pancake-worktrees.t3paqgWM/cr3-reference/artifacts/cr3-reference/sources/truncated.CR3: b'Unsupported file format or not RAW file'
