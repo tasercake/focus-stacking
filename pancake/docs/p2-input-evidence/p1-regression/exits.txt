@@ -1,0 +1,5 @@
+fast=0
+deps=0
+codecs=0
+release=0
+p1-conformance=0
