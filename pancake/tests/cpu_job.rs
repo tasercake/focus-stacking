@@ -574,3 +574,127 @@ fn observer_handles_non_unicode_paths_without_fabricating_geometry() -> Result<(
         "observer replaced undisplayable names or affected the real output or source",
     )
 }
+
+/// A controller rejects the wrong input count without consuming its valid
+/// request. A completed controller cannot publish a second stack.
+///
+/// # Errors
+/// Returns invalid fixture, admission, lifecycle or publication errors.
+#[test]
+fn controller_rejects_mismatched_and_repeated_admission() -> Result<(), String> {
+    let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
+    let root = directory.path();
+    let [first, second] = sources(root)?;
+    let third = root.join("third.png");
+    std::fs::hard_link(&first, &third).map_err(|error| error.to_string())?;
+    let output = root.join("prior.png");
+    let previous = b"prior export";
+    std::fs::write(&output, previous).map_err(|error| error.to_string())?;
+    let control = JobControl::new(Generation::from_counter(1), 2)?;
+    let options = Options::default();
+    let mismatched = run_controlled(
+        request(&[first.clone(), second.clone(), third], &output)?,
+        &options,
+        &control,
+        |_| {},
+    )
+    .err()
+    .ok_or("controller accepted a mismatched request")?;
+    require(
+        mismatched.to_string().contains("configured input count")
+            && control.snapshot()?.completed == 0
+            && std::fs::read(&output).map_err(|error| error.to_string())? == previous,
+        "mismatched admission consumed or published output",
+    )?;
+    let inputs = [first, second];
+    let complete = run_controlled(request(&inputs, &output)?, &options, &control, |_| {})
+        .map_err(|error| error.to_string())?;
+    let published = std::fs::read(&output).map_err(|error| error.to_string())?;
+    let duplicate = run_controlled(request(&inputs, &output)?, &options, &control, |_| {})
+        .err()
+        .ok_or("completed controller accepted a duplicate request")?;
+    require(
+        duplicate.to_string().contains("already owns an execution")
+            && control.snapshot()?.state == JobState::Completed
+            && decode(&output)?.samples() == complete.image().samples()
+            && std::fs::read(output).map_err(|error| error.to_string())? == published,
+        "repeated admission affected the completed CPU stack",
+    )
+}
+
+/// Moving an already consumed source leaves the actual stack usable. An
+/// existing observer cannot append a completion when identity inspection fails.
+///
+/// # Errors
+/// Returns fixture, execution, observation or publication errors.
+#[test]
+fn moved_source_blocks_observer_append_without_undoing_export() -> Result<(), String> {
+    let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
+    let root = directory.path();
+    let inputs = sources(root)?;
+    let source = inputs.first().ok_or("fixture source missing")?;
+    let moved = root.join("moved.png");
+    let expected = decode(source)?;
+    let output = root.join("published.png");
+    let marker = b"{\"event\":\"prior\"}\n";
+    let observer = root.join("events.jsonl");
+    std::fs::write(&observer, marker).map_err(|error| error.to_string())?;
+    let options = Options {
+        events_path: Some(observer.clone()),
+        ..Options::default()
+    };
+    let mut movement = None;
+    let completed = run(request(&inputs, &output)?, &options, |progress| {
+        if progress.completed == inputs.len() {
+            movement = Some(std::fs::rename(source, &moved));
+        }
+    })
+    .map_err(|error| error.to_string())?;
+    movement
+        .ok_or("stack did not observe final accumulation")?
+        .map_err(|error| error.to_string())?;
+    let missing = std::fs::metadata(source)
+        .err()
+        .ok_or("source was not moved")?;
+    require(
+        completed.warnings() == [missing.to_string()]
+            && std::fs::read(observer).map_err(|error| error.to_string())? == marker
+            && decode(&moved)?.samples() == expected.samples()
+            && decode(&output)?.samples() == expected.samples(),
+        "observer identity failure affected the prior record or the published CPU stack",
+    )
+}
+
+/// A directory at the export destination is rejected without replacing its
+/// contents or claiming a completed stack.
+///
+/// # Errors
+/// Returns fixture, execution, lifecycle or publication errors.
+#[test]
+fn directory_export_destination_preserves_existing_data() -> Result<(), String> {
+    let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
+    let root = directory.path();
+    let inputs = sources(root)?;
+    let destination = root.join("occupied.png");
+    std::fs::create_dir(&destination).map_err(|error| error.to_string())?;
+    let sentinel = destination.join("preserve");
+    let previous = b"directory contents";
+    std::fs::write(&sentinel, previous).map_err(|error| error.to_string())?;
+    let events = root.join("events.jsonl");
+    let options = Options {
+        events_path: Some(events.clone()),
+        ..Options::default()
+    };
+    let control = JobControl::new(Generation::from_counter(1), inputs.len())?;
+    let failure = run_controlled(request(&inputs, &destination)?, &options, &control, |_| {})
+        .err()
+        .ok_or("directory was accepted as an export file")?;
+    require(
+        failure.to_string().contains("occupied.png")
+            && failure.to_string().contains("not a regular file")
+            && control.snapshot()?.state == JobState::Failed
+            && !events.exists()
+            && std::fs::read(sentinel).map_err(|error| error.to_string())? == previous,
+        "failed export changed prior data or appeared completed",
+    )
+}
