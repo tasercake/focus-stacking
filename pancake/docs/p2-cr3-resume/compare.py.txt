@@ -1,0 +1,183 @@
+"""Compare pinned CR3 crop semantics and linear/gamma variants outside Pancake."""
+
+import contextlib
+import hashlib
+import json
+import platform
+import subprocess
+import sys
+from pathlib import Path
+
+import numpy as np
+import rawpy
+
+FROZEN = {"use_camera_wb": True, "no_auto_bright": True, "output_bps": 16}
+MODE = rawpy.DemosaicAlgorithm
+
+
+def compare(candidate, ref):
+    """Compute normalized RGB differences over full requested arrays."""
+    diff = np.subtract(candidate, ref, dtype=np.float32)
+    signed = diff.mean(axis=(0, 1), dtype=np.float64).tolist()
+    absolute = np.abs(diff, out=diff)
+    result = {
+        "pixels": int(absolute.size // 3),
+        "mean_absolute_rgb": float(absolute.mean(dtype=np.float64)),
+        "absolute_max": float(absolute.max()),
+        "channel_signed_mean_rgb": signed,
+        "above_one_u8_code_fraction": float(
+            np.count_nonzero(absolute > (1 / 255)) / absolute.size
+        ),
+    }
+    result["absolute_p99"] = float(np.quantile(absolute, 0.99, overwrite_input=True))
+    return result
+
+
+def reference_curve(pixels, exponent=0.45, slope=4.5):
+    """Match the frozen OETF's continuous linear toe and power segment."""
+    low, high = 0.0, 1.0
+    for _ in range(55):
+        knee = (low + high) / 2
+        amplitude = 1 + slope * knee * (1 / exponent - 1)
+        derivative = amplitude * exponent * knee ** (exponent - 1)
+        if derivative > slope:
+            low = knee
+        else:
+            high = knee
+    knee = (low + high) / 2
+    amplitude = 1 + slope * knee * (1 / exponent - 1)
+    x = np.clip(pixels, 0, 1).astype(np.float32, copy=False)
+    return np.where(x < knee, x * slope, amplitude * x**exponent - (amplitude - 1))
+
+
+def developed(path, **options):
+    """Open a fresh LibRaw session for each isolated postprocess option."""
+    with rawpy.imread(str(path)) as raw:
+        pixels = raw.postprocess(**(FROZEN | options))
+    return pixels.astype(np.float32) / 65535
+
+
+def intersection(candidate, c_rect, target, t_rect):
+    """Match the same absolute sensor pixels without a resample or a fit."""
+    cx, cy, cw, ch = c_rect
+    tx, ty, tw, th = t_rect
+    x0, y0 = max(cx, tx), max(cy, ty)
+    x1, y1 = min(cx + cw, tx + tw), min(cy + ch, ty + th)
+    return (
+        candidate[y0 - cy : y1 - cy, x0 - cx : x1 - cx],
+        target[y0 - ty : y1 - ty, x0 - tx : x1 - tx],
+    )
+
+
+@contextlib.contextmanager
+def capture(directory, exe, source, mode, rect):
+    """Hold at most one Rust probe raster on disk during the comparison."""
+    out = directory / f"{source.stem}-{mode}.pixels"
+    try:
+        result = subprocess.run(
+            [str(exe), str(source), mode, str(out), ",".join(map(str, rect))],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        with out.open("rb") as stream:
+            x, y, width, height = map(int, stream.readline().split())
+            pixels = np.fromfile(stream, dtype="<f4").reshape((height, width, 3))
+        yield pixels, (x, y, width, height), result.stderr.splitlines()
+    finally:
+        out.unlink(missing_ok=True)
+
+
+def run(directory, exonames):
+    """Verify pinned RAW inputs, compare decodes, and report evidence."""
+    manifest = Path(
+        "pancake-conformance/src/pancake_conformance/adapters/pancake/performance-raw-corpus.json"
+    )
+    originals = {
+        Path(row["source_path"]).name: row
+        for row in json.loads(manifest.read_text())["frames"]
+    }
+    exe = directory / "probe/target/debug/pancake-cr3-probe"
+    summary = {
+        "tested_workspace_revision": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], text=True
+        ).strip(),
+        "candidate": "Standalone Rawler 0.8.0 safe API probe with two Rayon threads",
+        "frozen_reference_options": FROZEN,
+        "libraw": {"rawpy": rawpy.__version__, "libraw": rawpy.libraw_version},
+        "host": platform.platform(),
+        "numpy": np.__version__,
+        "frozen_manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest(),
+        "sources": {},
+    }
+    for name in exonames:
+        source = directory / name
+        item = originals[name]
+        source_sha = hashlib.sha256(source.read_bytes()).hexdigest()
+        if source.stat().st_size != item["size_bytes"] or source_sha != item["sha256"]:
+            raise ValueError(f"Frozen input size or digest mismatch for {name}")
+        with rawpy.imread(str(source)) as raw:
+            sizes = raw.sizes
+            rect = (sizes.left_margin, sizes.top_margin, sizes.width, sizes.height)
+            frame = {
+                "source_sha256": source_sha,
+                "source_bytes": item["size_bytes"],
+                "reference_visible": rect,
+                "file_recommended": [
+                    sizes.crop_left_margin,
+                    sizes.crop_top_margin,
+                    sizes.crop_width,
+                    sizes.crop_height,
+                ],
+                "reference_visible_mosaic_max": int(raw.raw_image_visible.max()),
+                "reference_nominal_white": raw.white_level,
+                "file_saturation_per_channel": raw.camera_white_level_per_channel,
+                "file_black_per_channel": raw.black_level_per_channel,
+                "file_wb": raw.camera_whitebalance,
+                "reference_xyz_to_camera": raw.rgb_xyz_matrix.tolist(),
+                "variants": {},
+            }
+        target = developed(source)
+        ref_linear = developed(source, gamma=(1, 1))
+        frame["derived_reference_curve_vs_frozen"] = compare(
+            reference_curve(ref_linear), target
+        )
+        del ref_linear
+        target_srgb = developed(source, gamma=(2.4, 12.92))
+        for mode in ("default", "active", "sensor", "nominal", "measured"):
+            with capture(directory, exe, source, mode, rect) as (pixels, raster, logs):
+                record = {"sensor_rect_xywh": raster, "rawler_metadata": logs}
+                if mode in ("nominal", "measured"):
+                    normalized = np.floor(reference_curve(pixels) * 65535) / 65535
+                else:
+                    normalized = np.floor(np.clip(pixels, 0, 1) * 65535) / 65535
+                    record["vs_libraw_srgb_same_sensor_overlap"] = compare(
+                        *intersection(normalized, raster, target_srgb, rect)
+                    )
+                record["vs_frozen_same_sensor_overlap"] = compare(
+                    *intersection(normalized, raster, target, rect)
+                )
+                frame["variants"][mode] = record
+                print(
+                    name,
+                    mode,
+                    raster,
+                    record["vs_frozen_same_sensor_overlap"]["mean_absolute_rgb"],
+                    flush=True,
+                )
+                del normalized, pixels
+        del target_srgb
+        ppg = developed(source, demosaic_algorithm=MODE.PPG)
+        frame["reference_ppg_vs_frozen_ahd"] = compare(ppg, target)
+        del ppg, target
+        if hashlib.sha256(source.read_bytes()).hexdigest() != source_sha:
+            raise ValueError(f"Input changed during comparison: {name}")
+        summary["sources"][name] = frame
+    (directory / "report.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n"
+    )
+
+
+if __name__ == "__main__":
+    directory = Path(sys.argv[1]).absolute()
+    run(directory, sys.argv[2:])
