@@ -1,0 +1,119 @@
+{
+  "application_revision": "2608589f6a1fca495b9dab0cefe0a3d4a230f002",
+  "command": [
+    "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/pancake-cli-2608589",
+    "--input",
+    "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/headless-loader.9fqous1s/frame-0.png",
+    "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/headless-loader.9fqous1s/frame-1.png",
+    "--output",
+    "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/headless-loader.9fqous1s/result.png",
+    "--method",
+    "weighted_average",
+    "--bit-depth",
+    "8",
+    "--cpu"
+  ],
+  "source_hashes": [
+    "73dee3f7c3dd0de75954365b2d112e4591ec228fc5877e75e61475994c1841a6",
+    "73dee3f7c3dd0de75954365b2d112e4591ec228fc5877e75e61475994c1841a6"
+  ],
+  "dimensions": [
+    17,
+    13
+  ],
+  "output_sha256": "fb801388f677631bc256e50373ccc685443a4b06f5c881d43897fe538795c933",
+  "events": [
+    {
+      "actual_backend": "cpu",
+      "alignment_transforms": {
+        "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/headless-loader.9fqous1s/frame-0.png": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/headless-loader.9fqous1s/frame-1.png": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ]
+      },
+      "completed": true,
+      "device": "AMD Ryzen 9 7950X3D 16-Core Processor",
+      "device_fingerprint": "cpu_x86_64_load-512_f16-chain",
+      "device_pci_address": null,
+      "event": "stack_complete",
+      "fallback_reason": null,
+      "physical_gpu": false,
+      "runtime": "cpu",
+      "sequential_transforms": [
+        [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ],
+        [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ]
+      ]
+    }
+  ],
+  "probed_library_prefixes": [
+    "libvulkan",
+    "libEGL",
+    "libGL.",
+    "libcuda",
+    "libX11",
+    "libwayland",
+    "libnvidia"
+  ],
+  "load_matches": [],
+  "exit": 0,
+  "fixture_recipe": {
+    "generator": "Pillow 12.3.0",
+    "count": 2,
+    "format": "PNG",
+    "mode": "RGB",
+    "dimensions": [
+      17,
+      13
+    ],
+    "pixel_bytes": "Row-major interleaved RGB bytes: (index * 19 + 11) % 251 for 0 <= index < 17 * 13 * 3.",
+    "write": "Image.frombytes('RGB', (17, 13), colors).save(path) for both sources."
+  },
+  "additional_checked_loader_prefixes": [
+    "libGLX",
+    "libGLdispatch",
+    "libOpenGL",
+    "libGLES"
+  ]
+}

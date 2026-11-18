@@ -23,3 +23,11 @@ The conformance invocation selected the exact IDs with
 Each ID was supplied as a separate `--case` argument. The referenced decoder
 diagnostics confirm genuine source or size failures. Full host, platform and
 performance acceptance retain their own results at the appropriate revisions.
+
+The same hashed executable also completed a real, forced-CPU 17×13 PNG
+stack with `LD_DEBUG=libs`. Pillow independently verified every output byte
+in decoded RGB, and both source hashes were preserved. The single completion
+record reports CPU execution. The loader trace contains no Vulkan, OpenGL,
+CUDA, NVIDIA, X11 or Wayland library lookup. Temporary sources and output
+were deleted after verification. [Execution receipt](forced-cpu-loader.json)
+[Loader trace](forced-cpu-loader.log.gz)
