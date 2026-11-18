@@ -61,10 +61,28 @@ verdict retains its separate source pin.
 [Exact combined TSan](p9-tsan-audit/integrated-c1e2cac/README.md).
 [Exact stable CPU coverage](p9-cpu-assurance-evidence/c1e2cac/stable/README.md).
 
-The same-source Debian release built and passed rootless verification.
-Its fast and dependency gates passed. The host lane passed 341 cases and
-the physical RTX Vulkan lane passed one. The isolated GUI lane and strict
-aggregate remain pending at this checkpoint.
+**The packaged `c1e2cac` Linux release passes all 376 frozen case IDs.**
+The locked workspace build, fast and dependency gates, and rootless Debian
+verification passed. The strict ledger accepted 341 host cases, 34 isolated
+GUI cases and one physical RTX 3090 Vulkan GUI case. All three receipts bind
+the same source, lock, descriptor, frozen contract and packaged executables.
+The exact archive is 69,508,790 bytes with SHA-256
+`c6f39324ea4d9a29fb1a4f33253f6d988f44d1f150622bc94b728975a5f96b64`.
+[Exact package and lane summary](p9-linux-package-evidence/c1e2cac/summary.json).
+[Strict 376-case ledger](p9-linux-package-evidence/c1e2cac/linux-ledger.json.gz).
+[Clean-lineage receipt](p9-linux-package-evidence/c1e2cac/clean-ancestry.json).
+
+The same `c1e2cac` source compiled and linked the native Linux CUDA and HIP
+CLI profiles. Two CPU and two physical RTX 3090 CUDA cases ran through the
+hashed CUDA release with zero fallback, and all four export digests matched
+the previous native replay. The retained HIP receipt covers compilation
+and linking.
+[Exact native builds and executions](p9-linux-native-evidence/c1e2cac/README.md).
+
+Local Linux conformance and the retained CUDA/HIP results leave the
+canonical macOS assurance run, Apple physical runtime evidence, macOS
+package validation, strict coverage, full mutation and P10 performance
+open. The final push and its required hosted checks remain pending.
 
 **The packaged `8694b55` Linux release passes all 376 case IDs.** The strict
 ledger matched 341 host, 34 isolated GUI and one physical RTX 3090 Vulkan
@@ -130,6 +148,15 @@ selected mutants and exited 3 with six caught, three missed and one
 timeout. The baseline passed 137/137. The other 2,573 mutants in that
 exact roster remain unrun. Full mutation acceptance stays open.
 [Exact native mutation shard](p9-mutation-audit/287828a-255-256/README.md).
+
+The pinned native mutator repeated those same ten operations at exact
+`c1e2cac` and caught all ten after successful mutant builds. The native
+baseline passed 146 tests across 19 groups. The current roster contains
+2,642 operations, with 2,632 outside this replay. The 165-row next-shard
+projection contributes a verified roster and cost estimate. Full native
+mutation acceptance remains open.
+[Exact historical-operation replay](p9-mutation-audit/c1e2cac-historical-ten/README.md).
+[Next-shard projection](p9-mutation-audit/c1e2cac-historical-ten/full-shard-projection.md).
 
 Follow-up tests caught all three earlier survivors on their separately
 verified revisions. The panorama test exercised the thumbnail budget
@@ -274,6 +301,14 @@ verified all 784 observed pixel patches. Four late transitions showed
 long semaphore waits on another thread. The trace establishes this host
 interval. The responsible Rust lock remains unverified.
 [Instrumented retained-result attribution](p10-vulkan-retained-result-evidence/8694b55/README.md).
+
+A read-only audit examined the pinned CubeCL and wgpu source on
+`c1e2cac` alongside that earlier `8694b55` trace. A shared-device read
+guard can span the poller's native fence wait, and presentation requires
+the corresponding write guard. No live guard acquisition was recorded.
+A scoped follow-up can distinguish lock contention from queue and
+presentation delay by timing acquisition on the same guard instance.
+[Shared-device poll and present audit](../../qualification/p10-performance/evidence/viewer-poll-lock-audit/README.md).
 
 ### Benchmark baselines and scoped follow-ups
 
