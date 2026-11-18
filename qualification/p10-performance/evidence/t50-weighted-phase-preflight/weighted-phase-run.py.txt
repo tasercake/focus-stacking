@@ -62,15 +62,16 @@ def launch(argv, cwd, env, directory, timeout):
 def decode_and_validate(directory, frames):
     """Authenticate the actual fresh export and the emitted CPU completion."""
     completed = p10._assert_completion(directory / "events.jsonl", "cpu", "cpu", None)
-    transforms = completed["alignment_transforms"]
-    ordered = {str(path) for path in frames}
+    transforms = completed.get("alignment_transforms")
+    ordered = [str(path) for path in frames]
     identity = [[1, 0, 0], [0, 1, 0]]
-    if set(transforms) != ordered or any(matrix != identity for matrix in transforms.values()):
+    if (
+        len(set(ordered)) != len(ordered) or not isinstance(transforms, dict)
+        or list(transforms) != ordered or any(matrix != identity for matrix in transforms.values())
+    ):
         raise ValueError("exact reference-to-source identity witness changed")
     sequential = completed.get("sequential_transforms")
-    if sequential is not None and (
-        set(sequential) != ordered or any(matrix != identity for matrix in sequential.values())
-    ):
+    if not isinstance(sequential, list) or sequential != [identity] * len(ordered):
         raise ValueError("exact sequential map witness changed")
     image = verify_output(directory / "complete.tif", (4000, 6000, 3))
     if image["shape"] != [3998, 5998, 3] or any(image[key] != value for key, value in PINNED_OUTPUT.items()):

@@ -114,3 +114,12 @@ return matching, tail nesting, nonoverlap and invalid time or counts.
 The stock application, the reference application, and the image generator
 all remain unlaunched in this preparation.
 [Ledger tests](ledger-green.txt) · [No-inferior GDB log](elf-preflight.txt)
+
+## Consumer schema follow-up
+
+The first control completed successfully, then this preparation's original
+validator treated the ordered sequential maps as a mapping, so it stopped
+before GDB. The separate receipt preserves the failed attempt and valid
+control output evidence. The current launcher consumes the real emitted
+list. A new quiet-window experiment may use this corrected launcher and a
+fresh output directory. [Attempt and tested correction](../t50-weighted-phase-attempt/README.md)
