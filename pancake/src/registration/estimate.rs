@@ -505,3 +505,6 @@ fn one(scores: &[f32]) -> Result<f32, String> {
     };
     Ok(score)
 }
+
+#[cfg(test)]
+mod tests;
