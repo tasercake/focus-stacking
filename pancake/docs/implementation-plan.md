@@ -132,6 +132,16 @@ while Apple evidence is unavailable. Distribution signing and
 notarization remain owner decisions.
 [Private Apple package recipe](p9-release-preparation.md#apple-and-retained-builds).
 
+The Linux packaging tools stage a common GPL-3 notice for the three
+first-party Cargo entries and the pinned native LLVM notices. The exact
+`e81079d` build receipt binds 112 LLVM archive inputs and 2,182 matching
+object digests within the CubeCL rlib. It covers rlib membership. The
+final ELF symbol and broader distribution notice scope remain separate.
+The existing `e81079d` Debian archive predates this staging. A new
+package needs matching build provenance, the `--native-llvm-receipt`
+option, and rootless extraction checks.
+[Native packaging notices and provenance](p9-native-package-provenance.md).
+
 **The packaged `8694b55` Linux release passes all 376 case IDs.** The strict
 ledger matched 341 host, 34 isolated GUI and one physical RTX 3090 Vulkan
 GUI case to the exact locked source and extracted Debian binaries. The
