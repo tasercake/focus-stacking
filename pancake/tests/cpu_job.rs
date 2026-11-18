@@ -9,6 +9,7 @@ use pancake::job::{
     Generation, JobControl, JobError, JobState, Options, StackResult, StackWorker, run,
     run_controlled,
 };
+use pancake::registration::Affine;
 
 /// A completed weighted stack preserves identity, publishes and then logs.
 ///
@@ -89,6 +90,97 @@ fn identity_crop_applies_only_to_aligned_jobs() -> Result<(), String> {
             [result.crop().width(), result.crop().height()] == [width, height]
                 && [decoded.width(), decoded.height()] == [width, height],
             "identity crop geometry disagrees with aligned export",
+        )?;
+    }
+    Ok(())
+}
+
+/// Repeated structure must leave an ambiguous source unwarped in a completed CPU stack.
+///
+/// # Errors
+///
+/// Returns fixture, stack or output errors, or reports an invented displacement.
+#[test]
+fn repeated_registration_keeps_unwarped_cpu_export() -> Result<(), String> {
+    const MOTIF: [u16; 12] = [16, 24, 40, 64, 106, 174, 218, 200, 144, 76, 36, 24];
+    let directory = tempfile::tempdir().map_err(|error| error.to_string())?;
+    let root = directory.path();
+    let inputs = [root.join("repeated.png"), root.join("shifted.png")];
+    // A three-pixel phase shift leaves two equally good horizontal matches at
+    // +3 and -9. Both are inside the scoring margin at this native proxy size.
+    for (path, phase) in inputs.iter().zip([0_usize, 9]) {
+        let samples = (0_u16..96)
+            .flat_map(|row| {
+                let shade = row.min(95_u16.saturating_sub(row)) / 2_u16;
+                MOTIF
+                    .iter()
+                    .cycle()
+                    .skip(phase)
+                    .take(112)
+                    .flat_map(move |tone| {
+                        let sample = f32::from(tone.saturating_add(shade)) * (1.0_f32 / 255.0_f32);
+                        [sample; 3]
+                    })
+            })
+            .collect();
+        let frame = RgbImage::new(112, 96, samples)?;
+        export(path, &frame, BitDepth::Sixteen, 95, &[])?;
+    }
+    let originals = inputs
+        .iter()
+        .map(std::fs::read)
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|error| error.to_string())?;
+    let stack = |alignment, output: &Path, options: &Options| {
+        let settings = JobSettings {
+            alignment,
+            auto_crop: false,
+            bit_depth: BitDepth::Sixteen,
+            device: DevicePreference::Cpu,
+            method: Method::WeightedAverage,
+            ..JobSettings::default()
+        };
+        let config = JobConfig::new(&inputs, Some(output.to_owned()), settings)?;
+        run(config, options, |_| {}).map_err(|error| error.to_string())
+    };
+    let unaligned = root.join("unaligned.png");
+    stack(AlignmentMode::Off, &unaligned, &Options::default())?;
+    let aligned = root.join("aligned.png");
+    let events = root.join("registration.jsonl");
+    let options = Options {
+        events_path: Some(events.clone()),
+        ..Options::default()
+    };
+    let result = stack(AlignmentMode::Translation, &aligned, &options)?;
+    require(
+        result.source_transform(1) == Some(Affine::IDENTITY),
+        "repeated texture produced an unsupported transform",
+    )?;
+    let unaligned = decode(&unaligned)?;
+    let aligned = decode(&aligned)?;
+    require(
+        (aligned.width(), aligned.height()) == (112, 96)
+            && aligned.samples() == unaligned.samples(),
+        "ambiguous registration changed the unwarped CPU export",
+    )?;
+    let event = std::fs::read_to_string(events).map_err(|error| error.to_string())?;
+    let event: serde_json::Value =
+        serde_json::from_str(&event).map_err(|error| error.to_string())?;
+    require(
+        event.get("event").and_then(serde_json::Value::as_str) == Some("stack_complete")
+            && event.get("completed").and_then(serde_json::Value::as_bool) == Some(true)
+            && event
+                .get("actual_backend")
+                .and_then(serde_json::Value::as_str)
+                == Some("cpu")
+            && event.get("sequential_transforms")
+                == Some(&serde_json::json!([Affine::IDENTITY.matrix(); 2])),
+        "completion did not retain the actual CPU identity transforms",
+    )?;
+    for (path, before) in inputs.iter().zip(originals) {
+        require(
+            std::fs::read(path).map_err(|error| error.to_string())? == before,
+            "ambiguous registration modified its input",
         )?;
     }
     Ok(())
