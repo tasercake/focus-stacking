@@ -1,5 +1,8 @@
 # Linux memory collector cadence
 
+The [collector follow-up](collector-cadence-followup.md) retains the native
+RSS, delegated cgroup roster, and physical NVIDIA per-call tests.
+
 The earlier matched E9 process traces exceeded the unchanged 20 ms maximum
 sample gap. On CPU, 17 of 17 Pancake jobs and 3 of 17 ChimpStackr jobs exceeded
 it. On NVIDIA Vulkan/OpenCL, the counts were 17 of 17 and 12 of 17. All affected
