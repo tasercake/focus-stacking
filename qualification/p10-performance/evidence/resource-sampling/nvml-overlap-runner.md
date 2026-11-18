@@ -54,8 +54,9 @@ is inconclusive or invalid. Remove staged images after the final read.
 
 The initial preflight verified both immutable binaries, both historical
 paired archive digests, frozen target hash and all nine source-file hashes.
-Thirteen new device-free tests cover deduplication, identity errors, distinct
+Fourteen new device-free tests cover deduplication, identity errors, distinct
 result buffers, absolute slots, a blocked lane, exit and gap bounds, a real
-synthetic child reaped by the watchdog, and process-exit lease cleanup. All
-47 qualification tests passed.
+synthetic child reaped by the watchdog, process-exit lease cleanup,
+independent TIFF decoding and an exact physical device check. All
+48 qualification tests passed.
 The physical stage has not run.

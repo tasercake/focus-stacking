@@ -12,7 +12,11 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import numpy as np
+import tifffile
 from nvml_overlap_diagnostic import (
+    DEVICE,
+    PCI,
     PairDevice,
     PairLane,
     capture_pair,
@@ -21,7 +25,9 @@ from nvml_overlap_diagnostic import (
     due_slot,
     main,
     measure_arm,
+    run_arm,
 )
+from protocol import verify_output
 from resources import _DeviceProcess
 
 MS = 1_000_000
@@ -252,6 +258,61 @@ class IntervalContracts(unittest.TestCase):
         self.assertTrue(result["deadline_hit"] and result["drained"])
         self.assertEqual(result["returncode"], -9)
         self.assertNotIn("unexpected_session_members_after_exit", result)
+
+    def test_arm_requires_independent_decoded_pixels_and_exact_physical_identity(self):
+        pixels = np.arange(5 * 4 * 3, dtype=np.uint16).reshape((5, 4, 3)) * 1000
+        observed_pci = PCI
+
+        def measured(_argv, _env, directory, _provider, _workers):
+            tifffile.imwrite(directory / "complete.tif", pixels, photometric="rgb")
+            event = {
+                "event": "stack_complete",
+                "completed": True,
+                "actual_backend": "gpu",
+                "runtime": "cuda",
+                "device": DEVICE,
+                "device_pci_address": observed_pci,
+                "physical_gpu": True,
+                "fallback_reason": None,
+            }
+            (directory / "events.jsonl").write_text(json.dumps(event) + "\n")
+            return {
+                "drained": True,
+                "returncode": 0,
+                "deadline_hit": False,
+                "analysis": {"raw_complete_in_job_maximum_bytes": 150},
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            correct = root / "expected.tif"
+            tifffile.imwrite(correct, pixels, photometric="rgb")
+            archived = verify_output(correct, [339, 512, 3])
+            prepared = {
+                "frames": ["synthetic"],
+                "plans": {
+                    "cuda": {
+                        "binary": "/unused",
+                        "archived_environment": {},
+                        "argv_suffix": [],
+                        "archived_output": archived,
+                    }
+                },
+            }
+            with patch("nvml_overlap_diagnostic.measure_arm", side_effect=measured):
+                accepted = run_arm("cuda", 2, prepared, root / "accepted", object())
+                self.assertTrue(accepted["diagnostic_image_and_device_verified"])
+                archived["pixel_sha256"] = "unmatched"
+                rejected = run_arm("cuda", 2, prepared, root / "rejected", object())
+                self.assertFalse(rejected["diagnostic_image_and_device_verified"])
+                self.assertIn("pixel_sha256", rejected["failure"])
+                archived.update(verify_output(correct, [339, 512, 3]))
+                observed_pci = "0000:02:00.0"
+                mismatched = run_arm(
+                    "cuda", 2, prepared, root / "wrong-device", object()
+                )
+                self.assertFalse(mismatched["diagnostic_image_and_device_verified"])
+                self.assertIn("PCI address", mismatched["failure"])
 
     def test_undrained_subprocess_keeps_fatal_receipt_without_explicit_device_close(
         self,
