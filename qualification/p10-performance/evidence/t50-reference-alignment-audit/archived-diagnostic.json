@@ -1,0 +1,38 @@
+{
+  "source_commit": "c6ecfe1d09166f033eeb6f6c6a1b13c895d587f1",
+  "archive_path": "qualification/p10-performance/evidence/t50-12f2151-preflight/pair-001/raw-pair.tar.gz",
+  "archive_sha256": "6cbbc441216e0e7cd598591a499038ce5b4de748342eb3ea91d254ce2c63d73b",
+  "profile": "T50.hybrid.gpu",
+  "reference_revision": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "candidate_revision": "12f2151c8a198b5209c8f4d506dbd17fd9aaa74f",
+  "actual_reference_device": {
+    "name": "NVIDIA GeForce RTX 3090",
+    "driver_version": "580.178.04",
+    "index": 0,
+    "platform": "NVIDIA CUDA",
+    "uuid": "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+  },
+  "completed_reference_backend": "gpu",
+  "completed_reference_stages": {
+    "fusion": "gpu",
+    "alignment_estimation": "cpu",
+    "warping": "gpu"
+  },
+  "reference_warning": "GPU alignment help failed (Singular matrix); using the CPU",
+  "reference_warning_count": 3,
+  "recorded_jobs": {
+    "reference": {
+      "elapsed_ns": 26736526595,
+      "maximum_rss_sample_gap_ns": 26019126,
+      "maximum_gpu_sample_gap_ns": 30797023,
+      "returncode": 0
+    },
+    "candidate": {
+      "elapsed_ns": 82441012849,
+      "maximum_rss_sample_gap_ns": 10686825,
+      "maximum_gpu_sample_gap_ns": 69969955,
+      "returncode": 0
+    }
+  },
+  "hardware_access_for_this_audit": false
+}
