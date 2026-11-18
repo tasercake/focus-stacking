@@ -9,6 +9,8 @@ physical runtime paths also pass. Full feature, camera, lifecycle, packaging,
 AMD/Intel GPU and Windows runtime tests remain best effort, with retained builds.
 [Closure and source-equivalence receipt](p0-close-evidence/closure.json).
 
+## Earlier host checkpoints
+
 **P1 conformance passes for all 25 mapped host cases. P1 assurance is open.**
 The locked headless release at `6b38e6a` passes help, validated arguments,
 file discovery and decoder rejection with case-specific diagnostics. CPU
@@ -23,7 +25,6 @@ physical NVIDIA Vulkan evidence. The six 2D NumPy grayscale cases now pass.
 Retain all 109 IDs in later regressions. Canon CR3 crop/render compatibility
 and full milestone assurance remained open at that revision.
 [Conformance receipts](p2-conformance-evidence/README.md).
-
 
 **Linux host conformance passes for 341 of 341 case IDs at `cb5e3a4`.**
 Five disjoint selections match the locked release binary, reviewed contract and
@@ -42,6 +43,8 @@ raw report and provenance record.
 | P5 motion, crop and registration | 64/64 | [P5 replay](p5-registration.md) |
 | P6 completion, parity and recovery | 72/72 | [P6 replay](p6-device-replay-evidence/cb5e3a4/README.md) |
 
+## Active delivery checkpoint
+
 **The packaged `d6359e1` Linux release passes all 376 case IDs.** The
 same-source locked workspace build, fast and dependency checks, and rootless
 Debian package verification passed. The strict ledger accepted 341 host
@@ -49,10 +52,11 @@ cases, 34 isolated GUI cases, and one physical RTX 3090 GUI case. The
 package includes the RAW channel-copy reduction, whose focused decode and
 parity receipts are separate from the full P10 benchmark of `12f2151`.
 [Linux package and matched ledger](p9-linux-package-evidence/README.md).
+[Raw 376-case ledger](p9-linux-package-evidence/d6359e1/linux-ledger.json.gz).
 [Exact RAW source and focused measurements](p10-r50-raw-audit/README.md).
 [Source-equivalent real RAW parity](p10-r50-raw-audit/f2f1bb3/README.md).
 
-At `d6359e1`, the Linux CPU ASan and TSan gates each passed 127/127 tests.
+At `d6359e1`, the local Linux CPU ASan and TSan gates each passed 127/127 tests.
 The unchanged nightly CPU coverage gate exited 1 with 4,202/5,932 covered
 lines and 520/640 covered branch outcomes.
 [Exact CPU sanitizer tests](p9-tsan-audit/integrated-d6359e1/README.md).
@@ -60,10 +64,54 @@ lines and 520/640 covered branch outcomes.
 
 The same-source optional CUDA and HIP CLI release profiles both linked.
 The CUDA release passed two native CPU and two physical RTX 3090 CUDA cases.
-The HIP receipt covers the retained build and link. Apple hardware was
-unavailable for this release candidate, and the retained Windows native
-build remains unverified.
+The HIP receipt covers the retained build and link.
 [Matching native backend builds](p9-linux-native-evidence/d6359e1/README.md).
+
+The user-authorized M4 preview published
+`d6359e129737f1a9077fb4abc2a8f783fa1f7b38` to GitHub `main`.
+Both push-triggered workflows reached completion. Pancake required CI failed.
+Reference ChimpStackr conformance passed on Ubuntu and macOS. The preview's
+native Windows MSVC build/link passed with 25 linked test executables under
+`--no-run`. Windows execution remains unrun. Hosted ARM64 Miri passed 18/18.
+The first randomized-layout run then hit macOS `EILSEQ` on an invalid-UTF-8
+path fixture, and the separate macOS platform job stopped at the `MenuBar`
+documentation lint. Physical Apple CPU, wgpu Metal, native Metal and native
+GUI execution remain unverified under the requested Apple compatibility
+assumption. macOS package validation and distribution signing remain open.
+[Pancake CI](https://github.com/tasercake/focus-stacking/actions/runs/44277150143).
+[Reference conformance CI](https://github.com/tasercake/focus-stacking/actions/runs/44277150146).
+[Exact jobs, checksums and archived logs](preview-ci-evidence/d6359e1/README.md).
+[Raw Windows build](preview-ci-evidence/d6359e1/windows-build.log.gz).
+[Raw macOS Miri and layout run](preview-ci-evidence/d6359e1/macos-nightly.log.gz).
+
+Hosted Linux ASan passed 127/127. Hosted TSan reported two Fontconfig races
+through parallel Slint/fontique test initialization after all 127 tests passed.
+Hosted CPU coverage stopped at the uncovered-line gate. The Ubuntu platform
+job timed out during release compilation after its fast and debug CPU checks
+passed. Local commits `4c260b3` and `216f1f3` address the macOS documentation
+lint and raise the native platform job limit to 45 minutes, awaiting hosted
+replay. The 2,504-candidate mutation roster at `d6ac366` reconciled exactly
+across 16 listed shards. A separate native CLI pilot caught five mutants and
+recorded one compiler-unviable variant. Full-workspace mutation execution and
+strict owned-source assurance remain open.
+[Raw hosted ASan](preview-ci-evidence/d6359e1/sanitizer-address.log.gz).
+[Raw hosted TSan](preview-ci-evidence/d6359e1/sanitizer-thread.log.gz).
+[Raw hosted coverage](preview-ci-evidence/d6359e1/coverage.log.gz).
+[Full mutation roster](p9-mutation-audit/d6ac366/README.md).
+[Executed mutation shards](p9-mutation-audit/f9af478-cli/README.md).
+
+P9 retains the safe Slint interpreter for embedded repository-owned source,
+with the upstream Rowan strict-Miri finding documented. Rootless Debian
+validation covers the extracted executables, desktop entry, resolved native
+libraries and archived dependency notices. Physical CubeCL Vulkan ASan at
+`fcf395b` returned `Parent device is lost` during acquisition before any
+kernel ran. Minimal wgpu and standalone C controls acquired the device and
+reported LeakSanitizer failures.
+[Interpreter release decision](p9-slint-boundary.md).
+[Package verification](p9-linux-package-evidence/d6359e1/package-verification.json).
+[Dependency-notice review](p9-package-notices.md).
+[Physical GPU ASan replay](p9-gpu-asan-evidence/fcf395b/README.md).
+[Apple packaging and signing prerequisites](p9-release-preparation.md#apple-and-retained-builds).
 
 The packaged `d6359e1` GUI passed all 120 physical lifecycle requests on the
 RTX 3090, with 60 pauses and 60 cancellations across the original 64-path
@@ -71,6 +119,8 @@ fixture and real D150. Maximum acknowledgements were 150.773 ms for pause
 and 151.283 ms for cancel, both below the frozen 250 ms limit. The combined
 latency reducer exited 1 with zero viewer observations in this campaign.
 [Exact physical lifecycle campaign](../../qualification/p10-performance/evidence/native-lifecycle-d6359e1/README.md).
+
+### Benchmark baselines and scoped follow-ups
 
 **The packaged `12f2151` Linux release passes all 376 case IDs.** The
 locked default Linux workspace release used the rootlessly extracted Debian
@@ -80,29 +130,17 @@ The verifier accepted 341/341 host cases, 34/34 isolated GUI cases, and
 unchanged 376-ID catalog, including all earlier milestone cases.
 [Integrated package and receipt index](p9-linux-package-evidence/README.md).
 
-The release uses the reviewed Slint interpreter with repository-owned
-source. The known upstream Rowan strict-Miri finding remains in the
-assurance record. [Interpreter release decision](p9-slint-boundary.md).
-
 Linux CPU AddressSanitizer and ThreadSanitizer each passed 119 of 119
 tests across 19 executables at `12f2151`. The separate `5443cdf` coverage
 replay passed 33 CPU interface cases and raised combined owned-source line
 coverage to 5,315 of 5,775. The strict coverage comparator still failed.
-Physical GPU ASan repeatedly failed at `fcf395b` during physical CubeCL Vulkan
-acquisition with `Parent device is lost`, before any kernel ran. Minimal wgpu
-and C controls acquired the same device and reported LeakSanitizer failures.
-Integrated mutation coverage and the remaining assurance conditions are open.
 [Integrated CPU sanitizer receipts](p9-tsan-audit/integrated-12f2151/README.md).
-[Integrated physical GPU ASan replay](p9-gpu-asan-evidence/fcf395b/README.md).
 [Combined CPU and GUI coverage scope](p9-cpu-assurance-evidence/native-gui-continuous/5443cdf/README.md).
 
 The earlier `12f2151` Linux CUDA and HIP release profiles both linked. The
 CUDA build passed four frozen CLI cases, with two CPU completions and two
 native CUDA completions on the RTX 3090. The HIP result is a build/link
-receipt. The delivery assessment assumes Apple compatibility based on
-the NVIDIA result. Actual Apple CPU, wgpu Metal, native Metal and packaged
-GUI execution, signed macOS packaging, and the Windows native build remain
-unverified.
+receipt. Windows build/link was unverified at this revision.
 [Native Linux profile evidence](p9-linux-native-evidence/12f2151/README.md).
 [Windows build prerequisite](p9-windows-build-evidence/12f2151/README.md).
 
@@ -120,6 +158,18 @@ differences leave equal-quality acceptance open.
 [Sealed R50 benchmark and crop/color review](../../qualification/p10-performance/evidence/integrated-r50-12f2151/README.md).
 [Corrected reference](p2-cr3-reference-evidence/README.md).
 [Earlier R50 functional pair](p10-r50-integrated-quality/README.md).
+
+The host-aware RAW worker and allocation changes are merged at `f54096b`.
+The focused release at `b10fbec` matched the merged production source and
+lock. It decoded the authenticated first and last R50 originals into
+bit-identical working RGB and byte-identical RGB16 exports. Median two-file
+decode fell from 1.853 s to 0.782 s, with observed process peak RSS rising
+from 630,312 to 639,534 KiB. All 84 P2 cases passed at that focused revision,
+including 16 physical RTX 3090 Vulkan comparisons. Full paired R50 and the
+post-merge integrated release ledger remain open.
+[Exact Canon parity and timings](p10-r50-raw-audit/host-aware-workers/README.md).
+[P2 CPU accounting](p10-r50-raw-audit/host-aware-workers/p2/p2-cpu-summary.json).
+[P2 GPU accounting](p10-r50-raw-audit/host-aware-workers/p2/p2-gpu-summary.json).
 
 At the packaged `12f2151` CLI, the aligned real E9 comparison completed 17
 launches per application in each CPU and physical NVIDIA lane. CPU warm,
@@ -156,6 +206,15 @@ Detail remained soft in the same held-out regions. Equal quality remains open.
 [D150 paired timings and image review](../../qualification/p10-performance/evidence/integrated-d150-12f2151/README.md).
 [Adjacent-pair geometry proof](d150-geometry-audit/prototype-ff2c037/README.md).
 
+The held-out `0cc9159` D150 prototype reduced the largest nearby-frame map
+jump to 2.607 px and produced a 2266 × 1660 crop. All four original focus
+regions became softer than the sealed package. On a separate 40-frame
+control using identical registered pixels, the band-local fusion prototype
+degraded signed phase in both held-out regions. These experiments leave
+registration and equal output quality open.
+[Native motion and warp review](d150-geometry-audit/subpixel-diagnostic/README.md).
+[Fixed-input phase results](../../qualification/p10-performance/evidence/d150-band-focus/README.md).
+
 One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
 Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
 Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
@@ -168,12 +227,24 @@ One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
 byte for byte. Decode and the two full-frame upload call spans totalled
 63.94 s, about 87.5% of the owner-thread time. These are host intervals
-that can include copies, submission backpressure and prior queue work. This
-single instrumented diagnostic carries no frozen P10 qualification credit.
+that can include copies, submission backpressure and prior queue work. The
+two uploads staged 28.8 GB of logical RGB data across 50 frames. This single
+instrumented diagnostic carries no frozen P10 qualification credit.
 [Physical T50 phase trace](p10-t50-phase-trace/README.md).
+[T50 transfer boundaries](../../qualification/p10-performance/evidence/t50-stage-audit/README.md).
 
-The final GitHub push of `main` and required CI run remain pending while
-the frozen release gates are unmet.
+The process-tree RSS cadence and attributable GPU memory gates remain open
+where the traces exceeded 20 ms. The native RSS probe returned the same
+session roster and byte totals as the Python collector in its stable control.
+It has not qualified full-job cadence. Independent E9 replay measured individual
+NVIDIA compute-process queries lasting 26.972 ms on Vulkan and 30.815 ms on
+CUDA. The archived T50 pair also had GPU sample gaps above 20 ms.
+[Raw cadence replays and collector controls](../../qualification/p10-performance/evidence/resource-sampling/collector-cadence-followup.md).
+
+Final release acceptance, the final GitHub push of `main`, and required CI
+on that final revision remain open while frozen gates are unmet.
+
+### Earlier Linux release and performance receipts
 
 **Linux release conformance passes all 376 case IDs at `5216ba4`.** The
 release verifier matched 341 host cases, 34 isolated GUI cases, and one
