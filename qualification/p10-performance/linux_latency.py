@@ -176,18 +176,29 @@ def _wait_state(ui, status, expected, timeout):
     raise TimeoutError(f"native worker did not report any of {sorted(expected)}")
 
 
+def _matches_viewer_load(condition, phase, label):
+    """Require a native worker admission from the actual numerical pipeline."""
+    if condition == "idle":
+        return phase in {"idle", "completed"}
+    fields = label.casefold().split("·")
+    return (
+        phase == "running"
+        and len(fields) >= 2
+        and fields[1].strip() in {"decode", "register", "fuse"}
+    )
+
+
 def _viewer(step, context, sample, output, scenario_root):
     ui, screen, pointer, status = context
     condition = step["condition"]
     if condition not in ("idle", "loaded"):
         raise ValueError(f"unknown viewer load condition: {condition}")
-    expected = {"running"} if condition == "loaded" else {"idle", "completed"}
     before, before_identity = _witnesses(scenario_root, step["before"])
     after, after_identity = _witnesses(scenario_root, step["after"])
     with _prepare_pointer(pointer, ui, step["input"]) as dispatch:
         wait_pixels(screen, before, 10)
         phase, label = _state(ui, status)
-        if phase not in expected:
+        if not _matches_viewer_load(condition, phase, label):
             raise ValueError(
                 f"native state before {condition} viewer event was {label!r}"
             )
@@ -213,7 +224,7 @@ def _viewer(step, context, sample, output, scenario_root):
         sample["actual_after"].append(
             {"path": str(path), "sha256": sha256(path), "max_channel_error": error}
         )
-    if phase not in expected:
+    if not _matches_viewer_load(condition, phase, label):
         raise ValueError(
             f"worker left the requested viewer workload during sample: {label!r}"
         )

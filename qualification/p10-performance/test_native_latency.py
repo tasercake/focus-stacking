@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 from framebuffer import Patch, XwdScreen, observe_transition
+from linux_latency import _matches_viewer_load
 from protocol import merge_latency_samples, verify_frames
 
 
@@ -112,3 +113,23 @@ class CaptureEvidenceContracts(unittest.TestCase):
             self.assertEqual(
                 len(verify_frames(root, records, 2, distinct_content=False)), 2
             )
+
+
+class WorkerLoadContracts(unittest.TestCase):
+    def test_loaded_event_requires_observed_numerical_worker_stage(self):
+        self.assertTrue(
+            _matches_viewer_load("loaded", "running", "Running · Fuse · 11 of 50")
+        )
+        self.assertTrue(
+            _matches_viewer_load("loaded", "running", "Running · Register · 21 of 50")
+        )
+        self.assertFalse(
+            _matches_viewer_load("loaded", "running", "Running · Prepare · 0 of 50")
+        )
+        self.assertFalse(
+            _matches_viewer_load("loaded", "running", "Running · Publish · 50 of 50")
+        )
+        self.assertFalse(
+            _matches_viewer_load("loaded", "paused", "Paused · Fuse · 21 of 50")
+        )
+        self.assertTrue(_matches_viewer_load("idle", "idle", "Idle"))
