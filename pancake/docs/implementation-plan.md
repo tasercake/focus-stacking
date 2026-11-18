@@ -164,6 +164,14 @@ while warping and fusion completed on the GPU. The diagnostic carries no
 frozen warm or cold timing credit. Resource and equal-quality gates remain open.
 [Generated T50 diagnostic and cleanup](../../qualification/p10-performance/evidence/t50-12f2151-preflight/pair-001/README.md).
 
+One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
+in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
+byte for byte. Decode and the two full-frame upload call spans totalled
+63.94 s, about 87.5% of the owner-thread time. These are host intervals
+that can include copies, submission backpressure and prior queue work. This
+single instrumented diagnostic carries no frozen P10 qualification credit.
+[Physical T50 phase trace](p10-t50-phase-trace/README.md).
+
 The final GitHub push of `main` and required CI run remain pending while
 the frozen release gates are unmet.
 
