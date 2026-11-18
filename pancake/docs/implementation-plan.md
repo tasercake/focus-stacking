@@ -58,16 +58,21 @@ Linux CPU AddressSanitizer and ThreadSanitizer each passed 119 of 119
 tests across 19 executables at `12f2151`. The separate `5443cdf` coverage
 replay passed 33 CPU interface cases and raised combined owned-source line
 coverage to 5,315 of 5,775. The strict coverage comparator still failed.
-Physical GPU ASan, integrated mutation coverage and the remaining release
-assurance conditions are open.
+Physical GPU ASan repeatedly failed at `fcf395b` during physical CubeCL Vulkan
+acquisition with `Parent device is lost`, before any kernel ran. Minimal wgpu
+and C controls acquired the same device and reported LeakSanitizer failures.
+Integrated mutation coverage and the remaining assurance conditions are open.
 [Integrated CPU sanitizer receipts](p9-tsan-audit/integrated-12f2151/README.md).
+[Integrated physical GPU ASan replay](p9-gpu-asan-evidence/fcf395b/README.md).
 [Combined CPU and GUI coverage scope](p9-cpu-assurance-evidence/native-gui-continuous/5443cdf/README.md).
 
 The matching optional Linux CUDA and HIP release profiles both linked. The
 CUDA build passed four frozen CLI cases, with two CPU completions and two
 native CUDA completions on the RTX 3090. The HIP result is a build/link
-receipt. Apple execution and signed packaging, as well as the Windows
-native build, remain open.
+receipt. The delivery assessment assumes Apple compatibility based on
+the NVIDIA result. Actual Apple CPU, wgpu Metal, native Metal and packaged
+GUI execution, signed macOS packaging, and the Windows native build remain
+unverified.
 [Native Linux profile evidence](p9-linux-native-evidence/12f2151/README.md).
 [Windows build prerequisite](p9-windows-build-evidence/12f2151/README.md).
 
@@ -95,10 +100,32 @@ The candidate GPU-memory traces exceeded the required sampling interval, and
 equal output quality remains open.
 [Native CUDA E9 measurement](../../qualification/p10-performance/evidence/integrated-e9-cuda-12f2151/README.md).
 
-The earlier native viewer-cache replay at `89c6a22` measured 43.274 ms idle
-and 43.355 ms loaded P95 against the 33 ms limit. These viewer and prior
-lifecycle measurements apply to their recorded revisions.
-[Viewer cache measurement](p10-viewer-cache-evidence/README.md).
+The packaged `12f2151` GUI recorded all 400 calibrated visible transitions on
+physical RTX 3090, with 200 idle and 200 loaded events. The 41.121 ms idle and
+41.363 ms loaded P95 values both missed the 33 ms limit. The unmerged X11
+redraw branch `1a0ec8c` also missed at 41.492 ms idle and 41.335 ms loaded.
+Both arms matched the independent pixel witnesses.
+[Sealed viewer and redraw A/B](p10-viewer-redraw-evidence/README.md).
+[Earlier viewer cache measurement](p10-viewer-cache-evidence/README.md).
+
+The packaged `12f2151` D150 Hybrid CPU campaign completed all 34 primary
+launches. Warm medians of 43.36 s and 88.30 s gave a 0.491 ratio, and the cold
+ratio was 0.447. Both speed gates passed. Process-tree peak RSS remains pending
+under the frozen sampling interval. Same-canvas review confirmed softer
+specimen detail and doubled edges. The unmerged adjacent-fit prototype
+`ff2c037` removed the observed 129.796 px jump and widened the crop from
+2130 × 1530 to 2302 × 1726 in a full 150-frame metadata and export check.
+Detail remained soft in the same held-out regions. Equal quality remains open.
+[D150 paired timings and image review](../../qualification/p10-performance/evidence/integrated-d150-12f2151/README.md).
+[Adjacent-pair geometry proof](d150-geometry-audit/prototype-ff2c037/README.md).
+
+One matched generated T50 Hybrid diagnostic pair used the packaged `12f2151`
+Vulkan CLI and the reference OpenCL runtime on the same physical RTX 3090.
+Pancake took 82.44 s and the reference took 26.74 s. Both exported genuine
+3998 × 5998 RGB16. The reference fell back to CPU in its alignment helper
+while warping and fusion completed on the GPU. The diagnostic carries no
+frozen warm or cold timing credit. Resource and equal-quality gates remain open.
+[Generated T50 diagnostic and cleanup](../../qualification/p10-performance/evidence/t50-12f2151-preflight/pair-001/README.md).
 
 **Linux release conformance passes all 376 case IDs at `5216ba4`.** The
 release verifier matched 341 host cases, 34 isolated GUI cases, and one
@@ -116,16 +143,16 @@ full owned-source coverage, end-to-end CUDA qualification, genuine driver
 fault recovery, and the frozen P10 measurements remain separate exit gates.
 [Sealed Linux branch coverage](p9-cpu-assurance-evidence/5216ba4-nightly/README.md).
 
-**P10 Linux lifecycle passes. P10 release acceptance remains open.** The
-`5216ba4` physical RTX 3090 GUI met the frozen 250 ms deadline on all 60
-pauses and 60 cancels across the original 64-path fixture and real D150.
+**The `5216ba4` Linux lifecycle campaign passed. P10 release acceptance
+remains open.** The physical RTX 3090 GUI met the frozen 250 ms deadline on
+all 120 requests, comprising 60 pauses and 60 cancels across the original
+64-path fixture and real D150.
 Maximum observed acknowledgement was 155.640 ms for pause and 221.802 ms
 for cancellation. The comparison clip shifted source pixels with the divider
 on that sealed GUI. The corrected `74dfaa3` build matched independent physical
 24 MP witnesses for all viewer operations. Its full 200 idle and 200 loaded
-observations both miss the frozen 33 ms P95 limit, at 42.310 ms idle and
-54.054 ms loaded. Full same-revision conformance, release packaging, lifecycle
-measurement, and assurance remain required for the corrected artifact.
+observations both missed the frozen 33 ms P95 limit, at 42.310 ms idle and
+54.054 ms loaded.
 [Lifecycle measurements](../../qualification/p10-performance/evidence/native-lifecycle-measured/README.md),
 [physical comparison evidence](../../qualification/p10-performance/evidence/native-physical-pair-calibration/comparison.md),
 and [400-event viewer measurement](../../qualification/p10-performance/evidence/native-viewer-measured/README.md).
