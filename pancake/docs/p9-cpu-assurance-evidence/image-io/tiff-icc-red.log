@@ -1,0 +1,24 @@
+running 10 tests
+test forbids_source_aliases_even_during_commit ... ok
+test losing_staging_before_publication_does_not_damage_destination ... ok
+test failures_retain_destinations_and_remove_staging ... ok
+test source_inspection_error_preserves_existing_destination ... ok
+test retained_image_can_publish_after_source_disappears ... ok
+test exr_keeps_float_samples ... ok
+test staging_is_invisible_until_commit_and_cleans_on_drop ... ok
+test jpeg_declares_and_writes_eight_bit_samples ... ok
+test profiled_exports_preserve_original_icc_bytes ... FAILED
+test lossless_formats_keep_full_precision ... ok
+
+failures:
+
+---- profiled_exports_preserve_original_icc_bytes stdout ----
+Error: Custom { kind: Other, error: "metadata.tif did not preserve the embedded ICC bytes" }
+
+
+failures:
+    profiled_exports_preserve_original_icc_bytes
+
+test result: FAILED. 9 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `--test cpu_image_export`
