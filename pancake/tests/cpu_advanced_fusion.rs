@@ -191,3 +191,70 @@ fn cpu_slab_geometry_and_scale_aware_parameters() -> Result<(), String> {
     }
     Ok(())
 }
+
+/// Preserve the same two-frame Hybrid result after exchanging image axes.
+///
+/// # Errors
+/// Returns incorrect fusion geometry or samples, or a runtime failure.
+#[test]
+fn cpu_hybrid_commutes_with_transposition() -> Result<(), String> {
+    const SIDE: usize = 8;
+    const ROW_SAMPLES: usize = SIDE * 3;
+    const ONE_RGB16_CODE: f32 = 1.0_f32 / 65_535.0_f32;
+
+    // Each opposing pair has equal focus magnitude but different signed
+    // detail. The extra bright row varies the low-frequency tone as well.
+    let stripe = [0.25_f32, 0.75, 0.25, 0.75, 0.75, 0.25, 0.75, 0.25];
+    let row_stripes: Vec<_> = stripe
+        .into_iter()
+        .flat_map(|value| [value; ROW_SAMPLES])
+        .collect();
+    let column_stripes: Vec<_> = std::iter::repeat_n(stripe, SIDE)
+        .flatten()
+        .flat_map(|value| [value; 3])
+        .collect();
+    let device = cubecl::Device::Cpu(cubecl::cpu::CpuDevice);
+    let fuse = |first: &[f32]| -> Result<Vec<f32>, String> {
+        let second: Vec<_> = first.iter().map(|value| 1.0_f32 - value).collect();
+        let mut accumulator =
+            AdvancedAccumulator::new(&device, SIDE, SIDE, AdvancedMethod::Hybrid, 3, 1, BUDGET)?;
+        accumulator.add_frame(first)?;
+        accumulator.add_frame(&second)?;
+        let fused = accumulator.finish()?;
+        if fused.len() != first.len() {
+            return Err("Hybrid changed the square output extent".to_owned());
+        }
+        for input in [first, second.as_slice()] {
+            if fused
+                .iter()
+                .zip(input)
+                .all(|(actual, input)| (actual - input).abs() <= ONE_RGB16_CODE)
+            {
+                return Err("Hybrid did not combine the two focus sources".to_owned());
+            }
+        }
+        Ok(fused)
+    };
+    let horizontal = fuse(&row_stripes)?;
+    let vertical = fuse(&column_stripes)?;
+    let (horizontal_rows, _) = horizontal.as_chunks::<ROW_SAMPLES>();
+    let (vertical_rows, _) = vertical.as_chunks::<ROW_SAMPLES>();
+    let mut max_error = 0.0_f32;
+    for (y, row) in horizontal_rows.iter().enumerate() {
+        let (pixels, _) = row.as_chunks::<3>();
+        for (x, pixel) in pixels.iter().enumerate() {
+            let row = vertical_rows.get(x).ok_or("missing transposed row")?;
+            let (transposed, _) = row.as_chunks::<3>();
+            let expected = transposed.get(y).ok_or("missing transposed pixel")?;
+            for (actual, expected) in pixel.iter().zip(expected) {
+                max_error = max_error.max((actual - expected).abs());
+            }
+        }
+    }
+    if max_error > ONE_RGB16_CODE {
+        return Err(format!(
+            "transposing the focus sources changed Hybrid by {max_error:.6}"
+        ));
+    }
+    Ok(())
+}
