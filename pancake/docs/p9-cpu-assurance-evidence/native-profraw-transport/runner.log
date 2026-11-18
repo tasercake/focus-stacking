@@ -1,0 +1,3 @@
+Target: pancake-rust | 1 cases | /tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/llvm-scope-transport-3dc9bcf/conformance
+[1/1] PASSED cli.help (0.02s)
+Passed: 1; failed: 0; unsupported: 0
