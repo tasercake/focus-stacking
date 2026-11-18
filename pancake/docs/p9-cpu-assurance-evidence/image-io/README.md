@@ -50,3 +50,14 @@ The original export, NumPy and RAW source files and their LLVM denominators
 match exactly. The TIFF metadata fallback adds source and changes the shared
 image input file's denominator. The stable report records no branch counters.
 [Source and denominator comparison](coverage-comparison.json)
+
+## Independent P2 replay
+
+The unchanged suite passed all 84 P2 case IDs with zero failures and zero
+unsupported cases. The suite's existing CLI command override selected the
+locked debug executable so the public regression could reuse the native build.
+The tested application source is `a5965a2`, identical to the harness commit
+`8e5dd19` across the application crates and Cargo lock. The raw completion
+events report 43 CPU jobs and 16 physical NVIDIA RTX 3090 jobs via wgpu Vulkan
+on driver 580.178.04. The release assurance receipt is separate.
+[Command and binary receipt](p2-replay-receipt.json) · [Harness provenance](p2-provenance.json) · [Case report](p2-report.json.gz) · [Completion events](p2-completion-events.json.gz)
