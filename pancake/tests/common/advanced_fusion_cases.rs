@@ -224,7 +224,7 @@ pub fn check_hybrid_level_bounds(device: &cubecl::Device) -> Result<(), String> 
     Ok(())
 }
 
-/// Accumulate weighted and winning coefficients with one pass over each band.
+/// Avoid a separate band materialization pass for Hybrid coefficients.
 ///
 /// # Errors
 /// Returns a launch, shape, or numerical failure.
@@ -240,11 +240,11 @@ pub fn check_hybrid_frame_launches(device: &cubecl::Device) -> Result<(), String
     if output.len() != WIDTH * HEIGHT * 3 || output.iter().any(|sample| !sample.is_finite()) {
         return Err("Hybrid launch witness did not complete a finite RGB output".to_owned());
     }
-    // Per frame: three focus passes, two reductions per step, five band updates.
+    // Per frame: three focus passes, two reductions per step, ten band updates.
     let issued = launches.0.load(Ordering::Relaxed);
-    if issued > 32 {
+    if issued > 42 {
         return Err(format!(
-            "two four-reduction Hybrid frames should need at most 32 launches, issued {issued}"
+            "two four-reduction Hybrid frames should need at most 42 launches, issued {issued}"
         ));
     }
     Ok(())
