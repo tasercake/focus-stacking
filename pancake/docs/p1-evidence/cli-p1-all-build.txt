@@ -1,0 +1,5 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling pancake v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/p1-verify/pancake)
+   Compiling pancake-cli v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/p1-verify/pancake/crates/pancake-cli)
+    Finished `release` profile [optimized] target(s) in 25.78s

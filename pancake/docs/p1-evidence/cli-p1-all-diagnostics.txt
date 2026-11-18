@@ -1,0 +1,27 @@
+cli.coverage.reject.dng call-01: error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p1-decoder/wired/report/cases/cli.coverage.reject.dng/000-invalid-0.dng: Error: No decoder found, model '', make: '', mode: ''
+cli.coverage.reject.npy call-01: error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p1-decoder/wired/report/cases/cli.coverage.reject.npy/000-invalid-0.npy: invalid NumPy format signature or version
+cli.coverage.reject.oversize-png call-01: error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p1-decoder/wired/report/cases/cli.coverage.reject.oversize-png/oversized-headers/oversize-0.png: Image size exceeds limit
+cli.coverage.reject.oversize-png call-02: error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p1-decoder/wired/report/cases/cli.coverage.reject.oversize-png/oversized-headers/oversize-0.png: Image size exceeds limit
+cli.coverage.reject.oversize-png call-03: error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p1-decoder/wired/report/cases/cli.coverage.reject.oversize-png/oversized-headers/oversize-0.png: Image size exceeds limit
+cli.coverage.reject.png call-01: error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p1-decoder/wired/report/cases/cli.coverage.reject.png/000-invalid-0.png: The image format could not be determined
+cli.coverage.reject.unknown call-01: error: could not decode input /tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p1-decoder/wired/report/cases/cli.coverage.reject.unknown/000-invalid-0.unknown: The image format could not be determined
+cli.reject.alignment call-01: error: invalid value '__invalid_alignment__' for '--alignment-mode <MODE>': expected off, translation, euclidean, similarity, affine, or breathing
+cli.reject.bit-depth call-01: error: invalid value '12' for '--bit-depth <BITS>': expected 8 or 16
+cli.reject.device-conflict call-01: error: the argument '--cpu' cannot be used with '--gpu'
+cli.reject.duplicate-single call-01: error: at least two distinct input files are required (found 1)
+cli.reject.integer call-01: error: invalid value '__invalid_integer__' for '--kernel-size <PIXELS>': invalid digit found in string
+cli.reject.method call-01: error: invalid value '__invalid_method__' for '--method <METHOD>': expected laplacian, hybrid, weighted_average, depth_map, or exposure_fusion
+cli.reject.missing-input call-01: error: the following required arguments were not provided:
+cli.reject.missing-output call-01: error: the following required arguments were not provided:
+cli.reject.no-arguments call-01: error: the following required arguments were not provided:
+cli.reject.one-file call-01: error: at least two distinct input files are required (found 1)
+cli.reject.overlap-negative call-01: error: invalid value '-1' for '--slab-overlap <FRAMES>': -1 is not in 0..=4294967295
+cli.reject.overlap-too-large call-01: error: --slab-overlap 2 must be smaller than --slab-size 2
+cli.reject.reference call-01: error: invalid value '__invalid_reference__' for '--alignment-ref <FRAME>': expected first, middle, or previous
+cli.reject.scale-negative call-01: error: --max-scale-step must be greater than 0 and less than 1; got -0.1
+cli.reject.scale-one call-01: error: --max-scale-step must be greater than 0 and less than 1; got 1
+cli.reject.scale-zero call-01: error: --max-scale-step must be greater than 0 and less than 1; got 0
+cli.reject.slab-negative call-01: error: invalid value '-1' for '--slab-size <FRAMES>': -1 is not in 0..=4294967295
+cli.reject.slab-one call-01: error: --slab-size must be 0 or between 2 and 4096; got 1
+cli.reject.unknown-option call-01: error: unexpected argument '--conformance-deliberately-unknown-option' found
+Release executable SHA-256: 1abd565fe71a239457d11f6bc5ab0ecd2b2196c7a95ba424fa5686b9d95e9b78
