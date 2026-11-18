@@ -152,12 +152,16 @@ and 151.283 ms for cancel, both below the frozen 250 ms limit. The combined
 latency reducer exited 1 with zero viewer observations in this campaign.
 [Exact physical lifecycle campaign](../../qualification/p10-performance/evidence/native-lifecycle-d6359e1/README.md).
 
-The immediate-state viewer controls merged at `b192f7d`. On the locked
-`6489af6` candidate, all 400 physical viewer observations passed independent
-pixel validation. Idle and loaded P95 were 20.793 ms and 23.827 ms, both
-below 33 ms. This is the scoped viewer campaign. The package revision and
-combined viewer and lifecycle campaign require their own matching receipts.
-[Physical viewer measurement](p10-viewer-command-evidence/README.md).
+The exact packaged `287828a` GUI recorded all 400 physical viewer
+observations with independent pixel validation. Idle P95 passed at
+21.713240 ms and loaded P95 missed at 33.817853 ms against the 33 ms limit.
+The single attempt ended with the frozen reducer at exit 1. All 1,120
+presented RGB patches matched within one level per channel. The earlier
+scoped `6489af6` pass at 20.793 ms idle and 23.827 ms loaded remains
+attributed to that candidate. The exact package's loaded viewer gate and
+combined viewer and lifecycle campaign remain open.
+[Exact package viewer capture](p10-viewer-package-evidence/287828a/README.md).
+[Earlier scoped viewer measurement](p10-viewer-command-evidence/README.md).
 
 ### Benchmark baselines and scoped follow-ups
 
@@ -209,6 +213,16 @@ post-merge integrated release ledger remain open.
 [Exact Canon parity and timings](p10-r50-raw-audit/host-aware-workers/README.md).
 [P2 CPU accounting](p10-r50-raw-audit/host-aware-workers/p2/p2-cpu-summary.json).
 [P2 GPU accounting](p10-r50-raw-audit/host-aware-workers/p2/p2-gpu-summary.json).
+
+On the 50 authenticated Canon originals, one untraced R50 CPU pair took
+50.792 s with the exact packaged `287828a` CLI and 47.811 s with the
+corrected pinned reference. Each decoded RGB16 export repeated its earlier
+digest, and cross-application RGB mean absolute difference stayed at 506.42
+u16 codes. A separate traced package run measured 18.087 s in RAW decode,
+17.206 s in registration thumbnails and 14.340 s in frame fusion. This
+diagnostic leaves the full warm, cold, process-tree RSS and equal-quality
+verdicts open.
+[Packaged R50 pair and stage trace](p10-r50-phase-287828a/README.md).
 
 At the packaged `12f2151` CLI, the aligned real E9 comparison completed 17
 launches per application in each CPU and physical NVIDIA lane. CPU warm,
@@ -301,6 +315,27 @@ ran zero benchmark jobs during materialization.
 [Physical resident RGB comparison](p10-t50-resident-input/README.md).
 [Bounded TIFF decode](p10-tiled-tiff-diagnostic/README.md).
 [Verified T50 stage](../../qualification/p10-performance/evidence/t50-shared-287828a/README.md).
+
+The one-copy registration upload at `07816a2` passed all 64 P5 and 72 P6
+case IDs. The two disjoint replays used the same locked candidate CLI.
+The 73-case continuation audited 101 calls, including 33 native CPU jobs,
+37 physical RTX 3090 Vulkan jobs and 31 expected corrupt-input errors.
+All five Auto jobs used the physical GPU, and completed calls had zero
+fallbacks. The exact packaged 376-case ledger remains at `287828a`.
+[P5/P6 union and raw device records](p10-registration-owned-upload/device-regression.json).
+
+The two separately built `287828a` and `07816a2` CLIs ran one matched
+physical T50 pair on the RTX 3090. Wall time fell from 50.533 s to 37.223 s
+and process-tree RSS from 1.548 GB to 0.969 GB, with both RSS traces within
+the frozen cadence. The encoded and decoded RGB16 output, 50 identity
+transforms and completion records matched. VRAM sample gaps exceeded 20 ms.
+The frozen cross-application speed, memory and quality verdicts remain open.
+[Registration upload A/B and allocation proof](p10-registration-owned-upload/README.md).
+
+The decode overlap audit retains ordered current-frame reads. Its archived
+trace model bounds the benefit and identifies the extra memory, input-order
+and pause acknowledgement proof needed for speculative decode.
+[Decode overlap and ownership audit](p10-decode-overlap-audit/README.md).
 
 The process-tree RSS cadence and attributable GPU memory gates remain open
 where the traces exceeded 20 ms. The native RSS probe returned the same
