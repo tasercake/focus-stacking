@@ -174,3 +174,9 @@ reproduced the wrong direct jump and independently confirmed the genuine
 adjacent motion. Positive inverse reverse-anchor fits matched both nearby
 transitions more closely on held-out bilateral landmarks. Direction choice,
 the long-range trajectory and fused quality remain open.
+
+The [bounded witness design](witness-design/README.md) compares the same
+directional histories in scale-6 proxy coordinates. It identifies the
+invalid one-frame absolute switch, the false jump's narrow support, and
+what can be validated with existing CubeCL moments. The proposed witness,
+reverse-estimation demand and real output quality still need measurement.
