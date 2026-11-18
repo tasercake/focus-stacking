@@ -25,4 +25,5 @@ two generated TIFFs and the temporary exported result. The raw receipt retains
 paths, hashes, command source, hardware, and actual screen RGB.
 
 [Calibration archive](raw-calibration.tar.gz) ·
-[Archive checksum](raw-calibration.sha256)
+[Archive checksum](raw-calibration.sha256) ·
+[Five-family follow-up and comparison miss](comparison.md)
