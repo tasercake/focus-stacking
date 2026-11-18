@@ -45,32 +45,52 @@ raw report and provenance record.
 
 ## Active delivery checkpoint
 
-**The packaged `287828a` Linux release passes all 376 case IDs.** The strict
-ledger accepted 341 host cases, 34 isolated GUI cases, and one physical RTX
-3090 Vulkan GUI case from the same locked source and extracted Debian
-executables. Fast, dependency and rootless package checks passed. The
-69,551,694-byte Debian archive has SHA-256
-`34a63edea55c411a6082924c2fbe2c50094eea98753b1f75378459da78e4db99`.
-[Linux package index](p9-linux-package-evidence/README.md).
-[Exact package and lane summary](p9-linux-package-evidence/287828a/summary.json).
-[Strict ledger](p9-linux-package-evidence/287828a/linux-ledger.json.gz).
+**The packaged `8694b55` Linux release passes all 376 case IDs.** The strict
+ledger matched 341 host, 34 isolated GUI and one physical RTX 3090 Vulkan
+GUI case to the exact locked source and extracted Debian binaries. The
+release build, dependency checks and rootless package verification passed.
+The 69,494,350-byte archive has SHA-256
+`7dbc969e1813bc62aa4df206bb77982e3f7705298f753e12b7a493ae89ce3784`.
+[Exact package and lane summary](p9-linux-package-evidence/8694b55/summary.json).
+[Strict 376-case ledger](p9-linux-package-evidence/8694b55/linux-ledger.json.gz).
 
-The `8694b55` combined Linux candidate built and passed dependency and
-rootless Debian package checks. Its package replay has 341/341 host and
-1/1 physical RTX 3090 Vulkan GUI passes under `artifacts/p9-8694b55/`.
-The isolated 34-case replay and strict aggregate were pending at this
-checkpoint. The original `8694b55` strict fast check exited 101 at 20
-Clippy diagnostics in the CPU focus test. The test-only `7ffc01d` repair
-passed the unchanged fast check and 3/3 focused native tests. All fixture
-input, reference and tolerance bits matched. The test repair leaves the
-packaged product source and lock unchanged.
+The exact `8694b55` native CUDA and HIP CLI release profiles both linked.
+The CUDA build passed two CPU cases and two physical RTX 3090 CUDA cases
+without fallback. All four exports matched the prior native replay hashes.
+HIP execution remains unrun.
+[Native profile builds and execution receipts](p9-linux-native-evidence/8694b55/README.md).
+
+The original `8694b55` strict fast check exited 101 at 20 test Clippy
+diagnostics. The `7ffc01d` test-only repair passed the unchanged fast gate
+and 3/3 focused native tests with identical input, reference and tolerance
+bits. The later `7551f73` checkout added the reviewed panorama and GTK
+regressions and passed the full fast gate. Its production bodies and lock
+match the sealed package. The 376-case result retains its `8694b55` identity.
 [Original and repaired fast checks](p9-cpu-assurance-evidence/7ffc01d-focus-lint/README.md).
+[Integrated `7551f73` fast pass](p9-cpu-assurance-evidence/7551f73-fast/README.md).
+
+The unchanged nightly coverage gate at `7551f73` passed all 145 tests
+across 19 CPU targets and exited 1 at the strict coverage threshold.
+It covered 4,644/6,456 lines, 474/753 functions, 4,766/7,271 regions and
+573/762 branch outcomes. The native GUI and mixed-lane counters require
+separate evidence.
+[Exact strict coverage run](p9-cpu-assurance-evidence/7551f73-nightly/README.md).
 
 The exact `8694b55` supplemental Linux Miri run passed 22/22. Both
 randomized-layout seeds passed 142/142 across 19 targets each, including
 the real large TIFF and ICC corruption test. The canonical macOS gate
 still needs a matching hosted run.
 [Linux nightly receipts and artifact identities](p9-cpu-assurance-evidence/8694b55/linux-nightly/README.md).
+
+**The earlier packaged `287828a` Linux release also passed all 376 IDs.**
+The strict ledger accepted 341 host cases, 34 isolated GUI cases, and one physical RTX
+3090 Vulkan GUI case from the same locked source and extracted Debian
+executables. Fast, dependency and rootless package checks passed. The
+69,551,694-byte Debian archive has SHA-256
+`34a63edea55c411a6082924c2fbe2c50094eea98753b1f75378459da78e4db99`.
+[Linux package index](p9-linux-package-evidence/README.md).
+[Earlier package and lane summary](p9-linux-package-evidence/287828a/summary.json).
+[Strict ledger](p9-linux-package-evidence/287828a/linux-ledger.json.gz).
 
 At `287828a`, local Linux CPU ASan and TSan each passed 137/137
 across 19 targets. The unchanged nightly gate ran 137 passing tests and
@@ -399,7 +419,8 @@ case IDs. The two disjoint replays used the same locked candidate CLI.
 The 73-case continuation audited 101 calls, including 33 native CPU jobs,
 37 physical RTX 3090 Vulkan jobs and 31 expected corrupt-input errors.
 All five Auto jobs used the physical GPU, and completed calls had zero
-fallbacks. The exact packaged 376-case ledger remains at `287828a`.
+fallbacks. The integrated TIFF and registration source passed the later
+`8694b55` package replay.
 [P5/P6 union and raw device records](p10-registration-owned-upload/device-regression.json).
 
 The two separately built `287828a` and `07816a2` CLIs ran one matched
@@ -427,8 +448,8 @@ matched. GPU memory sample gaps were 93.134 and 116.456 ms. The launches
 started at P8/56 °C and P5/58 °C. Compiler-cache cleanup overlapped at least
 1.947 s of the serial opening and finished before the row-worker launch.
 The timing impact is unknown. The row-worker and one-copy upload effects
-were measured in separate A/B pairs. The combined
-source still needs release replay and the frozen cross-application comparison.
+were measured in separate A/B pairs. The combined source passed the
+`8694b55` release replay. The frozen cross-application comparison remains open.
 [Physical TIFF worker pair](p10-tiff-row-worker/README.md).
 [Cleanup overlap bound](p10-tiff-row-worker/physical/cleanup-overlap.json).
 
