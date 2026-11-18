@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Requires a quiet host and an explicitly scheduled GPU slot.
+set -euo pipefail
+stage=$(cd "$(dirname "$0")" && pwd)
+release=$(cd "$stage/../.." && pwd)
+cd "$release"
+test -r "$stage/materialization.json"
+test "$(cat "$stage/generation.exit")" = 0
+test "$(git rev-parse HEAD)" = 12f2151c8a198b5209c8f4d506dbd17fd9aaa74f
+test -z "$(git status --porcelain)"
+test ! -e "$stage/diagnostic"
+ref_python="$release/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python"
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONPATH="$release/pancake-conformance/src:$release/qualification/p10-performance"
+export OPENBLAS_NUM_THREADS=1
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+exec env -u DISPLAY -u WAYLAND_DISPLAY systemd-run --user --scope --quiet \
+  --unit=pancake-t50-12f2151-diagnostic-stage001 \
+  -p MemoryMax=28G -p MemorySwapMax=0 \
+  "$ref_python" "$stage/paired-diagnostic.py" \
+  --input-root "$stage/inputs" \
+  --build-receipt "$stage/build-receipt.json" \
+  --truth-review "$stage/truth-review.py" \
+  --output "$stage/diagnostic"

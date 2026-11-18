@@ -1,8 +1,27 @@
 # T50 Hybrid matched-job preflight
 
-This preparation inspected retained results, frozen inputs, and source only.
-No T50 files were generated and no application or hardware workload was
-started during the D150 campaign.
+The initial preparation reviewed retained evidence and wrote a quiet launch
+plan during the D150 campaign. After D150 ended, the sealed candidate and
+reference were staged and all 52 TIFFs were generated for read-only reuse
+by the viewer A/B and this benchmark. The diagnostic pair is queued.
+
+[Materialized input receipt](stage-001/verified-stage.json) ·
+[Raw verification](stage-001/materialization.json.gz) ·
+[Prepared candidate and reference provenance](stage-001/prepared-provenance.json.gz) ·
+[Package, reference, generator and resource records](stage-001/stage-observations.tar.gz) ·
+[Checksums](stage-001/SHA256SUMS)
+
+The Linux materializer took 229.215 seconds on logical CPU 15, with nice
++12, idle I/O priority, one decode worker and numeric thread limits of one.
+Maximum RSS was 83,676 KiB. Available disk space at its start and finish was
+141,441,183,744 B and 123,378,569,216 B during concurrent build activity.
+Available host memory was 44,954,508 KiB and 46,841,696 KiB at the same points.
+All 52 file records, codec-decoded pixel hashes and independent zlib-decoded
+hashes match the frozen receipt. The normal user service manager applied
+exactly 28 GiB of host memory and zero swap for a scope probe. The
+[staged launch command](stage-001/launch-pair.sh.txt) uses that same control.
+Benchmarks and the viewer release the shared inputs before authenticated
+cleanup.
 
 ## Exact inputs and prior closure
 
