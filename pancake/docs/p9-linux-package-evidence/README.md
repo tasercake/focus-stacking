@@ -1,5 +1,38 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `5216ba4`
+
+The Linux x86-64 Debian package for
+`5216ba4227e14033483a21bb5eca1c6c168ef840` is retained under
+`artifacts/pancake-packages/linux-5216ba4/pancake_0.1.0_amd64.deb`. It is
+69,262,768 bytes with SHA-256
+`f3caa23753ff1a670d895b33bff58d26ab6d48aa58f961e5bab731d985371ed1`.
+The producer compiled at `bc19261` and reran the locked release build after
+sealing `5216ba4`. The sealed build reused the same executable bytes. The
+application sources, manifests and Cargo.lock are identical across those
+revisions. The recorded differences concern assurance, tooling or
+documentation. [Build source witness](5216ba4/source-stage.json).
+[Sealed release build](5216ba4/sealed-release-build.log).
+
+The archive's two executables match those used for the conformance runs.
+APT's local simulation resolves the package and `ldd` resolves the extracted
+executables' linked dependencies. The extracted desktop entry launches the
+correct GUI and forwards both spaced and non-BMP file paths unchanged.
+The packaged GUI opens on a private desktop while a benign
+`std-widgets.slint` file is present in its working directory. Its file-open
+trace records no reads of that file. [Desktop entry receipt](5216ba4/desktop-entry-receipt.json).
+[Packaged interpreter receipt](5216ba4/slint-receipt.json).
+
+The stock conformance runner and strict verifier recorded 341/341 host passes
+using the extracted package. The separate physical-GPU GUI lane passed
+1/1 on the same source, descriptor, locks and executable bytes. Completed
+application telemetry identifies wgpu Vulkan on the RTX 3090 at
+`0000:01:00.0`. Full Linux accounting requires the complete isolated 34-case
+GUI report as well. The deployed candidate stays provisional pending the
+remaining platform, integrated assurance and frozen performance conditions.
+[Host receipt](5216ba4/host-receipt.json).
+[Physical GPU GUI receipt](5216ba4/physical-gpu-receipt.json).
+
 ## P7 release checkpoint `0859deb`
 
 Pancake's locked Linux x86-64 release CLI and GUI produced a 69,265,760 byte
