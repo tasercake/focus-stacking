@@ -89,3 +89,20 @@ The focused image tests passed 36/36 and the generated Clippy and cross-host
 source policy validations passed. The earlier report snapshots identify the
 preceding source.
 [Limit regression before the fix](tiff-icc-limit-red.log) · [Focused tests after the fix](tiff-icc-limit-tests.log)
+
+The exact bounded revision `1276ed6` ran `bash scripts/check.sh branches-cpu`
+with the same pinned nightly. All 111 selected executable tests passed. No
+doctests ran. The strict gate remained exit 1 for uncovered CPU lines. It
+counted 3,957/5,799 lines, 392/674 functions, 4,028/6,574 regions and 481/618
+branches. Compared with the prior nightly baseline, the unchanged export,
+NumPy and RAW files retain the same denominators and improvements above.
+The shared image input module reaches 162/182 lines, 26/39 functions,
+171/200 regions and 30/30 branches. These denominators include the bounded
+TIFF metadata path.
+[Bounded source and coverage comparison](bounded-branch-comparison.json) · [Nightly log](bounded-branches-cpu.log.gz) · [Nightly LLVM report](bounded-branches-cpu.json.gz)
+
+The exact bounded revision also passed a fresh run of all 84 P2 case IDs,
+using the same locked debug invocation and clean source. The replay recorded
+43 CPU and 16 physical RTX 3090 Vulkan completions. No cases failed, were
+unsupported or remained unrun.
+[Bounded replay receipt](bounded-p2-replay-receipt.json) · [Provenance](bounded-p2-provenance.json) · [Case report](bounded-p2-report.json.gz) · [Completion events](bounded-p2-events.json.gz)
