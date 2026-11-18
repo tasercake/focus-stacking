@@ -97,38 +97,98 @@ until those independent checks finish.
 
 ## Native latency
 
-Collect monotonic native dispatch and independently observed first-presented
-correct frame timestamps in the isolated GUI lane. The endpoint needs native
-presentation evidence tied to the changed frame, such as a captured presented
-frame with a presentation timestamp and confirmed image and viewport state.
-Capture all required viewer actions while idle and during real processing.
-Keep the native input and presentation trace, target build, renderer,
-workload and independent pixel/state evidence alongside the sample JSON.
+`linux_latency.py` launches the installed release GUI and the unchanged native
+AT-SPI driver on a private Xvfb and Openbox desktop. It initializes Xvfb’s
+shared XWD framebuffer, sends native XTest pointer events, and observes the
+actual visible screen pixels after each event. There is no per-event screenshot
+command, app callback, or app-side time measurement. The first independently
+observed correct patches give a conservative upper bound on virtual-screen
+presentation time. The receipt records the largest observation gap.
+Physical monitor refresh and scanout are outside this virtual-display receipt.
 
-For lifecycle measurements record native pause and cancel dispatch, worker
-acknowledgement at a safe boundary, and settled state separately. Confirm that
-the worker stops submitting new work at acknowledgement. Use the unchanged
-64-frame lifecycle case and selected real jobs. Record the fixture/job
-identity on the event trace. The reduction consumes these arrays.
-
-- `viewer` entries with `condition` (`idle` or `loaded`), `action` (`source`,
-  `result`, `pan`, `zoom`, or `comparison`), monotonic `dispatched_ns`, and
-  monotonic `presented_ns`.
-- `lifecycle` entries with `operation` (`pause` or `cancel`), monotonic
-  `dispatched_ns`, `acknowledged_ns`, and `settled_ns`.
+Prepare a GUI build receipt and an ordered scenario whose PNG witnesses were
+checked independently against the real source and expected viewport geometry.
+Use visible patches that distinguish the requested state, pan center, zoom,
+selection, or comparison position. Keep patches clear of the native cursor.
+The pre-action patches must be on screen and the post-action patches must
+differ visibly at dispatch. The observer writes the actual matched patches
+after the timer and records their hashes and maximum channel errors.
 
 ```sh
-"$ref_python" "$runner" latency /path/to/verified-native-events.json
+"$ref_python" "$runner" prepare-candidate --component gui \
+  --receipt artifacts/pancake-performance/gui-release-build.json
+"$ref_python" qualification/p10-performance/linux_latency.py \
+  --scenario /path/to/reviewed-viewer-scenario.json --workload T50 \
+  --input-root /path/to/materialized-T50 \
+  --build-receipt artifacts/pancake-performance/gui-release-build.json \
+  --output artifacts/pancake-performance/viewer-001
 ```
 
-Qualification depends on the independently verified origin and endpoints of
-the events. The reduction applies the frozen numerical gates.
+The native scenario uses schema 1 and an ordered `steps` array. This shape
+illustrates a single source-selection step. The listed witness images and
+coordinates must come from independent review of the actual scenario.
+
+```json
+{
+  "schema_version": 1,
+  "worker_status": {"control": "stack.status", "field": "title"},
+  "steps": [
+    {
+      "kind": "viewer",
+      "condition": "idle",
+      "action": "source",
+      "input": {"kind": "click", "at": {"control": "frame.1"}},
+      "before": [{"point": [700, 450], "png": "witness/source-0.png"}],
+      "after": [{"point": [700, 450], "png": "witness/source-1.png"}]
+    }
+  ]
+}
+```
+
+- Pointer inputs support `click`, `scroll_up`, `scroll_down`, and `drag`. An
+  anchor uses native `control` and optional interior `fraction`, or an absolute
+  private-screen `point`. A drag has a required `to` anchor. Its terminal
+  motion and release form the timed native input. Non-timed `setup` steps
+  accept `inputs` and an optional lower-case `worker_phase` to wait for.
+- Viewer cases use the exact generated 24 MP T50 source. Use `idle` and
+  `loaded` conditions and `source`, `result`, `pan`, `zoom`, and `comparison`
+  actions. The actual native worker status must remain Running around the
+  pixel interval for loaded cases. Setup steps use real controls to start
+  actual jobs and restore preconditions. Retain at least 200 samples per
+  condition, including all required actions.
+- `lifecycle` steps accept `operation` (`pause` or `cancel`) and `input`.
+  The collector records actual Running before dispatch, worker-confirmed
+  Paused or Cancelling, and reusable Idle after cancellation. The timestamps
+  bound external observation, so an acknowledgement too brief to observe
+  remains unqualified. Corroborate the observed state with the production
+  worker’s safe-boundary and resource-drain semantics and the native
+  [lifecycle case](../../pancake-conformance/src/pancake_conformance/cases/interface.py).
+- Use `--workload lifecycle` for the unmodified 64-path fixture. It intentionally
+  shares source bytes across distinct hardlinks. The other inputs require
+  distinct frozen content. Also capture selected R50/D150/E9 cases and keep
+  every observation from each trial. Target setup and stage selection happen
+  through real native controls and the GUI launch inputs.
+
+Reduce full captures on the same GUI build.
+
+```sh
+"$ref_python" "$runner" latency \
+  artifacts/pancake-performance/viewer-001/native-latency.json \
+  artifacts/pancake-performance/lifecycle-001/native-latency.json \
+  artifacts/pancake-performance/real-lifecycle-001/native-latency.json
+```
+
+The reducer rejects mixed build/frozen-target provenance, incomplete captures,
+and duplicate samples. It applies the frozen counts and thresholds. Keep the
+native action trace, independent witness files, actual presented patches,
+and input and build receipts together. Partial captures retain their original
+observations and contribute no passing latency evidence.
 
 ## Preparation evidence
 
 - Before implementation, `python -m unittest discover -s qualification/p10-performance -v`
   failed to import the absent protocol.
-- Nine focused tests and Ruff passed using the frozen reference environment.
+- Thirteen focused tests and Ruff passed using the frozen reference environment.
   The measurement test invokes a real local child process and verifies that
   the timed boundary reaches its output publication.
 - The pinned ChimpStackr checkout at
@@ -147,6 +207,17 @@ the events. The reduction applies the frozen numerical gates.
   Its decoded pixel SHA-256 was
   `529d4566b7bfe3fc0c742ae1ba90e4bd090592b89b7283a4d94f342f88aa8230`.
   The source hashes were reverified and the temporary output was removed.
+- A candidate-only E9 functional diagnostic used the same frozen profile and
+  inputs on the AMD Ryzen 9 7950X3D. Exact application revision `18c17b6`
+  completed on the CubeCL CPU runtime and exported genuine 339 × 512 RGB16.
+  Reference diagnostics report a one-pixel crop on each edge. Registered
+  overlap quality remains to be evaluated. No elapsed benchmark measurement
+  was made. [Diagnostic receipt](evidence/e9-candidate-functional.json)
+- A separate native observer smoke test used `smoke_x11.py` and a small
+  Xlib window. It changed visible screen RGB on receipt of actual XTest
+  input and the captured patch matched its independently known color with
+  zero error. This fixture validates the acquisition path before measuring
+  Pancake’s GUI.
 
 The matched candidate benchmark, native latency collection, and P10
 qualification remain pending.

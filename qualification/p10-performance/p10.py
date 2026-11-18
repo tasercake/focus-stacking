@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import sys
 import time
-from contextlib import ExitStack
+from contextlib import ExitStack, contextmanager
 from importlib import metadata
 from pathlib import Path
 
@@ -20,6 +20,7 @@ from protocol import (
     Campaign,
     corpus,
     evaluate_latency,
+    merge_latency_samples,
     pixel_metrics,
     profile_result,
     sha256,
@@ -54,6 +55,17 @@ def _require_clean(cwd, *paths):
         )
 
 
+@contextmanager
+def _campaign_lock():
+    """Prevent overlapping CLI or native benchmarks in this Git repository."""
+    git_dir = Path(
+        _git(ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir")
+    )
+    with (git_dir / "pancake-performance.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        yield
+
+
 def _snapshot(target, lock):
     return {
         "commit": _git(target.root, "rev-parse", "HEAD"),
@@ -69,8 +81,8 @@ def _write(path, payload):
     temporary.replace(path)
 
 
-def _candidate_binary(target):
-    executable = target.command("cli")[0]
+def _candidate_binary(target, component="cli"):
+    executable = target.command(component)[0]
     return (target.root / executable).resolve(strict=True)
 
 
@@ -84,18 +96,26 @@ def prepare_candidate(options):
     _require_clean(ROOT, "pancake", str(CANDIDATE))
     lock = target.root / "Cargo.lock"
     expected = _snapshot(target, lock)
-    build = ["cargo", "build", "--release", "--locked", "--bin", "pancake-cli"]
+    build = [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--bin",
+        f"pancake-{options.component}",
+    ]
     if options.features:
         build.extend(("--features", options.features))
     build_env = dict(os.environ, CARGO_TARGET_DIR=str(target.root / "target"))
     subprocess.run(build, cwd=target.root, env=build_env, check=True)
-    executable = _candidate_binary(target)
+    executable = _candidate_binary(target, options.component)
     _require_clean(ROOT, "pancake", str(CANDIDATE))
     if _snapshot(target, lock) != expected:
         raise ValueError("candidate sources changed during build")
     receipt = {
         **expected,
         "build": build,
+        "component": options.component,
         "executable": str(executable),
         "binary_sha256": sha256(executable),
         "rustc": _output(["rustc", "-vV"], target.root),
@@ -534,14 +554,7 @@ def run_profile(args):
 
     verified_corpus = None
     try:
-        with ExitStack() as context:
-            git_dir = Path(
-                _git(ROOT, "rev-parse", "--path-format=absolute", "--git-common-dir")
-            )
-            lock = context.enter_context(
-                (git_dir / "pancake-performance.lock").open("a")
-            )
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with _campaign_lock(), ExitStack() as context:
             specs, identities = _prepared_targets(args, campaign)
             hardware = _hardware(args.gpu_uuid)
             records, source = corpus(ROOT, campaign, profile.workload)
@@ -697,6 +710,7 @@ def main():
     )
     candidate.add_argument("--receipt", type=Path, required=True)
     candidate.add_argument("--features")
+    candidate.add_argument("--component", choices=("cli", "gui"), default="cli")
     run = sub.add_parser(
         "run",
         help="Run one serialized profile and its two independent backend diagnostics",
@@ -731,7 +745,7 @@ def main():
         "latency", help="Reduce independently collected native event timestamp records"
     )
     latency.add_argument(
-        "input", type=Path, help="JSON containing viewer and lifecycle sample arrays"
+        "input", nargs="+", type=Path, help="Verified native capture receipts"
     )
     args = parser.parse_args()
     try:
@@ -755,20 +769,31 @@ def main():
             prepare_candidate(args)
             return 0
         if args.operation == "latency":
-            data = json.loads(args.input.read_text())
-            result = evaluate_latency(
-                Campaign.load(TARGETS_PATH), data["viewer"], data["lifecycle"]
-            )
-            print(json.dumps(result, indent=2))
-            return (
-                0
-                if all(
-                    entry["status"] == "pass"
-                    for collection in result.values()
-                    for entry in collection.values()
+            captures = [json.loads(path.read_text()) for path in args.input]
+            target_hash = sha256(TARGETS_PATH)
+            if any(
+                capture.get("performance_targets_sha256") != target_hash
+                for capture in captures
+            ):
+                raise ValueError(
+                    "native capture target specification differs from the frozen version"
                 )
-                else 1
+            viewer, lifecycle, workloads = merge_latency_samples(captures)
+            result = evaluate_latency(Campaign.load(TARGETS_PATH), viewer, lifecycle)
+            profile_complete = "lifecycle" in workloads and bool(
+                {"R50", "D150", "E9"}.intersection(workloads)
             )
+            result["native_lifecycle_workloads"] = {
+                "status": "pass" if profile_complete else "pending",
+                "workloads": workloads,
+            }
+            print(json.dumps(result, indent=2))
+            passed = all(
+                entry["status"] == "pass"
+                for collection in (result["viewer"], result["lifecycle"])
+                for entry in collection.values()
+            )
+            return 0 if profile_complete and passed else 1
         return run_profile(args)
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as error:
         parser.exit(1, f"{error}\n")
