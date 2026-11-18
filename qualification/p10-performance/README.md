@@ -73,7 +73,11 @@ memory to its process IDs using both NVML compute and graphics lists.
 These counters are sampled at a 10 ms nominal interval.
 A gap above 20 ms or an unavailable metric leaves a memory gate pending.
 Transient peaks can escape polling, and RSS can count a shared page in multiple
-processes. The GPU measurement excludes unrelated clients. The maximum sampled
+processes. Linux `wait4` also supplies a cadence-independent kernel RSS
+high-water observation at the process boundary. The runner records that value
+separately in bytes, along with user and system CPU time. It does not replace
+the required concurrent process-tree total when processes can overlap.
+The GPU measurement excludes unrelated clients. The maximum sampled
 tree RSS and GPU residency are reported separately.
 The macOS physical-footprint lane requires equivalent measurements on Apple
 hardware.
