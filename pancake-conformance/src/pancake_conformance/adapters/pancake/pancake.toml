@@ -1,4 +1,4 @@
-# Planned full contract-v2 target. No Pancake executable exists yet.
+# Pancake application target for the full contract-v2 catalog.
 # Unfinished requirements must fail, not disappear as unsupported capabilities.
 # Add UI mappings only after observing the actual Slint accessibility tree.
 schema_version = 1
@@ -64,11 +64,14 @@ quality_report = '(?im)^sharpness\s+[0-9]+(?:\.[0-9]+)?'
 [ui.actions]
 "advanced.open" = [{ click = "advanced" }, { key = "tab" }]
 "frames.select_first" = [{ click = "frame.0" }]
+"export.open" = [{ click = "export.start" }]
 
 [ui.choices]
 alignment = { off = "Off", translation = "Translation", euclidean = "Euclidean", similarity = "Similarity", affine = "Affine", breathing = "Breathing" }
 "settings.theme" = { light = "Light", dark = "Dark" }
 "settings.device_mode" = { auto = "Automatic", cpu = "CPU", gpu = "GPU" }
+"export.format" = { png = "PNG", jpg = "JPEG", tif = "TIFF", exr = "OpenEXR" }
+"export.depth" = { "8" = "8-bit", "16" = "16-bit" }
 
 [ui.observations]
 selected_method = { selected = { laplacian = { id = "method.laplacian" }, hybrid = { id = "method.hybrid" }, weighted_average = { id = "method.weighted_average" }, depth_map = { id = "method.depth_map" }, exposure_fusion = { id = "method.exposure_fusion" } } }

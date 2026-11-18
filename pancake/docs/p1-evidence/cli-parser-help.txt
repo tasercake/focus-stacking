@@ -1,0 +1,30 @@
+Process a focal stack or exposure bracket
+
+Usage: pancake-cli [OPTIONS] --input <PATH>... --output <PATH>
+
+Options:
+      --input <PATH>...            Input files or quoted glob patterns. Repeat to add more inputs
+      --output <PATH>              Export destination; the extension selects the image format
+      --method <METHOD>            Combine with laplacian, hybrid, `weighted_average`, `depth_map`, or `exposure_fusion`
+      --align                      Align inputs with a translation model unless a model is supplied
+      --alignment-mode <MODE>      Select off, translation, euclidean, similarity, affine, or breathing
+      --alignment-ref <FRAME>      Reference frame: first, middle, or previous
+      --kernel-size <PIXELS>       Focus measurement window size
+      --pyramid-levels <LEVELS>    Number of levels in the focus pyramid
+      --scale-factor <FACTOR>      Registration downsampling factor
+      --max-scale-step <FRACTION>  Maximum positive fractional scale change between frames
+      --max-precision              Request high-precision registration
+      --slab-size <FRAMES>         Process the requested number of inputs per slab; zero uses the whole stack
+      --slab-overlap <FRAMES>      Neighboring slabs share this many inputs
+      --auto                       Choose focus and pyramid parameters from the input dimensions
+      --auto-crop                  Crop to the usable area of the registered stack
+      --quality <PERCENT>          Lossy output quality, from 1 to 100
+      --quality-report             Emit a sharpness report for a completed result
+      --bit-depth <BITS>           Export 8 or 16 bits per integer color channel where supported
+      --cpu                        Run all numerical work on the CPU
+      --gpu                        Run numerical work on a GPU
+      --device <DEVICE>            Device preference: cpu, gpu, or auto
+      --gpu-id <INDEX>             Select a specific GPU
+      --rotation-scale             Use the similarity model as the default when aligning
+  -h, --help                       Print help
+  -V, --version                    Print version

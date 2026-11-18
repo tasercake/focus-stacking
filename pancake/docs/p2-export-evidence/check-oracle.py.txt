@@ -1,0 +1,36 @@
+"""Independent decoded-sample checks for the Pancake P2 export proof."""
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+import numpy as np
+from pancake_conformance.validators import read_image
+
+root = Path(sys.argv[1])
+integer = np.array(
+    [0, 257, 256, 32768, 580, 62211, 65025, 65535, 130, 35533, 17, 1],
+    dtype=np.uint16,
+).reshape(2, 2, 3)
+floating = np.array(
+    [-0.125, 0.12345679, 7.25, 0.0, 0.75, 1.0], dtype=np.float32,
+).reshape(1, 2, 3)
+report = {}
+for name in ("uint16.png", "uint16.tiff", "uint16.jpg", "float.exr"):
+    output = root / name
+    actual = read_image(output)
+    report[name] = {
+        "dtype": str(actual.dtype),
+        "shape": list(actual.shape),
+        "bytes": output.stat().st_size,
+        "sha256": hashlib.file_digest(output.open("rb"), "sha256").hexdigest(),
+    }
+    if name.endswith((".png", ".tiff")):
+        assert actual.dtype == np.uint16 and np.array_equal(actual, integer), name
+        report[name]["exact_input_codes"] = True
+    elif name.endswith(".exr"):
+        assert actual.dtype == np.float32 and np.array_equal(actual, floating), name
+        report[name]["exact_float_samples"] = True
+    else:
+        assert actual.dtype == np.uint8 and actual.shape == integer.shape, name
+print(json.dumps(report, indent=2))

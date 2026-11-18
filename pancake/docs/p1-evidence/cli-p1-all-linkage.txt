@@ -1,0 +1,15 @@
+6b38e6a3d80b86eba80e568dbd8a20299b4b18ee
+pancake/target/release/pancake-cli: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=5ad45d412f1fae6bf6592656313e3701b3d1a1b9, not stripped
+1abd565fe71a239457d11f6bc5ab0ecd2b2196c7a95ba424fa5686b9d95e9b78  pancake/target/release/pancake-cli
+81e106af0ed12e69f7c1bb301ebafde68447f62b24bbe1ba3c2483172ebc1e32  pancake/Cargo.lock
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]
+   3556488:	calling init: /lib64/ld-linux-x86-64.so.2
+   3556488:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+   3556488:	calling init: /lib/x86_64-linux-gnu/libgcc_s.so.1
+   3556488:	calling init: /lib/x86_64-linux-gnu/libm.so.6
+   3556488:	calling init: /lib/x86_64-linux-gnu/libstdc++.so.6
+   3556488:	initialize program: pancake/target/release/pancake-cli

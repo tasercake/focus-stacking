@@ -1,0 +1,23 @@
+{
+  "tracked_contract_files": 90,
+  "contract_sha256": "2d17fb4f570dcfae47e355b63e18650c325c586f47620c565b568f4fdcce20b2",
+  "catalog_sha256": "0c287412662c0c47fb50fb90d3058c6dac864ba777275f9e8a9d0195c3a58705",
+  "catalog_cases": 376,
+  "suite_counts": {
+    "cli": 46,
+    "algorithms": 223,
+    "devices": 72,
+    "interface": 35
+  },
+  "roadmap_counts": {
+    "P1": 25,
+    "P2": 84,
+    "P4": 69,
+    "P5": 64,
+    "P3": 27,
+    "P6": 72,
+    "P7": 20,
+    "P8": 14,
+    "P9": 1
+  }
+}

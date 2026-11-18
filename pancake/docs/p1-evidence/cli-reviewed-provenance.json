@@ -1,0 +1,43 @@
+{
+  "contract_version": 2,
+  "target": "pancake-rust",
+  "target_root": "/tmp/pancake-worktrees.t3paqgWM/p1-verify/pancake",
+  "target_commit": "98e945f27874c2c8b162ca124d33df23b0fb71a0",
+  "target_dirty": "",
+  "suite_commit": "98e945f27874c2c8b162ca124d33df23b0fb71a0",
+  "suite_dirty": "",
+  "suite_source_sha256": "d01bb47bcf647948f364097f34382283923bfac6975233a75d49f6ec93943fef",
+  "target_descriptor_sha256": "f774e9e080fb49e2f82f11923668db6212ccea83f2924b370dbba1d508c2bfc8",
+  "coverage_scope_sha256": null,
+  "cli_command": [
+    "./target/release/pancake-cli"
+  ],
+  "gui_command": [
+    "./target/release/pancake-gui"
+  ],
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:14) [Clang 21.1.4 ]",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "uv_lock_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
+  "cases": [
+    "cli.help",
+    "cli.reject.no-arguments",
+    "cli.reject.method",
+    "cli.reject.alignment",
+    "cli.reject.reference",
+    "cli.reject.bit-depth",
+    "cli.reject.integer",
+    "cli.reject.missing-input",
+    "cli.reject.missing-output",
+    "cli.reject.unknown-option",
+    "cli.reject.device-conflict",
+    "cli.reject.scale-zero",
+    "cli.reject.scale-one",
+    "cli.reject.scale-negative",
+    "cli.reject.slab-one",
+    "cli.reject.slab-negative",
+    "cli.reject.overlap-negative",
+    "cli.reject.overlap-too-large",
+    "cli.reject.one-file",
+    "cli.reject.duplicate-single"
+  ]
+}
