@@ -59,4 +59,46 @@ result buffers, absolute slots, a blocked lane, exit and gap bounds, a real
 synthetic child reaped by the watchdog, process-exit lease cleanup,
 independent TIFF decoding and an exact physical device check. All
 48 qualification tests passed.
-The physical stage has not run.
+
+## Physical diagnostic result
+
+All four authorized launches completed at 20:11:37–20:11:40 SGT on
+November 18, 2026, on the RTX 3090 at `0000:01:00.0` with NVIDIA driver
+580.178.04. The prelaunch census recorded 0% GPU utilization and 575 MiB of
+ordinary desktop residency. Each runtime's serial and overlapping runs
+reproduced the earlier encoded TIFF digest and independently decoded
+337 × 510 RGB16 pixel digest. The actual GPU completion events confirmed
+Vulkan and CUDA as selected, with no CPU fallback. Both binaries and all
+nine originals remained byte-identical at the end. No arm was retried.
+
+| Runtime and arm | Longest compute call | Maximum bounded-pair completion gap | Conservative window gap | Complete bypasses |
+|---|---:|---:|---:|---:|
+| Vulkan, serial | 24.350 ms | 39.361 ms | 40.454 ms | — |
+| Vulkan, overlap | 40.815 ms | 55.320 ms | 57.124 ms | 0 |
+| CUDA, serial | 19.800 ms | 27.415 ms | 27.737 ms | — |
+| CUDA, overlap | 24.907 ms | 31.639 ms | 32.822 ms | 0 |
+
+The Vulkan control reproduced a compute call over 20 ms. In the Vulkan
+overlap arm, two compute calls began at 200.105 and 208.115 ms and returned
+at 240.921 and 241.092 ms. Near exit, two more began at 664.093 and 672.100
+ms and returned at 688.366 and 688.384 ms. Both times the second whole pair
+missed the bypass condition. The close returns are consistent with a common
+stall. The user-space trace cannot identify an internal driver lock.
+
+The CUDA serial arm had a gap above 20 ms but never reproduced a compute
+call above 20 ms. Its comparison is inconclusive under the planned
+reproduction rule. The CUDA overlap arm observed compute calls of 24.907
+and 17.047 ms, with both whole pairs completing after the observed job exit.
+They supply no in-interval coverage or peak credit.
+
+Both Vulkan arms observed the same pair maximum of 204,443,648 B. Both
+CUDA arms observed 295,698,432 B. Those are observed sampled values and carry
+no frozen memory gate credit. Every observer drained, NVML closed, the
+process exited 0, and the common lease was released. The archive retains
+all raw slots, command lines, sample and call timestamps, output hashes and
+same-device event checks. The nine staged originals, source-notice copy,
+extracted Vulkan package binary, and all four job scratch directories were
+removed. [Physical receipt](e9-nvml-overlap-physical.json.gz) ·
+[Device-free preflight](e9-nvml-overlap-preflight.json.gz) ·
+[Input acquisition and rights](e9-nvml-overlap-input-stage.json.gz) ·
+[Cleanup](e9-nvml-overlap-cleanup.json.gz) · [Receipt checksums](e9-nvml-overlap.sha256)
