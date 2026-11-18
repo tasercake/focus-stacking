@@ -59,11 +59,17 @@ def collect_profiles(report_dir, raw, cases, gui_build_id, cli_build_id=None):
             if type(pid) is not int or pid < 1 or not (clean or forced):
                 raise ValueError(f"failed shutdown in {shutdown_path}: {shutdown}")
             events = shutdown_path.with_name("events.jsonl")
+            cpu_completions = 0
             if events.exists():
                 for line in events.read_text().splitlines():
                     event = json.loads(line)
                     if event.get("actual_backend", "cpu") != "cpu":
                         raise ValueError(f"non-CPU backend in {events}")
+                    if event.get("event") == "stack_complete":
+                        if (event.get("actual_backend") != "cpu" or event.get("runtime") != "cpu"
+                                or event.get("completed") is not True):
+                            raise ValueError(f"incomplete CPU stack evidence in {events}")
+                        cpu_completions += 1
             profile = raw / f"pancake-{pid}-{gui_build_id}.profraw"
             if not profile.is_file() or profile.is_symlink() or profile.stat().st_size == 0:
                 raise ValueError(f"missing or empty profile for {case} process {pid}")
@@ -73,7 +79,10 @@ def collect_profiles(report_dir, raw, cases, gui_build_id, cli_build_id=None):
                 "case": case,
                 "call": str(shutdown_path.parent.relative_to(report_dir)),
                 "shutdown": shutdown,
+                "cpu_completions": cpu_completions,
+                "events_sha256": digest(events) if events.exists() else None,
                 "profile": profile.name,
+                "bytes": profile.stat().st_size,
                 "sha256": digest(profile),
             }
     for profile in raw.iterdir():

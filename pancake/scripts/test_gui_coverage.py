@@ -75,6 +75,17 @@ class GuiCoverageTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "non-CPU backend"):
             collect_profiles(self.output, self.raw, [self.case], self.build_id)
 
+    def test_completion_must_record_a_real_cpu_runtime(self):
+        call = self.record(22)
+        self.profile(22)
+        events = call / "events.jsonl"
+        events.write_text('{"event":"stack_complete","completed":true,"actual_backend":"cpu"}\n')
+        with self.assertRaisesRegex(ValueError, "incomplete CPU stack evidence"):
+            collect_profiles(self.output, self.raw, [self.case], self.build_id)
+        events.write_text('{"event":"stack_complete","completed":true,"actual_backend":"cpu","runtime":"cpu"}\n')
+        record, = collect_profiles(self.output, self.raw, [self.case], self.build_id)
+        self.assertEqual(record["cpu_completions"], 1)
+
     def test_report_must_be_complete_and_exactly_pass_every_selected_case(self):
         report = {
             "complete": True, "completed_count": 1, "selected_count": 1,
