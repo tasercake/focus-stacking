@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -eu
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+scope="$root/artifacts/e9-cuda-integrated-replay"
+qual=/home/krishna/Documents/focus-stacking/pancake-conformance/.venv/bin/python
+expected=e81079dee4078d7a1149da0f5950aab8c89f8d44
+test "$(git rev-parse HEAD)" = "$expected"
+test -z "$(git status --porcelain)"
+test -f "$scope/candidate-preflight.json"
+test ! -e "$scope/paired"
+test ! -e "$scope/window-start.txt"
+export PYTHONPATH="$root/pancake-conformance/src:$root/qualification/p10-performance"
+export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1
+{
+ date --iso-8601=seconds
+ uname -srmo
+ cat /proc/loadavg
+ ps -eo pid,stat,psr,%cpu,comm --sort=-%cpu | head -25
+} > "$scope/window-start.txt"
+status=0
+env -u LD_LIBRARY_PATH -u LD_PRELOAD OCL_ICD_VENDORS=/etc/OpenCL/vendors/nvidia.icd \
+ taskset -c 0-31 "$qual" "$root/qualification/p10-performance/p10.py" run \
+ --profile E9.exposure_fusion.gpu --runtime cuda --threads 32 --timeout 120 \
+ --gpu-uuid GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac --reference-gpu-index 0 --candidate-gpu-index 0 \
+ --cuda-library-path /usr/local/cuda-12.5/lib64 --input-root "$scope/input-stage/input" \
+ --build-receipt "$scope/build-receipt.json" --keep-review-images --output "$scope/paired" \
+ > "$scope/run.stdout" 2> "$scope/run.stderr" || status=$?
+{
+ date --iso-8601=seconds
+ printf 'exit=%s\n' "$status"
+ cat /proc/loadavg
+} > "$scope/window-end.txt"
+printf 'campaign exit=%s\n' "$status"
+if test "$status" -ne 0; then tail -25 "$scope/run.stderr"; fi
+exit "$status"
