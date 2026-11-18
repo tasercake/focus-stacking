@@ -62,13 +62,15 @@ fault recovery, and the frozen P10 measurements remain separate exit gates.
 `5216ba4` physical RTX 3090 GUI met the frozen 250 ms deadline on all 60
 pauses and 60 cancels across the original 64-path fixture and real D150.
 Maximum observed acknowledgement was 155.640 ms for pause and 221.802 ms
-for cancellation. The independent 24 MP physical viewport calibration
-matched source and retained-result RGB regions. The full viewer sample
-requirements are still pending. On the sealed GUI, the visible comparison
-clip shifts its source pixels with the divider instead of staying anchored
-at the left edge.
-[Lifecycle measurements](../../qualification/p10-performance/evidence/native-lifecycle-measured/README.md)
-and [physical comparison evidence](../../qualification/p10-performance/evidence/native-physical-pair-calibration/comparison.md).
+for cancellation. The comparison clip shifted source pixels with the divider
+on that sealed GUI. The corrected `74dfaa3` build matched independent physical
+24 MP witnesses for all viewer operations. Its full 200 idle and 200 loaded
+observations both miss the frozen 33 ms P95 limit, at 42.310 ms idle and
+54.054 ms loaded. Full same-revision conformance, release packaging, lifecycle
+measurement, and assurance remain required for the corrected artifact.
+[Lifecycle measurements](../../qualification/p10-performance/evidence/native-lifecycle-measured/README.md),
+[physical comparison evidence](../../qualification/p10-performance/evidence/native-physical-pair-calibration/comparison.md),
+and [400-event viewer measurement](../../qualification/p10-performance/evidence/native-viewer-measured/README.md).
 
 The registration-fixed `5e10244` diagnostic matched all 17 E9 CPU launches
 per application. Warm median was 1.086 s versus 0.899 s (ratio 1.208, limit
