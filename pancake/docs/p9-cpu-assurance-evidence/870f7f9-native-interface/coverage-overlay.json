@@ -1,0 +1,434 @@
+{
+  "source": "870f7f923d70b1a7b0e7fe73d5f9a4987770fdc4",
+  "elf": {
+    "cli": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/pancake-cli",
+      "sha256": "86e0a59e177196a699e5e82ca37ca3e3a9ce971ad490e2b7db032c9e6ab40dbf",
+      "build_id": "03f55724cefac6d7a64df6ab59b0c853c6d095f5"
+    },
+    "gui": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/pancake-gui",
+      "sha256": "73d39e4bc1b28780ed324ad8c02953492fa7bf422d0a81be3326c720d5fe0e39",
+      "build_id": "8fadd905a180662f13ac19899cb4a2dd7aeefca2"
+    }
+  },
+  "stock_filename_filter": "/rustc/([0-9a-f]+|[0-9]+\\.[0-9]+\\.[0-9]+)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake(/.*)?/(tests|examples|benches)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake(/.*)?/(tests\\.rs|[0-9a-zA-Z_-]+[_-]tests\\.rs)$|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake/target/llvm\\-cov\\-target($|/)|^/home/krishna/\\.cargo/(registry|git)/|^/home/krishna/\\.rustup/toolchains($|/)",
+  "stock_map_vector": [
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/07ee0bf19ca90cbf/out/cpu_config-07ee0bf19ca90cbf",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/2f1d9f764578b080/out/cpu_cli-2f1d9f764578b080",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/42ac38c67d4e872f/out/pancake_cli",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/671ca5067536cc5b/out/cpu_runtime_options-671ca5067536cc5b",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/fcd6975126d137f8/out/pancake_cli-fcd6975126d137f8",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-gui/1d304bd405b45454/out/pancake_gui",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-gui/4899a5f9ba2573c8/out/pancake_gui-4899a5f9ba2573c8",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/021d06eda41ce1d0/out/cpu_job-021d06eda41ce1d0",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/0f834282a9ed2faa/out/cpu_registration_contract-0f834282a9ed2faa",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/1d581a34f2ead19a/out/pancake-1d581a34f2ead19a",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/2df662d4c01a7023/out/cpu_gray_array_export-2df662d4c01a7023",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/3ba26637d1088025/out/cpu_npy-3ba26637d1088025",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/3cd220bfba35c089/out/cpu_image_export-3cd220bfba35c089",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/40ce7e17542871f2/out/cpu_numerical_contract-40ce7e17542871f2",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/50e4e6b60662478f/out/cpu_fusion_contract-50e4e6b60662478f",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/98696638978b1516/out/cpu_image_io-98696638978b1516",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/9a4bdacb4ca33703/out/cpu_array_layout-9a4bdacb4ca33703",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/e65692ccb934ca4e/out/cpu_kernel_contract-e65692ccb934ca4e",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/e6cfa373a2154ad6/out/cpu_runtime_contract-e6cfa373a2154ad6",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/e752c5ee59746343/out/cpu_advanced_fusion-e752c5ee59746343",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/fdf6284bb0a15055/out/cpu_stack_plan-fdf6284bb0a15055",
+    "-object",
+    "target/llvm-cov-target/debug/pancake-cli",
+    "-object",
+    "target/llvm-cov-target/debug/pancake-gui",
+    "-ignore-filename-regex",
+    "/rustc/([0-9a-f]+|[0-9]+\\.[0-9]+\\.[0-9]+)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake(/.*)?/(tests|examples|benches)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake(/.*)?/(tests\\.rs|[0-9a-zA-Z_-]+[_-]tests\\.rs)$|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake/target/llvm\\-cov\\-target($|/)|^/home/krishna/\\.cargo/(registry|git)/|^/home/krishna/\\.rustup/toolchains($|/)"
+  ],
+  "paired_map_vector": [
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/07ee0bf19ca90cbf/out/cpu_config-07ee0bf19ca90cbf",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/2f1d9f764578b080/out/cpu_cli-2f1d9f764578b080",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/42ac38c67d4e872f/out/pancake_cli",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/671ca5067536cc5b/out/cpu_runtime_options-671ca5067536cc5b",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/fcd6975126d137f8/out/pancake_cli-fcd6975126d137f8",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-gui/1d304bd405b45454/out/pancake_gui",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-gui/4899a5f9ba2573c8/out/pancake_gui-4899a5f9ba2573c8",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/021d06eda41ce1d0/out/cpu_job-021d06eda41ce1d0",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/0f834282a9ed2faa/out/cpu_registration_contract-0f834282a9ed2faa",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/1d581a34f2ead19a/out/pancake-1d581a34f2ead19a",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/2df662d4c01a7023/out/cpu_gray_array_export-2df662d4c01a7023",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/3ba26637d1088025/out/cpu_npy-3ba26637d1088025",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/3cd220bfba35c089/out/cpu_image_export-3cd220bfba35c089",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/40ce7e17542871f2/out/cpu_numerical_contract-40ce7e17542871f2",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/50e4e6b60662478f/out/cpu_fusion_contract-50e4e6b60662478f",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/98696638978b1516/out/cpu_image_io-98696638978b1516",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/9a4bdacb4ca33703/out/cpu_array_layout-9a4bdacb4ca33703",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/e65692ccb934ca4e/out/cpu_kernel_contract-e65692ccb934ca4e",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/e6cfa373a2154ad6/out/cpu_runtime_contract-e6cfa373a2154ad6",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/e752c5ee59746343/out/cpu_advanced_fusion-e752c5ee59746343",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/fdf6284bb0a15055/out/cpu_stack_plan-fdf6284bb0a15055",
+    "-object",
+    "target/llvm-cov-target/debug/pancake-cli",
+    "-object",
+    "target/llvm-cov-target/debug/pancake-gui",
+    "-ignore-filename-regex",
+    "/rustc/([0-9a-f]+|[0-9]+\\.[0-9]+\\.[0-9]+)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake(/.*)?/(tests|examples|benches)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake(/.*)?/(tests\\.rs|[0-9a-zA-Z_-]+[_-]tests\\.rs)$|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake/target/llvm\\-cov\\-target($|/)|^/home/krishna/\\.cargo/(registry|git)/|^/home/krishna/\\.rustup/toolchains($|/)"
+  ],
+  "cpu_gui_cases": 33,
+  "gui_profiles": 36,
+  "gui_completed_jobs": 22,
+  "cli_profiles": 14,
+  "cli_commands": [
+    "conformance/cases/interface.algorithm.depth_map/call-02/command.json",
+    "conformance/cases/interface.algorithm.exposure_fusion/call-02/command.json",
+    "conformance/cases/interface.algorithm.hybrid/call-02/command.json",
+    "conformance/cases/interface.algorithm.laplacian/call-02/command.json",
+    "conformance/cases/interface.algorithm.weighted_average/call-02/command.json",
+    "conformance/cases/interface.alignment.crop/call-02/command.json",
+    "conformance/cases/interface.export.batch/call-02/command.json",
+    "conformance/cases/interface.export.batch/call-03/command.json",
+    "conformance/cases/interface.export.batch/call-04/command.json",
+    "conformance/cases/interface.portability.retained-results/call-02/command.json",
+    "conformance/cases/interface.portability.unicode-paths/call-02/command.json",
+    "conformance/cases/interface.recovery.folder-import/call-02/command.json",
+    "conformance/cases/interface.recovery.missing-source/call-02/command.json",
+    "conformance/cases/interface.result.manual-crop/call-02/command.json"
+  ],
+  "raw_profile_manifest": {
+    "pancake-2567437-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "c904c00e80cacd142bde6a4a18c3bed527e16ee14d54eaf706308a9753f6fd93",
+      "bytes": 80456
+    },
+    "pancake-2569000-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "855309e65d7d0964996586748252b25ce1fbe3ddbb864ef8bb64fe89fe35aede",
+      "bytes": 80456
+    },
+    "pancake-2574222-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "cb743107d71c1f10287bbaefd934b4174855d982a671236ed25f813844742f83",
+      "bytes": 54832
+    },
+    "pancake-2574341-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "1af4b6cd23ebd53b63de9ec23b5f50edf77078739548f69e7954f41f1161e283",
+      "bytes": 80456
+    },
+    "pancake-2579835-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "85f5b6235b8fbd7e543bfd68d750996aaf7dae001b35ac4598b5e903972cfea4",
+      "bytes": 54832
+    },
+    "pancake-2579873-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "ceb699b9eadcde440d4c2556498e349015fbfd57e8c69675f98f4448e229429e",
+      "bytes": 80456
+    },
+    "pancake-2585051-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "641aa77d5b5e710e36d31955aab45b5458de73d38856d961ccee2018f36ae827",
+      "bytes": 54832
+    },
+    "pancake-2585094-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "d847a3fe63a9ee9a1e724db44ce7913d0c1e0cd30747c94e45c6603e74267751",
+      "bytes": 80456
+    },
+    "pancake-2589820-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "a745ce5d301eec3b7524765d1afdb8afde047abf88569c368b0afe0d29ac3810",
+      "bytes": 54832
+    },
+    "pancake-2589901-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "8ea592ab7a76daa4a08acae39c92947b34417208ffaba71717a68e044979983b",
+      "bytes": 80456
+    },
+    "pancake-2592991-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "1d16c102ce3cd008a9508a32b30b60f4c6b9507cd057342783857e70e5547540",
+      "bytes": 54832
+    },
+    "pancake-2593030-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "825267fd472a35531e240524656ce1eed31a52c3e08fc0581d748fb4073af630",
+      "bytes": 80456
+    },
+    "pancake-2593257-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "ccda0668d15537905f68169bc09d34b18a6acfdafc9d78c75698ffe1643f5a08",
+      "bytes": 80456
+    },
+    "pancake-2600066-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "4e82852c32a007864c471517b470b1ca2d767fde2c6d55cf1b54bfe240fdeaf5",
+      "bytes": 80456
+    },
+    "pancake-2606145-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "39ca3e47978da1b7f4142f3912a3a3207cbae401a4b6fadef4fcd709903b640a",
+      "bytes": 80456
+    },
+    "pancake-2624651-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "74d063ea7ecb9d87555adfa1254030dd1bfa9de7c5a4fac621e84d9208a92da9",
+      "bytes": 80456
+    },
+    "pancake-2631393-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "4f81bd7de9ce8e4aea27b5c87028201faaec4997b89b47268ea63151f8440905",
+      "bytes": 80456
+    },
+    "pancake-2633629-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "f5f5bca0b4359acefa4ef3106fc589976ada36789d1c96afd77341cec8539499",
+      "bytes": 80456
+    },
+    "pancake-2634251-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "98a11a572bbc2b5dae63dd47472a059a9f4a57e4802c69166ef7cf23f0cb3920",
+      "bytes": 80456
+    },
+    "pancake-2634601-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "5ef8c9b62aa0fd6014e462518caefb3af1eddecd0250dccc337284289e806c58",
+      "bytes": 80456
+    },
+    "pancake-2638232-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "63bc57790423e4fed6cbcc13eda3c5efd6690fe4b42d7b3f235c3614f187d4c4",
+      "bytes": 80456
+    },
+    "pancake-2641402-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "da705e79035bf113ea2cb56b635c045610968e37fb682d40bb31f84daca13611",
+      "bytes": 54832
+    },
+    "pancake-2641481-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "de217affa4eb7d7ec4ec00b05b3ae2c975815bcbfcd8b3bbb26f166b29761ccd",
+      "bytes": 80456
+    },
+    "pancake-2643924-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "4379ace7f314ad10a809b1cbf2b8984c1dc2f9c781a1ba6a57057484715e4916",
+      "bytes": 80456
+    },
+    "pancake-2644323-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "3e69a51d48cc2bb7063c6b9038d821415700a8561548d1952c3cda3e341c6176",
+      "bytes": 80456
+    },
+    "pancake-2644547-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "94fb9c2697120aeaa31edf7665bd0fbcecc0f717e40c4f38084f17db9df484ea",
+      "bytes": 80456
+    },
+    "pancake-2644860-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "cc437282c80cbba542b495b9619e50edc0adefdc59d18f5eddbf97f7bd6b0279",
+      "bytes": 80456
+    },
+    "pancake-2645118-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "9fcd621e8525ea6e390cbab55fe7ab9a44462e01ff2917bdffd9239eef40bf46",
+      "bytes": 80456
+    },
+    "pancake-2653020-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "c2313c0817049bb78d57d148324b1c8d2e84689d5640ed00972c489590b2fb77",
+      "bytes": 54832
+    },
+    "pancake-2653050-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "b8a452f5c0234acf4124910253827fce2608c837fd0fca1b716de68af7db373f",
+      "bytes": 80456
+    },
+    "pancake-2659485-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "00a0af28c08d383fc5006e36a5c3930a4f90ecc932a6eefbbad2653af1c83d6e",
+      "bytes": 54832
+    },
+    "pancake-2659503-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "4185ca533e0bc5d899284c4e04b831b86db595f4cfe8ab82ff51c1f66faa4e08",
+      "bytes": 80456
+    },
+    "pancake-2666663-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "87182fc0a5a381d53d6990214b05b10bb368d83cdd8ec0942a45db3a4afadf34",
+      "bytes": 54832
+    },
+    "pancake-2666688-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "63e43c08b60bf1ff0a28fa744275438b237a7eb30ba59729d33141d1a9e5e50b",
+      "bytes": 54832
+    },
+    "pancake-2666792-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "30465b8d7800f887b8bdbfb667da9d5fdf577b12630cfd827184cfff2f1a96a2",
+      "bytes": 54832
+    },
+    "pancake-2666897-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "c16fba38e4404327fc5e1ce4119f15493beffeee02f2ff98b91b509d69fba6a9",
+      "bytes": 80456
+    },
+    "pancake-2679541-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "3080d6008881e4bcb603fe7e3e5ac1c751de768cab5e3f17457f0982a211c181",
+      "bytes": 54832
+    },
+    "pancake-2679663-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "70f01be3685077dc1be91a46a9b662ee8872b4db01783fd164416a14bb7291a6",
+      "bytes": 80456
+    },
+    "pancake-2687672-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "89e04cfdfa83d0d8acef017e46b4a1dca82e9643fe5c8c715ddf2aea482b965b",
+      "bytes": 80456
+    },
+    "pancake-2689334-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "e8a5c0a8c1e5497e4a2af56128192a498ae35fcc7fc887413cf1a244f4b9e8f3",
+      "bytes": 80456
+    },
+    "pancake-2690325-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "8c21a74267b1d20fe7edf79ab8e4b58dcdd2a675c577d33ec4681604eda63d21",
+      "bytes": 80456
+    },
+    "pancake-2690841-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "bb8d120903bd3aa68f5e2b54f8a7fd67797175ea2326f4ff6e83e9189ec84bc4",
+      "bytes": 80456
+    },
+    "pancake-2692386-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "e469dcfbd5696c1abcc7ca6a24838442638bd49e829357f701205f53476054d4",
+      "bytes": 80456
+    },
+    "pancake-2696011-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "29d9f9e843a65bfd1f2309d23d3a5e44b508b020d91cda20ab7c75119a423312",
+      "bytes": 80456
+    },
+    "pancake-2696570-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "86544f5e57e03fb9089566cf3fb3465896c88fe9af7d287ad4907d374d01747b",
+      "bytes": 80456
+    },
+    "pancake-2714134-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "2e15e9b74bef7cbead87612b109f988d9a80b45053e1295b0a36dce242b72691",
+      "bytes": 54832
+    },
+    "pancake-2714207-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "de14a3f97214bd0e055aa7aa94bfba13f04593ac057ec68c01d5f83633e7186d",
+      "bytes": 80456
+    },
+    "pancake-2717136-03f55724cefac6d7a64df6ab59b0c853c6d095f5.profraw": {
+      "kind": "cli",
+      "sha256": "463c5e2b041829228a7477eb2fce4c8b29192792dbea0e60f48f639a9b8d4a24",
+      "bytes": 54832
+    },
+    "pancake-2717145-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "b3b86cd84b03b0a4efbdebb3473d5ba2243b8570dec07547d347b3a1507dcc83",
+      "bytes": 80456
+    },
+    "pancake-2723138-8fadd905a180662f13ac19899cb4a2dd7aeefca2.profraw": {
+      "kind": "gui",
+      "sha256": "5a3421e742e3c8725e517e0c0fdea5ab7fafd5e0f5d655edfaaf2444ac2c70d4",
+      "bytes": 80456
+    }
+  },
+  "note": "GUI PIDs bind to shutdown receipts. CLI raw profiles are authenticated by internal ELF build ID and total exact CLI command count.",
+  "control": {
+    "lines": {
+      "count": 6516,
+      "covered": 4731
+    },
+    "functions": {
+      "count": 760,
+      "covered": 485
+    },
+    "regions": {
+      "count": 7328,
+      "covered": 4850
+    },
+    "branches": {
+      "count": 0,
+      "covered": 0
+    }
+  },
+  "combined": {
+    "lines": {
+      "count": 6516,
+      "covered": 5925
+    },
+    "functions": {
+      "count": 760,
+      "covered": 618
+    },
+    "regions": {
+      "count": 7328,
+      "covered": 6134
+    },
+    "branches": {
+      "count": 0,
+      "covered": 0
+    }
+  },
+  "stock_accumulation": {
+    "same_export_arguments": true,
+    "all_raw_profiles_discovered": true,
+    "same_coverage_as_paired_merge": true,
+    "json_sha256": "205ab43bc62163921bff2a7ab1a17abc34d521d184a3e212f29583e1c5843a10",
+    "profdata_sha256": "b70454bc4dfa606e9662537b73fdcc3f8dbe07d2c1f50eb97659a88c1d1a872b"
+  },
+  "strict_before_exit": 1,
+  "strict_combined_exit": 1
+}

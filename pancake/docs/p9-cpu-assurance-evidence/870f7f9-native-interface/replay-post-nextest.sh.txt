@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(git rev-parse --show-toplevel)
+receipt=/home/krishna/Documents/focus-stacking/artifacts/p9-coverage-870f7f9
+cd "$repo/pancake"
+[[ $(git rev-parse HEAD) == 870f7f923d70b1a7b0e7fe73d5f9a4987770fdc4 && $(cat "$receipt/nextest.status") == 0 ]]
+export PATH="/tmp/pancake-tools/bin:$PATH"
+export CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 CARGO_NET_OFFLINE=true
+export CARGO_ENCODED_RUSTFLAGS=$'-C\x1fllvm-args=-runtime-counter-relocation'
+cov_target="$PWD/target/llvm-cov-target"
+CARGO_TARGET_DIR="$cov_target" cargo llvm-cov show-env --sh > "$receipt/instrumentation-native.env"
+status=0
+(
+  source "$receipt/instrumentation-native.env"
+  export CARGO_TARGET_DIR="$cov_target"
+  cargo build --locked --offline --workspace --all-features --bins
+) > "$receipt/normal-binaries.log" 2>&1 || status=$?
+printf '%s\n' "$status" > "$receipt/normal-binaries.status"
+if ((status != 0)); then tail -n 22 "$receipt/normal-binaries.log"; exit "$status"; fi
+sha256sum target/llvm-cov-target/debug/{pancake-cli,pancake-gui} > "$receipt/native-elf.sha256"
+status=0
+cargo llvm-cov report --workspace --include-build-script --json -v --output-path "$receipt/baseline.json" \
+  > "$receipt/baseline-export.log" 2>&1 || status=$?
+printf '%s\n' "$status" > "$receipt/baseline-export.status"
+if ((status != 0)); then tail -n 18 "$receipt/baseline-export.log"; exit "$status"; fi
+printf 'CPU Nextest and stock baseline export passed at %s\n' "$(date -Is)"

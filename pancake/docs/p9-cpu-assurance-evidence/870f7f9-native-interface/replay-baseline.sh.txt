@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(git rev-parse --show-toplevel)
+receipt=/home/krishna/Documents/focus-stacking/artifacts/p9-coverage-870f7f9
+cd "$repo/pancake"
+test "$(git rev-parse HEAD)" = 870f7f923d70b1a7b0e7fe73d5f9a4987770fdc4
+test -z "$(git status --porcelain --untracked-files=all)"
+export PATH="/tmp/pancake-tools/bin:$PATH"
+export CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 CARGO_NET_OFFLINE=true
+export CARGO_ENCODED_RUSTFLAGS=$'-C\x1fllvm-args=-runtime-counter-relocation'
+{
+  date -Is
+  git rev-parse HEAD HEAD^{tree}
+  sha256sum Cargo.lock rust-toolchain.toml scripts/{check.sh,assurance_targets.py,gui_coverage.py,compare_assurance_coverage.py} ../pancake-conformance/uv.lock
+  rustc -Vv
+  cargo -V
+  cargo llvm-cov --version
+  cargo nextest --version
+  awk '/^Cpus_allowed_list:/{print}' /proc/self/status
+} > "$receipt/baseline-identity.txt"
+cargo metadata --locked --offline --no-deps --format-version 1 > "$receipt/metadata.json"
+python3 -B scripts/assurance_targets.py "$receipt/metadata.json" cpu > "$receipt/selected-targets.txt"
+args=(--lib --bins)
+while IFS= read -r name; do args+=(--test "$name"); done < "$receipt/selected-targets.txt"
+status=0
+/usr/bin/time -v -o "$receipt/nextest.time" cargo llvm-cov nextest --locked --workspace --all-features "${args[@]}" \
+  --include-build-script --no-report --profile ci --run-ignored all --no-tests=pass --test-threads 2 \
+  > "$receipt/nextest.log" 2>&1 || status=$?
+printf '%s\n' "$status" > "$receipt/nextest.status"
+if ((status != 0)); then tail -n 22 "$receipt/nextest.log"; exit "$status"; fi
+cargo llvm-cov show-env --sh > "$receipt/instrumentation.env"
+rg -q -- 'runtime-counter-relocation' "$receipt/instrumentation.env"
+status=0
+(
+  source "$receipt/instrumentation.env"
+  cargo build --locked --offline --workspace --all-features --bins
+) > "$receipt/normal-binaries.log" 2>&1 || status=$?
+printf '%s\n' "$status" > "$receipt/normal-binaries.status"
+if ((status != 0)); then tail -n 22 "$receipt/normal-binaries.log"; exit "$status"; fi
+sha256sum target/llvm-cov-target/debug/{pancake-cli,pancake-gui} > "$receipt/native-elf.sha256"
+status=0
+cargo llvm-cov report --workspace --include-build-script --json -v --output-path "$receipt/baseline.json" \
+  > "$receipt/baseline-export.log" 2>&1 || status=$?
+printf '%s\n' "$status" > "$receipt/baseline-export.status"
+if ((status != 0)); then tail -n 18 "$receipt/baseline-export.log"; exit "$status"; fi
+printf 'CPU Nextest and stock baseline export passed at %s\n' "$(date -Is)"
