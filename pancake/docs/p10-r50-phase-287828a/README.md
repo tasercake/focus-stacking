@@ -85,6 +85,6 @@ Acquire the exclusive CPU slot before issuing the diagnostic command.
 bash "$scratch/run-diagnostic.sh" "$scratch"
 ```
 
-The task owns the temporary originals pending the coordinated
-`07816a2` differential. Retained evidence contains receipts and
-digests for all exports.
+The separate owned-upload comparison reused the authenticated originals
+and then cleaned them and every TIFF. Retained evidence contains receipts
+and digests for all exports. [Owned-upload comparison](owned-upload/README.md)
