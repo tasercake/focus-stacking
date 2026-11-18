@@ -1,13 +1,62 @@
 # Pancake implementation plan
 
-Updated: 2026-11-17. Foundation: **Slint + CubeCL + wgpu**.
-Status: **P0 architectural minima COMPLETE**. Required hosted CI
+Updated: 2026-11-18. Foundation: **Slint + CubeCL + wgpu**.
+**P0 architectural minima are complete.** Required hosted CI
 [44104336768](https://github.com/tasercake/focus-stacking/actions/runs/44104336768)
 passes all eight jobs at tested revision `bc67159`. Local native gates and six
-physical runtime paths also pass. P1 can start. Full feature/camera/lifecycle,
-packaging, 376-case conformance and measured performance acceptance remain in
-P1–P10. AMD/Intel GPU and Windows runtime tests are best effort; builds remain.
+physical runtime paths also pass. Full feature, camera, lifecycle, packaging,
+376-case conformance and measured performance acceptance remain in P1–P10.
+AMD/Intel GPU and Windows runtime tests remain best effort, with retained builds.
 [Closure and source-equivalence receipt](p0-close-evidence/closure.json).
+
+**P1 conformance passes for all 25 mapped host cases. P1 assurance is open.**
+The locked headless release at `6b38e6a` passes help, validated arguments,
+file discovery and decoder rejection with case-specific diagnostics. CPU
+source coverage is 522/824 lines, 60/128 functions and 524/893 regions.
+Full local regressions and canonical macOS assurance remain required. Rerun the same
+25 IDs with subsequent milestones. [Conformance receipts](p1-evidence/README.md)
+and [assurance receipts](p1-assurance-evidence/README.md).
+
+**P2 conformance passes for all 84 mapped host cases. P2 exit is open.**
+The locked release at `cb5e3a4` passes the accrued 109-case P1/P2 set with
+physical NVIDIA Vulkan evidence. The six 2D NumPy grayscale cases now pass.
+Retain all 109 IDs in later regressions. Canon CR3 crop/render compatibility
+and full milestone assurance remain open.
+[Conformance receipts](p2-conformance-evidence/README.md).
+
+
+**Linux host conformance passes for 341 of 341 case IDs at `cb5e3a4`.**
+Five disjoint selections match the locked release binary, reviewed contract and
+adapter descriptor. Each completed via the public CLI. Device cases include
+physical RTX 3090 Vulkan execution and CPU parity. The
+[exact host accounting](p6-host-evidence/cb5e3a4-accounting.json) records every
+verdict, the 35 interface IDs outstanding at this revision, and the hash of each
+raw report and provenance record.
+
+| Roadmap phase | Passed | Host evidence |
+|---|---:|---|
+| P1 parser and rejection | 25/25 | [P1/P2 replay](p2-conformance-evidence/README.md) |
+| P2 input and export | 84/84 | [P1/P2 replay](p2-conformance-evidence/README.md) |
+| P3 primitives and basic fusion | 27/27 | [P3 replay](p3-conformance-evidence/README.md) |
+| P4 multiscale methods, exposure and slabs | 69/69 | [P4 replay](p4-conformance-evidence.md) |
+| P5 motion, crop and registration | 64/64 | [P5 replay](p5-registration.md) |
+| P6 completion, parity and recovery | 72/72 | [P6 replay](p6-device-replay-evidence/cb5e3a4/README.md) |
+
+**Linux release conformance passes all 376 case IDs at `5216ba4`.** The
+release verifier matched 341 host cases, 34 isolated GUI cases, and one
+physical RTX 3090 GUI case to the same committed source, contract, descriptor,
+lockfile, executables, and Linux package. Every selected case passed.
+
+The isolated release replay passed all 20 P7 and 14 P8 interface IDs. It
+verified native panels, retained results, GUI and CLI export parity, and
+the actual 64-frame pause, resume, cancel, and worker reuse workflow.
+[Interface evidence](p7-ui-evidence/5216ba4/README.md) and
+[Linux package evidence](p9-linux-package-evidence/README.md).
+
+Apple execution, retained platform builds, mutation/sanitizer assurance,
+full owned-source coverage, end-to-end CUDA qualification, genuine driver
+fault recovery, and the frozen P10 measurements remain separate exit gates.
+[Sealed Linux branch coverage](p9-cpu-assurance-evidence/5216ba4-nightly/README.md).
 
 [Consolidated P0 work log, including earlier work](p0-work-log.md) is the evidence
 entry point. Historical reports retain their original outcomes; this plan owns

@@ -1,0 +1,219 @@
+info: cargo-llvm-cov currently setting cfg(coverage); you can opt-out it by passing --no-cfg-coverage
+   Compiling pancake v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/assurance/pancake)
+   Compiling pancake-gui v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/assurance/pancake/crates/pancake-gui)
+   Compiling pancake-cli v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/assurance/pancake/crates/pancake-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 17.19s
+     Running unittests src/lib.rs (target/llvm-cov-target/debug/build/pancake/15e55cbef080a408/out/pancake-15e55cbef080a408)
+
+running 16 tests
+test config::tests::configuration_names ... ok
+test config::tests::settings_reject_invalid_values ... ok
+test config::tests::failed_directory_read_keeps_its_path ... ok
+test job::lifecycle::tests::cancellation_followed_by_cleanup ... ok
+test fusion::advanced::tests::native_rgb_must_fit_one_device_buffer ... ok
+test job::lifecycle::tests::completed_stage_freezes_progress ... ok
+test job::lifecycle::tests::incomplete_processing_cannot_publish ... ok
+test job::lifecycle::tests::last_boundary_observes_cancellation ... ok
+test job::lifecycle::tests::cancellation_wakes_paused_worker ... ok
+test job::stream::tests::copies_only_the_retained_absolute_crop ... ok
+test tests::readback_decoding_rejects_corrupt_values ... ok
+test tests::shape_validation_checks_all_boundaries ... ok
+test tests::readback_failures_keep_the_runtime_error ... ok
+test job::lifecycle::tests::pause_acknowledgement_and_resume ... ok
+test tests::variance_readback_errors_are_recoverable ... ok
+test tests::working_budget_checks_exact_boundaries ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cpu_advanced_fusion.rs (target/llvm-cov-target/debug/build/pancake/753d3092c0f381cc/out/cpu_advanced_fusion-753d3092c0f381cc)
+
+running 3 tests
+test cpu_fusion_resource_limits_precede_runtime_access ... ok
+test cpu_slab_geometry_and_scale_aware_parameters ... ok
+test cpu_advanced_fusion ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.56s
+
+     Running tests/cpu_array_layout.rs (target/llvm-cov-target/debug/build/pancake/782633dcbd8749b8/out/cpu_array_layout-782633dcbd8749b8)
+
+running 1 test
+test identifies_two_dimensional_arrays_without_marking_native_grayscale ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cpu_fusion_contract.rs (target/llvm-cov-target/debug/build/pancake/98e3ba5ea88071c2/out/cpu_fusion_contract-98e3ba5ea88071c2)
+
+running 2 tests
+test invalid_requests_do_not_produce_a_result ... ok
+test cpu_fusion_and_resize ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+     Running tests/cpu_gray_array_export.rs (target/llvm-cov-target/debug/build/pancake/1b77b994e9f2736b/out/cpu_gray_array_export-1b77b994e9f2736b)
+
+running 2 tests
+test native_grayscale_still_exports_rgb ... ok
+test npy_gray_array_preserves_single_channel_and_depth ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/cpu_image_export.rs (target/llvm-cov-target/debug/build/pancake/3d5ed40de1c32be5/out/cpu_image_export-3d5ed40de1c32be5)
+
+running 6 tests
+test failures_retain_destinations_and_remove_staging ... ok
+test forbids_source_aliases_even_during_commit ... ok
+test exr_keeps_float_samples ... ok
+test jpeg_declares_and_writes_eight_bit_samples ... ok
+test staging_is_invisible_until_commit_and_cleans_on_drop ... ok
+test lossless_formats_keep_full_precision ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cpu_image_io.rs (target/llvm-cov-target/debug/build/pancake/0fe2464200f65866/out/cpu_image_io-0fe2464200f65866)
+
+running 13 tests
+test encoded_raw_size_is_limited ... ok
+test raster_constructor_validates_shape_and_samples ... ok
+test bmp_and_directory_input_paths ... ok
+test oversized_png_is_rejected_before_pixels_are_read ... ok
+test png_codec_keeps_low_bits_and_drops_alpha ... ok
+test float_tiff_keeps_levels_on_both_input_scales ... ok
+test npy_array_decodes_endian_codes_and_requires_complete_payload ... ok
+test exr_decode_keeps_float_bits_and_rejects_nonfinite_values ... ok
+test png_input_retains_embedded_icc_without_altering_rgb ... ok
+test png_orientation_follows_each_exif_value ... ok
+test malformed_file_diagnostics_identify_each_input ... ok
+test malformed_dng_sensor_metadata_fails_preflight ... ok
+test bayer_dng_develops_true_sixteen_bit_rgb ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/cpu_job.rs (target/llvm-cov-target/debug/build/pancake/21cf855dc3d6f79c/out/cpu_job-21cf855dc3d6f79c)
+
+running 8 tests
+test insufficient_runtime_budget_preserves_previous_output ... ok
+test stack_completion_follows_atomic_export ... ok
+test memory_result_appends_complete_geometry_to_an_existing_observer ... ok
+test interrupted_execution_retains_an_existing_export ... ok
+test worker_reports_a_failed_generation_and_accepts_recovery ... ok
+test worker_reuses_one_thread_without_replacing_retained_results ... ok
+test identity_crop_applies_only_to_aligned_jobs ... ok
+test observer_failures_leave_completed_exports_and_sources_intact ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+
+     Running tests/cpu_kernel_contract.rs (target/llvm-cov-target/debug/build/pancake/01fa9f8f5bb91a0a/out/cpu_kernel_contract-01fa9f8f5bb91a0a)
+
+running 2 tests
+test invalid_shapes_are_recoverable ... ok
+test cpu_blur_matches_independent_values ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/cpu_npy.rs (target/llvm-cov-target/debug/build/pancake/8213e7859d60aa2e/out/cpu_npy-8213e7859d60aa2e)
+
+running 3 tests
+test extended_versions_decode_reordered_metadata_without_trailing_commas ... ok
+test truncated_header_and_channel_reads_are_recoverable ... ok
+test invalid_metadata_reports_the_failing_field_or_shape ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cpu_numerical_contract.rs (target/llvm-cov-target/debug/build/pancake/e08d6cc48b7bb7c9/out/cpu_numerical_contract-e08d6cc48b7bb7c9)
+
+running 2 tests
+test budgets_fail_before_runtime_initialization ... ok
+test cpu_variance_and_reuse ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+     Running tests/cpu_registration_contract.rs (target/llvm-cov-target/debug/build/pancake/b06457f787c22bf6/out/cpu_registration_contract-b06457f787c22bf6)
+
+running 1 test
+test cpu_registration_geometry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+
+     Running tests/cpu_runtime_contract.rs (target/llvm-cov-target/debug/build/pancake/651d743b7f993938/out/cpu_runtime_contract-651d743b7f993938)
+
+running 2 tests
+test incompatible_and_overflowing_device_requests_fail ... ok
+test explicit_cpu_qualifies_a_real_shared_kernel ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/cpu_stack_plan.rs (target/llvm-cov-target/debug/build/pancake/17851aa2188d9c85/out/cpu_stack_plan-17851aa2188d9c85)
+
+running 5 tests
+test ticket_input_count_must_match_before_processing ... ok
+test shared_ticket_cannot_admit_a_second_stack ... ok
+test mixed_inputs_use_the_first_frame_canvas ... ok
+test every_method_preserves_a_textured_identity_stack ... ok
+test registration_preserves_all_reference_conventions_and_crop ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.13s
+
+     Running unittests src/main.rs (target/llvm-cov-target/debug/build/pancake-cli/2d7366067c016606/out/pancake_cli-2d7366067c016606)
+
+running 2 tests
+test tests::inaccessible_diagnostic_stream ... ok
+test tests::argument_device_mapping ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cpu_cli.rs (target/llvm-cov-target/debug/build/pancake-cli/3a69975409189826/out/cpu_cli-3a69975409189826)
+
+running 7 tests
+test help_is_headless ... ok
+test closed_console_pipe_fails_cleanly ... ok
+test file_diagnostics_distinguish_no_matches_and_duplicate_paths ... ok
+test validation_diagnostics_identify_the_invalid_value ... ok
+test parser_diagnostics_identify_the_invalid_request ... ok
+test relative_glob_processes_the_selected_sources ... ok
+test malformed_inputs_are_rejected_by_the_decoder ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+     Running tests/cpu_config.rs (target/llvm-cov-target/debug/build/pancake-cli/c0a84ac3ce82f6ee/out/cpu_config-c0a84ac3ce82f6ee)
+
+running 9 tests
+test canonical_input_order_preserves_distinct_paths ... ok
+test dangling_wildcard_input_is_reported ... ok
+test invalid_sources_keep_their_diagnostic ... ok
+test literal_suffix_can_be_missing_under_some_matches ... ok
+test path_component_too_long_is_a_real_access_error ... ok
+test nested_glob_matches_each_component ... ok
+test source_cannot_be_its_own_export_destination ... ok
+test unmatched_entries_still_consume_scan_budget ... ok
+test input_limits_bound_explicit_and_unique_paths ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/cpu_runtime_options.rs (target/llvm-cov-target/debug/build/pancake-cli/0b21ca8e56ef1096/out/cpu_runtime_options-0b21ca8e56ef1096)
+
+running 2 tests
+test invalid_or_conflicting_runtime_preserves_the_export ... ok
+test jpeg_depth_warning_and_quality_describe_a_real_export ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running unittests src/main.rs (target/llvm-cov-target/debug/build/pancake-gui/a7c8752a24c4676d/out/pancake_gui-a7c8752a24c4676d)
+
+running 11 tests
+test preview::tests::retains_no_more_than_four_display_images ... ok
+test preferences::tests::reports_malformed_preferences ... ok
+test sources::tests::retains_sources_after_unreadable_selection ... ok
+test sources::tests::imports_nested_source_files_once ... ok
+test history::tests::malformed_and_unbounded_lists_fail_without_editing_the_profile ... ok
+test history::tests::write_failure_preserves_the_current_history ... ok
+test preferences::tests::saves_preferences_to_only_the_active_profile ... ok
+test delivery::tests::failed_batch_keeps_previous_files ... ok
+test history::tests::remember_and_clear_across_launches ... ok
+test history::tests::retains_only_the_newest_folders ... ok
+test embedded_workspace_compiles ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s
+
+
+    Finished report saved to target/assurance/coverage-cpu.json
+CPU assurance: uncovered CPU lines

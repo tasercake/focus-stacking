@@ -1,0 +1,74 @@
+{
+  "coverage-cpu": {
+    "lines": [
+      3913,
+      5773
+    ],
+    "functions": [
+      385,
+      670
+    ],
+    "regions": [
+      3988,
+      6549
+    ],
+    "gui_lines": [
+      330,
+      1742
+    ]
+  },
+  "coverage-report-standard-cpu": {
+    "lines": [
+      3913,
+      5773
+    ],
+    "functions": [
+      385,
+      670
+    ],
+    "regions": [
+      3988,
+      6549
+    ],
+    "gui_lines": [
+      330,
+      1742
+    ]
+  },
+  "standard-cpu-with-gui-mapping": {
+    "lines": [
+      3913,
+      5773
+    ],
+    "functions": [
+      385,
+      670
+    ],
+    "regions": [
+      3988,
+      6549
+    ],
+    "gui_lines": [
+      330,
+      1742
+    ]
+  },
+  "standard-cpu-plus-gui": {
+    "lines": [
+      4479,
+      5773
+    ],
+    "functions": [
+      455,
+      670
+    ],
+    "regions": [
+      4603,
+      6549
+    ],
+    "gui_lines": [
+      826,
+      1742
+    ]
+  }
+}

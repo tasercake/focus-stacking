@@ -1,0 +1,50 @@
+{
+  "contract_version": 2,
+  "target": "pancake-rust",
+  "target_root": "/tmp/pancake-worktrees.t3paqgWM/p3-fusion/pancake",
+  "target_commit": "18c17b6f1dd2ff2a15ccea985fe430ac1eb7a666",
+  "target_dirty": "",
+  "suite_commit": "18c17b6f1dd2ff2a15ccea985fe430ac1eb7a666",
+  "suite_dirty": "",
+  "suite_source_sha256": "d01bb47bcf647948f364097f34382283923bfac6975233a75d49f6ec93943fef",
+  "target_descriptor_sha256": "f774e9e080fb49e2f82f11923668db6212ccea83f2924b370dbba1d508c2bfc8",
+  "coverage_scope_sha256": null,
+  "cli_command": [
+    "./target/release/pancake-cli"
+  ],
+  "gui_command": [
+    "./target/release/pancake-gui"
+  ],
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:14) [Clang 21.1.4 ]",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "uv_lock_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
+  "cases": [
+    "algorithms.stack.weighted_average",
+    "algorithms.odd_dimensions.weighted_average",
+    "algorithms.flat.weighted_average",
+    "algorithms.deterministic.weighted_average",
+    "algorithms.automatic_parameters.weighted_average",
+    "algorithms.quality_report.weighted_average",
+    "algorithms.stack.depth_map",
+    "algorithms.odd_dimensions.depth_map",
+    "algorithms.flat.depth_map",
+    "algorithms.deterministic.depth_map",
+    "algorithms.automatic_parameters.depth_map",
+    "algorithms.quality_report.depth_map",
+    "algorithms.precision16.png.weighted_average",
+    "algorithms.precision16.tif.weighted_average",
+    "algorithms.cross_export.weighted_average",
+    "algorithms.slabs.2.0.weighted_average",
+    "algorithms.slabs.3.1.weighted_average",
+    "algorithms.slabs.4.2.weighted_average",
+    "algorithms.slabs.9.0.weighted_average",
+    "algorithms.precision16.png.depth_map",
+    "algorithms.precision16.tif.depth_map",
+    "algorithms.cross_export.depth_map",
+    "algorithms.slabs.2.0.depth_map",
+    "algorithms.slabs.3.1.depth_map",
+    "algorithms.slabs.4.2.depth_map",
+    "algorithms.slabs.9.0.depth_map",
+    "algorithms.weighted.zero_regions"
+  ]
+}

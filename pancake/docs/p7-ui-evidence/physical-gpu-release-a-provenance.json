@@ -1,0 +1,25 @@
+{
+  "contract_version": 2,
+  "target": "pancake-rust",
+  "target_root": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake",
+  "target_commit": "0859deb124ed9c9dc4a8dd12a16d309b9af321fc",
+  "target_dirty": "M pancake/crates/pancake-gui/src/panel/linux.rs\n M pancake/crates/pancake-gui/src/panel/mod.rs\n M pancake/crates/pancake-gui/src/session.rs",
+  "suite_commit": "0859deb124ed9c9dc4a8dd12a16d309b9af321fc",
+  "suite_dirty": "M pancake/crates/pancake-gui/src/panel/linux.rs\n M pancake/crates/pancake-gui/src/panel/mod.rs\n M pancake/crates/pancake-gui/src/session.rs",
+  "suite_source_sha256": "73f51014ab281903f43c270579d8c0de32fc1cee5a99c1e84febc0979c702f89",
+  "target_descriptor_sha256": "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac",
+  "coverage_scope_sha256": null,
+  "cli_command": [
+    "./target/release/pancake-cli"
+  ],
+  "gui_command": [
+    "./target/release/pancake-gui"
+  ],
+  "python": "3.12.12 (main, Feb 12 2026, 00:42:14) [Clang 21.1.4 ]",
+  "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "uv_lock_sha256": "30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b",
+  "cases": [
+    "interface.compute.gpu",
+    "interface.recovery.device-request"
+  ]
+}

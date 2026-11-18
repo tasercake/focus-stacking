@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "failed",
+  "complete": true,
+  "selected_count": 6,
+  "completed_count": 6,
+  "counts": {
+    "passed": 0,
+    "failed": 6,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "interface.controls.method-alignment",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 0.004183983022812754,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface.py\", line 29, in _method_alignment\n    with ctx.open_ui() as ui:\n         ^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/context.py\", line 183, in open_ui\n    native = open_session(self.target.command(\"gui\"), cwd=self.target.root, env=env,\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 421, in open_session\n    process = subprocess.Popen([*map(str, command), *map(str, paths)], cwd=cwd, env=environment,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: './target/release/pancake-gui'\n",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/red/native-controls/cases/interface.controls.method-alignment"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.startup.empty",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 0.0010923920199275017,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface.py\", line 103, in _startup\n    with ctx.open_ui() as ui:\n         ^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/context.py\", line 183, in open_ui\n    native = open_session(self.target.command(\"gui\"), cwd=self.target.root, env=env,\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 421, in open_session\n    process = subprocess.Popen([*map(str, command), *map(str, paths)], cwd=cwd, env=environment,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: './target/release/pancake-gui'\n",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/red/native-controls/cases/interface.startup.empty"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.controls.advanced-visibility",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 0.0009269430302083492,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface.py\", line 268, in _advanced\n    with ctx.open_ui() as ui:\n         ^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/context.py\", line 183, in open_ui\n    native = open_session(self.target.command(\"gui\"), cwd=self.target.root, env=env,\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 421, in open_session\n    process = subprocess.Popen([*map(str, command), *map(str, paths)], cwd=cwd, env=environment,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: './target/release/pancake-gui'\n",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/red/native-controls/cases/interface.controls.advanced-visibility"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.settings.persistence",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 0.0009459889843128622,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface.py\", line 228, in _settings\n    with ctx.open_ui(settings_id=\"preferences\") as ui:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/context.py\", line 183, in open_ui\n    native = open_session(self.target.command(\"gui\"), cwd=self.target.root, env=env,\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 421, in open_session\n    process = subprocess.Popen([*map(str, command), *map(str, paths)], cwd=cwd, env=environment,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: './target/release/pancake-gui'\n",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/red/native-controls/cases/interface.settings.persistence"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.settings.lightroom-status",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 0.0010264900047332048,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface_settings.py\", line 35, in _lightroom_status\n    with ctx.open_ui() as ui:\n         ^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/context.py\", line 183, in open_ui\n    native = open_session(self.target.command(\"gui\"), cwd=self.target.root, env=env,\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 421, in open_session\n    process = subprocess.Popen([*map(str, command), *map(str, paths)], cwd=cwd, env=environment,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: './target/release/pancake-gui'\n",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/red/native-controls/cases/interface.settings.lightroom-status"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.about",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 0.0008956840028986335,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface_settings.py\", line 49, in _about\n    with ctx.open_ui() as ui:\n         ^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/context.py\", line 183, in open_ui\n    native = open_session(self.target.command(\"gui\"), cwd=self.target.root, env=env,\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 421, in open_session\n    process = subprocess.Popen([*map(str, command), *map(str, paths)], cwd=cwd, env=environment,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: './target/release/pancake-gui'\n",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/red/native-controls/cases/interface.about"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}

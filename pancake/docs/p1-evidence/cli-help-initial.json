@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "failed",
+  "complete": true,
+  "selected_count": 1,
+  "completed_count": 1,
+  "counts": {
+    "passed": 0,
+    "failed": 1,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "cli.help",
+      "suite": "cli",
+      "status": "failed",
+      "duration": 0.0013623160193674266,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p1-verify/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p1-verify/pancake-conformance/src/pancake_conformance/cases/cli.py\", line 10, in _help\n    result = ctx.command([\"--help\"])\n             ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p1-verify/pancake-conformance/src/pancake_conformance/context.py\", line 85, in command\n    result = ProcessRunner().run(self.target.command(\"cli\") + list(map(str, arguments)),\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p1-verify/pancake-conformance/src/pancake_conformance/process.py\", line 35, in run\n    child = subprocess.Popen(command, cwd=cwd, env=env, stdout=subprocess.PIPE,\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/home/krishna/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: './target/release/pancake-cli'\n",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p1-verify/artifacts/pancake-conformance/p1-red/report/cases/cli.help"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}

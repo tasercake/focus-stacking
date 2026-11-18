@@ -1,0 +1,8 @@
+Target: pancake-rust | 5 cases | /tmp/p9-extract-hkyq0h_o/artifacts/run
+[1/5] PASSED cli.help (0.01s)
+[2/5] PASSED cli.paths.glob (0.31s)
+[3/5] PASSED interface.algorithm.weighted_average (2.43s)
+[4/5] PASSED interface.startup.empty (0.91s)
+[5/5] PASSED interface.recovery.close-unsaved (2.48s)
+Desktop phase finished; keyboard and pointer are free.
+Passed: 5; failed: 0; unsupported: 0

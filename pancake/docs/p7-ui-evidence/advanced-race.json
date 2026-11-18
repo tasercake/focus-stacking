@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "failed",
+  "complete": true,
+  "selected_count": 6,
+  "completed_count": 6,
+  "counts": {
+    "passed": 5,
+    "failed": 1,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "interface.controls.method-alignment",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 11.930869733041618,
+      "error": "",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/dev-controls-01/cases/interface.controls.method-alignment"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.startup.empty",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 8.20015627099201,
+      "error": "",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/dev-controls-01/cases/interface.startup.empty"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.controls.advanced-visibility",
+      "suite": "interface",
+      "status": "failed",
+      "duration": 8.767519760003779,
+      "error": "Traceback (most recent call last):\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/runner.py\", line 40, in run_cases\n    case.run(context)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/cases/interface.py\", line 272, in _advanced\n    ui.edit(identifier, value)\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/ui.py\", line 95, in edit\n    return self.native.edit(self.selector(selector), value, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 204, in edit\n    self.click(selector, position=(0.35, 0.5))\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/linux_ui.py\", line 143, in click\n    return super().click(selector, **{**kwargs, 'physical': True})\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 137, in click\n    self._request(command, selector=self._selector(selector), **variants,\n  File \"/tmp/pancake-worktrees.t3paqgWM/p7-ui/pancake-conformance/src/pancake_conformance/macos_ui.py\", line 107, in _request\n    raise RuntimeError(f\"{result[\"error\"]} (target exit status: {self.process.poll()})\")\nRuntimeError: Expected one accessible control for {'id': 'kernel-size'}; found 0 (target exit status: None)\n",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/dev-controls-01/cases/interface.controls.advanced-visibility"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.settings.persistence",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 40.276796970982105,
+      "error": "",
+      "notes": {
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/dev-controls-01/cases/interface.settings.persistence"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.settings.lightroom-status",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 8.016506291984115,
+      "error": "",
+      "notes": {
+        "lightroom_status": {
+          "text": "Lightroom Classic integration is unavailable in this build.",
+          "action": "Configure Lightroom integration",
+          "enabled": false
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/dev-controls-01/cases/interface.settings.lightroom-status"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.about",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 7.620454084011726,
+      "error": "",
+      "notes": {
+        "about": {
+          "version": "0.1.0"
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/dev-controls-01/cases/interface.about"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}

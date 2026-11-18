@@ -1,0 +1,69 @@
+"""Observe focus and XI2 events without dispatching input to the desktop."""
+
+import json
+import os
+import selectors
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+
+def capture(argv):
+    """Read a native window property without changing the X11 session."""
+    result = subprocess.run(argv, text=True, capture_output=True, check=False, timeout=1)
+    return {"exit": result.returncode, "stdout": result.stdout.strip()}
+
+
+def observe(target, output):
+    """Follow the caller's own X11 clients and timestamp available records."""
+    commands = {
+        "wm": ["xprop", "-root", "-spy", "_NET_ACTIVE_WINDOW", "_NET_CLIENT_LIST"],
+        "input": ["xinput", "test-xi2", "--root"],
+    }
+    processes = {}
+    buffers = dict.fromkeys(commands, b"")
+    with output.open("x", encoding="utf-8") as stream, selectors.DefaultSelector() as ready:
+        def emit(channel, value):
+            stream.write(json.dumps({"ns": time.monotonic_ns(), "channel": channel, "value": value}) + "\n")
+            stream.flush()
+
+        emit("setup", {"display": os.environ["DISPLAY"], "pid": target, "commands": commands})
+        try:
+            for channel, argv in commands.items():
+                proc = subprocess.Popen(["stdbuf", "-oL", "-eL", *argv], stdout=subprocess.PIPE,
+                                        stderr=subprocess.STDOUT)
+                processes[channel] = proc
+                ready.register(proc.stdout, selectors.EVENT_READ, channel)
+            while Path(f"/proc/{target}").exists() and ready.get_map():
+                for key, _mask in ready.select(timeout=0.1):
+                    channel = key.data
+                    packet = os.read(key.fd, 65536)
+                    if not packet:
+                        ready.unregister(key.fileobj)
+                        continue
+                    lines = (buffers[channel] + packet).split(b"\n")
+                    buffers[channel] = lines.pop()
+                    for payload in lines:
+                        text = payload.decode(errors="replace")
+                        emit(channel, text)
+                        if channel == "wm" and text.startswith("_NET_ACTIVE_WINDOW"):
+                            xid = text.rsplit(" ", 1)[-1]
+                            if xid.startswith("0x") and xid != "0x0":
+                                emit("active", capture(["xprop", "-id", xid, "WM_CLASS", "WM_NAME", "_NET_WM_PID"]))
+                            emit("focus", capture(["xdotool", "getwindowfocus"]))
+                        if channel == "input" and ("RawButtonPress" in text or "RawButtonRelease" in text):
+                            emit("pointer", capture(["xdotool", "getmouselocation", "--shell"]))
+        finally:
+            for proc in processes.values():
+                if proc.poll() is None:
+                    proc.terminate()
+                    proc.wait(timeout=2)
+                if proc.stdout is not None:
+                    proc.stdout.close()
+
+
+if __name__ == "__main__":
+    if os.environ.get("PANCAKE_CONFORMANCE_LINUX_DESKTOP") != "1":
+        raise SystemExit("only a case-owned native desktop can be observed")
+    observe(int(sys.argv[1]), Path(sys.argv[2]))

@@ -1,0 +1,62 @@
+{
+  "revision": "3dc9bcf3c30605badea2f7b2ee2840075507b6c3",
+  "profile": "dev, pinned Rust LLVM coverage counters",
+  "command": [
+    "uv",
+    "run",
+    "--project",
+    "pancake-conformance",
+    "--frozen",
+    "pancake-conformance",
+    "run",
+    "--target",
+    "/tmp/pancake-worktrees.t3paqgWM/assurance/pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml",
+    "--case",
+    "cli.help",
+    "--no-coverage",
+    "--output",
+    "/tmp/pancake-worktrees.t3paqgWM/assurance/artifacts/pancake-assurance/llvm-scope-transport-3dc9bcf/conformance"
+  ],
+  "descriptor_sha256": "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac",
+  "executable_sha256": "44669bffad858acf64dff77d69714ac1a8bf5eeb676ee46b036571f8241c7491",
+  "profraw_sha256": "d52bdc847b549e50fbb1682b1b74aff84b484c8f2639adf558848f5dd05b9cb1",
+  "profraw_size": 50360,
+  "cli_main": {
+    "filename": "/tmp/pancake-worktrees.t3paqgWM/assurance/pancake/crates/pancake-cli/src/main.rs",
+    "coverage": {
+      "lines": {
+        "count": 99,
+        "covered": 15,
+        "percent": 15.151515151515152
+      },
+      "functions": {
+        "count": 9,
+        "covered": 2,
+        "percent": 22.22222222222222
+      },
+      "instantiations": {
+        "count": 10,
+        "covered": 2,
+        "percent": 20
+      },
+      "regions": {
+        "count": 103,
+        "covered": 14,
+        "notcovered": 89,
+        "percent": 13.592233009708737
+      },
+      "branches": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      },
+      "mcdc": {
+        "count": 0,
+        "covered": 0,
+        "notcovered": 0,
+        "percent": 0
+      }
+    }
+  }
+}

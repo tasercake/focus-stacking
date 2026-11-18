@@ -1,0 +1,70 @@
+_XSERVTransSocketUNIXCreateListener: ...SocketCreateListener() failed
+_XSERVTransMakeAllCOTSServerListeners: server already running
+The XKEYBOARD keymap compiler (xkbcomp) reports:
+> Warning:          Could not resolve keysym XF86CameraAccessEnable
+> Warning:          Could not resolve keysym XF86CameraAccessDisable
+> Warning:          Could not resolve keysym XF86CameraAccessToggle
+> Warning:          Could not resolve keysym XF86NextElement
+> Warning:          Could not resolve keysym XF86PreviousElement
+> Warning:          Could not resolve keysym XF86AutopilotEngageToggle
+> Warning:          Could not resolve keysym XF86MarkWaypoint
+> Warning:          Could not resolve keysym XF86Sos
+> Warning:          Could not resolve keysym XF86NavChart
+> Warning:          Could not resolve keysym XF86FishingChart
+> Warning:          Could not resolve keysym XF86SingleRangeRadar
+> Warning:          Could not resolve keysym XF86DualRangeRadar
+> Warning:          Could not resolve keysym XF86RadarOverlay
+> Warning:          Could not resolve keysym XF86TraditionalSonar
+> Warning:          Could not resolve keysym XF86ClearvuSonar
+> Warning:          Could not resolve keysym XF86SidevuSonar
+> Warning:          Could not resolve keysym XF86NavInfo
+Errors from xkbcomp are not fatal to the X server
+dbus-daemon[308621]: [session uid=1000 pid=308621] Activating service name='org.a11y.Bus' requested by ':1.0' (uid=1000 pid=308624 comm="gdbus call --session --dest org.a11y.Bus --object-" label="chatgpt (unconfined)")
+dbus-daemon[308621]: [session uid=1000 pid=308621] Successfully activated service 'org.a11y.Bus'
+dbus-daemon[308621]: [session uid=1000 pid=308621] Activating service name='ca.desrt.dconf' requested by ':1.1' (uid=1000 pid=308629 comm="/usr/libexec/at-spi-bus-launcher" label="chatgpt (unconfined)")
+dbus-daemon[308621]: [session uid=1000 pid=308621] Successfully activated service 'ca.desrt.dconf'
+Openbox-Message: Unable to find a valid menu file "/var/lib/openbox/debian-menu.xml"
+dbus-daemon[308647]: Cannot initialize inotify: Too many open files
+dbus-daemon[308647]: Activating service name='org.a11y.atspi.Registry' requested by ':1.0' (uid=1000 pid=308645 comm="/usr/bin/python3 -u /tmp/pancake-worktrees.t3paqgW" label="chatgpt (unconfined)")
+dbus-daemon[308647]: Successfully activated service 'org.a11y.atspi.Registry'
+dbus-daemon[308621]: [session uid=1000 pid=308621] Activating service name='org.freedesktop.portal.Desktop' requested by ':1.5' (uid=1000 pid=308644 comm="./target/release/pancake-gui /tmp/pancake-worktree" label="chatgpt (unconfined)")
+dbus-daemon[308621]: [session uid=1000 pid=308621] Activating service name='org.freedesktop.portal.Documents' requested by ':1.6' (uid=1000 pid=308725 comm="/usr/libexec/xdg-desktop-portal" label="chatgpt (unconfined)")
+dbus-daemon[308621]: [session uid=1000 pid=308621] Activating service name='org.freedesktop.impl.portal.PermissionStore' requested by ':1.7' (uid=1000 pid=308731 comm="/usr/libexec/xdg-document-portal" label="chatgpt (unconfined)")
+dbus-daemon[308621]: [session uid=1000 pid=308621] Successfully activated service 'org.freedesktop.impl.portal.PermissionStore'
+dbus-daemon[308621]: [session uid=1000 pid=308621] Successfully activated service 'org.freedesktop.portal.Documents'
+Ignoring invalid max threads value 4294967295 > max (100000).
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.027: Choosing gtk.portal for org.freedesktop.impl.portal.Lockdown as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.027: The preferred method to match portal implementations to desktop environments is to use the portals.conf(5) configuration file
+dbus-daemon[308621]: [session uid=1000 pid=308621] Activating service name='org.freedesktop.impl.portal.desktop.gtk' requested by ':1.6' (uid=1000 pid=308725 comm="/usr/libexec/xdg-desktop-portal" label="chatgpt (unconfined)")
+dbus-daemon[308621]: [session uid=1000 pid=308621] Activating service name='org.gtk.vfs.Daemon' requested by ':1.9' (uid=1000 pid=308748 comm="/usr/libexec/xdg-desktop-portal-gtk" label="chatgpt (unconfined)")
+dbus-daemon[308621]: [session uid=1000 pid=308621] Successfully activated service 'org.gtk.vfs.Daemon'
+dbus-daemon[308621]: [session uid=1000 pid=308621] Successfully activated service 'org.freedesktop.impl.portal.desktop.gtk'
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.091: No skeleton to export
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.091: Choosing gtk.portal for org.freedesktop.impl.portal.FileChooser as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.092: Choosing gtk.portal for org.freedesktop.impl.portal.AppChooser as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.092: Choosing gtk.portal for org.freedesktop.impl.portal.Print as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.092: Choosing gtk.portal for org.freedesktop.impl.portal.Notification as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.093: Choosing gtk.portal for org.freedesktop.impl.portal.Inhibit as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.093: Choosing gtk.portal for org.freedesktop.impl.portal.Access as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.095: Failed connect to PipeWire: Couldn't connect to PipeWire
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.095: Choosing gtk.portal for org.freedesktop.impl.portal.Account as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.096: Choosing gtk.portal for org.freedesktop.impl.portal.Email as a last-resort fallback
+
+(/usr/libexec/xdg-desktop-portal:308725): xdg-desktop-portal-WARNING **: 11:22:03.096: Choosing gtk.portal for org.freedesktop.impl.portal.DynamicLauncher as a last-resort fallback
+dbus-daemon[308621]: [session uid=1000 pid=308621] Successfully activated service 'org.freedesktop.portal.Desktop'
+
+** (xdg-desktop-portal-gtk:308748): WARNING **: 11:22:03.879: atk-bridge: Couldn't listen on dbus server: Socket name too long
+
+Obt-Message: Failed to open an Input Method

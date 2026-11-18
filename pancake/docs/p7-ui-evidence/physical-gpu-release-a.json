@@ -1,0 +1,343 @@
+{
+  "schema_version": 1,
+  "target": "pancake-rust",
+  "status": "passed",
+  "complete": true,
+  "selected_count": 2,
+  "completed_count": 2,
+  "counts": {
+    "passed": 2,
+    "failed": 0,
+    "unsupported": 0
+  },
+  "cases": [
+    {
+      "id": "interface.compute.gpu",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 3.3596785610425286,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "execution": {
+          "actual_backend": "gpu",
+          "alignment_transforms": {
+            "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gpu1/cases/interface.compute.gpu/fixtures/focus/focus/frame_00.png": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gpu1/cases/interface.compute.gpu/fixtures/focus/focus/frame_01.png": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gpu1/cases/interface.compute.gpu/fixtures/focus/focus/frame_02.png": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "completed": true,
+          "device": "NVIDIA GeForce RTX 3090",
+          "device_fingerprint": "spirv_4318_8708",
+          "device_pci_address": "0000:01:00.0",
+          "event": "stack_complete",
+          "fallback_reason": null,
+          "physical_gpu": true,
+          "runtime": "wgpu-vulkan",
+          "sequential_transforms": [
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gpu1/cases/interface.compute.gpu"
+      },
+      "outputs": {},
+      "execution_environment": "host",
+      "reason": ""
+    },
+    {
+      "id": "interface.recovery.device-request",
+      "suite": "interface",
+      "status": "passed",
+      "duration": 4.578322110988665,
+      "error": "",
+      "notes": {
+        "fixtures": {
+          "focus": {
+            "metadata": {
+              "generator_version": 2,
+              "regions": [
+                [
+                  16,
+                  113,
+                  16,
+                  84
+                ],
+                [
+                  16,
+                  113,
+                  108,
+                  177
+                ]
+              ],
+              "kind": "complementary-focus-planes",
+              "shape": [
+                129,
+                193,
+                3
+              ],
+              "dtype": "uint8",
+              "input_count": 3
+            },
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        },
+        "execution": {
+          "actual_backend": "gpu",
+          "alignment_transforms": {
+            "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gpu1/cases/interface.recovery.device-request/fixtures/focus/focus/frame_00.png": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gpu1/cases/interface.recovery.device-request/fixtures/focus/focus/frame_01.png": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gpu1/cases/interface.recovery.device-request/fixtures/focus/focus/frame_02.png": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          },
+          "completed": true,
+          "device": "NVIDIA GeForce RTX 3090",
+          "device_fingerprint": "spirv_4318_8708",
+          "device_pci_address": "0000:01:00.0",
+          "event": "stack_complete",
+          "fallback_reason": null,
+          "physical_gpu": true,
+          "runtime": "wgpu-vulkan",
+          "sequential_transforms": [
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "gpu_hardware_exercised": true,
+        "requests": [
+          {
+            "options": {
+              "device": "gpu",
+              "kernel_size": 3,
+              "pyramid_levels": 4,
+              "scale_factor": 6,
+              "method": "hybrid",
+              "bit_depth": 16
+            },
+            "output_format": "tif",
+            "input_names": [
+              "frame_00.png",
+              "frame_01.png",
+              "frame_02.png"
+            ],
+            "inputs": [
+              {
+                "name": "frame_00.png",
+                "sha256": "a15270eec73a95d04851dc0c32436d14544beb86477e287f97dbc6365d2d1016"
+              },
+              {
+                "name": "frame_01.png",
+                "sha256": "b081c3626f97897bcf07d896745d960ee4cad4b67f713a31f2003367f2307a26"
+              },
+              {
+                "name": "frame_02.png",
+                "sha256": "8ac9a6867760b61f3d1c8bfc38332b9cb4ee8b6f2c805c988fec1442f114bcc3"
+              }
+            ]
+          }
+        ],
+        "surface_parity": {
+          "mean_absolute_error": 0.0,
+          "max_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "fraction_above_threshold": 0.0
+        },
+        "artifact_directory": "/tmp/pancake-worktrees.t3paqgWM/p7-ui/artifacts/p7/gpu1/cases/interface.recovery.device-request"
+      },
+      "outputs": {
+        "device-request": "device-request.tif",
+        "output-02.tif": "output-02.tif"
+      },
+      "execution_environment": "host",
+      "reason": ""
+    }
+  ]
+}

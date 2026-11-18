@@ -1,0 +1,9 @@
+........................................................................ [ 23%]
+........................................................................ [ 46%]
+.ss..................................................................... [ 69%]
+........................................................................ [ 92%]
+.......................                                                  [100%]
+=========================== short test summary info ============================
+SKIPPED [1] pancake-conformance/tests/test_interface_cases.py:13: Live GUI smoke tests require --gui-vm or --gui-desktop and explicit --target
+SKIPPED [1] pancake-conformance/tests/test_interface_cases.py:17: Live GUI smoke tests require --gui-vm or --gui-desktop and explicit --target
+309 passed, 2 skipped in 7.84s
