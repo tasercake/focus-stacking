@@ -166,3 +166,7 @@ interval. The existing first canvas and admitted maps determine the crop.
 No crop target, filename, transition magnitude cutoff or confidence change
 is justified by these samples. Full-stack trajectory, fused quality, parity
 and performance remain separate obligations.
+
+The verified archive was removed immediately after extracting the nine
+originals. Those originals were rehashed and removed after the probe. The
+source and trace receipts are retained. [Cleanup](cleanup.json).
