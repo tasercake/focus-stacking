@@ -427,10 +427,25 @@ The completed-job evidence inventory covers 26 frozen profiles. None has
 passed every gate. The historical E9 CPU, Vulkan and CUDA schedules used a
 reference that reran the legacy exposure combiner over batch outputs. The
 frozen contract requires equal averaging of the batch outputs. Those runs
-retain their historical ratios as diagnostics. E9 qualification requires an
-eligible reference and a new matched schedule.
+retain their historical ratios as diagnostics.
 [Full P10 profile accounting](../../qualification/p10-performance/evidence/release-completeness.md).
 [E9 reference eligibility audit](../../qualification/p10-performance/evidence/e9-reference-eligibility.md).
+
+The E9 qualification launcher now binds a hashed equal final batch mean
+to the two existing CPU and GPU profiles. The reference pin, CLI settings,
+per-batch weighting, source order and frozen thresholds are unchanged.
+Actual CPU and physical RTX 3090 OpenCL runs reduced the same nine
+authenticated inputs in groups of four, four and one. Both matched the
+independent float64 mean within 0.000025 on the 0–255 scale. A separate
+clean OpenCL launch repeated the encoded and decoded RGB16 SHA-256 values
+with no CPU fallback. The matched timing and resource schedules and
+representative output-quality review remain pending.
+[Corrected E9 launcher and functional receipts](../../qualification/p10-performance/evidence/e9-reference-prototype/README.md).
+
+Adding the qualification adapter advances the suite-source digest used by
+the strict Linux ledger. The `c1e2cac` 376-case ledger retains its exact
+suite digest. The frozen case roster, descriptor and contract did not
+change. The final conformance replay must use its own matching digest.
 
 The same-source E9 CUDA compiler experiment on the RTX 3090 measured
 452.260 ms warm median for LLVM and 737.959 ms for C++, with exact RGB16
