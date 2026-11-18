@@ -27,7 +27,12 @@ from protocol import (
     verify_frames,
     verify_output,
 )
-from resources import NvidiaMemory, measure
+from resources import (
+    DEFAULT_RSS_SAMPLE_INTERVAL_MS,
+    RSS_SAMPLE_INTERVALS_MS,
+    NvidiaMemory,
+    measure,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 TARGETS_PATH = ROOT / "pancake/docs/performance-targets.json"
@@ -473,7 +478,18 @@ def _opencl_preflight(args, target, identity, hardware, directory):
 
 
 def _run_sample(
-    profile, pair, name, spec, identity, args, frames, bounds, directory, gpu
+    profile,
+    pair,
+    name,
+    spec,
+    identity,
+    args,
+    frames,
+    bounds,
+    directory,
+    gpu,
+    *,
+    rss_sample_interval_ms=DEFAULT_RSS_SAMPLE_INTERVAL_MS,
 ):
     kind, ordinal, _ = pair
     scope = directory / f"{kind}-{ordinal:02d}"
@@ -515,6 +531,7 @@ def _run_sample(
         "cwd": str(spec.root),
         "environment": env,
         "rss_sampler_cpu": args.rss_sampler_cpu,
+        "sample_interval_ns": rss_sample_interval_ms * 1_000_000,
         "gpu_before": _gpu_state(args.gpu_uuid) if gpu else None,
         "cpu_temperature_before_millidegrees": _cpu_thermal_state(),
         "cache_before": _cache_inventory(cache),
@@ -531,6 +548,7 @@ def _run_sample(
                 timeout=args.timeout,
                 gpu=gpu,
                 rss_sampler_cpu=args.rss_sampler_cpu,
+                rss_sample_interval_ms=rss_sample_interval_ms,
             )
         )
         record["gpu_after"] = _gpu_state(args.gpu_uuid) if gpu else None
@@ -589,8 +607,11 @@ def _cleanup_outputs(directory, result, *, keep_review_images):
 
 
 def run_profile(args):
-    campaign = Campaign.load(TARGETS_PATH)
     device = "cpu" if args.runtime == "cpu" else "gpu"
+    interval_ms = args.rss_sample_interval_ms
+    if device != "cpu" and interval_ms != DEFAULT_RSS_SAMPLE_INTERVAL_MS:
+        raise ValueError("--rss-sample-interval-ms overrides are for CPU profiles only")
+    campaign = Campaign.load(TARGETS_PATH)
     if bool(args.gpu_uuid) != (device == "gpu") or (
         args.gpu_uuid and not args.gpu_uuid.startswith("GPU-")
     ):
@@ -632,6 +653,7 @@ def run_profile(args):
         "candidate_runtime": args.runtime,
         "reference_runtime": "opencl" if device == "gpu" else "cpu",
         "settings": profile.options,
+        "sample_interval_ns": interval_ms * 1_000_000,
         "performance_targets_sha256": sha256(TARGETS_PATH),
         "samples": [],
         "pixel_comparisons": [],
@@ -707,6 +729,7 @@ def run_profile(args):
                     bounds,
                     directory,
                     gpu,
+                    rss_sample_interval_ms=interval_ms,
                 )
                 result["samples"].append(record)
                 _write(directory / "report.json", result)
@@ -738,6 +761,7 @@ def run_profile(args):
                     bounds,
                     directory,
                     gpu,
+                    rss_sample_interval_ms=interval_ms,
                 )
                 result["diagnostics"].append(record)
                 if not record["valid"]:
@@ -824,6 +848,13 @@ def main():
         "--rss-sampler-cpu",
         type=int,
         help="Pin only the RSS sampler to a logical CPU outside the common job affinity",
+    )
+    run.add_argument(
+        "--rss-sample-interval-ms",
+        type=int,
+        choices=RSS_SAMPLE_INTERVALS_MS,
+        default=DEFAULT_RSS_SAMPLE_INTERVAL_MS,
+        help="Nominal RSS interval for CPU profiles in ms (default: %(default)s)",
     )
     run.add_argument("--gpu-uuid")
     run.add_argument("--reference-gpu-index", type=int, default=0)

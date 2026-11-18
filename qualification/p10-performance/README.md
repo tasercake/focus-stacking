@@ -92,8 +92,12 @@ that appears on both lists once. The separate raw traces record each
 collector’s scheduled and actual start, completion, acquisition thread CPU
 time, observed PIDs, and bytes.
 
-Both samplers use an 8 ms nominal interval on the same monotonic clock as
-the job. The reducer checks each counter independently from launch through
+Both samplers default to an 8 ms nominal interval on the same monotonic clock
+as the job. For CPU profiles, `--rss-sample-interval-ms 3` selects a shorter
+nominal interval for both applications and their two backend diagnostics.
+The option accepts whole milliseconds from 2 to 8. The selected nominal
+value appears as `sample_interval_ns` in launch, sample, and campaign receipts.
+The reducer checks each counter independently from launch through
 observed exit, including the first and last gaps. An observation that
 completes after exit cannot cover a gap. A gap above 20 ms or any unavailable
 value leaves that metric pending. The raw peak is retained as a lower bound
@@ -104,6 +108,18 @@ processes. [Linux procfs reference](https://docs.kernel.org/filesystems/proc.htm
 
 The [D150 cadence investigation](evidence/resource-sampling/d150-rss-cadence.md)
 records the measurement that motivated the optional RSS sampler affinity.
+
+For a separately authorized T50 Weighted calibration, reuse the reference
+arm of the exact triplet diagnostic (`45164b1a`) and pass
+`rss_sample_interval_ms=3` to its `_run_sample` call. Run that arm once with
+the same pinned reference, frozen input order and settings, fresh scoped
+cache and CPU mask `0–14`, with CPU `15` reserved for RSS. Verify the fixture
+hashes before and after, genuine output geometry and depth, and the decoded
+output hash against the prior reference receipt. Retain the full RSS trace,
+sampler CPU time, launch and exit boundaries, and prior 8 ms receipt. The
+calibration checks observed cadence and observer cost on a real workload.
+A profile verdict requires the complete paired schedule with a single
+nominal setting for both applications.
 
 Linux `wait4` reports the waited process’s RSS high water separately. A
 cgroup `memory.peak` includes charged file cache and kernel data. NVIDIA
