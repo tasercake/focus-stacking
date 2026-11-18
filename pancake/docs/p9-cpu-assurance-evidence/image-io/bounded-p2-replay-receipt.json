@@ -1,0 +1,33 @@
+{
+  "source_revision": "1276ed68f75d8a294a9b740be3892ceb7e9ce9e8",
+  "case_selection": "Same exact 84 IDs listed in p2-replay-receipt.json.",
+  "counts": {
+    "passed": 84,
+    "failed": 0,
+    "unsupported": 0
+  },
+  "complete": true,
+  "binary_profile": "debug",
+  "binary_sha256": "6693fb590e0414559c3dbc326ee614b856a4a9803f497d539eb74104233a6771",
+  "cargo_lock_sha256": "639c5c88b9286e5583174f05168412db19f39dc3f651b6682b685d1db801e0dd",
+  "build_command": "CARGO_BUILD_JOBS=4 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 cargo build --locked -p pancake-cli --bin pancake-cli",
+  "conformance_command": "uv run --project pancake-conformance --frozen pancake-conformance run --target <Pancake descriptor> --cli-command <JSON argv for debug binary> --no-coverage --output <run path> --case <each recorded case ID>",
+  "gpu_identity": "NVIDIA GeForce RTX 3090, 580.178.04",
+  "completions": [
+    {
+      "backend": "cpu",
+      "runtime": "cpu",
+      "device": "AMD Ryzen 9 7950X3D 16-Core Processor",
+      "physical_gpu": false,
+      "count": 43
+    },
+    {
+      "backend": "gpu",
+      "runtime": "wgpu-vulkan",
+      "device": "NVIDIA GeForce RTX 3090",
+      "physical_gpu": true,
+      "count": 16
+    }
+  ],
+  "report_sha256": "5afa23626316ad8a0a1f2fab26ac3e95bb3f8ad4b5455e1df3e98520d058a7e5"
+}
