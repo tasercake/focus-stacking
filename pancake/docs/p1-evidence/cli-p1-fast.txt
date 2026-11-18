@@ -1,0 +1,14 @@
+........................................
+----------------------------------------------------------------------
+Ran 40 tests in 1.888s
+
+OK
+Miri platform contract: reviewed production source and dependency closure match.
+    Checking pancake v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/p1-decoder-integration/pancake)
+    Checking pancake-cli v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/p1-decoder-integration/pancake/crates/pancake-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.31s
+    Checking pancake v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/p1-decoder-integration/pancake)
+ Documenting pancake v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/p1-decoder-integration/pancake)
+ Documenting pancake-cli v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/p1-decoder-integration/pancake/crates/pancake-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.84s
+   Generated /tmp/pancake-worktrees.t3paqgWM/p1-decoder-integration/pancake/target/doc/pancake/index.html and 1 other file
