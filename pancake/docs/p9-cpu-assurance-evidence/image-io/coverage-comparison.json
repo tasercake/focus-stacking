@@ -1,0 +1,218 @@
+{
+  "retained_baseline_revision": "3dc9bcf3c30605badea2f7b2ee2840075507b6c3",
+  "candidate_revision": "a5965a2cad5ff2b46ca54f6df263235abd62e141",
+  "baseline_report_sha256": "2da8aaae57eba3031db3747c16489d9eeb76f027f4a4cf7927e890e67edec1ef",
+  "candidate_report_sha256": "679fabb8383dea8b35c7b9f8c0c2935bddc79cb25328467858cbe64dced91ff4",
+  "workspace_totals": {
+    "before": {
+      "lines": {
+        "covered": 3913,
+        "count": 5640
+      },
+      "functions": {
+        "covered": 385,
+        "count": 656
+      },
+      "regions": {
+        "covered": 3988,
+        "count": 6383
+      },
+      "branches": {
+        "covered": 0,
+        "count": 0
+      }
+    },
+    "after": {
+      "lines": {
+        "covered": 3951,
+        "count": 5792
+      },
+      "functions": {
+        "covered": 392,
+        "count": 674
+      },
+      "regions": {
+        "covered": 4022,
+        "count": 6568
+      },
+      "branches": {
+        "covered": 0,
+        "count": 0
+      }
+    }
+  },
+  "modules": [
+    {
+      "source": "pancake/src/image_io/export.rs",
+      "before_sha256": "7dbbe17c4aa909102d868c925a09bdc4d5f39672e6e2ddd3c2130ba3efd0fc72",
+      "after_sha256": "7dbbe17c4aa909102d868c925a09bdc4d5f39672e6e2ddd3c2130ba3efd0fc72",
+      "source_identical": true,
+      "exact_denominator_match": true,
+      "before": {
+        "lines": {
+          "covered": 247,
+          "count": 281
+        },
+        "functions": {
+          "covered": 21,
+          "count": 31
+        },
+        "regions": {
+          "covered": 237,
+          "count": 304
+        },
+        "branches": {
+          "covered": 0,
+          "count": 0
+        }
+      },
+      "after": {
+        "lines": {
+          "covered": 261,
+          "count": 281
+        },
+        "functions": {
+          "covered": 22,
+          "count": 31
+        },
+        "regions": {
+          "covered": 248,
+          "count": 304
+        },
+        "branches": {
+          "covered": 0,
+          "count": 0
+        }
+      }
+    },
+    {
+      "source": "pancake/src/image_io/mod.rs",
+      "before_sha256": "1dd8fa64cc7f79ba297e1afa4fa00f400d4fbdefe1c20e12018340e82d78b11f",
+      "after_sha256": "00814ac66e0e37de7fedc4669f4b2abbd9b23cf6756350b0e9bb17ef83dae287",
+      "source_identical": false,
+      "exact_denominator_match": false,
+      "before": {
+        "lines": {
+          "covered": 135,
+          "count": 156
+        },
+        "functions": {
+          "covered": 21,
+          "count": 35
+        },
+        "regions": {
+          "covered": 145,
+          "count": 175
+        },
+        "branches": {
+          "covered": 0,
+          "count": 0
+        }
+      },
+      "after": {
+        "lines": {
+          "covered": 156,
+          "count": 175
+        },
+        "functions": {
+          "covered": 26,
+          "count": 39
+        },
+        "regions": {
+          "covered": 165,
+          "count": 194
+        },
+        "branches": {
+          "covered": 0,
+          "count": 0
+        }
+      }
+    },
+    {
+      "source": "pancake/src/image_io/npy.rs",
+      "before_sha256": "e8697e8d90d26ff24c7d17c0ab605f3b0cc8ebc08a7f0bd023759830e76f2b05",
+      "after_sha256": "e8697e8d90d26ff24c7d17c0ab605f3b0cc8ebc08a7f0bd023759830e76f2b05",
+      "source_identical": true,
+      "exact_denominator_match": true,
+      "before": {
+        "lines": {
+          "covered": 133,
+          "count": 135
+        },
+        "functions": {
+          "covered": 23,
+          "count": 25
+        },
+        "regions": {
+          "covered": 168,
+          "count": 173
+        },
+        "branches": {
+          "covered": 0,
+          "count": 0
+        }
+      },
+      "after": {
+        "lines": {
+          "covered": 133,
+          "count": 135
+        },
+        "functions": {
+          "covered": 23,
+          "count": 25
+        },
+        "regions": {
+          "covered": 168,
+          "count": 173
+        },
+        "branches": {
+          "covered": 0,
+          "count": 0
+        }
+      }
+    },
+    {
+      "source": "pancake/src/image_io/raw.rs",
+      "before_sha256": "6335a39835eedb6f6f6dd372d4b41471549f3e6fd258994de6acd0e1d43b17a0",
+      "after_sha256": "6335a39835eedb6f6f6dd372d4b41471549f3e6fd258994de6acd0e1d43b17a0",
+      "source_identical": true,
+      "exact_denominator_match": true,
+      "before": {
+        "lines": {
+          "covered": 57,
+          "count": 101
+        },
+        "functions": {
+          "covered": 10,
+          "count": 28
+        },
+        "regions": {
+          "covered": 63,
+          "count": 118
+        },
+        "branches": {
+          "covered": 0,
+          "count": 0
+        }
+      },
+      "after": {
+        "lines": {
+          "covered": 60,
+          "count": 101
+        },
+        "functions": {
+          "covered": 11,
+          "count": 28
+        },
+        "regions": {
+          "covered": 66,
+          "count": 118
+        },
+        "branches": {
+          "covered": 0,
+          "count": 0
+        }
+      }
+    }
+  ]
+}
