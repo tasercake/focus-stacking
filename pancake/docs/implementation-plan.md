@@ -114,10 +114,20 @@ Follow-up tests caught all three earlier survivors on their separately
 verified revisions. The panorama test exercised the thumbnail budget
 boundary. The two GUI tests exercised missing-source Reveal and native
 GTK panel failure in a display-free child. The original shard verdicts
-remain recorded. The forced-empty registration read timeout and full
-mutation gate remain unresolved.
+remain recorded. The full mutation gate remains open.
 [Panorama mutation replay](p9-mutation-audit/2654813-panorama-budget/README.md).
 [Native panel and Reveal replays](p9-mutation-audit/native-panel-and-reveal/README.md).
+
+The warp now advances over the checked output extent and validates the
+assembled frame dimensions. The exact forced-empty read mutation that
+timed out after 60.058 s was caught in 0.254 s at `1ea0c4f`. The new CPU
+oracle verifies all 264,579 samples across a partial final tile. The exact
+`8460dd1` release passed all 64 P5 IDs with 63 native CPU cases and one
+physical RTX 3090 Vulkan case. Its exports were byte-identical to the sealed
+`8694b55` release, with exact transform parity. The native cascade probe
+retained the same two warp allocation sizes. Full integrated coverage, mutation and
+performance acceptance remain open.
+[Warp mutation and exact P5 replay](p9-mutation-audit/warp-empty-read/README.md).
 
 The same-source native CUDA and HIP release profiles linked. The CUDA
 release passed two native CPU and two physical RTX 3090 CUDA cases with
@@ -221,6 +231,12 @@ GPU stack completed. The trace had no Vulkan API tables, leaving queue
 attribution unverified. The frozen loaded result remains the package replay.
 [Vulkan trace attempt and retained witnesses](p10-vulkan-queue-trace-evidence/287828a/README.md).
 
+A directly profiled empty `287828a` GUI captured six Vulkan queue submits,
+two image acquisitions and two presents from the exact packaged PID. The
+launcher exited 1 after the shutdown wait timed out. This verifies API
+transport and leaves loaded queue attribution and clean shutdown open.
+[Direct Vulkan transport smoke](p10-vulkan-direct-smoke-evidence/287828a/README.md).
+
 ### Benchmark baselines and scoped follow-ups
 
 **The packaged `12f2151` Linux release passes all 376 case IDs.** The
@@ -321,6 +337,11 @@ side 64 and 10.24 ms at side 128. Exact native CPU controls matched six
 spectral fixtures. The prototype stays separate, with real E9 execution
 and impact on the frozen warm result unverified.
 [Host first-use compiler evidence](../../qualification/p10-performance/evidence/e9-cold-kernel-diagnostic/README.md).
+
+The read-only E9 startup audit found two CUDA driver loader opens in the
+first discovery path. Historical discovery took 13.075 ms of 116.574 ms
+runtime setup at the medians. Loader reuse remains a proposed experiment.
+[Native CUDA startup audit](../../qualification/p10-performance/evidence/e9-native-startup-audit/README.md).
 
 The packaged `12f2151` GUI recorded all 400 calibrated visible transitions on
 physical RTX 3090, with 200 idle and 200 loaded events. The 41.121 ms idle and
