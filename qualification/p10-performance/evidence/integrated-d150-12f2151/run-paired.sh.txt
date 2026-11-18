@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+sealed=$(realpath "$1")
+scratch=$(realpath "$2")
+cd "$sealed"
+ref=pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference
+test ! -e "$scratch/paired"
+{
+    TZ=Asia/Singapore date --iso-8601=seconds
+    uname -a
+    grep -E '^(MemAvailable|SwapFree):' /proc/meminfo
+    nvidia-smi --query-gpu=name,driver_version,pstate,utilization.gpu,memory.used,temperature.gpu --format=csv,noheader
+    printf '%s\n' 'Processes at the coordinated CPU timing handoff'
+    ps -eo pid,pcpu,pmem,comm --sort=-pcpu | head -n 15 || true
+} > "$scratch/window-start.txt"
+set +e
+/usr/bin/prlimit --as=34359738368 -- /usr/bin/taskset -c 0-15 \
+    "$ref/.venv/bin/python" qualification/p10-performance/p10.py run \
+    --runtime cpu --profile D150.hybrid.cpu --input-root "$scratch/inputs" \
+    --build-receipt "$scratch/build.json" --output "$scratch/paired" \
+    --threads 16 --timeout 900 --keep-review-images \
+    > "$scratch/paired-stdout.txt" 2> "$scratch/paired-stderr.txt"
+result=$?
+set -e
+{
+    TZ=Asia/Singapore date --iso-8601=seconds
+    grep -E '^(MemAvailable|SwapFree):' /proc/meminfo
+    nvidia-smi --query-gpu=name,driver_version,pstate,utilization.gpu,memory.used,temperature.gpu --format=csv,noheader
+    printf 'paired_runner_exit=%s\n' "$result"
+} > "$scratch/window-end.txt"
+exit "$result"

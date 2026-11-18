@@ -1,0 +1,58 @@
+"""Verify the exact parent-runner launch metadata and independently decode all sources."""
+
+import hashlib
+import json
+import sys
+from argparse import Namespace
+from pathlib import Path
+
+import numpy as np
+from p10 import ROOT, TARGETS_PATH, _prepared_targets
+from PIL import Image
+from protocol import Campaign, corpus, verify_frames
+
+scratch = Path(sys.argv[1]).resolve(strict=True)
+campaign = Campaign.load(TARGETS_PATH)
+profile = next(
+    item for item in campaign.profiles("cpu") if item.key == "D150.hybrid.cpu"
+)
+targets, identities = _prepared_targets(
+    Namespace(build_receipt=scratch / "build.json", profile=profile.key),
+    campaign,
+)
+records, source = corpus(ROOT, campaign, profile.workload)
+frames = verify_frames(scratch / "inputs", records, 150)
+if frames != sorted(frames, key=str):
+    raise ValueError("official CLI ordered paths disagree with the D150 manifest")
+decoded = hashlib.sha256()
+for frame, item in zip(frames, records, strict=True):
+    with Image.open(frame) as image:
+        if image.format != "JPEG" or image.mode != item["native_mode"]:
+            raise ValueError(f"unexpected original encoding {frame}")
+        pixels = np.asarray(image)
+    if list(pixels.shape) != item["shape"] or pixels.dtype != np.uint8:
+        raise ValueError(f"unexpected original decode {frame}")
+    decoded.update(hashlib.sha256(pixels).digest())
+verify_frames(scratch / "inputs", records, 150)
+receipt = {
+    "ordered_original_count": len(frames),
+    "authentic_input_verification": source,
+    "full_independent_rgb8_decodes": len(frames),
+    "ordered_sha256_of_decoded_rgb8_pixel_digests": decoded.hexdigest(),
+    "frame_order_verified_before_after": True,
+    "profile": profile.key,
+    "frozen_settings": profile.options,
+    "runner_schedule": campaign.schedule(),
+    "diagnostic_runs_per_target": 1,
+    "candidate_and_reference": identities,
+    "stack_arguments_tail": {
+        target: spec.stack_arguments(frames, scratch / "review.tif", profile.options)[
+            -25:
+        ]
+        for target, spec in targets.items()
+    },
+}
+(scratch / "preflight.json").write_text(json.dumps(receipt, indent=2) + "\n")
+print(
+    f"Verified {len(frames)} independent RGB8 decodes and both exact profile commands."
+)
