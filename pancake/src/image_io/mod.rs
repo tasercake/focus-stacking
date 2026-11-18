@@ -173,7 +173,7 @@ fn decode_raster(input: File) -> Result<RgbImage, String> {
     let is_tiff = format == Some(ImageFormat::Tiff);
     if is_tiff {
         let source = reader.into_inner();
-        if let Some(frame) = tiled::decode(source)? {
+        if let Some(frame) = tiled::decode(source.get_ref())? {
             return Ok(frame);
         }
         source.rewind().map_err(|error| error.to_string())?;

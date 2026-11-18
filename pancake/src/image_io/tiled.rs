@@ -3,27 +3,103 @@
 use std::cell::Cell;
 use std::fs::File;
 use std::io::{self, BufReader, Read, Seek, SeekFrom};
+use std::num::NonZeroUsize;
+use std::sync::Mutex;
+use std::thread;
 
 use tiff::decoder::{ChunkType, Decoder, DecodingResult, DecodingSampleType};
 use tiff::tags::Tag;
 
 use super::{RgbImage, SampleEncoding, checked_pixel_count, profile_from_tiff};
 
+#[cfg(test)]
+mod tests;
+
 /// Keep a reusable decoded tile to six MiB, with larger tiles using native raster import.
 const MAX_TILE_PIXELS: usize = 1_048_576;
 
-/// Bounds TIFF decompression reads to the current declared compressed tile.
+/// Avoid thread and codec setup for short decodes.
+const PARALLEL_MIN_PIXELS: usize = 1_048_576;
+
+/// At most 24 MiB of tile scratch, with the caller participating as one lane.
+const MAX_TIFF_WORKERS: usize = 4;
+
+/// Only one import may start extra tile threads across the process.
+static PARALLEL_TIFF: Mutex<()> = Mutex::new(());
+
+/// Start and exclusive end of one validated compressed tile.
+type TileSpan = (u64, u64);
+
+/// One pinned TIFF decoder with its own logical, bounded and buffered file cursor.
+type TileDecoder<'source, 'file> = Decoder<BufReader<TileInput<'source, 'file>>>;
+
+/// One opened input shared across independently buffered decode lanes.
 #[derive(Debug)]
-struct TileInput<'a> {
-    /// Original source handle, retained across metadata, tile and ICC reads.
-    input: &'a mut BufReader<File>,
-    /// Logical stream position, including bytes delivered from the read buffer.
-    position: u64,
-    /// Tile start and exclusive end, or no cap during directory reads.
-    span: &'a Cell<Option<(u64, u64)>>,
+struct FileSource<'file> {
+    /// Serialize only the seek and compressed-byte read on the shared OS handle.
+    input: Mutex<&'file File>,
+    /// Initial source size used to validate offsets and resolve logical end seeks.
+    length: u64,
 }
 
-impl Read for TileInput<'_> {
+impl<'file> FileSource<'file> {
+    /// Record the size of the existing input handle.
+    /// # Errors
+    /// Fails if the original handle cannot report file metadata.
+    fn new(input: &'file File) -> io::Result<Self> {
+        Ok(Self {
+            input: Mutex::new(input),
+            length: input.metadata()?.len(),
+        })
+    }
+
+    /// Create an independent logical cursor with an initially caller-selected span.
+    const fn cursor<'source>(
+        &'source self,
+        span: &'source Cell<Option<TileSpan>>,
+    ) -> TileInput<'source, 'file> {
+        TileInput {
+            source: self,
+            position: 0,
+            span,
+        }
+    }
+
+    /// Parse a TIFF directory using an independent buffer over the opened input.
+    /// # Errors
+    /// Returns directory parse and source I/O failures.
+    fn decoder<'source>(
+        &'source self,
+        span: &'source Cell<Option<TileSpan>>,
+    ) -> tiff::TiffResult<TileDecoder<'source, 'file>> {
+        Decoder::new(BufReader::with_capacity(65_536, self.cursor(span)))
+    }
+
+    /// Seek and read together, leaving other cursors' logical positions unaffected.
+    /// # Errors
+    /// Returns a lock or file I/O failure.
+    fn read_at(&self, position: u64, buffer: &mut [u8]) -> io::Result<usize> {
+        let mut input = self
+            .input
+            .lock()
+            .map_err(|_| io::Error::other("TIFF source lock failed"))?;
+        let _ = input.seek(SeekFrom::Start(position))?;
+        input.read(buffer)
+    }
+}
+
+/// Bounds TIFF decompression reads to the current declared compressed tile.
+#[derive(Debug)]
+struct TileInput<'source, 'file> {
+    /// Original source handle, reused for metadata, tiles and ICC.
+    source: &'source FileSource<'file>,
+    /// Logical position for this lane's compressed input buffer.
+    position: u64,
+    /// Apply the current cap before reading any bytes into the lane buffer.
+    span: &'source Cell<Option<TileSpan>>,
+}
+
+impl Read for TileInput<'_, '_> {
     fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
         let bound = if let Some((start, end)) = self.span.get() {
             if self.position < start || self.position > end {
@@ -36,7 +112,11 @@ impl Read for TileInput<'_> {
         } else {
             buffer.len()
         };
-        let count = self.input.read(
+        if bound == 0 {
+            return Ok(0);
+        }
+        let count = self.source.read_at(
+            self.position,
             buffer
                 .get_mut(..bound)
                 .ok_or_else(|| io::Error::other("invalid TIFF read size"))?,
@@ -49,15 +129,26 @@ impl Read for TileInput<'_> {
     }
 }
 
-impl Seek for TileInput<'_> {
+impl Seek for TileInput<'_, '_> {
     fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
-        self.position = self.input.seek(position)?;
+        let position = match position {
+            SeekFrom::Start(offset) => Some(offset),
+            SeekFrom::Current(delta) => self.position.checked_add_signed(delta),
+            SeekFrom::End(delta) => self.source.length.checked_add_signed(delta),
+        }
+        .ok_or_else(|| io::Error::other("TIFF logical position overflowed"))?;
+        if self.span.get().is_some_and(|(start, _)| start != position) {
+            return Err(io::Error::other(
+                "TIFF tile start does not match its validated span",
+            ));
+        }
+        self.position = position;
         Ok(self.position)
     }
 }
 
 /// Unoriented unsigned contiguous sample layout eligible for bounded typed decoding.
-fn supports_streaming(decoder: &mut Decoder<TileInput<'_>>) -> bool {
+fn supports_streaming(decoder: &mut TileDecoder<'_, '_>) -> bool {
     decoder.get_chunk_type() == ChunkType::Tile
         && matches!(decoder.colortype(), Ok(tiff::ColorType::RGB(16)))
         && matches!(decoder.find_tag_unsigned::<u16>(Tag::SamplesPerPixel), Ok(Some(3)))
@@ -70,7 +161,7 @@ fn supports_streaming(decoder: &mut Decoder<TileInput<'_>>) -> bool {
 }
 
 /// Tile and output geometry kept in elements unless passed to the TIFF stride API.
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 struct Layout {
     /// Pixels across the full raster.
     width: usize,
@@ -90,7 +181,7 @@ impl Layout {
     /// # Errors
     ///
     /// Rejects invalid dimensions or an unaddressable raster.
-    fn read(decoder: &mut Decoder<TileInput<'_>>) -> Result<Option<Self>, String> {
+    fn read(decoder: &mut TileDecoder<'_, '_>) -> Result<Option<Self>, String> {
         let (width, height) = decoder.dimensions().map_err(|error| error.to_string())?;
         let width = usize::try_from(width).map_err(|error| error.to_string())?;
         let height = usize::try_from(height).map_err(|error| error.to_string())?;
@@ -116,6 +207,20 @@ impl Layout {
         }))
     }
 
+    /// Count complete and partial tile rows in the raster.
+    const fn tile_rows(&self) -> usize {
+        self.height.div_ceil(self.tile_height)
+    }
+
+    /// Workspace size of a full row of tiles, in RGB elements.
+    /// # Errors
+    /// Rejects a band that does not fit in an addressable slice.
+    fn rgb_band_size(&self) -> Result<usize, String> {
+        rgb_samples(self.width)?
+            .checked_mul(self.tile_height)
+            .ok_or_else(|| "TIFF working band size overflowed".to_owned())
+    }
+
     /// Copy the available columns of a tile into the interleaved float output.
     ///
     /// # Errors
@@ -123,7 +228,7 @@ impl Layout {
     /// Reports invalid tile dimensions, strides or decoded sample type and extent.
     fn read_tile(
         &self,
-        decoder: &mut Decoder<TileInput<'_>>,
+        decoder: &mut TileDecoder<'_, '_>,
         scratch: &mut DecodingResult,
         samples: &mut [f32],
         index: usize,
@@ -133,12 +238,11 @@ impl Layout {
             .checked_rem(self.columns)
             .and_then(|column| column.checked_mul(self.tile_width))
             .ok_or_else(|| "TIFF tile column overflowed".to_owned())?;
-        let row = index
-            .checked_div(self.columns)
-            .and_then(|row| row.checked_mul(self.tile_height))
-            .ok_or_else(|| "TIFF tile row overflowed".to_owned())?;
         let width = self.width.saturating_sub(column).min(self.tile_width);
-        let height = self.height.saturating_sub(row).min(self.tile_height);
+        let height = samples
+            .len()
+            .checked_div(rgb_stride)
+            .ok_or_else(|| "TIFF working row has an invalid stride".to_owned())?;
         let start = rgb_samples(column)?;
         let tile_stride = rgb_samples(width)?;
         let tile_bytes = tile_stride
@@ -156,7 +260,6 @@ impl Layout {
         }
         for (output, native) in samples
             .chunks_exact_mut(rgb_stride)
-            .skip(row)
             .zip(codes.chunks_exact(tile_stride))
         {
             let target = output
@@ -181,45 +284,27 @@ fn rgb_samples(pixels: usize) -> Result<usize, String> {
         .ok_or_else(|| "TIFF RGB sample count overflowed".to_owned())
 }
 
-/// Stream the eligible tiled TIFF directly to normalized working samples.
+/// Validate the entire tile directory before decoding any compressed payload.
 ///
 /// # Errors
 ///
-/// Rejects invalid dimensions, truncated or invalid compressed ranges and decode errors.
-pub(super) fn decode(input: &mut BufReader<File>) -> Result<Option<RgbImage>, String> {
-    let source_len = input
-        .get_ref()
-        .metadata()
-        .map_err(|error| error.to_string())?
-        .len();
-    let span = Cell::new(None);
-    let stream = TileInput {
-        input,
-        position: 0,
-        span: &span,
-    };
-    let Ok(mut decoder) = Decoder::new(stream) else {
-        return Ok(None);
-    };
-    if !supports_streaming(&mut decoder) {
-        return Ok(None);
-    }
-    let Some(layout) = Layout::read(&mut decoder)? else {
-        return Ok(None);
-    };
+/// Rejects missing tile records and empty, overflowing or out-of-file ranges.
+fn tile_spans(
+    decoder: &mut TileDecoder<'_, '_>,
+    layout: &Layout,
+    source_len: u64,
+) -> Result<Vec<TileSpan>, String> {
     let offsets = decoder
         .get_tag_u64_vec(Tag::TileOffsets)
         .map_err(|error| error.to_string())?;
     let counts = decoder
         .get_tag_u64_vec(Tag::TileByteCounts)
         .map_err(|error| error.to_string())?;
-    let tiles = layout
-        .columns
-        .saturating_mul(layout.height.div_ceil(layout.tile_height));
+    let tiles = layout.columns.saturating_mul(layout.tile_rows());
     if offsets.len() != tiles || counts.len() != tiles {
         return Err("TIFF tile directory size does not match the image".to_owned());
     }
-    let spans = offsets
+    offsets
         .into_iter()
         .zip(counts)
         .map(|(offset, count)| {
@@ -229,16 +314,150 @@ pub(super) fn decode(input: &mut BufReader<File>) -> Result<Option<RgbImage>, St
                 .map(|end| (offset, end))
                 .ok_or_else(|| "compressed TIFF tile lies outside the source file".to_owned())
         })
-        .collect::<Result<Vec<_>, String>>()?;
+        .collect()
+}
 
-    let pixels = checked_pixel_count(layout.width, layout.height)?;
-    let mut samples = vec![0.0_f32; rgb_samples(pixels)?];
+/// Decode adjacent complete tile rows into their exclusive working sample range.
+/// # Errors
+/// Returns a malformed tile, I/O error or inconsistent working range.
+fn read_rows(
+    layout: &Layout,
+    decoder: &mut TileDecoder<'_, '_>,
+    span: &Cell<Option<TileSpan>>,
+    spans: &[TileSpan],
+    samples: &mut [f32],
+    first_tile: usize,
+) -> Result<(), String> {
     let mut scratch = DecodingResult::U16(Vec::new());
-    for (index, extent) in spans.into_iter().enumerate() {
-        span.set(Some(extent));
-        layout.read_tile(&mut decoder, &mut scratch, &mut samples, index)?;
+    let rows = spans.chunks(layout.columns);
+    let bands = samples.chunks_mut(layout.rgb_band_size()?);
+    if rows.len() != bands.len() {
+        return Err("TIFF tile rows do not match their working bands".to_owned());
+    }
+    let mut index = first_tile;
+    for (row, band) in rows.zip(bands) {
+        for &extent in row {
+            span.set(Some(extent));
+            layout.read_tile(decoder, &mut scratch, band, index)?;
+            index = index.saturating_add(1);
+        }
     }
     span.set(None);
+    Ok(())
+}
+
+/// Limit lanes by useful row count, host affinity and aggregate scratch budget.
+fn lane_count(pixels: usize, tile_rows: usize, host_cpus: usize) -> usize {
+    if pixels < PARALLEL_MIN_PIXELS {
+        1
+    } else {
+        tile_rows.min(host_cpus).clamp(1, MAX_TIFF_WORKERS)
+    }
+}
+
+/// Read and validate a worker's view of the source before filling its band.
+/// # Errors
+/// Returns directory changes, malformed compressed data and source I/O failures.
+fn read_worker_band(
+    source: &FileSource<'_>,
+    layout: &Layout,
+    first_tile: usize,
+    spans: &[TileSpan],
+    samples: &mut [f32],
+) -> Result<(), String> {
+    let span = Cell::new(None);
+    let mut decoder = source.decoder(&span).map_err(|error| error.to_string())?;
+    if !supports_streaming(&mut decoder) || Layout::read(&mut decoder)?.as_ref() != Some(layout) {
+        return Err("TIFF layout changed during tile decode".to_owned());
+    }
+    let parsed = tile_spans(&mut decoder, layout, source.length)?;
+    if parsed.get(first_tile..first_tile.saturating_add(spans.len())) != Some(spans) {
+        return Err("TIFF compressed spans changed during tile decode".to_owned());
+    }
+    read_rows(layout, &mut decoder, &span, spans, samples, first_tile)
+}
+
+/// Use disjoint working slices and a process-wide lease to decode adjacent bands.
+///
+/// A busy lease or unavailable thread falls back to serial after all spawned work joins.
+///
+/// # Errors
+/// Returns actual decode and worker failures in tile order.
+fn read_parallel(
+    source: &FileSource<'_>,
+    layout: &Layout,
+    spans: &[TileSpan],
+    samples: &mut [f32],
+    lanes: usize,
+) -> Result<bool, String> {
+    let Ok(_lease) = PARALLEL_TIFF.try_lock() else {
+        return Ok(false);
+    };
+    let rows_per_lane = layout.tile_rows().div_ceil(lanes);
+    let groups = spans.chunks(layout.columns.saturating_mul(rows_per_lane));
+    let bands = samples.chunks_mut(layout.rgb_band_size()?.saturating_mul(rows_per_lane));
+    if groups.len() != bands.len() {
+        return Err("TIFF worker groups do not match their working bands".to_owned());
+    }
+    let mut work = groups.zip(bands);
+    let Some((first_spans, first_samples)) = work.next() else {
+        return Err("TIFF has no worker bands".to_owned());
+    };
+    thread::scope(|scope| {
+        let mut workers = Vec::with_capacity(lanes.saturating_sub(1));
+        let mut start = first_spans.len();
+        for (spans, samples) in work {
+            let first_tile = start;
+            start = start.saturating_add(spans.len());
+            let worker = thread::Builder::new()
+                .name("pancake-tiff".to_owned())
+                .spawn_scoped(scope, move || {
+                    read_worker_band(source, layout, first_tile, spans, samples)
+                });
+            workers.push(worker);
+        }
+        let mut result = read_worker_band(source, layout, 0, first_spans, first_samples);
+        let mut complete = true;
+        for worker in workers {
+            if let Ok(worker) = worker {
+                let joined = worker
+                    .join()
+                    .unwrap_or_else(|_| Err("TIFF worker terminated unexpectedly".to_owned()));
+                result = result.and(joined);
+            } else {
+                complete = false;
+            }
+        }
+        result.map(|()| complete)
+    })
+}
+
+/// Stream the eligible tiled TIFF directly to normalized working samples.
+///
+/// # Errors
+///
+/// Rejects invalid dimensions, truncated or invalid compressed ranges and decode errors.
+pub(super) fn decode(input: &File) -> Result<Option<RgbImage>, String> {
+    // The caller's original buffer remains quiescent and the fallback rewinds it explicitly.
+    let source = FileSource::new(input).map_err(|error| error.to_string())?;
+    let span = Cell::new(None);
+    let Ok(mut decoder) = source.decoder(&span) else {
+        return Ok(None);
+    };
+    if !supports_streaming(&mut decoder) {
+        return Ok(None);
+    }
+    let Some(layout) = Layout::read(&mut decoder)? else {
+        return Ok(None);
+    };
+    let spans = tile_spans(&mut decoder, &layout, source.length)?;
+    let pixels = checked_pixel_count(layout.width, layout.height)?;
+    let mut samples = vec![0.0_f32; rgb_samples(pixels)?];
+    let host_cpus = thread::available_parallelism().map_or(1, NonZeroUsize::get);
+    let lanes = lane_count(pixels, layout.tile_rows(), host_cpus);
+    if lanes == 1 || !read_parallel(&source, &layout, &spans, &mut samples, lanes)? {
+        read_rows(&layout, &mut decoder, &span, &spans, &mut samples, 0)?;
+    }
     let mut frame = RgbImage::new(layout.width, layout.height, samples)?;
     frame.sample_encoding = SampleEncoding::U16;
     frame.icc_profile = profile_from_tiff(decoder);
