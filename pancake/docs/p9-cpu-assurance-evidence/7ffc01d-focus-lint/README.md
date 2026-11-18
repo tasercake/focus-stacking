@@ -9,9 +9,12 @@ Clean revision `7ffc01d720339f3472c74dbcaa99115b91a728ad` passed the same
 gate on Linux x86-64 with pinned Rust 1.100.0. It passed 54 Python checks,
 the Miri source-inventory validation, formatting, locked workspace Clippy
 with all targets, all features and warnings denied, private rustdoc,
-ShellCheck and actionlint. This gate compiles the affected test. The earlier
-focused runtime execution is retained separately. [Passing gate log](check-fast-after.log.gz),
-[earlier runtime evidence](../e63cadd-focused/README.md).
+ShellCheck and actionlint. [Passing gate log](check-fast-after.log.gz).
+
+The same clean `7ffc01d` passed all three `cpu_fusion_contract` tests,
+including the repaired numerical regression. Zero tests failed, were
+ignored or were filtered out. The test executable ran in 0.20 s after
+the 3m25s build. [Focused test log](focused-test.log.gz).
 
 Only the integration test changed. Explicit `f64` array types replace
 literal suffix inference, the existing tolerance is explicit `f64`, and
@@ -32,6 +35,12 @@ taskset -c 14,15 nice -n 5 env PATH="/tmp/pancake-tools/bin:$PATH" \
   CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 \
   RUSTC_WRAPPER=/tmp/pancake-tools/bin/pancake-rust-cache \
   bash scripts/check.sh fast
+
+taskset -c 14,15 nice -n 5 env PATH="/tmp/pancake-tools/bin:$PATH" \
+  CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 \
+  RUSTC_WRAPPER=/tmp/pancake-tools/bin/pancake-rust-cache \
+  cargo +1.100.0 test --locked --package pancake --test cpu_fusion_contract \
+  -- --test-threads=1
 ```
 
 [Artifact checksums](SHA256SUMS).
