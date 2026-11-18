@@ -19,6 +19,12 @@ const OVERSIZED_PNG: [u8; 33] = [
     0, 0, 0xe3, 0xe6, 0xa7, 0xb4,
 ];
 
+/// Little-endian RGB16 tiles with horizontal predictor, DEFLATE and a known ICC profile.
+const TILED_RGB16: &[u8] = include_bytes!("data/tiled-rgb16-zip.tif");
+
+/// The same encoded sample codes with big-endian storage and EXIF orientation 6.
+const TILED_RGB16_ROTATED: &[u8] = include_bytes!("data/tiled-rgb16-zip-rotated.tif");
+
 /// Check actual test behavior without panicking in a fallible test.
 ///
 /// # Errors
@@ -30,6 +36,107 @@ fn require(condition: bool, diagnostic: &str) -> TestResult {
     } else {
         Err(io::Error::other(diagnostic.to_owned()).into())
     }
+}
+
+/// Check every normalized 16-bit sample, partial edge tile and unchanged ICC payload.
+///
+/// # Errors
+///
+/// Returns a file, image decoding or raster and metadata mismatch error.
+#[test]
+fn tiled_tiff_keeps_rgb16_edge_pixels_and_orientation() -> TestResult {
+    let directory = tempfile::tempdir()?;
+    let mut big_endian = TILED_RGB16_ROTATED.to_vec();
+    // The Orientation entry contains an inline big-endian SHORT at byte 78.
+    big_endian
+        .get_mut(78..80)
+        .ok_or_else(|| io::Error::other("fixture orientation is missing"))?
+        .copy_from_slice(&1_u16.to_be_bytes());
+    for (bytes, rotated, width, height) in [
+        (TILED_RGB16, false, 257_usize, 259_usize),
+        (big_endian.as_slice(), false, 257, 259),
+        (TILED_RGB16_ROTATED, true, 259, 257),
+    ] {
+        let path = directory.path().join("profiled-tiles.tif");
+        fs::write(&path, bytes)?;
+        let frame = decode(&path)?;
+        require(
+            (frame.width(), frame.height()) == (width, height),
+            "TIFF bounds and orientation changed",
+        )?;
+        require(
+            frame.icc_profile() == Some(include_bytes!("data/srgb.png.icc").as_slice()),
+            "the source ICC profile changed",
+        )?;
+        require(
+            frame.sample_encoding() == SampleEncoding::U16,
+            "tiled RGB16 source precision changed",
+        )?;
+        let (pixels, remainder) = frame.samples().as_chunks::<3>();
+        require(remainder.is_empty(), "decoded an incomplete RGB triple")?;
+        for (output_index, pixel) in pixels.iter().enumerate() {
+            let x = output_index
+                .checked_rem(width)
+                .ok_or_else(|| io::Error::other("missing TIFF fixture width"))?;
+            let y = output_index
+                .checked_div(width)
+                .ok_or_else(|| io::Error::other("missing TIFF fixture width"))?;
+            let source_row = if rotated {
+                258_usize.checked_sub(x)
+            } else {
+                Some(y)
+            };
+            let source_column = if rotated { y } else { x };
+            let code = source_row
+                .and_then(|row| row.checked_mul(257))
+                .and_then(|row_start| row_start.checked_add(source_column))
+                .and_then(|source_index| source_index.checked_mul(3))
+                .ok_or_else(|| io::Error::other("invalid TIFF fixture pixel location"))?;
+            for (sample, delta) in pixel.iter().zip([0, 1, 2]) {
+                let code = code
+                    .checked_add(delta)
+                    .and_then(|value| u16::try_from(value % 65_536).ok())
+                    .ok_or_else(|| io::Error::other("invalid TIFF fixture code"))?;
+                if sample.to_bits() != (f32::from(code) / 65_535.0).to_bits() {
+                    return Err(io::Error::other(format!(
+                        "pixel {output_index} channel {delta} changed source code {code}"
+                    ))
+                    .into());
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Segments claiming one byte or reaching past EOF must fail whole-frame decode.
+///
+/// # Errors
+///
+/// Returns a fixture mutation error or an error if a malformed tile was accepted.
+#[test]
+fn tiled_tiff_rejects_invalid_compressed_spans() -> TestResult {
+    let directory = tempfile::tempdir()?;
+    // Classic little-endian IFD with first TileOffset at 264 and TileByteCount at 364.
+    for (field, bytes, name) in [
+        (364..368, 0_u32.to_le_bytes(), "zero-count.tif"),
+        (364..368, 1_u32.to_le_bytes(), "short-count.tif"),
+        (264..268, u32::MAX.to_le_bytes(), "past-eof.tif"),
+        (364..368, 65_536_u32.to_le_bytes(), "range-overflow.tif"),
+    ] {
+        let path = directory.path().join(name);
+        let mut mutated = TILED_RGB16.to_vec();
+        mutated
+            .get_mut(field)
+            .ok_or_else(|| io::Error::other("tile directory field is missing"))?
+            .copy_from_slice(&bytes);
+        fs::write(&path, mutated)?;
+        let error = decode(&path).err().ok_or_else(|| {
+            io::Error::other(format!("malformed {name} supplied a complete frame"))
+        })?;
+        require(error.contains(name) && error.contains("tile"), &error)?;
+    }
+    Ok(())
 }
 
 /// Corrupt paths are individually diagnosed without returning a decoded frame.
