@@ -1,0 +1,19 @@
+   Compiling pancake v0.1.0 (/tmp/pancake-worktrees.t3paqgWM/resume-image-tests/pancake)
+    Finished `test` profile [unoptimized] target(s) in 2.24s
+     Running tests/cpu_image_io.rs (target/debug/build/pancake/dc8813fb4a62bffb/out/cpu_image_io-dc8813fb4a62bffb)
+
+running 1 test
+test oversized_optional_tiff_profile_preserves_valid_samples ... FAILED
+
+failures:
+
+---- oversized_optional_tiff_profile_preserves_valid_samples stdout ----
+Error: Custom { kind: Other, error: "TIFF accepted an over-budget optional ICC field or changed raster precision" }
+
+
+failures:
+    oversized_optional_tiff_profile_preserves_valid_samples
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test cpu_image_io`

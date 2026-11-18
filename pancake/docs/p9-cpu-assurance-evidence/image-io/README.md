@@ -61,3 +61,31 @@ The tested application source is `a5965a2`, identical to the harness commit
 events report 43 CPU jobs and 16 physical NVIDIA RTX 3090 jobs via wgpu Vulkan
 on driver 580.178.04. The release assurance receipt is separate.
 [Command and binary receipt](p2-replay-receipt.json) · [Harness provenance](p2-provenance.json) · [Case report](p2-report.json.gz) · [Completion events](p2-completion-events.json.gz)
+
+## Nightly branch check
+
+The unchanged `bash scripts/check.sh branches-cpu` ran at `cfc2037` on the
+pinned `nightly-2026-11-15`. Application code and tests match the stable
+candidate. All 110 tests passed. The required gate returned exit 1 for
+uncovered CPU lines and the nightly report counted 477/614 covered branches.
+Export improved from 31/38 to 35/38 branches, NumPy from 20/22 to 22/22, and
+RAW from 6/8 to 7/8 with identical source files and denominators. The changed
+image input module went from 22/24 to 26/26.
+[Branch comparison](branches-comparison.json) · [Nightly log](branches-cpu.log.gz) · [Nightly LLVM report](branches-cpu.json.gz)
+
+## TIFF metadata allocation boundary
+
+The first ICC fix used TIFF's typed byte-buffer reader. Source inspection
+showed that this entry point charges reads against the TIFF decoding buffer,
+which defaults to 256 MiB. A real TIFF with a 1 MiB plus one byte ICC field
+confirmed that the first fix retained metadata beyond the native IFD budget.
+
+The application now uses one direct reader for TIFF ICC and gives its
+buffered-tag reads the pinned decoder's 1 MiB default IFD budget. With an actual
+RGB16 fixture, an ICC payload at the budget is retained byte-for-byte. A TIFF
+with a one-byte larger field still returns the original valid raster without
+retaining that optional metadata. The raster and orientation path is unchanged.
+The focused image tests passed 36/36 and the generated Clippy and cross-host
+source policy validations passed. The earlier report snapshots identify the
+preceding source.
+[Limit regression before the fix](tiff-icc-limit-red.log) · [Focused tests after the fix](tiff-icc-limit-tests.log)
