@@ -1,0 +1,3 @@
+M	pancake/scripts/check.sh
+M	pancake/scripts/gui_coverage.py
+M	pancake/scripts/test_gui_coverage.py

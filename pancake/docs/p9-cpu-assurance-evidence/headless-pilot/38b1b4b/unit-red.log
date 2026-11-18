@@ -1,0 +1,18 @@
+E
+======================================================================
+ERROR: test_gui_coverage (unittest.loader._FailedTest.test_gui_coverage)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_gui_coverage
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pancake-worktrees.t3paqgWM/p9-headless-llvm-pilot/pancake/scripts/test_gui_coverage.py", line 10, in <module>
+    from scripts.gui_coverage import (
+ImportError: cannot import name 'check_headless_arguments' from 'scripts.gui_coverage' (/tmp/pancake-worktrees.t3paqgWM/p9-headless-llvm-pilot/pancake/scripts/gui_coverage.py)
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

@@ -1,0 +1,75 @@
+{
+  "revision": "38b1b4bbb15fd9e6812da99351131be8342a36bb",
+  "test_suites": 19,
+  "standard_tests": {
+    "passed": 125,
+    "failed": 0,
+    "ignored": 0
+  },
+  "case_status": 0,
+  "case_counts": {
+    "passed": 18,
+    "failed": 0,
+    "unsupported": 0
+  },
+  "case_elapsed_seconds": 10.142725918092765,
+  "raw_profile_count": 20,
+  "raw_profile_bytes": 950880,
+  "completed_cpu_jobs": 16,
+  "child_returncodes": {
+    "0": 17,
+    "1": 3
+  },
+  "baseline_status": 1,
+  "combined_status": 1,
+  "baseline": {
+    "lines": {
+      "count": 5922,
+      "covered": 4193
+    },
+    "functions": {
+      "count": 683,
+      "covered": 425
+    },
+    "regions": {
+      "count": 6697,
+      "covered": 4290
+    },
+    "branches": {
+      "count": 0,
+      "covered": 0
+    }
+  },
+  "combined": {
+    "lines": {
+      "count": 5922,
+      "covered": 4194
+    },
+    "functions": {
+      "count": 683,
+      "covered": 425
+    },
+    "regions": {
+      "count": 6697,
+      "covered": 4293
+    },
+    "branches": {
+      "count": 0,
+      "covered": 0
+    }
+  },
+  "per_file_deltas": {
+    "src/job/mod.rs": {
+      "lines": 0,
+      "functions": 0,
+      "regions": 2,
+      "branches": 0
+    },
+    "src/registration/estimate.rs": {
+      "lines": 1,
+      "functions": 0,
+      "regions": 1,
+      "branches": 0
+    }
+  }
+}
