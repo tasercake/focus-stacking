@@ -1,5 +1,32 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `fb9c399`
+
+The locked default workspace release built both executables at
+`fb9c399a96658331cb76b843a1e565b503e94fdd`. The fast and dependency checks and
+four packaging tests passed. The exact local archive is
+`artifacts/pancake-packages/linux-fb9c399/pancake_0.1.0_amd64.deb` (69,508,808 bytes), with SHA-256
+`b8f707ca5812ce2137b49feee2888b50de53825e160aa9ccb0e30f55b02a62de`. The tested revision descends from the sanitized
+lineage. A complete Git object-membership check confirmed the excluded
+opaque object is unreachable from the tested revision.
+[Build, hardware and source receipts](fb9c399/summary.json).
+[Ancestry verification](fb9c399/clean-ancestry.json).
+[Rootless package verification](fb9c399/package-verification.json).
+
+Rootless extraction verified both executable hashes, linked native libraries,
+the desktop entry, CLI help and archived source notices. The extracted
+binaries passed all 376 frozen case IDs with matching source, contract,
+descriptor and lock receipts. The strict ledger accepted 341 host cases,
+34 isolated GUI cases and the separate physical RTX 3090 GUI case on wgpu
+Vulkan. The raw reports remain under `artifacts/p9-fb9c399/{h,g,p}`.
+Pancake production files and the frozen case contract match `c1e2cac`.
+The locked rebuild independently reproduced both executable hashes. The
+benchmark adapter changes the suite source digest, and this archive and all
+three executed lanes carry the new source identity.
+[Source and roster preflight](fb9c399/source-contract-preflight.json).
+Earlier package and performance evidence retains its recorded revision.
+[Strict aggregate ledger](fb9c399/linux-ledger.json.gz).
+
 ## Integrated Linux package candidate `c1e2cac`
 
 The locked default workspace release built both executables at
