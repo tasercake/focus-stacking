@@ -32,6 +32,8 @@ clean-shutdown evidence. CPU LLVM is statically bundled by
 Vulkan ICDs, NVIDIA's driver and NVRTC, and optional ROCm/HIP dependencies remain
 platform provisioning inputs. Validate available profiles with actual runtime
 completions on the required hardware.
+The package also archives matching source notices from the locked Linux graph
+and preserves an informational inventory. [Package notice evidence](p9-package-notices.md).
 
 The ledger calls the original conformance CLI with direct descriptor commands
 and literal case IDs. The 341 host IDs, 34 isolated interface IDs, and
