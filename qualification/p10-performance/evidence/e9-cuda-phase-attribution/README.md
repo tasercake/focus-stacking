@@ -41,6 +41,11 @@ frozen arguments, driver, event receipts and thermal readings accompany
 each run. A separate CPU diagnostic remained stopped throughout the paired
 launches and accumulated no CPU time.
 
+The original runner polled process exit with Python's timed wait and a 50 ms
+polling cap. Its two full-process medians lack precision for a latency
+comparison. The internal stage timestamps and the separate CUDA API trace
+were captured independently of that wait.
+
 One separate Nsight Systems 2024.2 CUDA API and GPU trace reused the warm
 driver cache and checked the same output and transforms. The first `fft_lines`
 module load began 92.587 ms after the first `window_luma` launch call, and the
