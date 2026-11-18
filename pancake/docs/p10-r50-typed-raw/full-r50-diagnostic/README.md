@@ -58,6 +58,8 @@ and the [archived f32 reducer](verify_three.py.txt) with the
 [frozen Python environment](cpu-python-sync.log). In task-owned
 scratch, copy the scripts without the trailing `.txt` suffix and
 copy the process observer as `diagnose.py`. Replay requires the pinned
-inputs, both exact ELF hashes and a host quiet window. The two output
-TIFFs and the staged original files are held for the parent task's
-portable witness decision. [Current media custody](retention.json)
+inputs, both exact ELF hashes and a host quiet window. All original
+files and all four CPU/Vulkan output TIFFs were rehashed and removed
+after preserving the independent verification receipts. Both verified
+ELFs remain locally available. [Initial witness hold](retention.json)
+[Final media cleanup](cleanup.json)

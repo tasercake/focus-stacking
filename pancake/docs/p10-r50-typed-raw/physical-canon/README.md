@@ -43,3 +43,7 @@ environment as the [full CPU diagnostic](../full-r50-diagnostic/README.md).
 For an authorized replay remove the `.txt` suffixes from the Python
 files, use the complete manifest-relative source staging, create a
 fresh owned output directory path and hold an exclusive RTX lease.
+
+All output TIFFs and all staged Canon originals were rehashed and
+removed after preserving these receipts. The exact ELFs remain local.
+[Final media cleanup](../full-r50-diagnostic/cleanup.json)
