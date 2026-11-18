@@ -24,6 +24,31 @@ Retain all 109 IDs in later regressions. Canon CR3 crop/render compatibility
 and full milestone assurance remain open.
 [Conformance receipts](p2-conformance-evidence/README.md).
 
+
+**Linux host conformance passes for 341 of 341 case IDs at `cb5e3a4`.**
+Five disjoint selections match the locked release binary, reviewed contract and
+adapter descriptor. Each completed via the public CLI. Device cases include
+physical RTX 3090 Vulkan execution and CPU parity. The
+[exact host accounting](p6-host-evidence/cb5e3a4-accounting.json) records every
+verdict, the 35 interface IDs outstanding at this revision, and the hash of each
+raw report and provenance record.
+
+| Roadmap phase | Passed | Host evidence |
+|---|---:|---|
+| P1 parser and rejection | 25/25 | [P1/P2 replay](p2-conformance-evidence/README.md) |
+| P2 input and export | 84/84 | [P1/P2 replay](p2-conformance-evidence/README.md) |
+| P3 primitives and basic fusion | 27/27 | [P3 replay](p3-conformance-evidence/README.md) |
+| P4 multiscale methods, exposure and slabs | 69/69 | [P4 replay](p4-conformance-evidence.md) |
+| P5 motion, crop and registration | 64/64 | [P5 replay](p5-registration.md) |
+| P6 completion, parity and recovery | 72/72 | [P6 replay](p6-device-replay-evidence/cb5e3a4/README.md) |
+
+Keep the complete host selection for the integrated GUI/package release.
+Full owned-source coverage, mutation/sanitizer assurance, native Apple
+execution and retained platform builds remain separate exit gates. Native CUDA
+component qualification is recorded independently. End-to-end CUDA qualification,
+a genuine driver fault during stack execution, and the P8/P10 lifecycle campaign
+remain to be demonstrated on the appropriate lanes.
+
 [Consolidated P0 work log, including earlier work](p0-work-log.md) is the evidence
 entry point. Historical reports retain their original outcomes; this plan owns
 current scope and exit requirements.
