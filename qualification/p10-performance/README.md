@@ -115,9 +115,9 @@ invalidates a run, preserve its directory and explain the condition before
 starting another run.
 
 The runner deletes its case-owned cache and intermediate images. Use
-`--keep-review-images` to retain the first warm pair long enough to measure
-representative real focus regions. Record the image hashes, corresponding
-regions in both coordinate systems, and per-region measurements, then remove
+`--keep-review-images` to retain the verified first warm pair from a complete
+profile, including one that misses a numeric target. Record the image hashes,
+corresponding regions in both coordinate systems, and per-region measurements, then remove
 the retained pair. Cropped shapes can differ and need an independently
 registered region comparison before a quality decision. Keep the full,
 matching conformance ledger alongside the timing result. Completed-job timing,
