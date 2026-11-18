@@ -156,3 +156,9 @@ The [adjacent-pair prototype](prototype-ff2c037/README.md) includes the
 test-first results, full 150-frame CLI geometry trace, and comparison on the
 same four fixed specimen regions. The prototype removed the false jump but
 its full D150 output retained the soft detail observed in the sealed job.
+
+The [local-motion follow-up](subpixel-diagnostic/README.md) includes the
+independent native track, same-map interpolation controls and a second full
+CPU prototype. It recovered 54 consecutive motions and removed the false
+jump. The four fixed focus regions became softer, so the quality gap remains
+open and the production experiment stays separate.
