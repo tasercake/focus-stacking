@@ -2,6 +2,8 @@
 
 The [collector follow-up](collector-cadence-followup.md) retains the native
 RSS, delegated cgroup roster, and physical NVIDIA per-call tests.
+The [private procfs and lineage check](rss-pid-namespace.md) records exact RSS
+membership across cgroup movement and the launch-equivalence blocker.
 
 The earlier matched E9 process traces exceeded the unchanged 20 ms maximum
 sample gap. On CPU, 17 of 17 Pancake jobs and 3 of 17 ChimpStackr jobs exceeded
