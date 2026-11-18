@@ -6,6 +6,7 @@ import gzip
 import json
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -312,7 +313,15 @@ def _environment(target, cache, artifact_dir, threads, gpu_uuid, runtime, diagno
     return env
 
 
-def _assert_completion(events_path, device, runtime, gpu_name):
+def _pci_id(address):
+    if not isinstance(address, str) or not re.fullmatch(
+        r"[0-9a-fA-F]{4,8}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}\.[0-7]", address
+    ):
+        raise ValueError(f"missing or invalid physical PCI address: {address}")
+    return tuple(int(part, 16) for part in re.split(r"[:.]", address))
+
+
+def _assert_completion(events_path, device, runtime, gpu_name, gpu_pci=None):
     events = [
         json.loads(line)
         for line in events_path.read_text().splitlines()
@@ -338,7 +347,66 @@ def _assert_completion(events_path, device, runtime, gpu_name):
         raise ValueError(
             f"completed physical GPU did not match {gpu_name}: {result.get('device')}"
         )
+    if gpu_pci is not None and _pci_id(result.get("device_pci_address")) != _pci_id(
+        gpu_pci
+    ):
+        raise ValueError(
+            f"completed physical PCI address did not match {gpu_pci}: {result.get('device_pci_address')}"
+        )
     return result
+
+
+def _assert_primary_gpu(record, case):
+    if not record["observed_peak_gpu_bytes"]:
+        raise ValueError(
+            f"no attributed process residency on the selected physical GPU: {case}"
+        )
+    for filename in ("stdout.txt", "stderr.txt"):
+        output = (case / filename).read_text(errors="replace").casefold()
+        fallback = ("falling back to the cpu", "no usable gpu", "not enough gpu memory")
+        if any(message in output for message in fallback):
+            raise ValueError(
+                f"forced GPU execution reported CPU fallback: {case / filename}"
+            )
+
+
+def _opencl_preflight(args, target, identity, hardware, directory):
+    cache = directory / "cache" / "reference" / "hardware-probe"
+    env = _environment(target, cache, directory, args.threads, None, None, False)
+    argv = [
+        identity["python"],
+        "-c",
+        'import runpy, sys; runpy.run_path(sys.argv.pop(1), run_name="__main__")',
+        str(Path(__file__).with_name("physical.py")),
+        str(args.reference_gpu_index),
+    ]
+    result = subprocess.run(
+        argv,
+        cwd=target.root,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    _write(
+        directory / "opencl-preflight.json",
+        {
+            "argv": argv,
+            "cwd": str(target.root),
+            "environment": env,
+            "exit": result.returncode,
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+        },
+    )
+    result.check_returncode()
+    selected = json.loads(result.stdout)
+    if selected["uuid"] != hardware["uuid"]:
+        raise ValueError(
+            f"reference OpenCL index resolves a different physical GPU: {selected['uuid']} != {hardware['uuid']}"
+        )
+    return selected
 
 
 def _run_sample(
@@ -402,6 +470,8 @@ def _run_sample(
             raise ValueError(
                 f"job resource observations failed in {case}: {record['resource_errors']}"
             )
+        if gpu:
+            _assert_primary_gpu(record, case)
         record["output"] = verify_output(path, bounds)
         if kind == "diagnostic":
             record["completion"] = _assert_completion(
@@ -409,6 +479,9 @@ def _run_sample(
                 profile.device,
                 args.runtime if name == "candidate" else None,
                 record["gpu_before"]["name"] if gpu else None,
+                record["gpu_before"]["pci.bus_id"]
+                if gpu and name == "candidate"
+                else None,
             )
         record["valid"] = True
     except (OSError, RuntimeError, ValueError, subprocess.CalledProcessError) as error:
@@ -427,6 +500,10 @@ def run_profile(args):
     ):
         raise ValueError(
             "an explicit physical GPU UUID is required only for a GPU profile"
+        )
+    if args.runtime == "cuda" and args.candidate_gpu_index != 0:
+        raise ValueError(
+            "the explicitly selected CUDA UUID is device index 0 inside the benchmark process"
         )
     if sys.platform != "linux":
         raise ValueError("Linux process counters required for this campaign")
@@ -484,6 +561,13 @@ def run_profile(args):
             bounds = first.get("shape", first.get("decoded_shape"))
             gpu = None
             if args.gpu_uuid:
+                hardware["reference_opencl"] = _opencl_preflight(
+                    args,
+                    specs["reference"],
+                    identities["reference"],
+                    hardware["gpu"],
+                    directory,
+                )
                 gpu = NvidiaMemory(args.gpu_uuid)
                 context.callback(gpu.close)
             result.update(

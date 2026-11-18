@@ -37,10 +37,12 @@ Use the actual release features in `prepare-candidate --features …` when
 features differ from the Cargo defaults. For GPU, use `--runtime wgpu-vulkan`
 or `--runtime cuda`, select the corresponding `.gpu` profile, and provide
 `--gpu-uuid GPU-…`. On a host with multiple OpenCL devices, provide the pinned
-reference index and the matching candidate index. The observed device name
-and NVIDIA UUID memory attribution must agree. The candidate backend receipt
-uses `runtime` and `device` on the completed numerical job, as well as the
-public `actual_backend` field. Reference execution uses OpenCL on that GPU.
+reference index and the matching candidate index. Native CUDA uses index 0 after restricting
+visibility to the selected UUID. The reference preflight obtains the physical
+UUID of its actual OpenCL index and checks it against NVML. The candidate
+completion event supplies `runtime`, `device`, and `device_pci_address` as well
+as the public `actual_backend` field. Each GPU sample must show attributable
+memory on the matched card and completion without a reported CPU fallback.
 
 For T50 pass the directory containing the exact `focus_000.tif` through
 `focus_049.tif` files. Real R50/D150/E9 paths resolve under the staging root
@@ -126,14 +128,17 @@ the events. The reduction applies the frozen numerical gates.
 
 - Before implementation, `python -m unittest discover -s qualification/p10-performance -v`
   failed to import the absent protocol.
-- Eight focused tests and Ruff passed using the frozen reference environment.
+- Nine focused tests and Ruff passed using the frozen reference environment.
   The measurement test invokes a real local child process and verifies that
   the timed boundary reaches its output publication.
 - The pinned ChimpStackr checkout at
   `ab7a92708269c01c6094729f6cdfaf1415677364` installed on Linux with
   `uv sync --frozen`. Its CLI help ran and locked PyOpenCL enumerated the RTX
   3090 on NVIDIA driver 580.178.04. NVML returned positive attributed bytes
-  for running local GPU clients.
+  for running local GPU clients. ChimpStackr OpenCL index 0, Vulkan
+  `vulkaninfo --summary` with the NVIDIA ICD, native CUDA UUID lookup, and
+  NVML identify the same card, UUID `GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac`
+  at PCI `0000:01:00.0`. These are out-of-timer identity probes.
 - A reference-only real E9 preflight used all nine original hash-matching PNGs,
   explicit CPU, kernel 6, levels 8, scale 6, first-reference Euclidean
   alignment, auto-crop and TIFF16. Exit 0 and completed CPU diagnostics

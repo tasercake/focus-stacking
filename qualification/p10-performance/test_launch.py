@@ -28,6 +28,37 @@ class LaunchContracts(unittest.TestCase):
             self.assertEqual(plain["NUMBA_NUM_THREADS"], "8")
             self.assertNotEqual(plain["NUMBA_CACHE_DIR"], diagnostic["NUMBA_CACHE_DIR"])
 
+    def test_matching_model_cannot_substitute_for_the_correct_physical_card(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            events = Path(temporary) / "events.jsonl"
+            completion = {
+                "event": "stack_complete",
+                "completed": True,
+                "actual_backend": "gpu",
+                "runtime": "wgpu-vulkan",
+                "device": "NVIDIA GeForce RTX 3090",
+                "device_pci_address": "0000:01:00.0",
+            }
+            events.write_text(json.dumps(completion) + "\n")
+            self.assertEqual(
+                _assert_completion(
+                    events,
+                    "gpu",
+                    "wgpu-vulkan",
+                    "NVIDIA GeForce RTX 3090",
+                    "00000000:01:00.0",
+                ),
+                completion,
+            )
+            with self.assertRaisesRegex(ValueError, "physical PCI"):
+                _assert_completion(
+                    events,
+                    "gpu",
+                    "wgpu-vulkan",
+                    "NVIDIA GeForce RTX 3090",
+                    "00000000:02:00.0",
+                )
+
     def test_backend_proof_rejects_fallback_wrong_runtime_and_wrong_device(self):
         with tempfile.TemporaryDirectory() as temporary:
             events = Path(temporary) / "events.jsonl"
