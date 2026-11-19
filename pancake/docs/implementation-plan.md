@@ -96,13 +96,15 @@ workspace checks, Windows MSVC build and link, ARM64 native Metal
 build, dependency and source guardrails, randomized layouts, canonical
 macOS Miri, and separate Linux ASan and TSan. The exact install and
 case evidence comes from `11cfcf8`. Across that pin and the delivery
-tree, the Rust source, tests, application crates and assets, vendored
-sources, Cargo manifests and lock, toolchain pin, compiler and
-dependency policy, notices, packaging scripts, conformance suite and
-reference gitlink are byte-identical. Hosted orchestration and evidence
-changed. Local script tests, ShellCheck and actionlint cover the
-reconciled routing. Final delivery requires the approved main-only
-push and the hosted results on the delivered commit.
+tree, production Rust source, application assets, vendored sources,
+Cargo manifests and lock, toolchain pin, compiler and dependency policy,
+notices, packaging scripts, conformance suite and reference gitlink are
+byte-identical. Hosted orchestration and evidence changed. A Linux replay
+reproduced the hosted macOS failure with a temporary-directory path
+alias. One CPU stack fixture now compares its expected source paths in
+canonical form. Local script tests, ShellCheck and actionlint cover the
+reconciled routing. Final delivery uses the approved pull request merge
+and requires hosted results on the merged commit.
 [Required headless workflow](../../.github/workflows/pancake.yml).
 [Hosted release assurance](../../.github/workflows/pancake-assurance.yml).
 
