@@ -17,7 +17,7 @@ jobs:
         with:
           submodules: false
       - run: git submodule update --init submodules/ChimpStackr
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
         with:
           version: '0.13.8'
       - if: runner.os == 'Linux'
