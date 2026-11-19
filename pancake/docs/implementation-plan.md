@@ -33,6 +33,7 @@ the retained Apple builds and required hosted checks.
 [Linux HIP build](p9-linux-native-evidence/11cfcf8/hip/README.md).
 [CPU ASan](p9-cpu-assurance-evidence/11cfcf8/address/README.md).
 [CPU TSan](p9-tsan-audit/integrated-11cfcf8/README.md).
+[Linux randomized layouts](p9-cpu-assurance-evidence/11cfcf8/linux-layouts/README.md).
 [Linux dependencies and guardrails](p9-cpu-assurance-evidence/11cfcf8-guardrails/README.md).
 
 **Two matched CPU performance checks.** Use the exact selected release
@@ -210,8 +211,11 @@ recorded 589/778 branch outcomes. Stable emitted no branch map.
 
 The exact Linux CPU AddressSanitizer and ThreadSanitizer gates each
 passed all 164 tests across 20 executables with zero diagnostics.
+The randomized layout gate passed the same 164 tests under seeds 1 and
+42. It retains 40 native executable identities and exact suite rosters.
 [Exact AddressSanitizer replay](p9-cpu-assurance-evidence/11cfcf8/address/README.md).
 [Exact ThreadSanitizer replay](p9-tsan-audit/integrated-11cfcf8/README.md).
+[Exact Linux randomized layouts](p9-cpu-assurance-evidence/11cfcf8/linux-layouts/README.md).
 
 The exact `11cfcf8` Linux release build, dependency and rootless
 notice-bearing package verification passed. The strict ledger accepted
