@@ -1,6 +1,6 @@
 # Pancake implementation plan
 
-Updated: 2026-11-18. Foundation: **Slint + CubeCL + wgpu**.
+Updated: 2026-11-19. Foundation: **Slint + CubeCL + wgpu**.
 **P0 architectural minima are complete.** Required hosted CI
 [44104336768](https://github.com/tasercake/focus-stacking/actions/runs/44104336768)
 passes all eight jobs at tested revision `bc67159`. Local native gates and six
@@ -33,6 +33,7 @@ the retained Apple builds and required hosted checks.
 [Linux HIP build](p9-linux-native-evidence/11cfcf8/hip/README.md).
 [CPU ASan](p9-cpu-assurance-evidence/11cfcf8/address/README.md).
 [CPU TSan](p9-tsan-audit/integrated-11cfcf8/README.md).
+[Linux dependencies and guardrails](p9-cpu-assurance-evidence/11cfcf8-guardrails/README.md).
 
 **Two matched CPU performance checks.** Use the exact selected release
 CLI, pinned ChimpStackr reference, original ordered inputs and settings,
@@ -66,12 +67,17 @@ physical lifecycle proof against the 250 ms limit.
 
 Strict zero-gap CPU coverage and zero-survivor mutation remain opt-in
 diagnostics under the release assurance decision delegated by the owner.
-Keep the strict commands available as manual GitHub Actions diagnostics.
+The manually dispatched workflow runs the same strict commands and
+retains available artifacts and the actual verdict. `Pancake required`
+keeps the platform, Windows build, Linux assurance, macOS Miri and
+layout, and Linux sanitizer jobs.
 The exact strict coverage failures and the failed native mutation shard
 remain recorded, including their denominators, survivor and timeout
 counts. The functional conformance roster and remaining required checks
 retain their existing requirements. Final delivery still requires the
 approved main-only push and completion of the required hosted checks.
+[Required workflow](../../.github/workflows/pancake.yml).
+[Manual strict assurance workflow](../../.github/workflows/pancake-strict-assurance.yml).
 [Stable coverage](p9-cpu-assurance-evidence/11cfcf8-stable-coverage/README.md).
 [Nightly branches](p9-cpu-assurance-evidence/11cfcf8-nightly-branches/README.md).
 [Native mutation shard](p9-mutation-audit/0a9ae85-native-9of16/README.md).
