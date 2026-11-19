@@ -55,7 +55,7 @@ jobs:
         run: cargo test --locked --workspace --all-targets --all-features --target x86_64-pc-windows-msvc --no-run
 
   assurance:
-    name: Coverage, dependencies, mutation, and guardrails
+    name: Dependencies, randomized layouts, and guardrails
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -71,15 +71,12 @@ jobs:
         run: |
           source scripts/tool-versions.sh
           rustup toolchain install "$PANCAKE_NIGHTLY" --profile minimal --component llvm-tools-preview
-      - run: bash scripts/check.sh coverage-cpu
       - run: bash scripts/check.sh deps
-      - run: bash scripts/check.sh mutants-cpu
       - run: bash scripts/check.sh layouts-cpu
-      - run: bash scripts/check.sh branches-cpu
       - run: bash scripts/check.sh guardrails
 
   nightly:
-    name: macOS Miri, randomized layouts, and branch coverage
+    name: macOS Miri and randomized layouts
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -89,12 +86,8 @@ jobs:
       - name: Install pinned nightly
         run: |
           source scripts/tool-versions.sh
-          rustup toolchain install "$PANCAKE_NIGHTLY" --profile minimal --component miri --component rust-src --component llvm-tools-preview
-      - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2
-        with:
-          tool: cargo-llvm-cov@0.9.1
+          rustup toolchain install "$PANCAKE_NIGHTLY" --profile minimal --component miri --component rust-src
       - run: bash scripts/check.sh nightly-cpu
-      - run: bash scripts/check.sh branches-cpu
 
   sanitizer:
     name: Sanitizer (${{ matrix.kind }})

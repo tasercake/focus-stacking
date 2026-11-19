@@ -1,0 +1,66 @@
+name: Pancake strict assurance
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Strict assurance profile to run
+        required: true
+        type: choice
+        default: linux-coverage
+        options:
+          - linux-coverage
+          - linux-branches
+          - macos-branches
+          - linux-mutation
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+    working-directory: pancake
+
+jobs:
+  strict-assurance:
+    name: Strict assurance (${{ inputs.profile }})
+    runs-on: ${{ inputs.profile == 'macos-branches' && 'macos-15' || 'ubuntu-24.04' }}
+    timeout-minutes: ${{ inputs.profile == 'linux-mutation' && 360 || 60 }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Provision Linux native build dependencies
+        if: runner.os == 'Linux'
+        run: bash scripts/ci-linux-native-deps.sh
+      - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2
+        with:
+          tool: ${{ inputs.profile == 'linux-mutation' && 'cargo-mutants@27.1.0' || 'cargo-llvm-cov@0.9.1' }}
+      - name: Install pinned nightly for branch coverage
+        if: endsWith(inputs.profile, '-branches')
+        run: |
+          source scripts/tool-versions.sh
+          rustup toolchain install "$PANCAKE_NIGHTLY" --profile minimal --component llvm-tools-preview
+      - name: Run the selected strict gate
+        env:
+          PANCAKE_ASSURANCE_PROFILE: ${{ inputs.profile }}
+        run: |
+          case "$PANCAKE_ASSURANCE_PROFILE" in
+            linux-coverage) gate=coverage-cpu ;;
+            linux-branches|macos-branches) gate=branches-cpu ;;
+            linux-mutation) gate=mutants-cpu ;;
+            *) printf 'Unsupported strict assurance profile %s\n' "$PANCAKE_ASSURANCE_PROFILE" >&2; exit 2 ;;
+          esac
+          exec bash scripts/check.sh "$gate"
+      - name: Retain available strict diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pancake-strict-${{ inputs.profile }}
+          if-no-files-found: ignore
+          path: |
+            pancake/target/assurance/coverage-cpu.json
+            pancake/target/coverage/branches-cpu.json
+            pancake/target/llvm-cov-target/pancake.profdata
+            pancake/mutants.out/
