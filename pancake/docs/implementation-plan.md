@@ -9,6 +9,73 @@ physical runtime paths also pass. Full feature, camera, lifecycle, packaging,
 AMD/Intel GPU and Windows runtime tests remain best effort, with retained builds.
 [Closure and source-equivalence receipt](p0-close-evidence/closure.json).
 
+## Revised release objective
+
+As of 2026-11-19, deliver the current app with a matching, verified
+package and all 376 conformance cases.
+The original P1–P10 plan, 26-profile benchmark campaign, frozen manifests,
+reference and benchmark protocol remain available for follow-up.
+[Original performance targets](performance-targets.json).
+
+**Required functional and platform evidence.** The exact notice-bearing
+`11cfcf8` Debian package passed 341 host cases, 34 isolated native GUI
+cases and one physical RTX 3090 Vulkan GUI case with zero fallback.
+Two additional E9 runs completed on the exact native CUDA build with
+zero fallback. Linux ASan and TSan each passed all 164 CPU tests. The
+retained Linux native CUDA and HIP builds passed. Keep the required
+platform and backend builds, functional tests, dependency and source
+guardrails, sanitizers, randomized layouts and canonical Miri in the
+delivery checks. Physical Apple Metal is unverified. The release scope
+uses the owner's stated compatibility assumption and still requires
+the retained Apple builds and required hosted checks.
+[Exact Linux package and 376-case ledger](p9-linux-package-evidence/11cfcf8/summary.json).
+[Physical CUDA witnesses](../../qualification/p10-performance/evidence/native-cuda-11cfcf8-real-e9/README.md).
+[Linux HIP build](p9-linux-native-evidence/11cfcf8/hip/README.md).
+[CPU ASan](p9-cpu-assurance-evidence/11cfcf8/address/README.md).
+[CPU TSan](p9-tsan-audit/integrated-11cfcf8/README.md).
+
+**Two matched CPU performance checks.** Use the exact selected release
+CLI, pinned ChimpStackr reference, original ordered inputs and settings,
+and matched host conditions. Ratios are Pancake divided by reference.
+Require independent RGB16 export and representative quality review,
+including geometry, registration maps and sampled detail and color.
+Retain the commands, matching identities, actual CPU completions,
+resource traces and output hashes.
+
+| Release measure | Limit |
+|---|---:|
+| Median warm elapsed | At most 1/1.80 of reference |
+| Median cold elapsed | At most 1.00 of reference |
+| Peak process-tree RSS | At most 0.55 of reference |
+| Actual RSS observation gap | At most 20 ms across each measured job, including launch and exit |
+
+| CPU profile | Required observations and current status |
+|---|---|
+| E9 Exposure Fusion | Use the same nine real exposure originals. The exact `11cfcf8` run completed ten warm and five cold jobs per application, with ratios 0.413300 and 0.056313. One 8 ms trace had a 28.073 ms interior gap. The interrupted 3 ms retry supplies no qualifying result. Complete three fresh matched pairs for RSS on this same scope. Require every trace to meet the gap limit, then compare each application's maximum process-tree peak across all three jobs. |
+| T50 Weighted Average | Generate or authenticate the same 50 RGB16 TIFF inputs. Run three fresh matched warm pairs and one cold pair on the exact current release package, with one warmup per application when supported. Retain the actual schedule and scope as the bounded release check. The original 34-job plus two-witness schedule remains separate. |
+
+[Exact packaged E9 timing and interrupted retry](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-11cfcf8/README.md).
+
+The full 26-profile campaign, attributable GPU peak memory and loaded
+viewer P95 are follow-up objectives. Retain the actual R50 and D150
+measurements and unresolved speed, geometry and detail findings. Keep
+all functional viewer and lifecycle conformance cases and the archived
+physical lifecycle proof against the 250 ms limit.
+[Retained R50 and D150 performance and quality evidence](../../qualification/p10-performance/evidence/release-completeness.md).
+[Physical lifecycle proof](../../qualification/p10-performance/evidence/native-lifecycle-e81079d/README.md).
+
+Strict zero-gap CPU coverage and zero-survivor mutation remain opt-in
+diagnostics under the release assurance decision delegated by the owner.
+Keep the strict commands available as manual GitHub Actions diagnostics.
+The exact strict coverage failures and the failed native mutation shard
+remain recorded, including their denominators, survivor and timeout
+counts. The functional conformance roster and remaining required checks
+retain their existing requirements. Final delivery still requires the
+approved main-only push and completion of the required hosted checks.
+[Stable coverage](p9-cpu-assurance-evidence/11cfcf8-stable-coverage/README.md).
+[Nightly branches](p9-cpu-assurance-evidence/11cfcf8-nightly-branches/README.md).
+[Native mutation shard](p9-mutation-audit/0a9ae85-native-9of16/README.md).
+
 ## Earlier host checkpoints
 
 **P1 conformance passes for all 25 mapped host cases. P1 assurance is open.**
@@ -49,11 +116,11 @@ The integrated local branch uses the audited clean base `8410863`.
 Compared with the original warp integration checkpoint, the base changed
 only three E9 trace evidence files. Product sources, test sources and
 locks match. Retained runtime receipts identify their original tested
-revisions and binaries. The latest sealed Debian package is `0a9ae85`.
-It includes checked Exposure Fusion upload reuse and the private U16
-completion for normalized RAW. The subsequent Weighted Average upload
-reuse needs a matching packaged replay and combined assurance. Final
-platform and performance acceptance remain open.
+revisions and binaries. The latest sealed Debian package is `11cfcf8`.
+It includes the checked Exposure Fusion and Weighted Average upload
+reuse and the private U16 completion for normalized RAW. The matching
+Linux package passed all 376 cases. The revised release checks above
+identify the remaining platform and performance evidence.
 
 The exact combined `c1e2cac` source passed the unchanged Linux CPU ASan and
 TSan gates. Each ran 146 passing tests across 19 groups with no diagnostics.
@@ -89,7 +156,7 @@ The scoped headless GTK child now keeps the compiler's profile path.
 The same filtered test hits the error path once and emits separate
 PID-bound parent and child profiles. Production code is unchanged
 outside this test module. Strict full coverage and branch results remain
-open. The latest sealed package replay identifies `0a9ae85`.
+open. The latest sealed package replay identifies `11cfcf8`.
 [Scoped GTK child profiles](p9-cpu-assurance-evidence/gtk-child-profile/README.md).
 
 At `7748045`, the full fast gate and all 147 selected CPU dev tests
@@ -140,15 +207,19 @@ passed all 164 tests across 20 executables with zero diagnostics.
 [Exact AddressSanitizer replay](p9-cpu-assurance-evidence/11cfcf8/address/README.md).
 [Exact ThreadSanitizer replay](p9-tsan-audit/integrated-11cfcf8/README.md).
 
-The exact `11cfcf8` Linux release build and notice-bearing package
-verification passed. All 341 host cases passed from the extracted
-package. The remaining 34 isolated GUI cases and one physical Vulkan
-case still need matched receipts before a strict 376-case verdict.
+The exact `11cfcf8` Linux release build, dependency and rootless
+notice-bearing package verification passed. The strict ledger accepted
+all 376 cases on the matched Linux lanes. The archive is 69,507,550 bytes
+with SHA-256 `74a764f99ba72be40f02e6b3b9faf3981f19e35f0b46e0231f665b1ccbe8c729`.
+[Exact package receipt](p9-linux-package-evidence/11cfcf8/summary.json).
+[Strict aggregate ledger](p9-linux-package-evidence/11cfcf8/linux-ledger.json.gz).
 
-The separate exact `11cfcf8` Linux CUDA CLI compiled and linked under
-the locked native feature graph. Physical CUDA execution at this source
-requires its own receipt.
+The separate exact `11cfcf8` Linux CUDA and HIP CLIs compiled and linked
+under their locked native feature graphs. The two physical CUDA smoke
+runs also passed. HIP execution remains outside the build scope.
 [Exact Linux native CUDA build](p9-linux-native-evidence/11cfcf8/cuda/README.md).
+[Physical CUDA execution](../../qualification/p10-performance/evidence/native-cuda-11cfcf8-real-e9/README.md).
+[Exact Linux native HIP build](p9-linux-native-evidence/11cfcf8/hip/README.md).
 
 At exact `0a9ae85`, both Linux CPU randomized layout seeds passed all 148
 tests, with 38 fingerprinted executable paths across the two builds.

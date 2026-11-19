@@ -1,5 +1,9 @@
 # Frozen P10 evidence inventory
 
+The dated release objective uses two bounded CPU performance checks. This
+inventory tracks the original frozen campaign and its remaining profiles.
+[Revised release objective](../../../pancake/docs/implementation-plan.md#revised-release-objective).
+
 The [frozen target manifest](../../../pancake/docs/performance-targets.json)
 defines 13 workload/method combinations, each measured with explicit CPU or
 GPU selection. That gives 26 logical profiles. Vulkan and CUDA are separately
@@ -155,14 +159,22 @@ ledger and the newer suite source retain distinct provenance.
 [Native Linux profiles](../../../pancake/docs/p9-linux-native-evidence/c1e2cac/README.md) ·
 [Current implementation and assurance scope](../../../pancake/docs/implementation-plan.md#active-delivery-checkpoint)
 
-The newest exact notice-bearing `0a9ae85` Debian package passed all 376
-frozen cases and supplied the latest E9 CPU binary above. Two exact
+The earlier exact notice-bearing `0a9ae85` Debian package passed all 376
+frozen cases and supplied the qualified E9 CPU binary above. Two exact
 standalone `0a9ae85` CUDA smoke jobs also completed on physical RTX 3090
 with zero fallback. These verify native CUDA execution. The full matched
-GPU schedule and device-memory outcome remain open. The later Weighted
-Average change needs its own matched package and conformance campaign.
+GPU schedule and device-memory outcome remain open.
 [Exact `0a9ae85` package and strict ledger](../../../pancake/docs/p9-linux-package-evidence/0a9ae85/summary.json).
 [Physical RTX CUDA smoke](native-cuda-0a9ae85-real-e9/README.md).
+
+The later notice-bearing `11cfcf8` Debian package passed all 376 frozen
+cases after the Weighted Average upload change. Its two actual native
+CUDA witnesses completed without fallback. Its full 8 ms E9 CPU review
+retains the passing time medians and the RSS cadence miss. The interrupted
+3 ms attempt remains separate from release measurements.
+[Exact `11cfcf8` package and ledger](../../../pancake/docs/p9-linux-package-evidence/11cfcf8/summary.json).
+[Physical CUDA witnesses](native-cuda-11cfcf8-real-e9/README.md).
+[E9 CPU attempts](integrated-e9-corrected-cpu-11cfcf8/README.md).
 
 ## Holds and unavailable evidence
 
