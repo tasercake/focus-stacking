@@ -71,6 +71,13 @@ profile-bound instrumentation. The merged map reached 5,340/6,475 lines,
 still exited 1. Stable instrumentation supplied no branch map.
 [Native three-case coverage overlay](p9-cpu-assurance-evidence/c1e2cac/native-three-case/README.md).
 
+The supplemental `870f7f9` overlay combined 151 CPU dev tests with all
+33 selected native CPU GUI cases. The same executable set and filter
+covered 5,925/6,516 lines, 618/760 functions and 6,134/7,328 regions and
+preserved every prior positive region. Stable emitted no branch map.
+The unchanged strict comparator exited 1.
+[33-case native interface coverage](p9-cpu-assurance-evidence/870f7f9-native-interface/README.md).
+
 An ordinary CPU integration test exercised real native About on the exact
 `fb9c399` application. Its PID- and build-ID-matched profile added 205
 covered lines, 22 functions and 210 regions through the existing exporter.
@@ -110,14 +117,21 @@ comparator still exited 1. This receipt covers the registration test on
 its own tested revision.
 [Native registration abstention and nightly coverage](p9-cpu-assurance-evidence/registration-abstention/README.md).
 
-The exact `870f7f9`, `5b98890` and `54e3a8d` revisions passed canonical
-fast and all 151, 160 and 162 CPU dev tests, respectively. Supplemental
-strict Linux Miri passed 26 tests on `5b98890` and 27 on `54e3a8d`. The
-latest receipts precede the Weighted Average production change.
+The exact `870f7f9`, `5b98890`, `54e3a8d` and `11cfcf8` revisions passed
+canonical fast and all 151, 160, 162 and 164 CPU dev tests, respectively.
+Supplemental strict Linux Miri passed 26 tests on `5b98890` and 27 each
+on `54e3a8d` and `11cfcf8`. The latest receipts include the Weighted
+Average production change. The canonical Apple Miri gate remains open.
 [First combined fast and CPU replay](p9-cpu-assurance-evidence/870f7f9/README.md).
 [Second combined fast and CPU replay](p9-cpu-assurance-evidence/5b98890/README.md).
 [Third combined fast and CPU replay](p9-cpu-assurance-evidence/54e3a8d/README.md).
-[Latest supplemental Linux Miri](p9-cpu-assurance-evidence/54e3a8d-linux-miri/README.md).
+[Weighted release fast and CPU replay](p9-cpu-assurance-evidence/11cfcf8/README.md).
+[Latest supplemental Linux Miri](p9-cpu-assurance-evidence/11cfcf8-linux-miri/README.md).
+
+The exact `11cfcf8` Linux release build and notice-bearing package
+verification passed. All 341 host cases passed from the extracted
+package. The remaining 34 isolated GUI cases and one physical Vulkan
+case still need matched receipts before a strict 376-case verdict.
 
 At exact `0a9ae85`, both Linux CPU randomized layout seeds passed all 148
 tests, with 38 fingerprinted executable paths across the two builds.
@@ -294,12 +308,16 @@ partition, baseline and native mutant outcomes. A complete shard has
 yet to run at that revision.
 [Canonical local mutation recipe](p9-mutation-audit/e81079d-canonical-shard-plan/README.md).
 
-The exact `0a9ae85` local mutator listed 2,672 unique candidates. The
-independent list for partition 9/16 matched the 167 expected candidates
-in order. Both listings exited 0. Native execution of that partition
-started on 2026-11-19 at 01:30:24 SGT. Its terminal result and the complete
-mutation verdict remain open.
+The exact `0a9ae85` local mutator listed 2,672 unique candidates and
+executed all 167 in partition 9/16. The baseline passed all 148 tests.
+The partition failed with 108 caught, 45 missed, one timeout and 13
+compiler-unviable operations. Cargo-mutants exited 3 and the strict
+verifier exited 1. The semantic audit accounts for every missed or
+timed-out row and distinguishes focused CPU and physical follow-ups.
+The original verdict stands and final same-source mutation remains open.
 [Exact native mutation preflight](p9-mutation-audit/0a9ae85-canonical-preflight/README.md).
+[Complete native partition](p9-mutation-audit/0a9ae85-native-9of16/README.md).
+[Exact adverse operation map](p9-mutation-audit/0a9ae85-semantic-map/README.md).
 
 Focused CPU replays caught five operators recorded as missed on the
 original `0a9ae85` partition. The tests verify actual CPU completion
@@ -979,6 +997,9 @@ and checked 50 fixed regions. The candidate took 0.391996 of reference
 wall time in this single diagnostic. The reference RSS gap exceeded
 20 ms. Full warm, cold, memory and quality qualification remains open.
 [Authenticated T50 Weighted Average CPU triplet](../../qualification/p10-performance/evidence/t50-weighted-triplet-0a9ae85-a49ce69/README.md).
+
+A separate Weighted energy-plane reuse candidate awaits a matched
+diagnostic. The preceding triplet measures registration RGB reuse.
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
