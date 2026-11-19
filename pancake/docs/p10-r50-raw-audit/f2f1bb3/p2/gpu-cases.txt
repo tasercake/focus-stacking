@@ -1,0 +1,16 @@
+algorithms.coverage.mixed_precision.ref8.stack
+algorithms.coverage.mixed_precision.ref8.aligned
+algorithms.coverage.mixed_precision.ref16.stack
+algorithms.coverage.mixed_precision.ref16.aligned
+algorithms.coverage.gray_array.hybrid.gpu
+algorithms.coverage.gray_array.weighted_average.gpu
+algorithms.coverage.gray_array.depth_map.gpu
+algorithms.sprint.native-input.grayscale.hybrid
+algorithms.sprint.native-input.grayscale.weighted_average
+algorithms.sprint.native-input.grayscale.depth_map
+algorithms.sprint.native-input.grayscale16.hybrid
+algorithms.sprint.native-input.grayscale16.weighted_average
+algorithms.sprint.native-input.grayscale16.depth_map
+algorithms.sprint.native-input.rgba.hybrid
+algorithms.sprint.native-input.rgba.weighted_average
+algorithms.sprint.native-input.rgba.depth_map

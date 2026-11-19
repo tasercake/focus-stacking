@@ -1,0 +1,154 @@
+"""Measure consecutive D150 motion from native local correspondences, outside Pancake."""
+
+import argparse
+import hashlib
+import json
+import statistics
+from pathlib import Path
+
+import cv2
+import numpy as np
+
+
+MANIFEST = Path("pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json")
+SHA256 = "6d417c9c00866755bdbc8e2fafc1421de8414e1ea9e75d2cfd7e96e2161a89ac"
+
+
+def image(path, record):
+    payload = path.read_bytes()
+    assert len(payload) == record["bytes"] and hashlib.sha256(payload).hexdigest() == record["sha256"]
+    gray = cv2.imdecode(np.frombuffer(payload, dtype=np.uint8), cv2.IMREAD_GRAYSCALE)
+    assert gray is not None and gray.shape == tuple(record["shape"][:2])
+    return cv2.GaussianBlur(gray, (5, 5), 1.1)
+
+
+def witness_points(shape):
+    height, width = shape
+    coords = np.linspace(0.16, 0.84, 9)
+    return np.asarray([(int(x * width), int(y * height)) for y in coords for x in coords], dtype=np.float32)
+
+
+def training_points(gray, withheld):
+    height, width = gray.shape
+    grid_x = np.linspace(12, width - 12, 7, dtype=int)
+    grid_y = np.linspace(12, height - 12, 6, dtype=int)
+    points = []
+    for x, right in zip(grid_x, grid_x[1:]):
+        for y, bottom in zip(grid_y, grid_y[1:]):
+            corners = cv2.goodFeaturesToTrack(gray[y:bottom, x:right], 9, 0.025, 21)
+            if corners is None:
+                continue
+            for point in corners.reshape(-1, 2) + [x, y]:
+                if np.min(np.linalg.norm(withheld - point, axis=1)) >= 39:
+                    points.append(point)
+    return np.asarray(points, dtype=np.float32)
+
+
+def reciprocal(before, after, points):
+    # Fit gain-tolerant motions within ordinary 25px windows. Round-trip
+    # checking rejects poorly localized or focus-dependent one-way matches.
+    criteria = (cv2.TERM_CRITERIA_COUNT | cv2.TERM_CRITERIA_EPS, 30, 0.002)
+    options = {"winSize": (25, 25), "maxLevel": 2, "criteria": criteria, "minEigThreshold": 0.00012}
+    forward, a, error = cv2.calcOpticalFlowPyrLK(before, after, points, None, **options)
+    backward, b, _ = cv2.calcOpticalFlowPyrLK(after, before, forward, None, **options)
+    drift = np.linalg.norm(backward - points, axis=1)
+    valid = (a.ravel() != 0) & (b.ravel() != 0) & (drift <= 0.35) & (error.ravel() <= 12)
+    return points[valid].astype(np.float64), forward[valid].astype(np.float64)
+
+
+def robust_step(before, after, shape):
+    count = len(before)
+    if count < 12:
+        return None, 0
+    center = np.asarray(shape[::-1]) / 2
+    coordinates = before - center
+    change = (after - before).ravel()
+    design = np.zeros((2 * count, 3))
+    design[0::2, 0] = 1
+    design[1::2, 1] = 1
+    design[0::2, 2] = coordinates[:, 0]
+    design[1::2, 2] = coordinates[:, 1]
+    mask = np.ones(count, dtype=bool)
+    for _ in range(6):
+        selected = mask.repeat(2)
+        tx, ty, ds = np.linalg.lstsq(design[selected], change[selected], rcond=None)[0]
+        residual = np.linalg.norm((design @ [tx, ty, ds] - change).reshape(-1, 2), axis=1)
+        median = float(np.median(residual))
+        mad = float(np.median(np.abs(residual - median)))
+        next_mask = residual <= max(0.25, median + min(0.9, 3 * mad))
+        if np.count_nonzero(next_mask) < 12 or np.array_equal(mask, next_mask):
+            break
+        mask = next_mask
+    spread = np.ptp(before[mask], axis=0)
+    if abs(ds) > 0.008 or np.any(spread < center * 0.32):
+        return None, int(mask.sum())
+    return np.asarray([[1 + ds, 0, tx - ds * center[0]], [0, 1 + ds, ty - ds * center[1]], [0, 0, 1]]), int(mask.sum())
+
+
+def test_tracking():
+    g = np.random.default_rng(27)
+    pixels = g.integers(20, 220, size=(540, 760), dtype=np.uint8)
+    before = cv2.GaussianBlur(pixels, (5, 5), 1.1)
+    known = np.array([[1.00022, 0, 0.31], [0, 1.00022, -0.49], [0, 0, 1]])
+    after = cv2.warpAffine(before, known[:2], before.shape[::-1], flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    points = witness_points(before.shape)
+    a, b = reciprocal(before, after, training_points(before, points))
+    actual, count = robust_step(a, b, before.shape)
+    assert actual is not None and count >= 12
+    homogeneous = np.column_stack((points, np.ones(len(points))))
+    residual = np.linalg.norm(homogeneous @ (actual - known).T, axis=1)
+    assert float(np.max(residual)) < 0.17
+    print(json.dumps({"known": known[:2].tolist(), "estimated": actual[:2].tolist(), "training_inliers": count,
+                      "max_corner_grid_error_px": float(np.max(residual)), "opencv": cv2.__version__}))
+
+
+def evaluate(root):
+    payload = MANIFEST.read_bytes()
+    assert hashlib.sha256(payload).hexdigest() == SHA256
+    frames = next(item["frames"] for item in json.loads(payload)["workloads"] if item["id"] == "D150-native-dorsal")
+    paths = [(root / record["path"]).resolve(strict=True) for record in frames]
+    assert len(paths) == 150 and len(set(paths)) == 150
+    previous = image(paths[0], frames[0])
+    reserved = witness_points(previous.shape)
+    translation_scale = np.eye(3)
+    maps = {paths[0].name: translation_scale[:2].tolist()}
+    steps = []
+    for index, (record, path) in enumerate(zip(frames[1:], paths[1:]), start=1):
+        current = image(path, record)
+        a, b = reciprocal(previous, current, training_points(previous, reserved))
+        motion, count = robust_step(a, b, previous.shape)
+        x, y = reciprocal(previous, current, reserved)
+        item = {"before": paths[index - 1].name, "after": path.name, "training_candidates": len(a),
+                "training_inliers": count, "witness_candidates": len(x), "motion": None}
+        if motion is not None:
+            item["motion"] = motion[:2].tolist()
+            translation_scale = motion @ translation_scale
+            if len(x) >= 4:
+                projected = np.column_stack((x, np.ones(len(x)))) @ motion[:2].T
+                item["median_witness_error_px"] = float(np.median(np.linalg.norm(projected - y, axis=1)))
+                item["median_identity_error_px"] = float(np.median(np.linalg.norm(x - y, axis=1)))
+        maps[path.name] = translation_scale[:2].tolist()
+        steps.append(item)
+        previous = current
+    tracked = [item for item in steps if item["motion"] is not None]
+    qualified = [item for item in tracked if "median_witness_error_px" in item]
+    result = {"scope": "Independent one-thread local optical diagnostic and composition; no timing credit",
+              "opencv": cv2.__version__, "manifest_sha256": SHA256,
+              "tracked_steps": len(tracked), "witnessed_steps": len(qualified),
+              "median_witness_error_px": statistics.median(item["median_witness_error_px"] for item in qualified),
+              "median_identity_error_px": statistics.median(item["median_identity_error_px"] for item in qualified),
+              "steps": steps, "alignment_transforms": maps}
+    print(json.dumps(result, indent=2, allow_nan=False))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--self-test", action="store_true")
+    parser.add_argument("--source-root", type=Path)
+    args = parser.parse_args()
+    cv2.setNumThreads(1)
+    cv2.ocl.setUseOpenCL(False)
+    if args.self_test:
+        test_tracking()
+    else:
+        evaluate(args.source_root.resolve(strict=True))

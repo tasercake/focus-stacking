@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root=$(git rev-parse --show-toplevel)
+cd "$root"
+scope="$root/artifacts/e9-cuda-integrated-replay"
+native="$scope/native-build"
+original="$native/target/release/pancake-cli"
+stable=/home/krishna/Documents/focus-stacking/artifacts/pancake-linux-native/e81079d/pancake-cli
+staged="$root/pancake/target/release/pancake-cli"
+qual=/home/krishna/Documents/focus-stacking/pancake-conformance/.venv/bin/python
+test "$(git rev-parse HEAD)" = e81079dee4078d7a1149da0f5950aab8c89f8d44
+test -z "$(git status --porcelain)"
+grep -Fxq 'exit=0' "$native/build-status.txt"
+test ! -e "$staged" && test ! -e "$stable"
+sha256sum "$original" > "$native/original-binary.sha256"
+readelf -n "$original" > "$native/elf-notes.txt"
+readelf -d "$original" > "$native/elf-dynamic.txt"
+nm --defined-only --demangle "$original" | awk '/cubecl_cuda/ { cuda++ } /[Nn][Vv][Pp][Tt][Xx]/ { nvptx++ } END { print "CUDA native symbols:", cuda; print "NVPTX symbols:", nvptx; exit !(cuda > 0 && nvptx > 0) }' > "$native/link-witness.txt"
+mkdir -p "${staged%/*}" "${stable%/*}"
+for copy in "$staged" "$stable"; do
+  cp --reflink=auto "$original" "$copy.staging"
+  chmod 0555 "$copy.staging"
+  mv -n "$copy.staging" "$copy"
+  cmp "$original" "$copy"
+done
+sha256sum "$staged" "$stable" > "$native/copied-binaries.sha256"
+sha256sum "$stable" > "${stable%/*}/pancake-cli.sha256"
+export PYTHONPATH="$root/pancake-conformance/src:$root/qualification/p10-performance"
+export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1
+taskset -c 15 "$qual" "$scope/seal_native.py" > "$scope/seal-native-stdout.json"
+cp "$scope/build-receipt.json" "${stable%/*}/build-receipt.json"
+cat "$scope/seal-native-stdout.json"

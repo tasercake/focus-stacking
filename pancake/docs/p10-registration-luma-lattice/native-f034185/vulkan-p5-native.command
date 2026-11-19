@@ -1,0 +1,1 @@
+timeout --signal=TERM --kill-after=5s 300s taskset -c 2\,3 /tmp/pancake-worktrees.t3paqgWM/registration-luma-lattice/pancake/target/release/build/pancake/5a426a47f8d9e472/out/gpu_registration_contract-5a426a47f8d9e472 --exact gpu_registration_geometry --test-threads 1

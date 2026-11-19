@@ -1,0 +1,2 @@
+17caf39bd28a99447226c1d06b2906a33994273dfae880434811f3cf9e141b77  pancake-conformance/src/pancake_conformance/process.py
+de5275a01d4cec26c1fed7d53581b5cc6fcf7d8283e5a6ab0e130e2a474edb7d  pancake-conformance/src/pancake_conformance/model.py

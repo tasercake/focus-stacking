@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+main=/home/krishna/Documents/focus-stacking
+work=/tmp/pancake-worktrees.t3paqgWM/viewer-package-287828a
+shared=/tmp/pancake-worktrees.t3paqgWM/t50-shared-287828a/artifacts/p10-t50-shared-001
+artifact="$main/artifacts/p10-viewer-package-287828a"
+runner="$work/qualification/p10-performance"
+python="$main/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python"
+scratch=$(<"$artifact/owned-scratch.path")
+capture="$scratch/artifacts/capture"
+
+[[ ${1:-} == "exclusive-lease-confirmed" ]]
+test -d "$scratch/artifacts" && test ! -e "$capture" && test ! -e "$artifact/start"
+git -C "$work" diff --exit-code
+test "$(git -C "$work" rev-parse HEAD)" = "287828aac07ffad2252785b73a52a59fc07b3409"
+(cd "$runner" && sha256sum --check "$artifact/harness.sha256")
+sha256sum --check "$artifact/package.sha256"
+cmp "$shared/materialization.json" "$artifact/t50-materialization.json"
+source "$main/artifacts/p10-compare/native-tools/gui-env.sh"
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONPATH="$work/pancake-conformance/src:$runner"
+unset SLINT_BACKEND
+printf 'Capture directory %s\n' "$capture"
+date -Iseconds > "$artifact/start"
+nvidia-smi > "$artifact/gpu-before.txt"
+collector=0
+timeout --signal=INT --kill-after=20s 900s "$python" "$runner/linux_latency.py" \
+  --build-receipt "$artifact/build.json" \
+  --scenario "$artifact/calibration/scenario-package.json" \
+  --workload T50 --input-root "$shared/inputs" --output "$capture" \
+  > "$artifact/collector.log" 2>&1 || collector=$?
+printf '%s\n' "$collector" > "$artifact/collector.exit"
+nvidia-smi > "$artifact/gpu-after.txt"
+date -Iseconds > "$artifact/end"
+if [[ -f "$capture/native-latency.json" ]]; then
+  reduction=0
+  "$python" "$runner/p10.py" latency "$capture/native-latency.json" \
+    > "$artifact/frozen-reduction.json" 2> "$artifact/frozen-reduction.stderr" \
+    || reduction=$?
+  printf '%s\n' "$reduction" > "$artifact/reducer.exit"
+fi
+cmp "$shared/materialization.json" "$artifact/t50-materialization.json"
+exit "$collector"

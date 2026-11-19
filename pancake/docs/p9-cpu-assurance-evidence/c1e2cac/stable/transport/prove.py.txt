@@ -1,0 +1,75 @@
+"""Verify the launcher with unchanged conformance process handling and a synthetic Rust ELF."""
+from hashlib import file_digest
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+from pancake_conformance.process import ProcessRunner
+
+def sha256(path):
+    with path.open("rb") as stream:
+        return file_digest(stream, "sha256").hexdigest()
+
+def binary_id(path):
+    notes = subprocess.check_output(["readelf", "-n", path], text=True)
+    identity, = re.findall(r"Build ID:\s*([0-9a-f]+)", notes)
+    return identity
+
+def save(path, data):
+    path.write_text(json.dumps(data, indent=2) + "\n")
+
+root = Path(sys.argv[1]).resolve(strict=True)
+llvm = Path(sys.argv[2]).resolve(strict=True)
+elf = root / "probe"
+st = elf.stat()
+contract = {
+    "report_root": str(root / "report"), "raw_root": str(root / "raw"),
+    "elf": {"path": str(elf), "build_id": binary_id(elf), "sha256": sha256(elf),
+            "stat": [st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns]},
+}
+(root / "raw").mkdir()
+(root / "report").mkdir()
+save(root / "contract.json", contract)
+calls = []
+expected_profiles = set()
+for index, (mode, code) in enumerate((("--accept", 0), ("--reject", 17)), 1):
+    directory = root / "report/cases/synthetic-transport" / f"call-{index:02d}"
+    arguments = [mode, "two words", "*[literal]", "élément"]
+    before_exec = os.stat(elf)
+    template = [sys.executable, "-I", str(root / "launch.py"), str(root / "contract.json")]
+    env = {"PATH": os.environ["PATH"], "LC_ALL": "C.UTF-8",
+           "CONFORMANCE_EVENTS_PATH": str(directory / "events.jsonl")}
+    result = ProcessRunner().run(template + arguments, cwd=root, env=env, directory=directory)
+    receipt = json.loads((directory / "llvm-profile-launch.json").read_text())
+    profile = Path(receipt["profile"])
+    pid, *received = result.stdout.splitlines()
+    stderr = "synthetic rejection\n" if code else ""
+    if not (
+        result.returncode == code and result.stderr == stderr and not result.timed_out
+        and received == arguments and int(pid) == receipt["pid"]
+        and receipt["argv"] == [str(elf), *arguments] and receipt["elf"] == contract["elf"]
+        and os.stat(elf).st_ino == before_exec.st_ino
+        and profile.is_file() and profile.stat().st_size > 0
+        and profile.name == f"pancake-{pid}-{contract['elf']['build_id']}.profraw"
+    ):
+        raise ValueError("the preserved CLI process did not match its launch receipt")
+    summary = subprocess.check_output([llvm / "llvm-profdata", "show", "--binary-ids", profile], text=True)
+    counts = re.findall(r"^Total count: ([0-9]+)$", summary, re.MULTILINE)
+    identity = contract["elf"]["build_id"]
+    if not counts or int(counts[0]) <= 0 or not summary.rstrip().endswith(f"Binary IDs: \n{identity}"):
+        raise ValueError("the raw profile did not authenticate its producing ELF")
+    expected_profiles.add(profile)
+    calls.append({**receipt, "expected_exit": code, "actual_exit": result.returncode,
+                  "profile_sha256": sha256(profile), "profile_bytes": profile.stat().st_size,
+                  "llvm_profdata_show": summary})
+if set((root / "raw").rglob("*.profraw")) != expected_profiles or sha256(elf) != contract["elf"]["sha256"]:
+    raise ValueError("unattributed profiles or changed ELF")
+index = root / "synthetic.profdata"
+subprocess.run([llvm / "llvm-profdata", "merge", "-sparse", "--failure-mode=any",
+                "-o", index, *sorted(expected_profiles)], check=True)
+save(root / "result.json", {"qualification": "synthetic profile transport only",
+                            "profiles": calls, "indexed_sha256": sha256(index)})
+print("Both same-PID synthetic calls preserved argv, exit status and authenticated LLVM counters.")

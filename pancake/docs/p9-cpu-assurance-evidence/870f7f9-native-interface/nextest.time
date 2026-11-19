@@ -1,0 +1,23 @@
+	Command being timed: "cargo llvm-cov nextest --locked --workspace --all-features --lib --bins --test cpu_advanced_fusion --test cpu_array_layout --test cpu_cli --test cpu_config --test cpu_fusion_contract --test cpu_gray_array_export --test cpu_image_export --test cpu_image_io --test cpu_job --test cpu_kernel_contract --test cpu_npy --test cpu_numerical_contract --test cpu_registration_contract --test cpu_runtime_contract --test cpu_runtime_options --test cpu_stack_plan --include-build-script --no-report --profile ci --run-ignored all --no-tests=pass --test-threads 2"
+	User time (seconds): 304.75
+	System time (seconds): 58.91
+	Percent of CPU this job got: 197%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:03.73
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 2010356
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1365
+	Minor (reclaiming a frame) page faults: 24743646
+	Voluntary context switches: 67671
+	Involuntary context switches: 98838
+	Swaps: 0
+	File system inputs: 96
+	File system outputs: 16161840
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

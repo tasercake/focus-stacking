@@ -1,0 +1,44 @@
+"""Check the actual bounded job argv and explicit CPU environment without spawning."""
+from pathlib import Path
+import runpy
+from tempfile import TemporaryDirectory
+import time
+import unittest
+from unittest.mock import patch
+
+import p10
+import resources
+from pancake_conformance.target import TargetSpec
+
+operator = runpy.run_path(str(Path(__file__).with_name("operator.py.txt")))
+
+
+class CpuLaunchPolicy(unittest.TestCase):
+    def test_both_frozen_descriptors_keep_cpu_in_argv_out_of_runtime_override(self):
+        receiver = operator["require_metadata"]()
+        _, profile, _, frames, _ = receiver["settings"]()
+        reference, setup = receiver["reference_spec"]()
+        candidate = TargetSpec.load(p10.CANDIDATE)
+        targets = (
+            ("reference", reference, reference.command("cli", python=Path(setup["python"]))),
+            ("candidate", candidate, candidate.command("cli")),
+        )
+        for role, spec, command in targets:
+            with self.subTest(role=role), TemporaryDirectory() as root:
+                with patch.object(resources, "measure", side_effect=RuntimeError("guard before spawn")) as check:
+                    with self.assertRaisesRegex(RuntimeError, "guard before spawn"):
+                        operator["run_job"](
+                            ("warmup", 1, role), Path(root), time.monotonic() + 10,
+                            (spec, {"command": command}), profile, frames, receiver, None,
+                        )
+                    check.assert_called_once()
+                    argv, = check.call_args.args
+                    self.assertEqual(argv.count("--cpu"), 1)
+                    self.assertNotIn("--gpu", argv)
+                    self.assertFalse("PANCAKE_RUNTIME" in check.call_args.kwargs["env"], "CPU job carried PANCAKE_RUNTIME")
+                    self.assertEqual(check.call_args.kwargs["rss_sample_interval_ms"], 3)
+                    self.assertEqual(check.call_args.kwargs["rss_sampler_cpu"], 15)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,5 @@
+/home/krishna/Documents/focus-stacking/artifacts/p10-compare/native-tools/system/commands/Xvfb
+/home/krishna/Documents/focus-stacking/artifacts/p10-compare/native-tools/system/commands/openbox
+/home/krishna/Documents/focus-stacking/artifacts/p10-compare/native-tools/system/root/usr/bin/xdotool
+/usr/bin/xprop
+/usr/bin/dbus-daemon

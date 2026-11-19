@@ -1,0 +1,108 @@
+//! Observe the real About dialog and graceful exit on the isolated Linux desktop.
+
+#![cfg(target_os = "linux")]
+
+use std::error::Error;
+use std::fs;
+use std::io::{self, Write as _};
+use std::path::Path;
+use std::process::Command;
+
+use serde_json::Value;
+
+/// The existing frozen case exercises the About dialog without image or CLI fixtures.
+const ABOUT: &str = "interface.about";
+
+/// Read one real conformance report or process receipt.
+///
+/// # Errors
+///
+/// Returns filesystem and JSON errors.
+fn read_json(path: &Path) -> Result<Value, Box<dyn Error>> {
+    Ok(serde_json::from_slice(&fs::read(path)?)?)
+}
+
+/// Run the Cargo-built desktop in the normal native harness and require graceful exit.
+///
+/// # Errors
+///
+/// Returns private-desktop, case observation, launch or shutdown failures.
+#[test]
+fn cargo_gui_about_shows_version_and_exits_cleanly() -> Result<(), Box<dyn Error>> {
+    let repository = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../..")
+        .canonicalize()?;
+    let project = repository.join("pancake-conformance");
+    let target = project.join("src/pancake_conformance/adapters/pancake/pancake.toml");
+    let gui = Path::new(env!("CARGO_BIN_EXE_pancake-gui")).canonicalize()?;
+    let gui_command = serde_json::to_string(&[&gui])?;
+    let scratch = tempfile::Builder::new().prefix("pcg.").tempdir_in("/tmp")?;
+    let result = scratch.path().join("artifacts/n");
+    let run = Command::new("uv")
+        .args(["run", "--offline", "--frozen", "--project"])
+        .arg(project)
+        .args(["pancake-conformance", "run", "--no-coverage", "--target"])
+        .arg(target)
+        .arg("--output")
+        .arg(&result)
+        .args(["--case", ABOUT, "--gui-command", &gui_command])
+        .current_dir(repository)
+        .env("SLINT_BACKEND", "winit-software")
+        .env_remove("PANCAKE_RUNTIME")
+        .env_remove("DISPLAY")
+        .env_remove("WAYLAND_DISPLAY")
+        .env_remove("DBUS_SESSION_BUS_ADDRESS")
+        .env_remove("AT_SPI_BUS_ADDRESS")
+        .output()?;
+    if !run.status.success() {
+        return Err(format!(
+            "native About failed ({}): {}\n{}",
+            run.status,
+            String::from_utf8_lossy(&run.stdout),
+            String::from_utf8_lossy(&run.stderr)
+        )
+        .into());
+    }
+    let report = read_json(&result.join("report.json"))?;
+    let Some([case]) = report
+        .get("cases")
+        .and_then(Value::as_array)
+        .map(Vec::as_slice)
+    else {
+        return Err("expected one About case report".into());
+    };
+    let version = case.pointer("/notes/about/version").and_then(Value::as_str);
+    if report.get("complete").and_then(Value::as_bool) != Some(true)
+        || case.get("id").and_then(Value::as_str) != Some(ABOUT)
+        || case.get("status").and_then(Value::as_str) != Some("passed")
+        || version.is_none_or(|text| text.trim().is_empty())
+    {
+        return Err("missing the completed native About observation".into());
+    }
+    let provenance = read_json(&result.join("provenance.json"))?;
+    let recorded = provenance.get("gui_command");
+    if recorded != Some(&serde_json::json!([&gui])) {
+        return Err("native About did not use the Cargo executable".into());
+    }
+    let shutdown = read_json(
+        &result
+            .join("cases")
+            .join(ABOUT)
+            .join("call-01/shutdown.json"),
+    )?;
+    let pid = shutdown
+        .get("pid")
+        .and_then(Value::as_u64)
+        .filter(|value| *value > 0);
+    if pid.is_none()
+        || shutdown.get("status").and_then(Value::as_str) != Some("clean")
+        || shutdown.get("returncode").and_then(Value::as_i64) != Some(0)
+        || shutdown.get("forced").and_then(Value::as_bool) != Some(false)
+    {
+        return Err(format!("native About did not close gracefully: {shutdown}").into());
+    }
+    let observation =
+        serde_json::json!({"case": ABOUT, "version": version, "gui": gui, "shutdown": shutdown});
+    writeln!(io::stdout().lock(), "Native About witness {observation}")?;
+    Ok(())
+}

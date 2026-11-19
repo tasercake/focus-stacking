@@ -1,0 +1,475 @@
+"""Prepare or execute the authorized exact T50 Weighted CPU diagnostic triplet."""
+
+import argparse
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import runpy
+import subprocess
+import time
+from types import SimpleNamespace
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, pinned_json, pixel_metrics, sha256, verify_frames
+
+HERE = Path(__file__).resolve().parent
+STAGE = HERE.parent / "t50-stage6-e81079d"
+CANDIDATE_DESCRIPTOR = p10.CANDIDATE.relative_to(p10.ROOT)
+REFERENCE_DESCRIPTOR = p10.REFERENCE.relative_to(p10.ROOT)
+PROFILE = "T50.weighted_average.cpu"
+ORDER = ("reference", "stock", "resident")
+TARGETS = "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc"
+MATERIALIZATION = "1d9be3f1cd20a01083b11c10c4d17ab75a4f3b6bb7e2ebef682824e345ba649d"
+BOUNDS = (4000, 6000, 3)
+EXPORT_SHAPE = [3998, 5998, 3]
+IDENTITY = [[1, 0, 0], [0, 1, 0]]
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
+PRODUCERS = {
+    "stock": {
+        "commit": "0a9ae85b88519a795e3b6ba90860c3b3e664bcaa",
+        "tree": "fde57a0b461e3ea031ea969e1e841927bead17f9",
+        "binary_sha256": "67f8bdab62b7a1014df34034fd1f3a8b7c04b65fb89a1333a5daebd324f048bd",
+        "binary_bytes": 122_321_712,
+        "elf_build_id": "609b7b50fa04efd459e3f045077ab34c0d34ec46",
+    },
+    "resident": {
+        "commit": "a49ce692371558ff40f72b0af77f5249d00dcedb",
+        "tree": "965aa0c7dc33731d3aef94231afa3e59fc7bc330",
+        "binary_sha256": "43a05f9cfb6ac3f89c7153e6043cc9e79d33bfccd03054d20da54bd7d147c65e",
+        "binary_bytes": 122_173_312,
+        "elf_build_id": "561328fa71c9ff497ce2040ebf619f24e1ec1f7e",
+    },
+}
+PACKAGE = "c3516a65762b58889858857c8163744e86e82c9427a953730c0450580c5cc4c4"
+PACKAGE_RECEIPT = "c0120fbd255f746f7a0987c36e84c37543dd5cc1a98212281ffb282d835bb21e"
+RESIDENT_RECEIPT = "dff85153d6384f7362e98e40e63d502768fa619811784bc5786c60b008731085"
+RESIDENT_RECORD = (
+    "80a5737:qualification/p10-performance/evidence/t50-weighted-resident/raw-host-records.tar.gz"
+)
+ENV_KEYS = (
+    "NUMBA_NUM_THREADS", "OMP_NUM_THREADS", "RAYON_NUM_THREADS", "OPENBLAS_NUM_THREADS",
+    "HOME", "XDG_CACHE_HOME", "XDG_CONFIG_HOME", "NUMBA_CACHE_DIR", "PANCAKE_COMPUTE_CACHE_DIR",
+)
+
+
+def settings():
+    """Read the frozen profile and construct source paths without opening media."""
+    pinned_json(p10.TARGETS_PATH, TARGETS)
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(p for p in campaign.profiles("cpu") if p.key == PROFILE)
+    stage = json.loads((STAGE / "shared-stage.json").read_text())
+    records, provenance = corpus(p10.ROOT, campaign, "T50")
+    root = Path(stage["input_root"])
+    frames = [root / row["path"] for row in records]
+    if stage["materialization_sha256"] != MATERIALIZATION or frames != [
+        root / f"focus_{index:03}.tif" for index in range(50)
+    ]:
+        raise ValueError("frozen T50 input order or stage pin differs")
+    return campaign, profile, stage, frames, provenance
+
+
+def reference_spec():
+    setup = json.loads((STAGE / "diagnostic-setup.json").read_text())["reference"]
+    root = Path(setup["checkout"]).parents[1]
+    spec = TargetSpec.load(root / REFERENCE_DESCRIPTOR)
+    if str(spec.root) != setup["checkout"]:
+        raise ValueError("reference checkout differs from the stage6 setup")
+    return spec, setup
+
+
+def static_settings():
+    """Build all three argv suffixes without reading corpus files or launching a job."""
+    _, profile, _, frames, _ = settings()
+    reference, _ = reference_spec()
+    pancake = TargetSpec.load(p10.CANDIDATE)
+    specs = {"reference": reference, "stock": pancake, "resident": pancake}
+    return {
+        role: spec.stack_arguments(frames, Path("/unused/complete.tif"), profile.options)
+        for role, spec in specs.items()
+    }, frames, profile
+
+
+def check_lease(receipt):
+    expected = {
+        "exclusive_host_granted": True,
+        "stage6_read_granted": True,
+        "mutation_terminal": True,
+        "profile": PROFILE,
+        "materialization_sha256": MATERIALIZATION,
+        "order": list(ORDER),
+    }
+    if any(type(receipt.get(key)) is not type(value) or receipt[key] != value
+           for key, value in expected.items()):
+        raise ValueError("triplet lease does not authorize this stage and run order")
+
+
+def matches_identity(matrix):
+    return (
+        isinstance(matrix, list) and len(matrix) == 2
+        and all(
+            isinstance(row, list) and len(row) == 3 and all(
+                type(value) in (int, float) and value == expected
+                for value, expected in zip(row, identity, strict=True)
+            )
+            for row, identity in zip(matrix, IDENTITY, strict=True)
+        )
+    )
+
+
+def check_completion(role, events, frames, output):
+    """Supplement the stock runner's typed completion with role-specific geometry."""
+    complete = [event for event in events if event["event"] == "stack_complete"]
+    if len(complete) != 1 or any(
+        event["event"] in ("observer_error", "backend_fallback") for event in events
+    ):
+        raise ValueError(f"{role} has ambiguous completion or backend fallback")
+    event = complete[0]
+    if event["completed"] is not True or event["actual_backend"] != "cpu":
+        raise ValueError(f"{role} backend did not complete explicit CPU work")
+    if output["shape"] != EXPORT_SHAPE or output["dtype"] != "uint16":
+        raise ValueError(f"{role} export is not genuine 5998×3998 RGB16")
+    ordered = [str(path) for path in frames]
+    maps = event["alignment_transforms"]
+    if (
+        len(ordered) != 50 or len(set(ordered)) != 50 or not isinstance(maps, dict)
+        or set(maps) != set(ordered) or any(not matches_identity(m) for m in maps.values())
+    ):
+        raise ValueError(f"{role} missing or altered first-reference maps")
+    sequential = event["sequential_transforms"]
+    if role == "reference":
+        if event["input_order"] != ordered:
+            raise ValueError("reference input order differs")
+        if (
+            event["algorithm"] != "weighted_average" or event["requested_backend"] != "cpu"
+            or event["actual_backend_by_stage"] != dict.fromkeys(
+                ("fusion", "alignment_estimation", "warping"), "cpu"
+            )
+        ):
+            raise ValueError("reference Weighted CPU backend stages differ")
+        effective = event["effective_parameters"]
+        required = {
+            "fusion_kernel_size": 6, "pyramid_num_levels": 8, "alignment_scale_factor": 6,
+            "alignment_reference": "first", "alignment_mode": "similarity",
+            "slab_size": 0, "slab_overlap": 0,
+        }
+        if any(effective.get(key) != value for key, value in required.items()):
+            raise ValueError("reference effective Weighted settings differ")
+        crops = [row["bounds"] for row in events if row["event"] == "crop_complete"]
+        if event["output_shape"] != list(BOUNDS) or crops != [[1, 1, 1, 1]]:
+            raise ValueError("reference crop differs from the verified one-pixel margin")
+        if sequential is not None:
+            raise ValueError("reference Similarity unexpectedly reported sequential maps")
+    else:
+        if (
+            event["runtime"] != "cpu" or event["physical_gpu"] is not False
+            or event["fallback_reason"] is not None
+        ):
+            raise ValueError(f"{role} backend did not use the original CPU path")
+        if list(maps) != ordered:
+            raise ValueError(f"{role} first-reference maps are out of original order")
+        if (
+            not isinstance(sequential, list) or len(sequential) != 50
+            or any(not matches_identity(matrix) for matrix in sequential)
+        ):
+            raise ValueError(f"{role} sequential maps are missing or altered")
+    return event
+
+
+def eligible_rss(sample):
+    gap = sample.get("maximum_rss_sample_gap_ns")
+    peak = sample.get("peak_rss_bytes")
+    if (
+        sample.get("rss_sampler_affinity") == [15]
+        and type(gap) is int and 0 <= gap <= 20_000_000
+        and type(peak) is int and peak > 0 and not sample.get("resource_errors")
+    ):
+        return peak
+    return None
+
+
+def known_producers():
+    """Authenticate immutable Git, package and build-receipt metadata."""
+    stock = pinned_json(
+        p10.ROOT / "pancake/docs/p9-linux-package-evidence/0a9ae85/package-verification.json",
+        PACKAGE_RECEIPT,
+    )
+    if (
+        stock["source_commit"] != PRODUCERS["stock"]["commit"]
+        or stock["archive"]["sha256"] != PACKAGE or stock["cargo_lock_sha256"] != LOCK
+        or stock["binaries"]["pancake-cli"]["sha256"] != PRODUCERS["stock"]["binary_sha256"]
+    ):
+        raise ValueError("stock package verification does not bind the pinned producer")
+    records = subprocess.check_output(["git", "show", RESIDENT_RECORD], cwd=p10.ROOT)
+    if hashlib.sha256(records).hexdigest() != RESIDENT_RECEIPT:
+        raise ValueError("resident producer build archive differs")
+    for producer in PRODUCERS.values():
+        source = producer["commit"]
+        if p10._git(p10.ROOT, "rev-parse", f"{source}^{{tree}}") != producer["tree"]:
+            raise ValueError("producer Git tree differs")
+        for path, digest in ((CANDIDATE_DESCRIPTOR, DESCRIPTOR), (Path("pancake/Cargo.lock"), LOCK)):
+            blob = subprocess.check_output(["git", "show", f"{source}:{path}"], cwd=p10.ROOT)
+            if hashlib.sha256(blob).hexdigest() != digest:
+                raise ValueError(f"producer lock or descriptor differs: {path}")
+    return stock
+
+
+def bind_reference(campaign):
+    reference, setup = reference_spec()
+    lock = reference.descriptor.parent / "uv.lock"
+    p10._require_clean(reference.root)
+    reference_pin = {
+        "commit": setup["commit"], "descriptor_sha256": setup["descriptor_sha256"],
+        "lock_sha256": setup["runtime_lock_sha256"],
+    }
+    protocol_pin = campaign.raw["reference"]
+    interpreter = Path(setup["python"])
+    inventory = subprocess.check_output(["uv", "pip", "freeze", "--python", str(interpreter)])
+    if (
+        p10._snapshot(reference, lock) != reference_pin
+        or reference_pin != {
+            "commit": protocol_pin["source_commit"],
+            "descriptor_sha256": protocol_pin["descriptor_sha256"],
+            "lock_sha256": protocol_pin["runtime_lock_sha256"],
+        }
+        or sha256(interpreter) != setup["python_sha256"]
+        or hashlib.sha256(inventory).hexdigest() != setup["package_inventory_sha256"]
+        or len(inventory.splitlines()) != setup["package_count"]
+    ):
+        raise ValueError("pinned ChimpStackr source or runtime differs")
+    return reference, {**setup, **p10._reference_launch(reference, interpreter, PROFILE)}
+
+
+def producer_spec(role, checkout):
+    checkout = checkout.resolve(strict=True)
+    producer = PRODUCERS[role]
+    spec = TargetSpec.load(checkout / CANDIDATE_DESCRIPTOR)
+    p10._require_clean(checkout, "pancake", str(CANDIDATE_DESCRIPTOR))
+    if (
+        p10._git(checkout, "rev-parse", "HEAD^{tree}") != producer["tree"]
+        or p10._snapshot(spec, spec.root / "Cargo.lock") != {
+            "commit": producer["commit"], "lock_sha256": LOCK, "descriptor_sha256": DESCRIPTOR,
+        }
+    ):
+        raise ValueError(f"exact {role} producer checkout differs")
+    return spec
+
+
+def bind_targets(args, campaign):
+    stock = known_producers()
+    if args.package.stat().st_size != stock["archive"]["bytes"] or sha256(args.package) != PACKAGE:
+        raise ValueError("notice-bearing package archive differs")
+    targets = {"reference": bind_reference(campaign)}
+    for role, producer in PRODUCERS.items():
+        spec = producer_spec(role, getattr(args, f"{role}_source"))
+        exe = getattr(args, f"{role}_cli").resolve(strict=True)
+        if (
+            not exe.is_file() or not os.access(exe, os.X_OK)
+            or exe.stat().st_size != producer["binary_bytes"] or sha256(exe) != producer["binary_sha256"]
+            or f"Build ID: {producer['elf_build_id']}" not in p10._output(["readelf", "-n", str(exe)])
+        ):
+            raise ValueError(f"exact {role} producer checkout, CLI or release identity differs")
+        targets[role] = (spec, {
+            **producer, "executable": str(exe), "lock_sha256": LOCK,
+            "descriptor_sha256": DESCRIPTOR,
+            "build_anchor_sha256": PACKAGE_RECEIPT if role == "stock" else RESIDENT_RECEIPT,
+        })
+    return targets
+
+
+def authenticate_stage(stage, provenance, frames):
+    operator = runpy.run_path(str(
+        HERE.parent / "t50-profile-priority-e810/weighted-cpu-pair.py.txt"
+    ))
+    options = SimpleNamespace(
+        materialization=Path(stage["materialization"]), materialization_sha256=MATERIALIZATION,
+        input_root=Path(stage["input_root"]),
+    )
+    receipt = operator["materialization"](options, provenance["sha256"])
+    frozen = pinned_json(Path(provenance["path"]), provenance["sha256"])
+    if receipt["files"] != frozen["files"]:
+        raise ValueError("stage6 does not preserve all ordered encoded and decoded records")
+    paths = verify_frames(options.input_root, [
+        {**item, "path": item["name"], "sha256": item["file_sha256"]}
+        for item in receipt["files"]
+    ], 52)
+    if paths[:50] != frames:
+        raise ValueError("verified stage6 focus file order differs")
+    return receipt
+
+
+def sanitized(sample):
+    sample = dict(sample)
+    environment = sample.pop("environment", {})
+    sample["recorded_environment"] = {key: environment[key] for key in ENV_KEYS if key in environment}
+    return sample
+
+
+def run_arm(profile, role, target, args, frames, directory):
+    spec, identity = target
+    runner_role = "reference" if role == "reference" else "candidate"
+    arm = directory / role
+    case = arm / "diagnostic-01" / runner_role
+    try:
+        return p10._run_sample(
+            profile, ("diagnostic", 1, runner_role), runner_role, spec,
+            identity, args, frames, BOUNDS, arm, None,
+        )
+    finally:
+        for name in ("launch.json", "sample.json"):
+            path = case / name
+            if path.is_file():
+                p10._write(path, sanitized(json.loads(path.read_text())))
+
+
+def compare_images(campaign, stage, jobs, exports):
+    oracle = runpy.run_path(str(HERE.parent / "registration-recheck/scale-recheck.py.txt"))
+    pairs = (("resident", "stock"), ("stock", "reference"), ("resident", "reference"))
+    stock, resident = (jobs[role]["output"] for role in ("stock", "resident"))
+    truth = {
+        role: oracle["generated_oracle"](path, Path(stage["input_root"]), campaign)
+        for role, path in exports.items()
+    }
+    if any([row["depth"] for row in review["regions"]] != list(range(50)) for review in truth.values()):
+        raise ValueError("sharp-truth review missed an original depth strip")
+    return {
+        "exact_pancake_output_parity": all(
+            stock[key] == resident[key] for key in ("sha256", "pixel_sha256")
+        ),
+        "oracle_sha256": sha256(Path(oracle["__file__"])),
+        "pixels": {
+            f"{left}/{right}": pixel_metrics(exports[right], exports[left], BOUNDS)
+            for left, right in pairs
+        },
+        "truth": truth,
+        "observed_elapsed_ratios": {
+            f"{left}/{right}": jobs[left]["elapsed_ns"] / jobs[right]["elapsed_ns"]
+            for left, right in pairs
+        },
+        "cadence_eligible_tree_rss_ratios": {
+            f"{left}/{right}": eligible_rss(jobs[left]) / eligible_rss(jobs[right])
+            if all(eligible_rss(jobs[role]) is not None for role in (left, right)) else None
+            for left, right in pairs
+        },
+    }
+
+
+def run(args):
+    campaign, profile, stage, frames, provenance = settings()
+    check_lease(json.loads(args.quiet_receipt.read_text()))
+    if os.sched_getaffinity(0) != set(range(15)) or not 0 < args.timeout <= 300 or not math.isfinite(args.timeout):
+        raise ValueError("require job CPUs 0–14, RSS sampler CPU15, and a deadline no greater than 300 s")
+    args.runtime, args.threads, args.rss_sampler_cpu = "cpu", 15, 15
+    args.gpu_uuid = args.cuda_library_path = None
+    directory = args.output.resolve()
+    reference, _ = reference_spec()
+    protected = (Path(stage["input_root"]).parent, reference.root, args.stock_source, args.resident_source)
+    if any(directory.is_relative_to(path.resolve()) for path in protected):
+        raise ValueError("diagnostic output must be outside linked producer and shared input trees")
+    tools = [
+        Path(__file__), Path(p10.__file__),
+        Path(p10.__file__).with_name("protocol.py"), Path(p10.__file__).with_name("resources.py"),
+        HERE.parent / "t50-profile-priority-e810/weighted-cpu-pair.py.txt",
+        HERE.parent / "registration-recheck/scale-recheck.py.txt",
+    ]
+    p10._require_clean(p10.ROOT, *(str(path) for path in tools), "pancake-conformance/src")
+    directory.mkdir(mode=0o700)
+    report = {
+        "scope": "single T50 Weighted CPU triplet with zero frozen or release credit",
+        "tool_commit": p10._git(p10.ROOT, "rev-parse", "HEAD"),
+        "tools": {str(path.relative_to(p10.ROOT)): sha256(path) for path in tools},
+        "profile": profile.key, "settings": profile.options, "fixed_order": list(ORDER),
+        "protocol_sha256": TARGETS, "materialization_sha256": MATERIALIZATION,
+        "quiet_receipt_sha256": sha256(args.quiet_receipt), "source": provenance,
+        "status": "starting", "jobs": {}, "started_unix_ns": time.time_ns(),
+    }
+    report_path = directory / "triplet.json"
+    try:
+        with p10._campaign_lock():
+            targets = bind_targets(args, campaign)
+            stage_receipt = authenticate_stage(stage, provenance, frames)
+            report["target_identities"] = {role: identity for role, (_, identity) in targets.items()}
+            report["hardware"] = p10._hardware(None)
+            p10._write(report_path, report)
+            exports = {}
+            try:
+                try:
+                    for role in ORDER:
+                        job, output = run_arm(profile, role, targets[role], args, frames, directory)
+                        report["jobs"][role] = sanitized(job)
+                        p10._write(report_path, report)
+                        if not job["valid"]:
+                            raise ValueError(f"{role} failed: {job['invalid_reason']}")
+                        events_path = output.with_name("events.jsonl")
+                        events = [
+                            json.loads(line) for line in events_path.read_text().splitlines()
+                            if line.strip()
+                        ]
+                        check_completion(role, events, frames, job["output"])
+                        exports[role] = output
+                finally:
+                    p10._write(directory / "children-terminal.json", {
+                        "attempted": list(report["jobs"]), "finished_unix_ns": time.time_ns(),
+                    })
+                report["comparison"] = compare_images(campaign, stage, report["jobs"], exports)
+            finally:
+                try:
+                    report["all_52_and_ownership_unchanged"] = (
+                        authenticate_stage(stage, provenance, frames) == stage_receipt
+                    )
+                    after = bind_targets(args, campaign)
+                    report["target_identities_unchanged"] = (
+                        {role: identity for role, (_, identity) in after.items()} == report["target_identities"]
+                    )
+                except (KeyError, OSError, ValueError, subprocess.CalledProcessError) as error:
+                    report["postflight_error"] = str(error)
+            if not report.get("all_52_and_ownership_unchanged") or not report.get("target_identities_unchanged"):
+                raise ValueError("postflight provenance changed")
+            report["status"] = (
+                "diagnostic_triplet_complete"
+                if report["comparison"]["exact_pancake_output_parity"] else "pancake_output_parity_mismatch"
+            )
+    except BaseException as error:
+        report.update(status="failed", failure=str(error))
+        raise
+    finally:
+        report["finished_unix_ns"] = time.time_ns()
+        p10._write(report_path, report)
+    return report["status"] != "diagnostic_triplet_complete"
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--execute-diagnostic", action="store_true")
+    parser.add_argument("--quiet-receipt", type=Path)
+    parser.add_argument("--timeout", type=float, default=300)
+    required = ("stock-source", "resident-source", "stock-cli", "resident-cli", "package", "output")
+    for key in required:
+        parser.add_argument(f"--{key}", type=Path)
+    args = parser.parse_args()
+    if not args.execute_diagnostic:
+        known_producers()
+        argv, frames, profile = static_settings()
+        campaign = Campaign.load(p10.TARGETS_PATH)
+        _, reference = bind_reference(campaign)
+        checkouts = {}
+        for role in PRODUCERS:
+            checkout = getattr(args, f"{role}_source")
+            if checkout is not None:
+                checkouts[role] = str(producer_spec(role, checkout).root)
+        print(json.dumps({
+            "status": "verified_no_application_launched", "profile": profile.key,
+            "order": ORDER, "frame_count": len(frames), "argv_suffixes": argv,
+            "source_checkouts": checkouts, "reference_command": reference["command"],
+        }, indent=2))
+        return 0
+    if args.quiet_receipt is None or any(getattr(args, key.replace("-", "_")) is None for key in required):
+        parser.error("execution requires the specific quiet receipt, two producers, package and fresh output")
+    return run(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

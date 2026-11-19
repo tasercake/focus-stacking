@@ -1,0 +1,151 @@
+{
+  "revision": "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb",
+  "binary": {
+    "cli": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/native-profile-target/debug/pancake-cli",
+      "sha256": "3e700d075fb7ba51e6050f772afe94698061d7890894e873a118aada05c7117b",
+      "build_id": "614c4a3e49a98b1d5837c5c4c00e9d35f3d6e570"
+    },
+    "gui": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/native-profile-target/debug/pancake-gui",
+      "sha256": "272465dcbbe0672b46ddbd9953a5980895a8f9ceeced81f59352cd672f853a6f",
+      "build_id": "c20ddb7561d99b7df6d9352aef12d56c2ff980d5"
+    }
+  },
+  "cases": [
+    "interface.about",
+    "interface.recovery.close-unsaved",
+    "interface.sprint.frame-context"
+  ],
+  "standalone_status": 1,
+  "baseline": {
+    "branches": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "functions": {
+      "count": 756,
+      "covered": 476,
+      "percent": 62.96296296296296
+    },
+    "instantiations": {
+      "count": 1432,
+      "covered": 644,
+      "percent": 44.97206703910614
+    },
+    "lines": {
+      "count": 6475,
+      "covered": 4658,
+      "percent": 71.93822393822393
+    },
+    "mcdc": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "regions": {
+      "count": 7288,
+      "covered": 4776,
+      "notcovered": 2512,
+      "percent": 65.5323819978046
+    }
+  },
+  "control": {
+    "lines": {
+      "count": 6475,
+      "covered": 4658,
+      "percent": 71.93822393822393
+    },
+    "functions": {
+      "count": 756,
+      "covered": 476,
+      "percent": 62.96296296296296
+    },
+    "instantiations": {
+      "count": 1657,
+      "covered": 644,
+      "percent": 38.86541943270972
+    },
+    "regions": {
+      "count": 7288,
+      "covered": 4776,
+      "notcovered": 2512,
+      "percent": 65.5323819978046
+    },
+    "branches": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    },
+    "mcdc": {
+      "count": 0,
+      "covered": 0,
+      "notcovered": 0,
+      "percent": 0
+    }
+  },
+  "llvm_cov": "/home/krishna/.rustup/toolchains/1.100.0-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-cov",
+  "llvm_profdata": "/home/krishna/.rustup/toolchains/1.100.0-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-profdata",
+  "cpu_profile": "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/llvm-cov-target/pancake.profdata",
+  "cpu_profile_sha256": "5cb079e102c9df3241e3ee46a31a92c0ca9b712cc145d4fdb162f8ea8b35bb22",
+  "control_profdata_sha256": "5cb079e102c9df3241e3ee46a31a92c0ca9b712cc145d4fdb162f8ea8b35bb22",
+  "control_export": [
+    "/home/krishna/.rustup/toolchains/1.100.0-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu/bin/llvm-cov",
+    "export",
+    "-format=text",
+    "-instr-profile=/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/artifacts/native-overlay-c1e2cac/control.profdata",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/42c06702d157fabd/out/cpu_cli-42c06702d157fabd",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/7e78120988185968/out/cpu_config-7e78120988185968",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/ada1d04d7c7e9623/out/pancake_cli",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/d325cc0515f44aaa/out/cpu_runtime_options-d325cc0515f44aaa",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-cli/e826090b3a46e4d2/out/pancake_cli-e826090b3a46e4d2",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake-gui/c855531277e79884/out/pancake_gui-c855531277e79884",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/024a5a3a707188cc/out/cpu_gray_array_export-024a5a3a707188cc",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/1c0e37461a14c202/out/cpu_numerical_contract-1c0e37461a14c202",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/1cc0e41a2b871fa4/out/cpu_npy-1cc0e41a2b871fa4",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/4d9f48a2f37cad78/out/cpu_stack_plan-4d9f48a2f37cad78",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/60180d21bb380275/out/cpu_job-60180d21bb380275",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/716bcecd10248f6e/out/cpu_image_export-716bcecd10248f6e",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/813d1728439ff4c9/out/cpu_kernel_contract-813d1728439ff4c9",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/86329bc5c28b05cf/out/cpu_advanced_fusion-86329bc5c28b05cf",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/9a2246de77a50087/out/cpu_array_layout-9a2246de77a50087",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/a81729e0837ee626/out/cpu_fusion_contract-a81729e0837ee626",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/ca6722fccfe4773d/out/pancake-ca6722fccfe4773d",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/e1f28ac180f5696f/out/cpu_image_io-e1f28ac180f5696f",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/f3cdf583f7f0bac8/out/cpu_registration_contract-f3cdf583f7f0bac8",
+    "-object",
+    "target/llvm-cov-target/debug/build/pancake/fe92e22c0a43f52c/out/cpu_runtime_contract-fe92e22c0a43f52c",
+    "-object",
+    "target/llvm-cov-target/debug/pancake-cli",
+    "-ignore-filename-regex",
+    "/rustc/([0-9a-f]+|[0-9]+\\.[0-9]+\\.[0-9]+)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/native\\-overlay\\-c1e2cac/pancake(/.*)?/(tests|examples|benches)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/native\\-overlay\\-c1e2cac/pancake(/.*)?/(tests\\.rs|[0-9a-zA-Z_-]+[_-]tests\\.rs)$|^/tmp/pancake\\-worktrees\\.t3paqgWM/native\\-overlay\\-c1e2cac/pancake/target/llvm\\-cov\\-target($|/)|^/home/krishna/\\.cargo/(registry|git)/|^/home/krishna/\\.rustup/toolchains($|/)",
+    "-object",
+    "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/native-profile-target/debug/pancake-gui"
+  ],
+  "completed_utc": "2026-11-18T13:24:13.116895+00:00",
+  "archive_control": "identical coordinates, covered signatures and per-file counts",
+  "display_launched": false
+}

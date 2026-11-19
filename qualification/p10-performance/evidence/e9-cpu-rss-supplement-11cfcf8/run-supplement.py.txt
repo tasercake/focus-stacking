@@ -1,0 +1,138 @@
+"""Execute only one authorized six-job reduced-release E9 CPU RSS supplement."""
+
+import argparse
+from dataclasses import replace
+import json
+import os
+from pathlib import Path
+import time
+from types import SimpleNamespace
+
+import p10
+from busy_census import census
+from protocol import Campaign, corpus, sha256, verify_frames
+from supplement_rules import LIMIT_NS, PERIOD_NS, ROSTER, evaluate_rss
+
+SCOPE = Path(__file__).resolve().parent
+PROFILE = "E9.exposure_fusion.cpu"
+TOOL = "cae209e4aabe488eb38030a6df65ebaabd58b074"
+CPUS = set(range(32))
+
+
+def read(name):
+    return json.loads((SCOPE / name).read_text())
+
+
+def grant():
+    prereg = read("preregistration.json")
+    preflight = read("no-device-preflight.json")
+    new_grant = read("quiet-grant.json")
+    ledger = read("strict-ledger-prereq.json")
+    reviewed = read("reviewed-busy-census.json")
+    if not all((
+        new_grant["exclusive_host_granted"] is True,
+        new_grant["competing_layout_and_test_workloads_terminal"] is True,
+        new_grant["reviewed_busy_census_sha256"] == sha256(SCOPE / "reviewed-busy-census.json"),
+        new_grant["preregistration_sha256"] == sha256(SCOPE / "preregistration.json"),
+        new_grant["strict_ledger_prereq_sha256"] == sha256(SCOPE / "strict-ledger-prereq.json"),
+        reviewed["quiet"] is True,
+        set(reviewed["sampled_cpus"]) == CPUS == os.sched_getaffinity(0),
+        ledger["status"] == "pass" and ledger["total_passed"] == 376,
+        sha256(Path(ledger["ledger"])) == ledger["ledger_sha256"],
+        preflight["targets"]["candidate"]["binary_sha256"] == ledger["cli_sha256"],
+        prereg["qualification_tool_commit"] == TOOL,
+        all(sha256(SCOPE / filename) == digest for filename, digest in prereg["operator_sha256"].items()),
+    )):
+        raise ValueError("fresh actual quiet and exact preregistered release evidence are required")
+    return preflight, ledger, prereg
+
+
+def verify_job(role, sample, output, expected):
+    if not sample["valid"] or sample["output"] != expected:
+        raise ValueError(f"{role} failed completed RGB16 output parity")
+    if sample["cache_before"]["files"] != 0 or "--cpu" not in sample["argv"] or "--gpu" in sample["argv"]:
+        raise ValueError(f"{role} differs from explicit CPU and fresh case caches")
+    scope = output.parent
+    if role == "candidate":
+        event = p10._assert_completion(scope / "events.jsonl", "cpu", "cpu", None)
+        if event["physical_gpu"] is not False or event["fallback_reason"] is not None:
+            raise ValueError("Pancake completion does not attest explicit CPU without fallback")
+        return event
+    standard = (scope / "stdout.txt").read_text()
+    if not all(text in standard for text in (
+        "Device: CPU", "Output saved:", "16-bit", "Output shape: (337, 510, 3)",
+    )):
+        raise ValueError("stock reference did not report its actual CPU decision and RGB16 export")
+    return {"actual_cpu_decision_and_complete_export": True, "stock_python_phase_observer": False}
+
+
+def execute():
+    preflight, ledger, prereg = grant()
+    root = SCOPE / "paired"
+    if root.exists() or (SCOPE / "immediate-busy-census.json").exists():
+        raise ValueError("scope already has an attempt")
+    options = SimpleNamespace(
+        profile=PROFILE, runtime="cpu", threads=32, rss_sampler_cpu=None,
+        gpu_uuid=None, cuda_library_path=None, timeout=120,
+        build_receipt=SCOPE / "build-receipt.json",
+    )
+    expected_review = read("original-8ms-image-review.json")
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(profile for profile in campaign.profiles("cpu") if profile.key == PROFILE)
+    source = Path(preflight["input_root"])
+    records, provenance = corpus(p10.ROOT, campaign, "E9")
+    bounds = tuple(records[0]["shape"])
+    report = {
+        "scope": "separate reduced-release RSS supplement",
+        "full_frozen_credit": False, "profile": PROFILE, "settings": profile.options,
+        "samples": [], "predeclared_roster": ROSTER, "rss_nominal_interval_ns": PERIOD_NS,
+        "rss_maximum_gap_ns": LIMIT_NS, "exact_package_ledger": ledger,
+        "qualification_tool_commit": TOOL, "inputs": records, "corpus": provenance,
+        "retained_full_8ms_timing_and_quality_source": prereg["historical_report_sha256"],
+    }
+    with p10._campaign_lock():
+        staged, identities = p10._prepared_targets(options, campaign)
+        if identities != preflight["targets"]:
+            raise ValueError("exact candidate identity or corrected reference differs")
+        frames = verify_frames(source, records, 9)
+        if frames != sorted(frames, key=str):
+            raise ValueError("input order differs")
+        hardware = p10._hardware(None)
+        fresh = census()
+        p10._write(SCOPE / "immediate-busy-census.json", fresh)
+        if fresh["quiet"] is not True or set(fresh["sampled_cpus"]) != CPUS:
+            raise ValueError("fresh dynamic host guard blocked launch")
+        root.mkdir(mode=0o700)
+        report.update(identity=identities, hardware=hardware, started_unix_ns=time.time_ns())
+        try:
+            for pair in ROSTER:
+                kind, ordinal, role = pair
+                spec = staged[role]
+                if role == "candidate":
+                    event = root / f"{kind}-{ordinal:02d}" / role / "events.jsonl"
+                    spec = replace(spec, env={**spec.env, "CONFORMANCE_EVENTS_PATH": str(event)})
+                sample, output = p10._run_sample(
+                    profile, pair, role, spec, identities[role], options, frames,
+                    bounds, root, None, rss_sample_interval_ms=3,
+                )
+                report["samples"].append(sample)
+                p10._write(root / "report.json", report)
+                sample["backend_witness"] = verify_job(role, sample, output, expected_review["outputs"][role])
+            report["rss_supplement"] = evaluate_rss(report["samples"])
+        finally:
+            report["children_terminal_unix_ns"] = time.time_ns()
+            report["inputs_unchanged"] = verify_frames(source, records, 9) == frames
+            report["producer_identities_unchanged"] = p10._prepared_targets(options, campaign)[1] == identities
+            report["finished_unix_ns"] = time.time_ns()
+            p10._write(root / "report.json", report)
+        if not report["inputs_unchanged"] or not report["producer_identities_unchanged"]:
+            raise ValueError("postflight changed")
+    print(json.dumps(report["rss_supplement"], indent=2))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--execute-diagnostic", action="store_true")
+    if not parser.parse_args().execute_diagnostic:
+        parser.error("no launch without explicit separate grant and --execute-diagnostic")
+    execute()

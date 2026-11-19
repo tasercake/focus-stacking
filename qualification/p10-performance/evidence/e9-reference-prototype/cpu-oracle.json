@@ -1,0 +1,250 @@
+{
+  "reference_source": "ab7a92708269c01c6094729f6cdfaf1415677364",
+  "reference_launcher_sha256": "47f2c63bfc635e53e886e9bbd6b66944a95f97c719fad26ed88f6c222594cb94",
+  "reference_descriptor_sha256": "e3e951b674bc0103f267575a99533cc33ead40e2af56671766f4fc71f3f12b76",
+  "reference_lock_sha256": "fda57ac5eea063aebcc278eb57a90228e6da32fe2d8f67d7025ac367f4b51036",
+  "frozen_targets_sha256": "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+  "cpu_affinity": [
+    14,
+    15
+  ],
+  "diagnostic_only": true,
+  "profile": "E9.exposure_fusion.cpu",
+  "settings": {
+    "device": "cpu",
+    "method": "exposure_fusion",
+    "align": true,
+    "alignment_mode": "euclidean",
+    "alignment_reference": "first",
+    "kernel_size": 6,
+    "pyramid_levels": 8,
+    "scale_factor": 6,
+    "slab_size": 0,
+    "slab_overlap": 0,
+    "bit_depth": 16,
+    "auto": false,
+    "auto_crop": true,
+    "quality_report": false
+  },
+  "reference": {
+    "argv": [
+      "e9_reference.py",
+      "--input",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_00.png",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_01.png",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_02.png",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_03.png",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_04.png",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_05.png",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_06.png",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_07.png",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/frame_08.png",
+      "--output",
+      "/tmp/e9-reference-cpu-oracle-urd2udgl/result.tif",
+      "--cpu",
+      "--method",
+      "exposure_fusion",
+      "--align",
+      "--alignment-mode",
+      "euclidean",
+      "--alignment-ref",
+      "first",
+      "--kernel-size",
+      "6",
+      "--pyramid-levels",
+      "8",
+      "--scale-factor",
+      "6",
+      "--slab-size",
+      "0",
+      "--slab-overlap",
+      "0",
+      "--bit-depth",
+      "16",
+      "--auto-crop"
+    ],
+    "source_hashes_unchanged": [
+      "f1f73e147aaa132d66add1cf798adf11a83634915b82e61731667873d46ec498",
+      "811272692148368cddc7f36e466badc18e74345673d60b0b2c51d05b2afe1c50",
+      "da1cb033b4534e129615c9ea1dff1d958ae510a990b017e046f7a286410c0154",
+      "abaa79bb2ca068dcee875b55d89942eba9e907b2f626dd46187bf9bfb17d28e0",
+      "c7633f624426b90558c24df60b38ba69136c62c5ba5c0a17e2328f741fb0d745",
+      "edc084a887745fa6eb7558d178a8ff07c5862cde968ea778795eb475a77ca6e4",
+      "15752a0080b0e70b4a89d170c14cfad9eb1cc7ffcb3003702d43b915fe4e13b3",
+      "98b324c41f9ca1bc10e9ecdbd1c44bfaef0f75ed826887ffafac67b5e4435ae7",
+      "e4078e2417a3f7171e5dd4e1ddd7e0b23ef3696bbf4869834563d2a8469592ff"
+    ],
+    "source_frame_count": 9,
+    "aligned_nonreference_frames": 8,
+    "pinned_multisample_batches": [
+      4,
+      4
+    ],
+    "singleton_frames": 1,
+    "partial_float32_bgr_pixel_hashes": [
+      "687ff22e89dd9939ba641626a2f26964434c243d23e00ce616cfad7a0ef2ba12",
+      "3608a9a1bb5488f65145be96861ce4472b6aa3c7f2347c5c058efd2d54820737",
+      "f8e664ef6470d03a4f2c7ef1b5ca80cf206b509851210c5d1c5050f3269df3a1"
+    ],
+    "mean_max_float32_vs_float64_abs_error": 1.0172526032192764e-05,
+    "crop_top_bottom_left_right": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "alignment_transforms": {
+      "frame_00.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "frame_01.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "frame_02.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "frame_03.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "frame_04.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "frame_05.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "frame_06.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "frame_07.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "frame_08.png": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ]
+    },
+    "export": {
+      "shape": [
+        254,
+        254,
+        3
+      ],
+      "dtype": "uint16",
+      "sha256": "7ce0dffd0eda20ae6fbac383b385d02b24e01527a296613449c206a0bf0be35c",
+      "pixel_sha256": "762a74506f5065fd5027d3578d98401e63ceb18f30b4fa8497fd34150f33fea9",
+      "bytes": 389442,
+      "minimum": 11325,
+      "maximum": 40793
+    },
+    "independent_bgr_to_rgb_export_matches": true,
+    "device": "Device: CPU",
+    "reference_errors_or_warnings": [],
+    "direct_uninstrumented_export_matches": true,
+    "invalid_input_exit_codes": {
+      "missing": 1,
+      "corrupt": 1
+    },
+    "late_corrupt_input": [
+      {
+        "completed_batches": [
+          4
+        ],
+        "exit": 1,
+        "errors": [
+          "Error: Cannot decode input: /tmp/e9-reference-cpu-oracle-urd2udgl/frame_04-corrupt.png"
+        ],
+        "output": "absent"
+      },
+      {
+        "completed_batches": [
+          4
+        ],
+        "exit": 1,
+        "errors": [
+          "Error: Cannot decode input: /tmp/e9-reference-cpu-oracle-urd2udgl/frame_04-corrupt.png"
+        ],
+        "output": "pre-existing bytes unchanged"
+      }
+    ]
+  }
+}

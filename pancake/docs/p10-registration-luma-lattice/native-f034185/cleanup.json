@@ -1,0 +1,10 @@
+{
+  "removed_owned_directories": [
+    "p5-host",
+    "p5-vulkan",
+    "vulkan-xdg"
+  ],
+  "p5_generated_paths_in_manifest": 802,
+  "p5_hashed_bytes": 65099483,
+  "raw_case_archive_verified_before_cleanup": true
+}

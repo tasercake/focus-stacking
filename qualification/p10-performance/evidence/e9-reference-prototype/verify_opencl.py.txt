@@ -1,0 +1,614 @@
+"""Prove the corrected pinned E9 reduction on the physical reference queue."""
+
+import argparse
+import contextlib
+import hashlib
+import io
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
+
+import numpy as np
+import p10
+import tifffile
+from pancake_conformance.adapters.pancake import e9_reference
+from pancake_conformance.target import TargetSpec
+from physical import reference_opencl
+from protocol import (
+    Campaign,
+    _read_rgb16,
+    corpus,
+    pixel_metrics,
+    sha256,
+    verify_frames,
+    verify_output,
+)
+
+PIN = "ab7a92708269c01c6094729f6cdfaf1415677364"
+GPU_PCI = "0000:01:00.0"
+GPU_UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+GPU_INDEX = 0
+BOUNDS = (339, 512)
+
+
+class ExposureWitness:
+    """Record real batch flushes and the actual queue that returned the reduction."""
+
+    def __init__(self, device_handle):
+        self.device_handle = device_handle
+        self.fuser = None
+        self.queue = None
+        self.groups = []
+        self.partials = []
+        self.device_results = 0
+        self.cpu_entries = 0
+
+    def flushed(self, fuser, original):
+        count = len(fuser.batch)
+        prior = len(fuser.partials)
+        original(fuser)
+        if len(fuser.partials) != prior + 1 or fuser.batch:
+            raise ValueError("a real flush did not publish exactly one batch partial")
+        queue = fuser.g.q
+        if queue.device.int_ptr != self.device_handle:
+            raise ValueError("actual exposure queue uses another OpenCL device")
+        if self.fuser is not None and (
+            fuser is not self.fuser or queue.int_ptr != self.queue
+        ):
+            raise ValueError("exposure partials came from multiple fusers or queues")
+        self.fuser = fuser
+        self.queue = queue.int_ptr
+        self.groups.append(count)
+        self.partials.append(fuser.partials[-1].copy())
+
+    def returned(self, fuser, result, array_type):
+        if (
+            fuser is not self.fuser
+            or not isinstance(result, array_type)
+            or result.queue.int_ptr != self.queue
+            or result.queue.device.int_ptr != self.device_handle
+        ):
+            raise ValueError(
+                "the result did not remain on the observed physical exposure queue"
+            )
+        self.device_results += 1
+
+    def reduction(self, before_crop):
+        if self.groups != [4, 4, 1] or self.device_results != 1 or self.cpu_entries:
+            raise ValueError(
+                "expected one physical 4+4+1 exposure result and zero CPU fallbacks"
+            )
+        for array in [*self.partials, before_crop]:
+            if (
+                array.shape != before_crop.shape
+                or array.dtype != np.float32
+                or not np.isfinite(array).all()
+            ):
+                raise ValueError(
+                    "native OpenCL partials must have the float32 image shape"
+                )
+        hashes = [
+            hashlib.sha256(np.ascontiguousarray(image, dtype="<f4")).hexdigest()
+            for image in self.partials
+        ]
+        if len(set(hashes)) != 3:
+            raise ValueError(
+                "the equal-mean witness requires three different actual partials"
+            )
+        expected = np.asarray(self.partials, dtype=np.float64).sum(axis=0) / 3
+        np.testing.assert_allclose(
+            before_crop, expected, rtol=4 * np.finfo(np.float32).eps, atol=0
+        )
+        return {
+            "batch_sizes": self.groups,
+            "device_results": self.device_results,
+            "cpu_fallback_entries": self.cpu_entries,
+            "partial_f32_bgr_sha256": hashes,
+            "float64_mean_max_absolute_error": float(
+                np.max(np.abs(before_crop - expected))
+            ),
+        }
+
+
+def native_identity():
+    output = subprocess.check_output(
+        [
+            "nvidia-smi",
+            "--query-gpu=name,uuid,pci.bus_id,driver_version",
+            "--format=csv,noheader,nounits",
+        ],
+        text=True,
+        timeout=5,
+    )
+    native = [
+        tuple(field.strip() for field in line.split(","))
+        for line in output.splitlines()
+    ]
+    selected_nvidia = [
+        row for row in native if p10._pci_id(row[2]) == p10._pci_id(GPU_PCI)
+    ]
+    if len(selected_nvidia) != 1:
+        raise ValueError(f"expected one NVIDIA device at pinned PCI {GPU_PCI}")
+    name, uuid, pci, driver = selected_nvidia[0]
+    if uuid != GPU_UUID or "RTX 3090" not in name:
+        raise ValueError(
+            "target PCI no longer identifies the archived physical RTX 3090"
+        )
+    selected = reference_opencl(GPU_INDEX)
+    if selected["uuid"] != uuid or "RTX 3090" not in selected["name"]:
+        raise ValueError(
+            "pinned OpenCL device index does not select the same physical RTX 3090"
+        )
+    return {
+        "physical_name": name,
+        "pci": pci,
+        "uuid": uuid,
+        "nvidia_driver": driver,
+        "opencl": selected,
+    }
+
+
+def check_cli_logs(stdout, stderr):
+    milestones = [
+        line.strip()
+        for line in stdout.splitlines()
+        if any(
+            label in line
+            for label in ("Device:", "GPU:", "Auto-cropped:", "Output saved:")
+        )
+    ]
+    messages = [
+        line.strip()
+        for line in stderr.splitlines()
+        if any(
+            word in line.casefold()
+            for word in ("fallback", "falling back", "warning", "error", "unavailable")
+        )
+    ]
+    if not any("Device: GPU" in line for line in milestones) or not any(
+        "RTX 3090" in line for line in milestones
+    ):
+        raise ValueError(f"reference GPU selection was not visible: {milestones}")
+    text = (stdout + stderr).casefold()
+    if any(
+        phrase in text
+        for phrase in (
+            "falling back to the cpu",
+            "no usable gpu",
+            "not enough gpu memory",
+            "gpu alignment help unavailable",
+        )
+    ):
+        raise ValueError(
+            f"pinned reference reported that GPU processing fell back: {messages}"
+        )
+    return {"cli_milestones": milestones, "reference_messages": messages}
+
+
+def run_instrumented(argv, destination, frames):
+    from pyopencl.array import Array
+    from src.algorithms.API import LaplacianPyramid
+    from src.algorithms.stacking_algorithms import ocl
+
+    witness = ExposureWitness(ocl.devices()[GPU_INDEX].int_ptr)
+    original_flush = ocl.ExposureGPU._flush
+    original_cpu = e9_reference._exposure_core
+    original_gpu = e9_reference._gpu_result
+    original_crop = LaplacianPyramid.auto_crop_output
+    stdout, stderr = io.StringIO(), io.StringIO()
+    observed = {}
+
+    def capture_flush(fuser):
+        witness.flushed(fuser, original_flush)
+
+    def capture_result(fuser):
+        result = original_gpu(fuser)
+        witness.returned(fuser, result, Array)
+        return result
+
+    def capture_cpu(*args, **kwargs):
+        witness.cpu_entries += 1
+        return original_cpu(*args, **kwargs)
+
+    def capture_crop(stack):
+        observed["mean"] = witness.reduction(stack.output_image)
+        observed["alignment_transforms"] = {
+            Path(path).name: None if matrix is None else matrix.tolist()
+            for path, matrix in stack.alignment_transforms.items()
+        }
+        crop = original_crop(stack)
+        observed["crop_top_bottom_left_right"] = crop
+        observed["after_crop"] = stack.output_image.copy()
+        return crop
+
+    with (
+        contextlib.redirect_stdout(stdout),
+        contextlib.redirect_stderr(stderr),
+        patch.object(sys, "argv", argv),
+        patch.object(ocl.ExposureGPU, "_flush", capture_flush),
+        patch.object(e9_reference, "_gpu_result", capture_result),
+        patch.object(e9_reference, "_exposure_core", capture_cpu),
+        patch.object(LaplacianPyramid, "auto_crop_output", capture_crop),
+    ):
+        try:
+            assert e9_reference.main() is None
+        except BaseException:
+            print(stdout.getvalue(), file=sys.__stderr__, end="")
+            print(stderr.getvalue(), file=sys.__stderr__, end="")
+            raise
+    result = check_cli_logs(stdout.getvalue(), stderr.getvalue())
+    rgb = _read_rgb16(destination, BOUNDS)
+    bgr = observed.pop("after_crop")
+    expected_rgb = np.rint(bgr[..., ::-1].clip(0, 255) * np.float32(257)).astype(
+        np.uint16
+    )
+    np.testing.assert_array_equal(rgb, expected_rgb)
+    transforms = observed["alignment_transforms"]
+    if set(transforms) != {frame.name for frame in frames}:
+        raise ValueError("pinned OpenCL run did not publish all nine reference maps")
+    for matrix in transforms.values():
+        np.testing.assert_array_equal(
+            np.asarray(matrix), np.eye(3, dtype=np.float32)[:2]
+        )
+    assert observed["crop_top_bottom_left_right"] == (1, 1, 1, 1)
+    result.update(observed)
+    result.update(
+        argv=argv,
+        independently_verified_rgb16_conversion=True,
+        export=verify_output(destination, BOUNDS),
+    )
+    return result
+
+
+def fixed_roi_stats(reference, candidate=None):
+    historical = (
+        p10.ROOT / "qualification/p10-performance/evidence/integrated-e9-12f2151"
+    )
+    receipts = [historical / name for name in ("vulkan-review.json", "cpu-review.json")]
+    windows = [
+        [
+            (roi["name"], roi["xywh"])
+            for roi in json.loads(receipt.read_text())["regions"]
+        ]
+        for receipt in receipts
+    ]
+    if windows[0] != windows[1]:
+        raise ValueError("historical CPU and Vulkan E9 windows disagree")
+    files = {"reference": reference}
+    if candidate is not None:
+        files["candidate"] = candidate
+    reports = {name: verify_output(path, BOUNDS) for name, path in files.items()}
+    if any(report["shape"] != [337, 510, 3] for report in reports.values()):
+        raise ValueError("review requires the verified 337x510 first-reference grid")
+    images = {name: _read_rgb16(path, BOUNDS) for name, path in files.items()}
+
+    def region_stats(pixels):
+        return {
+            "rgb_mean_u16": pixels.mean(axis=0).tolist(),
+            "rgb_min_u16": pixels.min(axis=0).tolist(),
+            "rgb_max_u16": pixels.max(axis=0).tolist(),
+            "fraction_at_floor": float(np.mean(pixels == 0)),
+            "fraction_at_ceiling": float(np.mean(pixels == 65535)),
+        }
+
+    regions = []
+    for name, xywh in windows[0]:
+        x, y, width, height = xywh
+        pixels = {
+            key: rgb[y : y + height, x : x + width] for key, rgb in images.items()
+        }
+        if any(value.shape != (height, width, 3) for value in pixels.values()):
+            raise ValueError(
+                f"historical ROI extends beyond the verified export: {name}"
+            )
+        region = {"name": name, "xywh": xywh}
+        region.update(
+            {key: region_stats(value.reshape(-1, 3)) for key, value in pixels.items()}
+        )
+        if candidate is not None:
+            delta = pixels["reference"].astype(np.int32) - pixels["candidate"]
+            abs_delta = np.abs(delta)
+            region.update(
+                mean_absolute_u16=float(abs_delta.mean()),
+                max_absolute_u16=int(abs_delta.max()),
+                rms_u16=float(np.sqrt(np.square(delta, dtype=np.float64).mean())),
+            )
+        regions.append(region)
+    result = {
+        "historical_window_receipt_sha256": {
+            path.name: sha256(path) for path in receipts
+        },
+        "outputs": reports,
+        "regions": regions,
+    }
+    if candidate is not None:
+        result["dimensions_and_pixel_metrics"] = pixel_metrics(
+            reference, candidate, BOUNDS
+        )
+    return result
+
+
+def finished_process(argv, target, environment):
+    run = subprocess.run(
+        argv,
+        cwd=target.root,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    if run.returncode:
+        print(run.stdout, file=sys.stderr, end="")
+        print(run.stderr, file=sys.stderr, end="")
+    run.check_returncode()
+    return run
+
+
+def verify(directory, input_root, icd):
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(
+        profile
+        for profile in campaign.profiles("gpu")
+        if profile.key == "E9.exposure_fusion.gpu"
+    )
+    target = TargetSpec.load(p10.REFERENCE)
+    if target.root != Path.cwd() or p10._git(target.root, "rev-parse", "HEAD") != PIN:
+        raise ValueError("run from the exact pinned reference checkout")
+    p10._require_clean(target.root)
+    p10._require_clean(p10.ROOT, str(p10.E9_REFERENCE))
+    pin = campaign.raw["reference"]
+    frozen_reference = p10._snapshot(target, p10.ROOT / pin["runtime_lock_path"])
+    assert frozen_reference == {
+        "commit": pin["source_commit"],
+        "lock_sha256": pin["runtime_lock_sha256"],
+        "descriptor_sha256": pin["descriptor_sha256"],
+    }
+    records, provenance = corpus(p10.ROOT, campaign, "E9")
+    frames = verify_frames(input_root, records, 9)
+    launcher = e9_reference.__file__
+    settings = profile.options | {"gpu_id": GPU_INDEX}
+    instrumented_path = directory / "instrumented.tif"
+    instrumented_argv = [
+        launcher,
+        *target.stack_arguments(frames, instrumented_path, settings),
+    ]
+    clean_path = directory / "clean.tif"
+    clean_argv = [
+        sys.executable,
+        launcher,
+        *target.stack_arguments(frames, clean_path, settings),
+    ]
+
+    def fresh_environment(label):
+        env = p10._environment(
+            target, directory / label, directory, 2, None, None, False
+        )
+        env.pop("LD_LIBRARY_PATH", None)
+        env.update(
+            OCL_ICD_VENDORS=str(icd),
+            PYTHONDONTWRITEBYTECODE="1",
+            PYTHONPATH=os.pathsep.join(
+                map(
+                    str,
+                    (
+                        p10.ROOT / "pancake-conformance/src",
+                        p10.ROOT / "qualification/p10-performance",
+                        target.root,
+                    ),
+                )
+            ),
+        )
+        return env
+
+    with patch.dict(os.environ, fresh_environment("instrumented"), clear=True):
+        hardware = native_identity()
+    manifest = directory / "observe-job.json"
+    p10._write(
+        manifest,
+        {
+            "argv": instrumented_argv,
+            "output": str(instrumented_path),
+            "frames": list(map(str, frames)),
+        },
+    )
+    observe_argv = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "--observe-job",
+        str(manifest),
+    ]
+    observation = finished_process(
+        observe_argv, target, fresh_environment("instrumented")
+    )
+    instrumented = json.loads(observation.stdout)
+    clean = finished_process(clean_argv, target, fresh_environment("clean"))
+    clean_receipt = check_cli_logs(clean.stdout, clean.stderr)
+    clean_receipt.update(argv=clean_argv, export=verify_output(clean_path, BOUNDS))
+    if clean_receipt["export"] != instrumented["export"]:
+        raise ValueError(
+            "clean OpenCL CLI did not reproduce the observed file and decoded RGB16 hashes\n"
+            f"instrumented: {instrumented['export']}\nclean: {clean_receipt['export']}"
+        )
+    verify_frames(input_root, records, 9)
+    return {
+        "diagnostic_only": True,
+        "profile": profile.key,
+        "frozen_reference": frozen_reference,
+        "launcher_sha256": sha256(Path(launcher)),
+        "reference_python_sha256": sha256(Path(sys.executable)),
+        "targets_sha256": sha256(p10.TARGETS_PATH),
+        "settings": settings,
+        "cpu_affinity": sorted(os.sched_getaffinity(0)),
+        "opencl_icd": {"path": str(icd), "sha256": sha256(icd)},
+        "physical_device": hardware,
+        "corpus": provenance,
+        "ordered_input_sha256": [record["sha256"] for record in records],
+        "input_hashes_unchanged": True,
+        "instrumented": instrumented,
+        "instrumented_process_argv": observe_argv,
+        "clean_uninstrumented": clean_receipt,
+        "clean_file_and_decoded_sha256_match": True,
+        "fixed_review_windows": fixed_roi_stats(clean_path),
+    }
+
+
+class WitnessControl(unittest.TestCase):
+    def observed(self, groups=(4, 4, 1)):
+        device = SimpleNamespace(int_ptr=64)
+        queue = SimpleNamespace(device=device, int_ptr=50)
+        fuser = SimpleNamespace(g=SimpleNamespace(q=queue), partials=[])
+        witness = ExposureWitness(device.int_ptr)
+        for count, value in zip(groups, (20, 80, 200), strict=True):
+            fuser.batch = [object()] * count
+            with patch.object(self, "value", value, create=True):
+                witness.flushed(fuser, self.control_flush)
+        witness.returned(fuser, SimpleNamespace(queue=queue), SimpleNamespace)
+        return witness, fuser
+
+    def control_flush(self, fuser):
+        fuser.partials.append(np.full((2, 3, 3), self.value, dtype=np.float32))
+        fuser.batch = []
+
+    def test_requires_exact_independently_reduced_mean(self):
+        witness, fuser = self.observed()
+        fuser.partials[1].fill(0)
+        self.assertEqual(
+            witness.reduction(np.full((2, 3, 3), 100, np.float32))["batch_sizes"],
+            [4, 4, 1],
+        )
+        with self.assertRaises(AssertionError):
+            witness.reduction(np.full((2, 3, 3), 101, np.float32))
+
+    def test_rejects_reordered_batch_sizes_and_cpu_fallback(self):
+        witness, _ = self.observed(groups=(4, 1, 4))
+        with self.assertRaisesRegex(ValueError, "4\\+4\\+1"):
+            witness.reduction(np.full((2, 3, 3), 100, np.float32))
+        witness.groups = [4, 4, 1]
+        witness.cpu_entries = 1
+        with self.assertRaisesRegex(ValueError, "fallback"):
+            witness.reduction(np.full((2, 3, 3), 100, np.float32))
+
+    def test_rejects_missing_or_duplicate_partials(self):
+        witness, _ = self.observed()
+        witness.groups.pop()
+        with self.assertRaisesRegex(ValueError, "4\\+4\\+1"):
+            witness.reduction(np.full((2, 3, 3), 100, np.float32))
+        witness.groups = [4, 4, 1]
+        witness.partials[2] = witness.partials[1]
+        with self.assertRaisesRegex(ValueError, "three different"):
+            witness.reduction(np.full((2, 3, 3), 100, np.float32))
+
+    def test_rejects_other_device_or_return_queue(self):
+        witness, fuser = self.observed()
+        other_queue = SimpleNamespace(device=fuser.g.q.device, int_ptr=51)
+        with self.assertRaisesRegex(ValueError, "physical exposure queue"):
+            witness.returned(fuser, SimpleNamespace(queue=other_queue), SimpleNamespace)
+        fuser.g.q.device.int_ptr = 63
+        fuser.batch = [object()]
+        with (
+            patch.object(self, "value", 12, create=True),
+            self.assertRaisesRegex(ValueError, "another OpenCL device"),
+        ):
+            witness.flushed(fuser, self.control_flush)
+
+    def test_rejects_full_or_alignment_helper_cpu_fallback(self):
+        good_stdout = "Device: GPU (forced)\nGPU: NVIDIA GeForce RTX 3090\n"
+        check_cli_logs(good_stdout, "")
+        for failure in (
+            "GPU stacking failed; falling back to the CPU",
+            "GPU alignment help unavailable",
+        ):
+            with self.assertRaisesRegex(ValueError, "fell back"):
+                check_cli_logs(good_stdout, failure)
+
+    def test_opencl_identity_must_match_archived_uuid_at_physical_pci(self):
+        smi = f"NVIDIA GeForce RTX 3090, {GPU_UUID}, 00000000:01:00.0, 580.178.04\n"
+        opencl = {"name": "NVIDIA GeForce RTX 3090", "uuid": GPU_UUID}
+        with (
+            patch.object(subprocess, "check_output", return_value=smi),
+            patch(f"{__name__}.reference_opencl", return_value=opencl) as selected,
+        ):
+            self.assertEqual(native_identity()["uuid"], GPU_UUID)
+            selected.assert_called_once_with(0)
+            opencl["uuid"] = "GPU-other-device"
+            with self.assertRaisesRegex(ValueError, "same physical RTX"):
+                native_identity()
+        with (
+            patch.object(
+                subprocess, "check_output", return_value=smi.replace("01:00", "02:00")
+            ),
+            self.assertRaisesRegex(ValueError, "pinned PCI"),
+        ):
+            native_identity()
+
+    def test_historical_pair_windows_keep_positions_and_rgb16_metrics(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            reference, candidate = (
+                root / name for name in ("reference.tif", "candidate.tif")
+            )
+            rgb = np.full((337, 510, 3), (101, 102, 103), dtype=np.uint16)
+            tifffile.imwrite(reference, rgb, photometric="rgb")
+            tifffile.imwrite(candidate, rgb + 2, photometric="rgb")
+            report = fixed_roi_stats(reference, candidate)
+        self.assertEqual(
+            [roi["xywh"] for roi in report["regions"]],
+            [[103, 60, 48, 48], [231, 144, 48, 48], [358, 228, 48, 48]],
+        )
+        for roi in report["regions"]:
+            self.assertEqual(roi["reference"]["rgb_mean_u16"], [101, 102, 103])
+            self.assertEqual(roi["mean_absolute_u16"], 2)
+        self.assertEqual(report["dimensions_and_pixel_metrics"]["mean_absolute_u16"], 2)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    operation = parser.add_mutually_exclusive_group(required=True)
+    operation.add_argument("--self-test", action="store_true")
+    operation.add_argument("--run", action="store_true")
+    operation.add_argument("--observe-job", type=Path, help=argparse.SUPPRESS)
+    operation.add_argument(
+        "--review-pair", nargs=2, type=Path, metavar=("REFERENCE", "CANDIDATE")
+    )
+    parser.add_argument("--input-root", type=Path)
+    parser.add_argument("--nvidia-icd", type=Path)
+    args = parser.parse_args()
+    if args.self_test:
+        result = unittest.TextTestRunner(verbosity=2).run(
+            unittest.defaultTestLoader.loadTestsFromTestCase(WitnessControl)
+        )
+        return 0 if result.wasSuccessful() else 1
+    if args.review_pair:
+        print(json.dumps(fixed_roi_stats(*args.review_pair), indent=2, allow_nan=False))
+        return 0
+    if args.observe_job:
+        request = json.loads(args.observe_job.read_text())
+        observed = run_instrumented(
+            request["argv"], Path(request["output"]), list(map(Path, request["frames"]))
+        )
+        print(json.dumps(observed, allow_nan=False))
+        return 0
+    if not args.input_root or not args.nvidia_icd or not __debug__:
+        parser.error(
+            "physical verification requires --input-root, --nvidia-icd, and active assertions"
+        )
+    with (
+        p10._campaign_lock(),
+        tempfile.TemporaryDirectory(prefix="e9-reference-opencl-") as work,
+    ):
+        report = verify(
+            Path(work), args.input_root, args.nvidia_icd.resolve(strict=True)
+        )
+    print(json.dumps(report, indent=2, allow_nan=False))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

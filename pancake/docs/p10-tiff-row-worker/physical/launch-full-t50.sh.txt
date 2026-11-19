@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+test "$#" = 1
+root=$(git rev-parse --show-toplevel)
+proof="$root/artifacts/tiff-row-workers"
+stage=$1
+revision=$(cat "$proof/p2/revision.txt")
+test "$(git rev-parse HEAD)" = "$revision"
+test -z "$(git status --porcelain)"
+test ! -e "$proof/full-t50"
+test "$(cat "$proof/p2/p2-cpu.status")" = 0
+test "$(cat "$proof/p2/p2-gpu.status")" = 0
+python="$proof/p2/conformance-venv/bin/python"
+serial="$proof/serial-287828a/pancake-cli"
+rows="$root/pancake/target/release/pancake-cli"
+export PYTHONPATH="$root/pancake-conformance/src:$root/qualification/p10-performance"
+export PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+command=(env -u DISPLAY -u WAYLAND_DISPLAY -u LD_PRELOAD -u LD_LIBRARY_PATH
+  -u VK_ICD_FILENAMES -u VK_ADD_DRIVER_FILES -u OCL_ICD_VENDORS -u PANCAKE_RUNTIME
+  systemd-run --user --scope --quiet --unit="pancake-t50-tiff-rows-${revision:0:7}"
+  -p MemoryMax=28G -p MemorySwapMax=0 taskset --cpu-list 0-31
+  "$python" "$proof/full-t50.py" "$proof/p2" "$stage" "$serial" "$rows" "$proof/full-t50")
+{ printf '%q' "${command[0]}"; printf ' %q' "${command[@]:1}"; printf '\n'; } > "$proof/full-t50.command"
+date -u +%FT%TZ > "$proof/full-t50.started"
+status=0
+"${command[@]}" > "$proof/full-t50.log" 2>&1 || status=$?
+printf '%s\n' "$status" > "$proof/full-t50.status"
+date -u +%FT%TZ > "$proof/full-t50.finished"
+exit "$status"

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+workspace=$1
+expected_commit=$2
+expected_cli_sha256=$3
+scratch=$4
+implementation=$workspace/pancake/target/release/pancake-cli
+suite=$workspace/pancake-conformance
+adapter=$suite/src/pancake_conformance/adapters/pancake/pancake.toml
+[[ $(git -C "$workspace" rev-parse HEAD) == "$expected_commit" ]]
+[[ -z $(git -C "$workspace" status --porcelain=v1) ]]
+printf '%s  %s\n' "$expected_cli_sha256" "$implementation" | sha256sum --check
+mapfile -t ids < "$scratch/p4-case-ids.txt"
+(( ${#ids[@]} == 69 ))
+case_args=()
+for case_id in "${ids[@]}"; do
+  case_args+=(--case "$case_id")
+done
+env -u DISPLAY -u WAYLAND_DISPLAY -u PANCAKE_RUNTIME \
+  uv run --offline --frozen --project "$suite" pancake-conformance run \
+  --target "$adapter" --output "$scratch/p4-run" --no-coverage "${case_args[@]}"
+printf '%s  %s\n' "$expected_cli_sha256" "$implementation" | sha256sum --check
+[[ $(git -C "$workspace" rev-parse HEAD) == "$expected_commit" ]]
+[[ -z $(git -C "$workspace" status --porcelain=v1) ]]

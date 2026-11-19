@@ -1,0 +1,30 @@
+{
+  "binary": "pancake-cli",
+  "binary_sha256": "5cd03069846177a3f94fcd304f3d01d3d03ab007a99246dd6b10c1ccc5f205b5",
+  "binary_bytes": 122129888,
+  "tested_revision": "f034185843cb20bfb61c31655f999e2f26e1c939",
+  "tested_tree": "2f9fd5b62e16ed3eef5615c2a04b4cb1d1d7313a",
+  "cargo_lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+  "build_argv": [
+    "taskset",
+    "-c",
+    "2",
+    "cargo",
+    "+1.100.0",
+    "build",
+    "--offline",
+    "--locked",
+    "--release",
+    "-p",
+    "pancake-cli",
+    "--jobs",
+    "1"
+  ],
+  "build_environment": {
+    "CARGO_INCREMENTAL": "0",
+    "RUSTC_WRAPPER": "/tmp/pancake-tools/bin/pancake-rust-cache"
+  },
+  "native_p5_case_count": 64,
+  "native_p5_audit_sha256": "9a07c5e13a5f70c241b74735753f0f93edc4b0e7fb2339a017517d25b1d307fc",
+  "native_p5_audit_path": "pancake/docs/p10-registration-luma-lattice/native-f034185/p5-audit.json"
+}

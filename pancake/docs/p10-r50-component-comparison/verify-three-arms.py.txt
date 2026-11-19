@@ -1,0 +1,89 @@
+"""Pin local R50 comparison executables and classify their exact source changes."""
+
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path.cwd()
+out = Path(sys.argv[1]).resolve()
+binaries = Path(sys.argv[2]).resolve(strict=True)
+baseline = ("registration-owned-07816a2", "07816a24a62f96bc3d3252e95fcfd2b4b5950269",
+            "aad46d08e71f1973ba4ffa1efa7d7fe0ee7747e02cf2a3834903af448587f9ed")
+hybrid = ("hybrid-band-903836c", "903836ca831ba1e92b7d4f006836320dd8cbe402",
+          "c4cf0e5f9ed65e4fd3b91835b27b28d1ff12e518d9dee57fb70f3cb3ed0fc6f6")
+luma = ("registration-luma-f034185", "f034185843cb20bfb61c31655f999e2f26e1c939",
+        "5cd03069846177a3f94fcd304f3d01d3d03ab007a99246dd6b10c1ccc5f205b5")
+compile_paths = ("pancake/src", "pancake/crates", "pancake/Cargo.toml", "pancake/Cargo.lock")
+
+
+def digest(file):
+    with file.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def git(*args):
+    return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
+
+
+assert not git("diff", "--name-only", baseline[1], "b820da05", "--", *compile_paths)
+assert not git("diff", "--name-only", "b820da05", "c6ecfe1", "--", "pancake-conformance")
+expected_paths = {
+    "baseline": [],
+    "hybrid": ["pancake/src/fusion/advanced/levels.rs"],
+    "luma": ["pancake/src/registration/estimate.rs", "pancake/src/registration/kernels.rs",
+             "pancake/src/registration/kernels/tests.rs"],
+}
+candidate_receipts = {}
+for name, (directory, commit, expected) in (("baseline", baseline), ("hybrid", hybrid), ("luma", luma)):
+    owned = binaries / directory
+    executable = (owned / "pancake-cli").resolve(strict=True)
+    flavor = "physical-and-p4-receipt.json" if name == "hybrid" else "binary-provenance.json"
+    receipt_path = owned / flavor
+    witness = json.loads(receipt_path.read_bytes())
+    if name == "hybrid":
+        assert (witness["candidate_source"], witness["candidate_cli_sha256"]) == (commit, expected)
+        assert witness["p4"]["counts"] == {"passed": 69, "failed": 0, "unsupported": 0}
+        assert witness["f32_comparison"]["identical"] is True
+    else:
+        assert (witness["tested_revision"], witness["binary_sha256"]) == (commit, expected)
+        assert witness["tested_tree"] == git("rev-parse", f"{commit}^{{tree}}")
+        if name == "luma":
+            assert witness["native_p5_case_count"] == 64
+        else:
+            assert witness["qualification"]["p5_p6_device_replay_passed"] == 73
+    lock = digest(root / "pancake/Cargo.lock")
+    assert witness["cargo_lock_sha256"] == lock
+    assert digest(executable) == expected
+    changed = git("diff", "--name-only", baseline[1], commit, "--", *compile_paths).splitlines()
+    assert changed == expected_paths[name]
+    candidate_receipts[name] = {
+        "commit": commit, "tree": git("rev-parse", f"{commit}^{{tree}}"),
+        "executable": str(executable), "sha256": expected, "lock_sha256": lock,
+        "build_receipt": str(receipt_path), "build_receipt_sha256": digest(receipt_path),
+        "changed_compile_paths_from_07816a2": changed,
+    }
+
+performance = root / "pancake/docs/performance-targets.json"
+campaign = json.loads(performance.read_bytes())
+pin = campaign["corpus_evidence"]["R50"]
+manifest_path = root / pin["manifest_path"]
+assert digest(manifest_path) == pin["manifest_sha256"]
+corpus = json.loads(manifest_path.read_bytes())
+assert len(corpus["frames"]) == 50 and corpus["selected_native_bytes"] == 442_098_996
+assert len({item["sha256"] for item in corpus["frames"]}) == len(corpus["frames"])
+quality = json.loads((root / "qualification/p10-performance/evidence/integrated-r50-12f2151/summary.json").read_bytes())
+owned = json.loads((root / "pancake/docs/p10-r50-phase-287828a/owned-upload/paired-summary.json").read_bytes())
+report = {
+    "harness_commit": git("rev-parse", "HEAD"),
+    "historical_camera_crop_shape_hwc": quality["capture_geometry"]["oriented_shape_hwc"],
+    "historical_candidate_pixel_sha256": owned["owned"]["output"]["pixel_sha256"],
+    "frozen_performance_targets_sha256": digest(performance),
+    "manifest_path": str(manifest_path.relative_to(root)),
+    "manifest_sha256": pin["manifest_sha256"],
+    "count": len(corpus["frames"]),
+    "bytes": corpus["selected_native_bytes"],
+    "candidates": candidate_receipts,
+}
+out.write_text(json.dumps(report, indent=2) + "\n")

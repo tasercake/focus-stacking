@@ -1,0 +1,25 @@
+2026-11-19T02:09:29+08:00
+870f7f923d70b1a7b0e7fe73d5f9a4987770fdc4
+2430350c3c010fb798220540a10ad346c57f1d99
+f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc  Cargo.lock
+ca2b40a7b204b6b8301215cdc543d13811ce1fb29575a70302f8482c01ab4c6e  rust-toolchain.toml
+63ce2ccca53e1e4e73666b5bc72374d2ea5f8a25fe474e0c87ee41284d27eec7  scripts/check.sh
+044dcaefaf20b04fda64f974d464c79298c54ee4bbac234661bb204809e27a3a  scripts/assurance_targets.py
+46a3c6e85acda589d887dff1da033eff72f4788098edacea3974382679e162f8  scripts/gui_coverage.py
+5035ec02411487a560f02dc1f6170d49762e79e1fd1fafc73ebfabca502b9019  scripts/compare_assurance_coverage.py
+30663059d83f2bb9d94bef743e9f74cf1a28c4bdd78073fc0342557fd76eb29b  ../pancake-conformance/uv.lock
+rustc 1.100.0 (0ef1bc386 2026-11-09)
+binary: rustc
+commit-hash: 0ef1bc386059596dada8fb65b50425aab2ea637a
+commit-date: 2026-11-09
+host: x86_64-unknown-linux-gnu
+release: 1.100.0
+LLVM version: 23.1.5
+cargo 1.100.0 (3acc79c0c 2026-11-05)
+cargo-llvm-cov 0.9.1
+cargo-nextest 0.9.152 (26ebeda79 2026-11-13)
+release: 0.9.152
+commit-hash: 26ebeda79b9ae1d008cf64ddb01984bcaa6e1239
+commit-date: 2026-11-13
+host: x86_64-unknown-linux-gnu
+Cpus_allowed_list:	2-3

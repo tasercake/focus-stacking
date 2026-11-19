@@ -1,0 +1,52 @@
+{
+  "harness_commit": "c6ecfe1d09166f033eeb6f6c6a1b13c895d587f1",
+  "historical_camera_crop_shape_hwc": [
+    3392,
+    5088,
+    3
+  ],
+  "historical_candidate_pixel_sha256": "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492",
+  "frozen_performance_targets_sha256": "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+  "manifest_path": "pancake-conformance/src/pancake_conformance/adapters/pancake/performance-raw-corpus.json",
+  "manifest_sha256": "dd7a7e8a396d16e952d3d24d258afc1e05b77bb1664b179d3a43a7f66e413fab",
+  "count": 50,
+  "bytes": 442098996,
+  "candidates": {
+    "baseline": {
+      "commit": "07816a24a62f96bc3d3252e95fcfd2b4b5950269",
+      "tree": "fb731072babb7c0df9fd9e058449ed4b9fd9ace7",
+      "executable": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/registration-owned-07816a2/pancake-cli",
+      "sha256": "aad46d08e71f1973ba4ffa1efa7d7fe0ee7747e02cf2a3834903af448587f9ed",
+      "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+      "build_receipt": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/registration-owned-07816a2/binary-provenance.json",
+      "build_receipt_sha256": "084fb142c11eaaedbd3b93731fb7211b9a3001058e7d29260042fcc855415325",
+      "changed_compile_paths_from_07816a2": []
+    },
+    "hybrid": {
+      "commit": "903836ca831ba1e92b7d4f006836320dd8cbe402",
+      "tree": "2dd395a8f38cd9534c67f087aa8070967f4df7ca",
+      "executable": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/hybrid-band-903836c/pancake-cli",
+      "sha256": "c4cf0e5f9ed65e4fd3b91835b27b28d1ff12e518d9dee57fb70f3cb3ed0fc6f6",
+      "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+      "build_receipt": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/hybrid-band-903836c/physical-and-p4-receipt.json",
+      "build_receipt_sha256": "c21fbdae085af46d93d3d9f58ad56f0ea4a5b778deee59280e2fed4377ba89b1",
+      "changed_compile_paths_from_07816a2": [
+        "pancake/src/fusion/advanced/levels.rs"
+      ]
+    },
+    "luma": {
+      "commit": "f034185843cb20bfb61c31655f999e2f26e1c939",
+      "tree": "2f9fd5b62e16ed3eef5615c2a04b4cb1d1d7313a",
+      "executable": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/registration-luma-f034185/pancake-cli",
+      "sha256": "5cd03069846177a3f94fcd304f3d01d3d03ab007a99246dd6b10c1ccc5f205b5",
+      "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+      "build_receipt": "/home/krishna/Documents/focus-stacking/artifacts/pancake-performance/binaries/registration-luma-f034185/binary-provenance.json",
+      "build_receipt_sha256": "169bac34e955db7953aa8e5fce6c70281cd98cd9fe1919c8313a9175efbafa5d",
+      "changed_compile_paths_from_07816a2": [
+        "pancake/src/registration/estimate.rs",
+        "pancake/src/registration/kernels.rs",
+        "pancake/src/registration/kernels/tests.rs"
+      ]
+    }
+  }
+}

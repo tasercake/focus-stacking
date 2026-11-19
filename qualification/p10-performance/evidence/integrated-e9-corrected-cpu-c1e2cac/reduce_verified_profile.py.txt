@@ -1,0 +1,204 @@
+"""Reproduce the qualified E9 CPU verdict from frozen samples and review evidence."""
+
+import argparse
+import gzip
+import hashlib
+import json
+import tarfile
+from pathlib import Path
+
+from pancake_conformance.adapters.pancake.release_ledger import Lane, load_contract
+from protocol import Campaign, corpus, profile_result, sha256
+
+P9_SUMMARY_SHA256 = "e51fbc3c092cdcc1c019224158e6d4d7b5f564dfa3d120a3a6d1f9da9b6f446f"
+P9_LEDGER_GZIP_SHA256 = (
+    "00a659b2c5bc8353646485a13007d43f174dd2585afc6052ea96251abf8d810e"
+)
+REVIEW_NARRATIVE_SHA256 = (
+    "b60891d3267b35bba32b1678345edfdb9461c5dd576940d6d09bc05d376f4b12"
+)
+REVIEW_METRICS_SHA256 = (
+    "81e7efd5ccb2d4b3cdfb323f1b342d281b21b838cadc60790c5e8746e17b8ccf"
+)
+
+
+def checked(path, expected):
+    assert sha256(path) == expected, f"unexpected SHA-256 for {path}"
+    return path
+
+
+def strict_linux_review(p9, candidate):
+    summary_path = checked(p9 / "summary.json", P9_SUMMARY_SHA256)
+    ledger_path = checked(p9 / "linux-ledger.json.gz", P9_LEDGER_GZIP_SHA256)
+    summary = json.loads(summary_path.read_text())
+    ledger_bytes = gzip.decompress(ledger_path.read_bytes())
+    assert (
+        hashlib.sha256(ledger_bytes).hexdigest() == summary["aggregate_ledger_sha256"]
+    )
+    ledger = json.loads(ledger_bytes)
+    assert ledger["passed"] == summary["aggregate_passed"] == 376
+    assert (
+        summary["aggregate_verification_exit"]
+        == summary["package_verification_exit"]
+        == 0
+    )
+    assert (
+        ledger["linux_package"]["artifact_sha256"]
+        == summary["archive"]["sha256"]
+        == candidate["build_package"]["archive_sha256"]
+    )
+    assert summary["binaries"]["pancake-cli"]["sha256"] == candidate["binary_sha256"]
+    assert summary["identity"]["target_commit"] == candidate["commit"]
+    assert summary["identity"]["cargo_lock_sha256"] == candidate["lock_sha256"]
+    assert summary["identity"]["descriptor_sha256"] == candidate["descriptor_sha256"]
+    assert (
+        summary["identity"]["pancake_tree"]
+        == candidate["independent_benchmark_source"]["complete_identical_pancake_tree"]
+    )
+    contract = load_contract()
+    assert contract.snapshot_hash == summary["identity"]["contract_sha256"]
+    assert contract.descriptor_hash == summary["identity"]["descriptor_sha256"]
+    assert contract.uv_lock_hash == summary["identity"]["uv_lock_sha256"]
+    counts = {}
+    for lane in Lane:
+        receipt = ledger["lanes"][lane.value]
+        assert receipt["identity"] == summary["identity"]
+        assert receipt["executables"]["cli"]["sha256"] == candidate["binary_sha256"]
+        assert receipt["cases"] == [case.id for case in contract.select(lane)]
+        counts[lane.value] = len(receipt["cases"])
+    return {
+        "status": "pass",
+        "passed": sum(counts.values()),
+        "lanes": counts,
+        "summary_sha256": P9_SUMMARY_SHA256,
+        "ledger_sha256": summary["aggregate_ledger_sha256"],
+        "ledger_gzip_sha256": P9_LEDGER_GZIP_SHA256,
+        "candidate_commit": candidate["commit"],
+    }
+
+
+def evaluate(evidence, p9, targets):
+    summary = json.loads((evidence / "summary.json").read_text())
+    checked(targets, summary["targets_sha256"])
+    archive = checked(evidence / "raw-paired-runs.tar.gz", summary["archive"]["sha256"])
+    with tarfile.open(archive, "r:gz") as sealed:
+        with sealed.extractfile("paired/report.json") as stream:
+            raw = stream.read()
+        report_hash = hashlib.sha256(raw).hexdigest()
+        assert report_hash == summary["archive"]["raw_report_sha256"]
+        report = json.loads(raw)
+        assert report["profile"] == summary["profile"] == "E9.exposure_fusion.cpu"
+        assert report["candidate_runtime"] == report["reference_runtime"] == "cpu"
+        assert report["inputs_unchanged"]
+        assert report["performance_targets_sha256"] == summary["targets_sha256"]
+        assert (
+            report["targets"]["reference"]["exposure_combiner"]["policy"]
+            == "equal-final-batch-mean-v1"
+        )
+        campaign = Campaign.load(targets)
+        frames, _ = corpus(targets.resolve().parents[2], campaign, "E9")
+        assert report["frames"] == frames
+        assert report["settings"] == next(
+            profile.options
+            for profile in campaign.profiles("cpu")
+            if profile.key == report["profile"]
+        )
+        assert [frame["sha256"] for frame in report["frames"]] == summary[
+            "ordered_input_sha256"
+        ]
+        numeric = profile_result(campaign, "cpu", report["samples"])
+        assert all(
+            numeric[key] == report[key] for key in ("status", "gates", "elapsed_ns")
+        )
+        assert numeric["gates"]["quality"]["status"] == "pending"
+        assert all(
+            gate["status"] == "pass"
+            for key, gate in numeric["gates"].items()
+            if key != "quality"
+        )
+        jobs = report["samples"] + report["diagnostics"]
+        assert len(report["samples"]) == 34 and len(report["diagnostics"]) == 2
+        assert all(
+            job["maximum_rss_sample_gap_ns"] <= 20_000_000
+            and job["peak_rss_bytes"] is not None
+            for job in jobs
+        )
+        diagnostics = {}
+        for witness in report["diagnostics"]:
+            app = witness["target"]
+            assert witness["valid"] and witness["completion"]["actual_backend"] == "cpu"
+            assert witness["matching_warm_pixel_hashes"] == 10
+            with sealed.extractfile(
+                f"paired/diagnostic-01/{app}/events.jsonl"
+            ) as events:
+                diagnostics[app] = hashlib.file_digest(events, "sha256").hexdigest()
+
+    checked(evidence / "independent-quality-review.md", REVIEW_NARRATIVE_SHA256)
+    review = json.loads(
+        checked(
+            evidence / "independent-quality-metrics.json", REVIEW_METRICS_SHA256
+        ).read_text()
+    )
+    first_warm = {
+        sample["target"]: sample["output"]
+        for sample in report["samples"]
+        if (sample["kind"], sample["number"]) == ("warm", 1)
+    }
+    assert review["paired_report_sha256"] == report_hash
+    assert review["input_hashes"] == summary["ordered_input_sha256"]
+    assert review["exports"] == first_warm == summary["first_warm_exports"]
+    assert all(
+        output["dtype"] == "uint16" and output["shape"] == [337, 510, 3]
+        for output in first_warm.values()
+    )
+    for app, digest in diagnostics.items():
+        witness = review["diagnostics"][app]
+        assert (
+            witness["events_sha256"] == digest
+            and witness["identity_maps"] == 9
+            and witness["export_matches_warm01"]
+        )
+    assert [(window["name"], window["xywh"]) for window in review["windows"]] == [
+        (entry["name"], entry["xywh"]) for entry in summary["fixed_window_pair_metrics"]
+    ]
+    conformance = strict_linux_review(p9, report["targets"]["candidate"])
+    return {
+        "profile": report["profile"],
+        "status": "pass",
+        "scope": "one corrected frozen E9 CPU profile, exact Linux package",
+        "original_runner_status": numeric["status"],
+        "paired_report_sha256": report_hash,
+        "numeric_gates": {
+            key: value for key, value in numeric["gates"].items() if key != "quality"
+        },
+        "independent_quality_gate": {
+            "status": "pass",
+            "narrative_sha256": REVIEW_NARRATIVE_SHA256,
+            "metrics_sha256": REVIEW_METRICS_SHA256,
+            "residual_candidate_only_endpoint_samples": {
+                endpoint: item["candidate_new_endpoint_samples"]
+                for endpoint, item in review["endpoint_locations"].items()
+            },
+        },
+        "strict_linux_release_conformance": conformance,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--p9-dir", required=True, type=Path)
+    parser.add_argument("--targets", required=True, type=Path)
+    args = parser.parse_args()
+    if not __debug__:
+        parser.error("proof reduction requires active assertions")
+    print(
+        json.dumps(
+            evaluate(Path(__file__).resolve().parent, args.p9_dir, args.targets),
+            indent=2,
+            allow_nan=False,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

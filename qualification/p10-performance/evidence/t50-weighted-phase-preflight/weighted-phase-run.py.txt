@@ -1,0 +1,210 @@
+"""Authorize one stock control and one exact-ELF GDB attribution run."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import runpy
+import signal
+import subprocess
+import time
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, pinned_json, sha256, verify_frames, verify_output
+from resources import _session_memory
+
+SOURCE = "e81079dee4078d7a1149da0f5950aab8c89f8d44"
+ELF = "9630572be5e637c38c604f2fcd6d7a44e31e171a5ccf17dadb1f59ba345c24f0"
+MATERIALIZATION = "1d9be3f1cd20a01083b11c10c4d17ab75a4f3b6bb7e2ebef682824e345ba649d"
+TARGETS = "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc"
+PINNED_OUTPUT = {
+    "sha256": "60a45fe42e665b16d365406ab222c6f99538cd0284b2256799affa98daebf75a",
+    "pixel_sha256": "f8a00c590aa9b7b9d24071348a46897c43d2fa07a98ec9a6204ada9e1838b6a7",
+}
+
+
+def drain_session(session):
+    """Kill only a leaked or timed-out run's original Linux session."""
+    pids, _ = _session_memory(session)
+    for pid in pids:
+        try:
+            if os.getsid(pid) == session:
+                os.kill(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            continue
+    return sorted(pids)
+
+
+def launch(argv, cwd, env, directory, timeout):
+    """Measure parent invocation through reaping, retaining both terminal streams."""
+    with (directory / "stdout.txt").open("xb") as stdout, (directory / "stderr.txt").open("xb") as stderr:
+        start = time.monotonic_ns()
+        with subprocess.Popen(
+            argv, cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=stdout,
+            stderr=stderr, start_new_session=True,
+        ) as process:
+            timed_out = False
+            try:
+                status = process.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                timed_out = True
+                drain_session(process.pid)
+                status = process.wait(timeout=10)
+            end = time.monotonic_ns()
+            remaining = drain_session(process.pid)
+    return {
+        "elapsed_ns": end - start, "returncode": status, "timed_out": timed_out,
+        "remaining_session_pids_after_reap": remaining,
+    }
+
+
+def decode_and_validate(directory, frames):
+    """Authenticate the actual fresh export and the emitted CPU completion."""
+    completed = p10._assert_completion(directory / "events.jsonl", "cpu", "cpu", None)
+    transforms = completed.get("alignment_transforms")
+    ordered = [str(path) for path in frames]
+    identity = [[1, 0, 0], [0, 1, 0]]
+    if (
+        len(set(ordered)) != len(ordered) or not isinstance(transforms, dict)
+        or list(transforms) != ordered or any(matrix != identity for matrix in transforms.values())
+    ):
+        raise ValueError("exact reference-to-source identity witness changed")
+    sequential = completed.get("sequential_transforms")
+    if not isinstance(sequential, list) or sequential != [identity] * len(ordered):
+        raise ValueError("exact sequential map witness changed")
+    image = verify_output(directory / "complete.tif", (4000, 6000, 3))
+    if image["shape"] != [3998, 5998, 3] or any(image[key] != value for key, value in PINNED_OUTPUT.items()):
+        raise ValueError("RGB16 geometry, encoded bytes or decoded pixels changed")
+    return completed, image
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for option in ("lease", "stage", "probe", "output"):
+        parser.add_argument(f"--{option}", type=Path, required=True)
+    parser.add_argument("--execute-diagnostic", action="store_true")
+    options = parser.parse_args()
+    if not options.execute_diagnostic:
+        parser.error("fresh quiet lease and --execute-diagnostic required")
+    if os.sched_getaffinity(0) != set(range(15)):
+        parser.error("launch from the preplanned CPU 0–14 mask")
+    lease_sha256 = sha256(options.lease)
+    stage = options.stage.resolve(strict=True)
+    probe = options.probe.resolve(strict=True)
+    probe_policy = runpy.run_path(str(probe))
+    output = options.output.resolve()
+    output.mkdir()
+    report = {
+        "scope": "two same-ELF diagnostic jobs, no frozen qualification credit",
+        "launcher_sha256": sha256(Path(__file__)), "probe_sha256": sha256(probe),
+        "lease_sha256": lease_sha256, "manifest_sha256": MATERIALIZATION,
+        "jobs": {}, "began_unix_ns": time.time_ns(),
+    }
+    try:
+        with p10._campaign_lock():
+            pinned_json(p10.TARGETS_PATH, TARGETS)
+            if p10._git(p10.ROOT, "rev-parse", "HEAD") != SOURCE:
+                raise ValueError("unexpected candidate source")
+            p10._require_clean(p10.ROOT, "pancake", str(p10.CANDIDATE), "qualification/p10-performance")
+            spec = TargetSpec.load(p10.CANDIDATE)
+            executable = p10._candidate_binary(spec)
+            build = json.loads((stage / "build-receipt.json").read_bytes())
+            if (
+                build["commit"] != SOURCE or build["binary_sha256"] != ELF
+                or Path(build["executable"]) != executable or sha256(executable) != ELF
+            ):
+                raise ValueError("exact stock package-derived build or executable changed")
+            report["build"] = build
+            campaign = Campaign.load(p10.TARGETS_PATH)
+            profile = next(p for p in campaign.profiles("cpu") if p.key == "T50.weighted_average.cpu")
+            rows, source = corpus(p10.ROOT, campaign, "T50")
+            frozen = pinned_json(Path(source["path"]), source["sha256"])
+            manifest = pinned_json(stage / "materialization.json", MATERIALIZATION)
+            inputs = (stage / "inputs").resolve(strict=True)
+            marker_path = inputs / "ownership.json"
+            marker = json.loads(marker_path.read_bytes())
+            if (
+                marker_path.is_symlink() or (stage / "inputs").is_symlink()
+                or marker != {"kind": manifest["dataset_kind"], "token": manifest["ownership_token"]}
+                or manifest["files"] != frozen["files"]
+                or manifest["reference_receipt_sha256"] != source["sha256"]
+                or manifest["cleanup"]["owned_output_directory"] != str(inputs)
+            ):
+                raise ValueError("stage no longer matches frozen ownership and image records")
+            all_rows = [row | {"path": row["name"], "sha256": row["file_sha256"]} for row in manifest["files"]]
+            originals = verify_frames(inputs, all_rows, 52)
+            frames = [inputs / row["path"] for row in rows]
+            if frames != originals[:50]:
+                raise ValueError("observed source sequence changed")
+            report.update(profile=profile.key, settings=profile.options, host=p10._hardware(None))
+            try:
+                for arm in ("control", "trace"):
+                    directory = output / arm
+                    directory.mkdir()
+                    cache = output / "cache" / arm
+                    env = p10._environment(spec, cache, directory, 15, None, None, True)
+                    env["LC_ALL"] = "C"
+                    stock = [str(executable), *spec.command("cli")[1:]]
+                    stock += spec.stack_arguments(frames, directory / "complete.tif", profile.options)
+                    argv = ["/usr/bin/taskset", "-c", "0-14", *stock]
+                    if arm == "trace":
+                        phase_receipt = directory / "phases.json"
+                        env.update(
+                            PANCAKE_WEIGHTED_PHASE_MODE="trace",
+                            PANCAKE_WEIGHTED_PHASE_RECEIPT=str(phase_receipt),
+                            DEBUGINFOD_URLS="",
+                        )
+                        # Also bind this harmless local-only setting in the control.
+                        argv = [
+                            "/usr/bin/taskset", "-c", "15", "/usr/bin/gdb", "-q", "-nx", "-batch",
+                            "-iex", "set auto-load off", "-iex", "set debuginfod enabled off",
+                            "-ex", "set pagination off", "-ex", "set confirm off",
+                            "-ex", "set disable-randomization off", "-ex", "set print thread-events off",
+                            "-ex", "set exec-wrapper /usr/bin/taskset -c 0-14",
+                            "-ex", f"source {probe}", "--args", *stock,
+                        ]
+                    else:
+                        env["DEBUGINFOD_URLS"] = ""
+                    record = {"argv": argv, "app_argv": stock}
+                    report["jobs"][arm] = record
+                    p10._write(output / "report.json", report)
+                    record.update(launch(argv, spec.root, env, directory, 180))
+                    if record["returncode"] or record["timed_out"] or record["remaining_session_pids_after_reap"]:
+                        raise ValueError(f"{arm} exited unsuccessfully or leaked its child session")
+                    record["completion"], record["output"] = decode_and_validate(directory, frames)
+                    if arm == "trace":
+                        phases = json.loads(phase_receipt.read_bytes())
+                        if phases["status"] != "completed":
+                            raise ValueError("GDB phase receipt is invalid")
+                        counts, timings = probe_policy["summarize"](phases["intervals"])
+                        if counts != phases["counts"] or timings != phases["timings"]:
+                            raise ValueError("independent reduction of recorded intervals differs")
+                        record["phases_sha256"] = sha256(phase_receipt)
+                        record.update(counts=counts, timings=timings)
+                        record["callback_observer_wall_ns"] = phases["observer_callback_wall_ns"]
+                        record["gdb_run_through_inferior_exit_ns"] = phases["gdb_run_through_inferior_exit_ns"]
+                        record["uncovered_gdb_run_wall_ns"] = phases["gdb_run_through_inferior_exit_ns"] - timings["top_level_ns"]
+                    p10._write(output / "report.json", report)
+            finally:
+                report["all_52_unchanged"] = originals == verify_frames(inputs, all_rows, 52)
+                report["materialization_unchanged"] = sha256(stage / "materialization.json") == MATERIALIZATION
+                report["executable_unchanged"] = sha256(executable) == ELF
+            if not all(report[key] for key in ("all_52_unchanged", "materialization_unchanged", "executable_unchanged")):
+                raise ValueError("postflight provenance changed")
+        control = report["jobs"]["control"]["elapsed_ns"]
+        trace = report["jobs"]["trace"]["elapsed_ns"]
+        report["observed_outer_gdb_minus_control_ns"] = trace - control
+        report["observed_outer_gdb_over_control_ratio"] = trace / control
+        report["status"] = "completed_phase_diagnostic"
+        return 0
+    except (KeyError, OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+        report.update(status="failed", failure=str(error))
+        raise
+    finally:
+        report["finished_unix_ns"] = time.time_ns()
+        p10._write(output / "report.json", report)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

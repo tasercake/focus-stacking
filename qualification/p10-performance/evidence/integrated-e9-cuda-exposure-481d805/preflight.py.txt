@@ -1,0 +1,174 @@
+"""Authenticate the scoped Exposure-native candidate without running either application."""
+
+import json
+import re
+import subprocess
+import tarfile
+from pathlib import Path
+from types import SimpleNamespace
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames
+
+SOURCE = "481d8052e288c54cf027808b3eaad1ea5655e128"
+TREE = "f1fbbed08ec90dbe19dda563a0d204f0d5293408"
+PRODUCT = "1d9d639fc635d0af8dda93880ad3d74a3cd43c78"
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
+BINARY = "875e8800fe95806b840bf062dc211940acc12191dec3a19a4561698a99fe355f"
+BUILD = "41017f8eabeb5a25f4dc84eb3a012f1a06848dc1"
+HOST_ARCHIVE = "e92f907439f170b2307302df41cc7ba1d37126e9db1211691abd5c36f5d41781"
+STABLE = Path(
+    "/home/krishna/Documents/focus-stacking/artifacts/pancake-linux-native/481d805/pancake-cli"
+)
+INPUTS = Path(
+    "/tmp/pancake-worktrees.t3paqgWM/e9-cuda-integrated-replay/artifacts/e9-cuda-integrated-replay/input-stage/input"
+)
+PREVIOUS = INPUTS.parents[1] / "build-receipt.json"
+PROFILE = "E9.exposure_fusion.gpu"
+
+
+def require(value, detail):
+    if not value:
+        raise ValueError(detail)
+
+
+def main():
+    stage = Path(__file__).resolve().parent
+    p10._require_clean(
+        p10.ROOT, "pancake", "pancake-conformance/src", "qualification/p10-performance"
+    )
+    candidate = TargetSpec.load(p10.CANDIDATE)
+    snapshot = p10._snapshot(candidate, candidate.root / "Cargo.lock")
+    require(
+        snapshot
+        == {"commit": SOURCE, "lock_sha256": LOCK, "descriptor_sha256": DESCRIPTOR},
+        "candidate snapshot differs",
+    )
+    require(
+        p10._git(p10.ROOT, "rev-parse", "HEAD^{tree}") == TREE
+        and p10._git(p10.ROOT, "rev-parse", "HEAD:pancake") == PRODUCT,
+        "candidate tree differs",
+    )
+    exe = p10._candidate_binary(candidate)
+    for file in (STABLE, exe):
+        require(
+            file.is_file()
+            and not file.is_symlink()
+            and not file.stat().st_mode & 0o222
+            and sha256(file) == BINARY,
+            f"immutable CUDA executable differs: {file}",
+        )
+    require(
+        not STABLE.samefile(exe), "benchmark requires an independent CUDA binary copy"
+    )
+    notes = subprocess.check_output(["readelf", "-n", str(exe)], text=True)
+    require(
+        re.findall(r"Build ID: ([a-f0-9]+)", notes) == [BUILD],
+        "candidate ELF Build ID differs",
+    )
+    archive = STABLE.with_name("host-records.tar.gz")
+    require(sha256(archive) == HOST_ARCHIVE, "native producer host archive differs")
+    with tarfile.open(archive) as tar:
+
+        def extract(name):
+            with tar.extractfile(f"./physical-build/{name}") as data:
+                return data.read().decode()
+
+        require(
+            extract("source-tree.txt").splitlines() == [SOURCE, TREE],
+            "native producer source stamp differs",
+        )
+        require(
+            extract("lock.sha256").split()[0] == LOCK
+            and extract("cli.sha256").split()[0] == BINARY
+            and BUILD in extract("cli-elf-notes.txt"),
+            "native producer lock or binary proof differs",
+        )
+        settings = extract("build-settings.txt")
+        command = extract("cli.command")
+        log = extract("cli.log")
+        require(
+            "Finished `release`" in log
+            and "CUDARC_CUDA_VERSION=12050" in settings
+            and "CARGO_BUILD_JOBS=2" in settings
+            and all(
+                flag in command
+                for flag in (
+                    "--locked",
+                    "--offline",
+                    "--release",
+                    "--features cubecl/cuda",
+                )
+            ),
+            "native producer build proof differs",
+        )
+    previous = json.loads(PREVIOUS.read_text())
+    for path, digest in previous["runtime_files_sha256"].items():
+        require(
+            sha256(Path(path)) == digest, f"established runtime library differs: {path}"
+        )
+    snapshot.update(
+        executable=str(exe),
+        binary_sha256=BINARY,
+        elf_build_id=BUILD,
+        retained_executable=str(STABLE),
+        source_repository_tree=TREE,
+        source_pancake_tree=PRODUCT,
+        producer_host_archive_sha256=HOST_ARCHIVE,
+        native_build_settings=settings,
+        native_build_command=command,
+        runtime_files_sha256=previous["runtime_files_sha256"],
+        expected_physical_gpu=previous["expected_physical_gpu"],
+        release_scope="standalone experimental CUDA CLI; separate from the e810 Debian package",
+    )
+    receipt = stage / "build-receipt.json"
+    p10._write(receipt, snapshot)
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    require(
+        sha256(p10.TARGETS_PATH)
+        == "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+        "frozen target file differs",
+    )
+    records, _ = corpus(p10.ROOT, campaign, "E9")
+    frames = verify_frames(INPUTS, records, 9)
+    require(
+        frames == sorted(frames), "ordered originals differ from public CLI sorting"
+    )
+    _, identities = p10._prepared_targets(
+        SimpleNamespace(profile=PROFILE, build_receipt=receipt), campaign
+    )
+    require(
+        identities["reference"]["exposure_combiner"]["sha256"]
+        == "47f2c63bfc635e53e886e9bbd6b66944a95f97c719fad26ed88f6c222594cb94",
+        "the corrected OpenCL comparator differs",
+    )
+    p10._write(
+        stage / "candidate-preflight.json",
+        {
+            "profile": PROFILE,
+            "targets": identities,
+            "schedule": campaign.schedule(),
+            "same_ordered_originals": len(frames),
+            "product_launches": 0,
+            "gpu_queries": 0,
+        },
+    )
+    print(
+        json.dumps(
+            {
+                "candidate": SOURCE,
+                "executable_sha256": BINARY,
+                "paired_entries": len(campaign.schedule()),
+                "inputs": len(frames),
+                "gpu_queries": 0,
+                "product_launches": 0,
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

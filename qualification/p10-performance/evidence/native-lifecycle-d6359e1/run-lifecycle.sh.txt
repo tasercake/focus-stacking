@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+work=$(realpath "$1")
+main=$(realpath "$2")
+plan="$work/artifacts/lifecycle-plan"
+runner="$work/artifacts/lifecycle-runner"
+real="$work/artifacts/d150/inputs"
+python="$main/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python"
+owned=$(mktemp -d "${TMPDIR:-/tmp}/plife.XXXXXXXX")
+output="$owned/artifacts/run"
+mkdir -p "$output"
+printf 'Lifecycle evidence %s\n' "$output"
+source "$main/artifacts/p10-compare/native-tools/gui-env.sh"
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+export PYTHONPATH="$work/pancake-conformance/src:$runner"
+unset SLINT_BACKEND
+cd "$work"
+
+date -Iseconds > "$output/quiet-start.txt"
+nvidia-smi > "$output/initial-gpu.txt"
+ps -eo pcpu,pmem,pid,ppid,stat,comm --sort=-pcpu | head -25 > "$output/initial-host.txt" || test "$?" = 141
+common=(--build-receipt "$plan/build-receipt.json")
+failed=0
+for profile in fixture-64 real-D150; do
+    dataset=()
+    workload=lifecycle
+    if [[ "$profile" == real-D150 ]]; then
+        workload=D150
+        dataset=(--input-root "$real")
+    fi
+    result=0
+    timeout --signal=INT --kill-after=20s 600s "$python" "$runner/linux_latency.py" \
+        "${common[@]}" --scenario "$plan/$profile.json" --workload "$workload" \
+        "${dataset[@]}" --output "$output/$profile" > "$output/$profile.collector.log" 2>&1 || result=$?
+    printf '%s %s %s\n' "$profile" "$result" "$(date -Iseconds)" | tee -a "$output/exit-status.txt"
+    if ((result != 0)); then failed=$result; fi
+done
+result=0
+"$python" "$runner/p10.py" latency \
+    "$output/fixture-64/native-latency.json" "$output/real-D150/native-latency.json" \
+    > "$output/frozen-reduction.json" 2> "$output/frozen-reduction.stderr" || result=$?
+printf '%s\n' "$result" > "$output/reducer-exit-status.txt"
+nvidia-smi > "$output/final-gpu.txt"
+date -Iseconds > "$output/quiet-end.txt"
+exit "$failed"

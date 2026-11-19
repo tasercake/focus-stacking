@@ -1,0 +1,431 @@
+[
+  {
+    "case": "interface.controls.method-alignment",
+    "status": "passed",
+    "fixture_inputs": 0,
+    "outputs": {}
+  },
+  {
+    "case": "interface.algorithm.laplacian",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "gui": {
+        "file": "gui.tif",
+        "sha256": "b0df3f5cd409769b94dd00d1b10711b95c7bf5fe6deed6a2a01c7e3c27c59f88",
+        "bytes": 149592
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "b0df3f5cd409769b94dd00d1b10711b95c7bf5fe6deed6a2a01c7e3c27c59f88",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.algorithm.hybrid",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "gui": {
+        "file": "gui.tif",
+        "sha256": "edbb94a89fe2be9d559ca65240123b856d850eb3ce2a73c193fd729e24110ee8",
+        "bytes": 149592
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "edbb94a89fe2be9d559ca65240123b856d850eb3ce2a73c193fd729e24110ee8",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.algorithm.weighted_average",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "gui": {
+        "file": "gui.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.algorithm.depth_map",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "gui": {
+        "file": "gui.tif",
+        "sha256": "b66d769cca67d3d291686a27d68313ede94ff366ca8b59ae788442b0ce9437c0",
+        "bytes": 149592
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "b66d769cca67d3d291686a27d68313ede94ff366ca8b59ae788442b0ce9437c0",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.algorithm.exposure_fusion",
+    "status": "passed",
+    "fixture_inputs": 5,
+    "outputs": {
+      "gui": {
+        "file": "gui.tif",
+        "sha256": "31ec8f50a07cc113c21bb918545133813d8565e5c80b3a9511b4259fefd34d9f",
+        "bytes": 149592
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "31ec8f50a07cc113c21bb918545133813d8565e5c80b3a9511b4259fefd34d9f",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.startup.empty",
+    "status": "passed",
+    "fixture_inputs": 0,
+    "outputs": {}
+  },
+  {
+    "case": "interface.import.native-dialogs",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.import.raw",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "raw-gui": {
+        "file": "raw.tif",
+        "sha256": "190559c8e8526d4fb626afa762f9cdb3fdb77856a06d0e045c04a694e93567c3",
+        "bytes": 107730
+      }
+    }
+  },
+  {
+    "case": "interface.export.formats",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "gui-JPG-8": {
+        "file": "export-0.jpg",
+        "sha256": "a127aa7e4ed603af5f381352593e8601551560655c30ee14ace4278c063276d3",
+        "bytes": 22171
+      },
+      "gui-PNG-8": {
+        "file": "export-1.png",
+        "sha256": "f061c84ef52171e941f30bbaa02ae971def93f8ea74582c78502ff4aa61e916b",
+        "bytes": 50356
+      },
+      "gui-PNG-16": {
+        "file": "export-2.png",
+        "sha256": "29b0e1dd797e609d7c34fbd955107d81da862b9b094ea2506ede73a38ca444f9",
+        "bytes": 86146
+      },
+      "gui-TIFF-8": {
+        "file": "export-3.tif",
+        "sha256": "a686ab58fb485536f718ab67fedcbb65a3c66171e5562bb5e75f83787ab1cf00",
+        "bytes": 74901
+      },
+      "gui-TIFF-16": {
+        "file": "export-4.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      },
+      "gui-EXR-float32": {
+        "file": "export-5.exr",
+        "sha256": "46cf3d84a81819908e55576ab0c77d3a5891ea3ccba517cfdc4e42953ea6b1b8",
+        "bytes": 299490
+      }
+    }
+  },
+  {
+    "case": "interface.viewer.navigation-comparison",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.layout.panels",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.controls.advanced-visibility",
+    "status": "passed",
+    "fixture_inputs": 0,
+    "outputs": {}
+  },
+  {
+    "case": "interface.workflow.unsaved-discard",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.lifecycle.pause-cancel",
+    "status": "passed",
+    "fixture_inputs": 64,
+    "outputs": {}
+  },
+  {
+    "case": "interface.alignment.crop",
+    "status": "passed",
+    "fixture_inputs": 4,
+    "outputs": {
+      "aligned-gui": {
+        "file": "aligned-gui.tif",
+        "sha256": "7fa3cd19ac558af219329cd8d2c219cbdb871cb5401fc70f8623a0b56f22decd",
+        "bytes": 468576
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "7fa3cd19ac558af219329cd8d2c219cbdb871cb5401fc70f8623a0b56f22decd",
+        "bytes": 468576
+      }
+    }
+  },
+  {
+    "case": "interface.settings.persistence",
+    "status": "passed",
+    "fixture_inputs": 0,
+    "outputs": {}
+  },
+  {
+    "case": "interface.settings.lightroom-status",
+    "status": "passed",
+    "fixture_inputs": 0,
+    "outputs": {}
+  },
+  {
+    "case": "interface.about",
+    "status": "passed",
+    "fixture_inputs": 0,
+    "outputs": {}
+  },
+  {
+    "case": "interface.portability.retained-results",
+    "status": "passed",
+    "fixture_inputs": 4,
+    "outputs": {
+      "retained-before": {
+        "file": "retained-before.tif",
+        "sha256": "995a63b04bef6cca235b5f83afb3fa45bb81558a52f09ffb54a618ce8df2b691",
+        "bytes": 468576
+      },
+      "replacement": {
+        "file": "replacement.tif",
+        "sha256": "91273f2868b1315c4bccc3ef4fddfe02d59e865199ae66c2d55b0539a1858792",
+        "bytes": 495192
+      },
+      "retained-after": {
+        "file": "retained-after.tif",
+        "sha256": "995a63b04bef6cca235b5f83afb3fa45bb81558a52f09ffb54a618ce8df2b691",
+        "bytes": 468576
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "91273f2868b1315c4bccc3ef4fddfe02d59e865199ae66c2d55b0539a1858792",
+        "bytes": 495192
+      }
+    }
+  },
+  {
+    "case": "interface.portability.unicode-paths",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "unicode-gui": {
+        "file": "\u7126\u70b9 caf\u00e9 \ud801\udc00.tif",
+        "sha256": "edbb94a89fe2be9d559ca65240123b856d850eb3ce2a73c193fd729e24110ee8",
+        "bytes": 149592
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "edbb94a89fe2be9d559ca65240123b856d850eb3ce2a73c193fd729e24110ee8",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.export.batch",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "batch-jpg": {
+        "file": "batch/Pancake.jpg",
+        "sha256": "a127aa7e4ed603af5f381352593e8601551560655c30ee14ace4278c063276d3",
+        "bytes": 22171
+      },
+      "batch-png": {
+        "file": "batch/Pancake.png",
+        "sha256": "29b0e1dd797e609d7c34fbd955107d81da862b9b094ea2506ede73a38ca444f9",
+        "bytes": 86146
+      },
+      "batch-tif": {
+        "file": "batch/Pancake.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      },
+      "output-02.jpg": {
+        "file": "output-02.jpg",
+        "sha256": "a127aa7e4ed603af5f381352593e8601551560655c30ee14ace4278c063276d3",
+        "bytes": 22171
+      },
+      "output-03.png": {
+        "file": "output-03.png",
+        "sha256": "29b0e1dd797e609d7c34fbd955107d81da862b9b094ea2506ede73a38ca444f9",
+        "bytes": 86146
+      },
+      "output-04.tif": {
+        "file": "output-04.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.result.manual-crop",
+    "status": "passed",
+    "fixture_inputs": 4,
+    "outputs": {
+      "uncropped": {
+        "file": "before.tif",
+        "sha256": "4ea63732fb9524267ce0c422eb02d3cc4d9ecc2ab2157110c1118cebf98d0f40",
+        "bytes": 495192
+      },
+      "cropped": {
+        "file": "cropped.tif",
+        "sha256": "7fa3cd19ac558af219329cd8d2c219cbdb871cb5401fc70f8623a0b56f22decd",
+        "bytes": 468576
+      },
+      "cropped-again": {
+        "file": "cropped-again.tif",
+        "sha256": "7fa3cd19ac558af219329cd8d2c219cbdb871cb5401fc70f8623a0b56f22decd",
+        "bytes": 468576
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "7fa3cd19ac558af219329cd8d2c219cbdb871cb5401fc70f8623a0b56f22decd",
+        "bytes": 468576
+      }
+    }
+  },
+  {
+    "case": "interface.import.recent-folders",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.viewer.keyboard-boundaries",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.sprint.viewer-input",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.sprint.frame-context",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.sprint.viewport-export",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.recovery.close-unsaved",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {}
+  },
+  {
+    "case": "interface.recovery.folder-import",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "folder-result": {
+        "file": "folder-result.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.recovery.missing-source",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "recovered": {
+        "file": "recovered.tif",
+        "sha256": "edbb94a89fe2be9d559ca65240123b856d850eb3ce2a73c193fd729e24110ee8",
+        "bytes": 149592
+      },
+      "output-02.tif": {
+        "file": "output-02.tif",
+        "sha256": "edbb94a89fe2be9d559ca65240123b856d850eb3ce2a73c193fd729e24110ee8",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.recovery.batch-export",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "recovered-jpg": {
+        "file": "batch/Pancake.jpg",
+        "sha256": "a127aa7e4ed603af5f381352593e8601551560655c30ee14ace4278c063276d3",
+        "bytes": 22171
+      },
+      "recovered-png": {
+        "file": "batch/Pancake.png",
+        "sha256": "29b0e1dd797e609d7c34fbd955107d81da862b9b094ea2506ede73a38ca444f9",
+        "bytes": 86146
+      },
+      "recovered-tif": {
+        "file": "batch/Pancake.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      }
+    }
+  },
+  {
+    "case": "interface.recovery.export-cancel",
+    "status": "passed",
+    "fixture_inputs": 3,
+    "outputs": {
+      "after-cancel": {
+        "file": "after-cancel.tif",
+        "sha256": "92097c3ba4867813580695c00e18cdcbfeeb633fdd5ed2f8e546cb3f8c77e7d5",
+        "bytes": 149592
+      }
+    }
+  }
+]

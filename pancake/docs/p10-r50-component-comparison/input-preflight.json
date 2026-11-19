@@ -1,0 +1,47 @@
+{
+  "source": {
+    "source": {
+      "id": "D02",
+      "name": "Sood 999-frame macro stack",
+      "primary_url": "https://huggingface.co/datasets/jjjsood/focus-stack-sample",
+      "revision": "0f8256edf2d2e3f1f1ea162f78a8bca36eb6915c",
+      "rights": "CC BY 4.0; dataset LICENSE at pinned revision",
+      "author": "Johannes Sood",
+      "license_sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+      "readme_sha256": "c54f3060ac7c655eef98b594154f301437a43c138c997b5e731cd45c3ebf62a3",
+      "selection": "First 50 distinct filename-sorted CR3 files, frame_000 through frame_049. Contiguous optical focus frames; no repeated file or upscale. Partial dataset acquisition, not complete 999-frame source."
+    },
+    "full_raw_decode": {
+      "engine": "rawpy",
+      "rawpy_version": "0.26.1",
+      "libraw_version": [
+        0,
+        22,
+        0
+      ],
+      "python_version": "3.12.12",
+      "full_raw_decodes": 50,
+      "postprocess_parameters": {
+        "output_bps": 16,
+        "use_camera_wb": true,
+        "no_auto_bright": true
+      },
+      "other_parameters": "rawpy defaults; no preview/thumbnail extraction",
+      "output_shape": [
+        3412,
+        5118,
+        3
+      ],
+      "output_dtype": "uint16",
+      "sensor_white_level": 16383,
+      "original_precision": "14-bit sensor samples stored in uint16; nonzero low eight bits verified in all 50 raw visible planes. Does not claim 16-bit sensor ADC.",
+      "scope": "Corpus qualification with reference LibRaw only. Not Rust decoder qualification, Pancake conformance, or performance baseline.",
+      "T50_exclusion": "Native visible 5118x3412 is below required 6000x4000. No resizing or 8-bit promotion fills T50."
+    },
+    "path": "/tmp/pancake-worktrees.t3paqgWM/r50-three-arm/pancake-conformance/src/pancake_conformance/adapters/pancake/performance-raw-corpus.json",
+    "sha256": "dd7a7e8a396d16e952d3d24d258afc1e05b77bb1664b179d3a43a7f66e413fab"
+  },
+  "verified_originals": 50,
+  "first": "/tmp/pancake-worktrees.t3paqgWM/r50-three-arm/artifacts/r50-quality/inputs/datasets/p0-d02/raw/frame_000.CR3",
+  "last": "/tmp/pancake-worktrees.t3paqgWM/r50-three-arm/artifacts/r50-quality/inputs/datasets/p0-d02/raw/frame_049.CR3"
+}

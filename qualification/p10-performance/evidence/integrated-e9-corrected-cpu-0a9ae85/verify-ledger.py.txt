@@ -1,0 +1,90 @@
+"""Bind the CPU preflight to the exact independently verified Linux 376 ledger."""
+
+import argparse
+import json
+from pathlib import Path
+
+import p10
+from pancake_conformance.adapters.pancake.release_ledger import Lane, load_contract
+from protocol import sha256
+
+
+def require(value, detail):
+    if not value:
+        raise ValueError(detail)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--ledger", required=True, type=Path)
+    parser.add_argument("--ledger-sha256", required=True)
+    args = parser.parse_args()
+    stage = Path(__file__).resolve().parent
+    ledger = args.ledger.resolve(strict=True)
+    require(sha256(ledger) == args.ledger_sha256, "exact 376 ledger hash differs")
+    run = json.loads(ledger.read_text())
+    candidate = json.loads((stage / "build-receipt.json").read_text())
+    preflight = json.loads((stage / "no-device-preflight.json").read_text())
+    require(
+        preflight["targets"]["candidate"] == candidate
+        and preflight["profile"] == "E9.exposure_fusion.cpu",
+        "staged CPU identity differs",
+    )
+    require(
+        p10._git(p10.ROOT, "rev-parse", "HEAD") == candidate["commit"],
+        "exact benchmark source differs",
+    )
+    require(
+        run["passed"] == 376 and run["target"] == "pancake-rust",
+        "strict native ledger did not pass 376",
+    )
+    require(
+        run["linux_package"]["artifact_sha256"]
+        == candidate["build_package"]["archive_sha256"],
+        "376 package differs from staged CPU candidate",
+    )
+    require(
+        run["linux_package"]["receipt_sha256"]
+        == candidate["build_package"]["package_receipt_sha256"],
+        "376 package receipt differs",
+    )
+    contract = load_contract()
+    counts = {}
+    for lane in Lane:
+        recorded = run["lanes"][lane.value]
+        identity = recorded["identity"]
+        expect = {
+            "target_commit": candidate["commit"],
+            "pancake_tree": candidate["product_tree"],
+            "cargo_lock_sha256": candidate["lock_sha256"],
+            "descriptor_sha256": candidate["descriptor_sha256"],
+            "contract_sha256": contract.snapshot_hash,
+            "suite_source_sha256": contract.suite_source_hash,
+            "uv_lock_sha256": contract.uv_lock_hash,
+        }
+        require(
+            identity == expect
+            and recorded["executables"]["cli"]["sha256"] == candidate["binary_sha256"],
+            f"{lane.value}: application, binary or frozen suite provenance differs",
+        )
+        ids = [case.id for case in contract.select(lane)]
+        require(recorded["cases"] == ids, f"{lane.value}: frozen ID inventory differs")
+        counts[lane.value] = len(ids)
+    require(sum(counts.values()) == 376, "qualified lane total differs")
+    output = {
+        "status": "pass",
+        "source": candidate["commit"],
+        "debian_sha256": candidate["build_package"]["archive_sha256"],
+        "cli_sha256": candidate["binary_sha256"],
+        "ledger": str(ledger),
+        "ledger_sha256": args.ledger_sha256,
+        "lanes": counts,
+        "total_passed": 376,
+        "native_apple_execution": run.get("required_apple_runtime_evidence"),
+    }
+    p10._write(stage / "strict-ledger-prereq.json", output)
+    print(json.dumps(output, indent=2))
+
+
+if __name__ == "__main__":
+    main()

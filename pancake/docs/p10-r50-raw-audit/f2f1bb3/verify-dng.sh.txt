@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo=$(git rev-parse --show-toplevel)
+proof=$(realpath "$repo/artifacts/r50-raw-audit")
+output="$proof/dng"
+mkdir "$output"
+cd "$repo/pancake"
+
+python3 - tests/data/bayer-conformance.dng "$output" <<'PY'
+from pathlib import Path
+import struct
+import sys
+
+source = Path(sys.argv[1]).read_bytes()
+out = Path(sys.argv[2])
+assert source[:4] == b"II*\0"
+(out / "original.dng").write_bytes(source)
+data = bytearray(source)
+directory, = struct.unpack_from("<I", data, 4)
+count, = struct.unpack_from("<H", data, directory)
+offset = directory + 2
+entries = [bytes(data[offset + i * 12:offset + (i + 1) * 12]) for i in range(count)]
+tags = [struct.unpack_from("<H", entry)[0] for entry in entries]
+assert 282 in tags and 274 not in tags
+# Replace optional XResolution with valid EXIF orientation 2 (horizontal mirror).
+entries[tags.index(282)] = struct.pack("<HHII", 274, 3, 1, 2)
+entries.sort(key=lambda entry: struct.unpack_from("<H", entry)[0])
+data[offset:offset + count * 12] = b"".join(entries)
+(out / "oriented.dng").write_bytes(data)
+PY
+
+inputs=("$output/original.dng" "$output/oriented.dng")
+sha256sum "${inputs[@]}" > "$output/input-sha256.txt"
+export RAYON_NUM_THREADS=15 OMP_NUM_THREADS=15 OPENBLAS_NUM_THREADS=1
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+for variant in baseline candidate; do
+    program="$proof/sealed-baseline-cli"
+    decoder="$proof/decode-baseline"
+    if [[ $variant == candidate ]]; then
+        program="$PWD/target/release/pancake-cli"
+        decoder="$PWD/target/release/examples/raw_decode_probe"
+    fi
+    export PANCAKE_STATE_DIR="$output/$variant-state"
+    export PANCAKE_COMPUTE_CACHE_DIR="$output/$variant-state/cache"
+    export CONFORMANCE_EVENTS_PATH="$output/$variant-events.jsonl"
+    mkdir -p "$PANCAKE_STATE_DIR"
+    taskset -c 0-14 "$program" --input "${inputs[@]}" --cpu --method weighted_average \
+        --kernel-size 3 --bit-depth 16 --output "$output/$variant.tiff" > "$output/$variant-cli.log" 2>&1
+    taskset -c 0-14 "$decoder" bytes "${inputs[@]}" > "$output/$variant.rgbf32" \
+        2> "$output/$variant-decode.log"
+done
+
+cmp "$output/baseline.tiff" "$output/candidate.tiff"
+cmp "$output/baseline.rgbf32" "$output/candidate.rgbf32"
+sha256sum "$output/"{baseline,candidate}.{tiff,rgbf32} > "$output/output-sha256.txt"
+sha256sum -c "$output/input-sha256.txt"
+exiftool -G1 -s -ImageWidth -ImageHeight -BitsPerSample -SampleFormat -SamplesPerPixel \
+    -PhotometricInterpretation "$output/"{baseline,candidate}.tiff > "$output/tiff-metadata.txt"

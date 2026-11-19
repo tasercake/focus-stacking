@@ -1,0 +1,191 @@
+"""Prepare an authenticated same-source candidate receipt without launching a job."""
+
+import json
+import re
+from pathlib import Path
+from types import SimpleNamespace
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames
+
+COMMIT = "e81079dee4078d7a1149da0f5950aab8c89f8d44"
+TREE = "e9db47ff9704f3911fb2bbf6d1943d5226518e4e"
+PRODUCT_TREE = "bc64dc84971104a0b83c049bf3965c27bfafd151"
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
+PROFILE = "E9.exposure_fusion.gpu"
+UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+RUNTIME = {
+    Path(
+        "/usr/local/cuda-12.5/lib64/libnvrtc.so.12.5.40"
+    ): "fb37b3f5b0ed35bf6b24f31f1277d30f2fadb08f8562e90d1e6ce208817fc8ed",
+    Path(
+        "/usr/local/cuda-12.5/lib64/libnvrtc-builtins.so.12.5.40"
+    ): "1237ef425d116b1faee57d924e099b877fd6548ce3b367e50a7e1ef912eeb08c",
+    Path(
+        "/usr/lib/x86_64-linux-gnu/libcuda.so.580.178.04"
+    ): "dcdf334aeb177c95b3385b797c9b871d03a287895713c6d107f79096b0985aa9",
+    Path(
+        "/usr/local/cuda-12.5/nvvm/libdevice/libdevice.10.bc"
+    ): "8c593e48547f85458b6bfbed93a2e6b05484644ccc6b429bb0d8424e06a68b6c",
+    Path(
+        "/etc/OpenCL/vendors/nvidia.icd"
+    ): "4ad07f8afc189894374aecb91023e6ff16bbceedf82496c04c0fdb0e2fe81e73",
+}
+
+
+def require(condition, text):
+    if not condition:
+        raise ValueError(text)
+
+
+def main():
+    stage = Path(__file__).resolve().parent
+    native = stage / "native-build"
+    p10._require_clean(
+        p10.ROOT, "pancake", "pancake-conformance/src", "qualification/p10-performance"
+    )
+    for name, expected in (
+        ("HEAD", COMMIT),
+        ("HEAD^{tree}", TREE),
+        ("HEAD:pancake", PRODUCT_TREE),
+    ):
+        require(
+            p10._git(p10.ROOT, "rev-parse", name) == expected,
+            f"sealed source mismatch for {name}",
+        )
+    spec = TargetSpec.load(p10.CANDIDATE)
+    expected = p10._snapshot(spec, spec.root / "Cargo.lock")
+    require(
+        expected
+        == {"commit": COMMIT, "lock_sha256": LOCK, "descriptor_sha256": DESCRIPTOR},
+        "candidate snapshot differs",
+    )
+    require(
+        "exit=0" in (native / "build-status.txt").read_text().splitlines(),
+        "native build has no verified successful exit",
+    )
+    command = (native / "build-command.txt").read_text()
+    require(
+        all(
+            token in command
+            for token in (
+                "CUDARC_CUDA_VERSION=12050",
+                "--locked",
+                "--offline",
+                "--release",
+                "--features cubecl/cuda",
+                "-j 2",
+            )
+        ),
+        "native build profile differs",
+    )
+    original = native / "target/release/pancake-cli"
+    executable = p10._candidate_binary(spec)
+    stable = Path(
+        "/home/krishna/Documents/focus-stacking/artifacts/pancake-linux-native/e81079d/pancake-cli"
+    )
+    digest = sha256(original)
+    for binary in (executable, stable):
+        require(
+            binary.is_file()
+            and not binary.is_symlink()
+            and not binary.stat().st_mode & 0o222
+            and sha256(binary) == digest,
+            f"native executable copies differ: {binary}",
+        )
+    static_elf = (native / "elf-notes.txt").read_text()
+    ids = re.findall(r"Build ID: ([0-9a-f]+)", static_elf)
+    require(len(ids) == 1, "native ELF Build ID missing")
+    require(
+        re.search(
+            r"^CUDA native symbols: [1-9][0-9]*$",
+            (native / "link-witness.txt").read_text(),
+            re.MULTILINE,
+        ),
+        "native CUDA link proof missing",
+    )
+    for path, digest_expected in RUNTIME.items():
+        require(
+            sha256(path) == digest_expected,
+            f"native CUDA runtime or OpenCL ICD changed: {path}",
+        )
+    artifact_receipt = expected | {
+        "executable": str(executable),
+        "binary_sha256": digest,
+        "elf_build_id": ids[0],
+        "retained_executable": str(stable),
+        "executable_bytes": executable.stat().st_size,
+        "source_repository_tree": TREE,
+        "source_pancake_tree": PRODUCT_TREE,
+        "native_build": command,
+        "build_log_sha256": sha256(native / "build.log"),
+        "build_identity_sha256": sha256(native / "build-identity.txt"),
+        "link_witness_sha256": sha256(native / "link-witness.txt"),
+        "runtime_files_sha256": {
+            str(path): digest_expected for path, digest_expected in RUNTIME.items()
+        },
+        "expected_physical_gpu": {
+            "uuid": UUID,
+            "pci": "0000:01:00.0",
+            "driver": "580.178.04",
+            "opencl_device_index": 0,
+            "cuda_device_index": 0,
+        },
+    }
+    receipt = stage / "build-receipt.json"
+    if receipt.exists():
+        require(
+            json.loads(receipt.read_text()) == artifact_receipt,
+            "original receipt already differs",
+        )
+    else:
+        p10._write(receipt, artifact_receipt)
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    require(
+        sha256(p10.TARGETS_PATH)
+        == "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+        "frozen targets differ",
+    )
+    records, _ = corpus(p10.ROOT, campaign, "E9")
+    frames = verify_frames(stage / "input-stage/input", records, 9)
+    require(frames == sorted(frames), "public CLI ordering differs")
+    _, identities = p10._prepared_targets(
+        SimpleNamespace(profile=PROFILE, build_receipt=receipt), campaign
+    )
+    require(
+        identities["reference"]["exposure_combiner"]
+        == {
+            "path": str(p10.E9_REFERENCE.relative_to(p10.ROOT)),
+            "sha256": "47f2c63bfc635e53e886e9bbd6b66944a95f97c719fad26ed88f6c222594cb94",
+            "policy": "equal-final-batch-mean-v1",
+        },
+        "corrected OpenCL launcher differs",
+    )
+    p10._write(
+        stage / "candidate-preflight.json",
+        {
+            "target_identities": identities,
+            "profile": PROFILE,
+            "paired_jobs": campaign.schedule(),
+            "device_queries": 0,
+            "product_launches": 0,
+        },
+    )
+    print(
+        json.dumps(
+            {
+                "candidate_source": COMMIT,
+                "binary_sha256": digest,
+                "build_id": ids[0],
+                "scope": "read-only static preflight",
+                "scheduled": len(campaign.schedule()),
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

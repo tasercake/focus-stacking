@@ -1,0 +1,78 @@
+"""Audit the exact frozen P5 case set and per-call device completion evidence."""
+
+import hashlib
+import json
+import sys
+from collections import Counter
+from pathlib import Path
+
+root = Path(sys.argv[1]).resolve()
+revision = "f034185843cb20bfb61c31655f999e2f26e1c939"
+physical_id = "algorithms.recovery.cascade.gpu"
+suite = Path("pancake-conformance")
+adapter = suite / "src/pancake_conformance/adapters/pancake"
+contract = json.loads((adapter / "contract-current.json").read_text())
+roadmap = json.loads((adapter / "case-roadmap.json").read_text())
+digest = hashlib.sha256()
+for filename, expected in sorted(contract["files"].items()):
+    content = (suite / filename).read_bytes()
+    assert hashlib.sha256(content).hexdigest() == expected, filename
+    digest.update(filename.encode() + b"\0" + content)
+assert digest.hexdigest() == contract["combined_sha256"]
+
+p5 = {case["id"] for case in roadmap["cases"] if case["primary_milestone"] == "P5"}
+assert len(p5) == 64 and physical_id in p5
+runtime_counts = Counter()
+summaries = {}
+for lane, selected in (("host", p5 - {physical_id}), ("vulkan", {physical_id})):
+    run = root / f"p5-{lane}"
+    report = json.loads((run / "report.json").read_text())
+    provenance = json.loads((run / "provenance.json").read_text())
+    found = [case["id"] for case in report["cases"]]
+    assert set(found) == set(provenance["cases"]) == selected and len(found) == len(selected)
+    assert report["complete"] is True and report["status"] == "passed"
+    assert report["completed_count"] == report["selected_count"] == len(selected)
+    assert report["counts"] == {"passed": len(selected), "failed": 0, "unsupported": 0}
+    assert provenance["suite_dirty"] == provenance["target_dirty"] == ""
+    assert provenance["suite_commit"] == provenance["target_commit"] == revision
+    assert provenance["contract_version"] == 2
+    lane_counts = Counter()
+    for case in report["cases"]:
+        case_root = run / "cases" / case["id"]
+        assert case["status"] == "passed" and case["execution_environment"] == "host"
+        assert json.loads((case_root / "result.json").read_text()) == case
+        calls = sorted(case_root.glob("call-*"))
+        requests = case["notes"]["requests"]
+        assert calls and len(calls) == len(requests)
+        for call, request in zip(calls, requests, strict=True):
+            command = json.loads((call / "command.json").read_text())
+            assert command["argv"][0] == provenance["cli_command"][0]
+            events = [json.loads(line) for line in (call / "events.jsonl").read_text().splitlines()]
+            assert len(events) == 1, call
+            event = events[0]
+            assert event["event"] == "stack_complete" and event["completed"] is True, call
+            assert event["fallback_reason"] is None, call
+            identity = (event["actual_backend"], event["runtime"], event["physical_gpu"], event["device_pci_address"])
+            if request["options"]["device"] == "cpu":
+                assert identity == ("cpu", "cpu", False, None), call
+            else:
+                assert lane == "vulkan" and request["options"]["device"] == "gpu", call
+                assert identity == ("gpu", "wgpu-vulkan", True, "0000:01:00.0"), call
+                assert event["device"] == "NVIDIA GeForce RTX 3090", call
+            lane_counts[event["runtime"]] += 1
+        for relative in case["outputs"].values():
+            output = case_root / relative
+            assert output.is_file() and output.stat().st_size > 0, output
+    runtime_counts.update(lane_counts)
+    summaries[lane] = dict(counts=report["counts"], provenance=provenance, actual_runtimes=lane_counts)
+assert runtime_counts["wgpu-vulkan"] > 0
+assert summaries["host"]["actual_runtimes"] == {"cpu": 63}
+summary = {
+    "candidate_revision": revision,
+    "frozen_contract_files": len(contract["files"]),
+    "frozen_contract_sha256": digest.hexdigest(),
+    "distinct_cases_passed": len(p5),
+    "actual_runtimes": runtime_counts,
+    "lanes": summaries,
+}
+(root / "p5-audit.json").write_text(json.dumps(summary, indent=2) + "\n")

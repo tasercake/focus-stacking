@@ -1,0 +1,400 @@
+"""Exercise the exact pinned CPU CLI and independent equal-batch arithmetic."""
+
+import argparse
+import contextlib
+import hashlib
+import io
+import json
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+
+import cv2
+import numpy as np
+import p10
+import tifffile
+from pancake_conformance.adapters.pancake import e9_reference
+from pancake_conformance.target import TargetSpec
+from protocol import (
+    Campaign,
+    corpus,
+    pixel_metrics,
+    sha256,
+    verify_frames,
+    verify_output,
+)
+from src.algorithms.API import LaplacianPyramid
+from src.algorithms.stacking_algorithms import cpu, ocl
+
+PIN = "ab7a92708269c01c6094729f6cdfaf1415677364"
+PACKAGE_SOURCE = "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb"
+PACKAGE_SHA256 = "c6f39324ea4d9a29fb1a4f33253f6d988f44d1f150622bc94b728975a5f96b64"
+CLI_SHA256 = "a69427103f9a1ef20ce576269feeceffab58aff7944f4b5cd08be2b11220af33"
+
+
+def synthetic_pngs(directory):
+    y, x = np.indices((256, 256))
+    texture = np.stack(
+        [((p * x + q * y + (x ^ y)) % 100) + 40 for p, q in ((3, 7), (5, 11), (11, 3))],
+        axis=-1,
+    )
+    for index, percentage in enumerate((61, 71, 81, 91, 100, 109, 120, 133, 147)):
+        path = directory / f"frame_{index:02}.png"
+        pixels = (texture * percentage // 100).astype(np.uint8)
+        if not cv2.imwrite(str(path), pixels):
+            raise ValueError(f"failed to create control {path}")
+        yield path
+
+
+def verify(directory, frames, profile, reference):
+    input_hashes = list(map(sha256, frames))
+    assert len(set(input_hashes)) == 9
+    destination = directory / "result.tif"
+    outputs = []
+    aligned = {}
+    collected = {}
+    terminal_log = io.StringIO()
+    original_fuse = cpu.mertens_fuse_batch
+    original_warp = LaplacianPyramid._load_and_align
+    original_crop = LaplacianPyramid.auto_crop_output
+    original_cpu_path = LaplacianPyramid._exposure_core
+    original_gpu_path = ocl.ExposureGPU.result
+
+    def capture_fuse(group):
+        result = original_fuse(group)
+        outputs.append((len(group), result.copy()))
+        return result
+
+    def capture_warp(stack, first, path):
+        result = original_warp(stack, first, path)
+        aligned[Path(path).name] = result.copy()
+        return result
+
+    def capture_crop(stack):
+        collected["before_crop"] = stack.output_image.copy()
+        collected["transforms"] = {
+            Path(path).name: None if matrix is None else matrix.tolist()
+            for path, matrix in stack.alignment_transforms.items()
+        }
+        collected["crop"] = original_crop(stack)
+        collected["after_crop"] = stack.output_image.copy()
+        return collected["crop"]
+
+    argv = [
+        e9_reference.__file__,
+        *reference.stack_arguments(frames, destination, profile.options),
+    ]
+    log = io.StringIO()
+    with (
+        patch.object(cpu, "mertens_fuse_batch", capture_fuse),
+        patch.object(LaplacianPyramid, "_load_and_align", capture_warp),
+        patch.object(LaplacianPyramid, "auto_crop_output", capture_crop),
+        patch.object(sys, "argv", argv),
+        contextlib.redirect_stdout(log),
+        contextlib.redirect_stderr(terminal_log),
+    ):
+        assert e9_reference.main() is None
+    assert LaplacianPyramid._exposure_core is original_cpu_path
+    assert ocl.ExposureGPU.result is original_gpu_path
+    assert [count for count, _ in outputs] == [4, 4]
+    assert list(aligned) == [path.name for path in frames[1:]]
+    assert list(map(sha256, frames)) == input_hashes
+    partials = [value for _, value in outputs] + [aligned[frames[-1].name]]
+    expected = np.asarray(partials, dtype=np.float64).sum(axis=0) / 3
+    assert collected["before_crop"].dtype == np.float32
+    np.testing.assert_allclose(collected["before_crop"], expected, rtol=0, atol=0.00004)
+    assert all(value > 0 for value in collected["crop"])
+    rgb = tifffile.imread(destination)
+    expected_export = np.rint(
+        collected["after_crop"][..., ::-1].clip(0, 255) * np.float32(257)
+    ).astype(np.uint16)
+    np.testing.assert_array_equal(rgb, expected_export)
+    device_line = next(
+        line.strip() for line in log.getvalue().splitlines() if "Device:" in line
+    )
+    assert "CPU" in device_line
+    return {
+        "argv": [Path(argv[0]).name, *argv[1:]],
+        "source_hashes_unchanged": input_hashes,
+        "source_frame_count": len(frames),
+        "aligned_nonreference_frames": len(aligned),
+        "pinned_multisample_batches": [count for count, _ in outputs],
+        "singleton_frames": 1,
+        "partial_float32_bgr_pixel_hashes": [
+            hashlib.sha256(np.ascontiguousarray(image, dtype="<f4")).hexdigest()
+            for image in partials
+        ],
+        "mean_max_float32_vs_float64_abs_error": float(
+            np.max(np.abs(collected["before_crop"] - expected))
+        ),
+        "crop_top_bottom_left_right": collected["crop"],
+        "alignment_transforms": collected["transforms"],
+        "export": verify_output(destination, collected["before_crop"].shape[:2]),
+        "independent_bgr_to_rgb_export_matches": True,
+        "device": device_line,
+        "reference_errors_or_warnings": [
+            line
+            for line in terminal_log.getvalue().splitlines()
+            if "error" in line.casefold() or "warning" in line.casefold()
+        ],
+    }, argv
+
+
+def verify_synthetic_controls(directory, frames, profile, reference, argv, report):
+    direct_output = directory / "direct.tif"
+    direct_args = argv[1:]
+    direct_args[direct_args.index("--output") + 1] = str(direct_output)
+    direct = subprocess.run(
+        [sys.executable, e9_reference.__file__, *direct_args],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=True,
+    )
+    assert "Device: CPU" in direct.stdout
+    assert sha256(direct_output) == report["export"]["sha256"]
+
+    bad_inputs = {
+        "missing": directory / "missing.png",
+        "corrupt": directory / "frame_04-corrupt.png",
+    }
+    bad_inputs["corrupt"].write_bytes(b"invalid PNG fixture")
+    error_codes = {}
+    original_cpu_path = LaplacianPyramid._exposure_core
+    original_gpu_path = ocl.ExposureGPU.result
+    for name, path in bad_inputs.items():
+        invalid_output = directory / f"{name}.tif"
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    "e9_reference.py",
+                    "--input",
+                    str(path),
+                    "--output",
+                    str(invalid_output),
+                    "--cpu",
+                    "--method",
+                    "exposure_fusion",
+                ],
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            try:
+                e9_reference.main()
+            except SystemExit as error:
+                assert error.code == 1
+                error_codes[name] = error.code
+            else:
+                raise AssertionError("invalid native input was accepted")
+        assert not invalid_output.exists()
+    assert LaplacianPyramid._exposure_core is original_cpu_path
+    assert ocl.ExposureGPU.result is original_gpu_path
+    report.update(
+        direct_uninstrumented_export_matches=True, invalid_input_exit_codes=error_codes
+    )
+
+    late_failures = []
+    original_fuse = cpu.mertens_fuse_batch
+    observed_batches = []
+
+    def capture_successful_batch(group):
+        result = original_fuse(group)
+        observed_batches.append(len(group))
+        return result
+
+    for sentinel in (None, direct_output.read_bytes()):
+        observed_batches.clear()
+        invalid_output = directory / "late-failure.tif"
+        if sentinel is not None:
+            invalid_output.write_bytes(sentinel)
+        inputs = [*frames[:4], bad_inputs["corrupt"], *frames[5:]]
+        invalid_args = [
+            e9_reference.__file__,
+            *reference.stack_arguments(inputs, invalid_output, profile.options),
+        ]
+        invalid_errors = io.StringIO()
+        with (
+            patch.object(cpu, "mertens_fuse_batch", capture_successful_batch),
+            patch.object(sys, "argv", invalid_args),
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(invalid_errors),
+        ):
+            try:
+                e9_reference.main()
+            except SystemExit as error:
+                assert error.code == 1
+            else:
+                raise AssertionError("late corrupt input was accepted")
+        assert observed_batches == [4]
+        errors = [
+            line.strip()
+            for line in invalid_errors.getvalue().splitlines()
+            if "Error:" in line
+        ]
+        assert any("corrupt.png" in line for line in errors)
+        assert (
+            not invalid_output.exists()
+            if sentinel is None
+            else invalid_output.read_bytes() == sentinel
+        )
+        assert LaplacianPyramid._exposure_core is original_cpu_path
+        assert ocl.ExposureGPU.result is original_gpu_path
+        late_failures.append(
+            {
+                "completed_batches": observed_batches.copy(),
+                "exit": 1,
+                "errors": errors,
+                "output": "absent"
+                if sentinel is None
+                else "pre-existing bytes unchanged",
+            }
+        )
+    report["late_corrupt_input"] = late_failures
+
+
+def verify_candidate(directory, executable, frames, profile, reference):
+    assert sha256(executable) == CLI_SHA256
+    candidate = TargetSpec.load(p10.CANDIDATE)
+    destination = directory / "candidate.tif"
+    argv = [
+        str(executable),
+        *candidate.command("cli")[1:],
+        *candidate.stack_arguments(frames, destination, profile.options),
+    ]
+    env = p10._environment(
+        candidate, directory / "settings", directory, 2, None, None, True
+    )
+    env.pop("LD_LIBRARY_PATH", None)
+    result = subprocess.run(
+        argv,
+        cwd=candidate.root,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=True,
+    )
+    events = directory / "events.jsonl"
+    completed = p10._assert_completion(events, "cpu", "cpu", None)
+    assert completed["physical_gpu"] is False and completed["fallback_reason"] is None
+    transforms = {
+        Path(path).name: matrix
+        for path, matrix in completed["alignment_transforms"].items()
+    }
+    assert (
+        set(transforms)
+        == set(reference["alignment_transforms"])
+        == {path.name for path in frames}
+    )
+    identity = np.eye(3)[:2]
+    for path in frames:
+        for matrix in (
+            reference["alignment_transforms"][path.name],
+            transforms[path.name],
+        ):
+            normalized = np.asarray(matrix).reshape(-1, 3)
+            np.testing.assert_array_equal(normalized[:2], identity)
+    assert reference["crop_top_bottom_left_right"] == (1, 1, 1, 1)
+    output = verify_output(destination, (339, 512))
+    assert output["shape"] == reference["export"]["shape"] == [337, 510, 3]
+    assert sha256(executable) == CLI_SHA256
+    return {
+        "argv": argv,
+        "source": PACKAGE_SOURCE,
+        "binary_sha256": CLI_SHA256,
+        "cargo_lock_sha256": sha256(candidate.root / "Cargo.lock"),
+        "device": completed["device"],
+        "actual_runtime": completed["runtime"],
+        "events_sha256": sha256(events),
+        "alignment_transforms": transforms,
+        "export": output,
+        "warnings": [
+            line
+            for line in (result.stdout + result.stderr).splitlines()
+            if "warning" in line.casefold()
+        ],
+        "same_first_reference_grid_pixels": pixel_metrics(
+            directory / "result.tif", destination, (339, 512)
+        ),
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--input-root", type=Path)
+    parser.add_argument("--candidate", type=Path)
+    parser.add_argument("--package", type=Path)
+    args = parser.parse_args()
+    if any((args.input_root, args.candidate, args.package)) and not all(
+        (args.input_root, args.candidate, args.package)
+    ):
+        parser.error("real replay requires --input-root, --candidate and --package")
+    observed_pin = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], text=True
+    ).strip()
+    assert observed_pin == PIN
+    assert not subprocess.check_output(
+        ["git", "status", "--porcelain"], text=True
+    ).strip()
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(
+        profile
+        for profile in campaign.profiles("cpu")
+        if profile.key == "E9.exposure_fusion.cpu"
+    )
+    reference = TargetSpec.load(p10.REFERENCE)
+    assert reference.root == Path.cwd()
+    with tempfile.TemporaryDirectory(prefix="e9-reference-cpu-oracle-") as scratch:
+        directory = Path(scratch)
+        if args.input_root:
+            assert sha256(args.package) == PACKAGE_SHA256
+            records, provenance = corpus(p10.ROOT, campaign, "E9")
+            frames = verify_frames(args.input_root, records, 9)
+            report, _ = verify(directory, frames, profile, reference)
+            candidate = verify_candidate(
+                directory, args.candidate.resolve(strict=True), frames, profile, report
+            )
+            verify_frames(args.input_root, records, 9)
+            assert sha256(args.package) == PACKAGE_SHA256
+            evidence = {
+                "package_sha256": PACKAGE_SHA256,
+                "corpus": provenance,
+                "candidate": candidate,
+            }
+        else:
+            frames = list(synthetic_pngs(directory))
+            report, argv = verify(directory, frames, profile, reference)
+            verify_synthetic_controls(
+                directory, frames, profile, reference, argv, report
+            )
+            evidence = {}
+    print(
+        json.dumps(
+            {
+                "reference_source": PIN,
+                "reference_launcher_sha256": sha256(Path(e9_reference.__file__)),
+                "reference_descriptor_sha256": sha256(p10.REFERENCE),
+                "reference_lock_sha256": sha256(
+                    p10.ROOT / campaign.raw["reference"]["runtime_lock_path"]
+                ),
+                "frozen_targets_sha256": sha256(p10.TARGETS_PATH),
+                "cpu_affinity": sorted(os.sched_getaffinity(0)),
+                "diagnostic_only": True,
+                "profile": profile.key,
+                "settings": profile.options,
+                "reference": report,
+                **evidence,
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

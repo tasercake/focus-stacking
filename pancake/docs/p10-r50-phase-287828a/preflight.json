@@ -1,0 +1,121 @@
+{
+  "identities": {
+    "reference": {
+      "commit": "ab7a92708269c01c6094729f6cdfaf1415677364",
+      "lock_sha256": "fda57ac5eea063aebcc278eb57a90228e6da32fe2d8f67d7025ac367f4b51036",
+      "descriptor_sha256": "e3e951b674bc0103f267575a99533cc33ead40e2af56671766f4fc71f3f12b76",
+      "python": "/tmp/pancake-worktrees.t3paqgWM/r50-287828a-quiet/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python",
+      "python_sha256": "3008abbb48c1e2b0fa3072ae72334b9b352e1346ea3a20d34126a455f0c7bc66",
+      "command": [
+        "/tmp/pancake-worktrees.t3paqgWM/r50-287828a-quiet/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python",
+        "/tmp/pancake-worktrees.t3paqgWM/r50-287828a-quiet/pancake-conformance/src/pancake_conformance/adapters/pancake/cr3_reference.py"
+      ],
+      "raw_ingest": {
+        "path": "pancake-conformance/src/pancake_conformance/adapters/pancake/cr3_reference.py",
+        "sha256": "0272c8f3dff4a8b31e5bb7817a02225b7c44d51a6a8c8ed90bf22712a4396992"
+      },
+      "packages": [
+        "attrs==26.1.0",
+        "automat==25.4.16",
+        "bcrypt==5.0.0",
+        "cffi==2.1.1",
+        "-e file:///tmp/pancake-worktrees.t3paqgWM/r50-287828a-quiet/submodules/ChimpStackr",
+        "constantly==23.10.4",
+        "coverage==7.17.3",
+        "cryptography==50.0.2",
+        "hyperlink==21.0.0",
+        "idna==3.20",
+        "imagecodecs==2026.11.11",
+        "imageio==2.38.1",
+        "incremental==24.11.0",
+        "iniconfig==2.3.1",
+        "invoke==3.0.3",
+        "llvmlite==0.50.0",
+        "lupa==2.8",
+        "numba==0.68.1",
+        "numpy==2.5.4",
+        "opencv-python-headless==4.14.0.94",
+        "openexr==3.5.4",
+        "packaging==26.3",
+        "-e file:///tmp/pancake-worktrees.t3paqgWM/r50-287828a-quiet/pancake-conformance",
+        "paramiko==4.0.0",
+        "pillow==12.3.0",
+        "platformdirs==4.14.5",
+        "pluggy==1.7.0",
+        "pycparser==3.12",
+        "pyfftw==0.15.1",
+        "pygments==2.21.0",
+        "pynacl==1.6.2",
+        "pyopencl==2026.1.5",
+        "pypng==0.20220715.0",
+        "pyside6-essentials==6.12.0",
+        "pytest==9.2.0",
+        "pytools==2026.1.1",
+        "rawpy==0.26.1",
+        "ruff==0.17.5",
+        "scipy==1.18.1",
+        "shiboken6==6.12.0",
+        "siphash24==1.9",
+        "tifffile==2026.11.12",
+        "twisted==26.10.0",
+        "typing-extensions==4.16.0",
+        "vncdotool==1.4.2",
+        "zope-interface==8.7"
+      ]
+    },
+    "candidate": {
+      "commit": "287828aac07ffad2252785b73a52a59fc07b3409",
+      "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+      "descriptor_sha256": "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac",
+      "binary_sha256": "874c8683623131b5619858a9cba61cb6219bc2eae6d6bdb30ed1bc5d8634ce8e",
+      "executable": "/tmp/pancake-worktrees.t3paqgWM/r50-287828a-quiet/pancake/target/release/pancake-cli",
+      "build": "Package ELF independently extracted and size/hash-verified against exact P9 release.",
+      "package_file": "/home/krishna/Documents/focus-stacking/artifacts/pancake-packages/linux-287828a/pancake_0.1.0_amd64.deb",
+      "package_archive_sha256": "34a63edea55c411a6082924c2fbe2c50094eea98753b1f75378459da78e4db99",
+      "package_validation_sha256": "096f88ea50620ad70edc86c53db0e2c79071a174cc863d741c82d21bae55e8b5"
+    }
+  },
+  "source": {
+    "source": {
+      "id": "D02",
+      "name": "Sood 999-frame macro stack",
+      "primary_url": "https://huggingface.co/datasets/jjjsood/focus-stack-sample",
+      "revision": "0f8256edf2d2e3f1f1ea162f78a8bca36eb6915c",
+      "rights": "CC BY 4.0; dataset LICENSE at pinned revision",
+      "author": "Johannes Sood",
+      "license_sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+      "readme_sha256": "c54f3060ac7c655eef98b594154f301437a43c138c997b5e731cd45c3ebf62a3",
+      "selection": "First 50 distinct filename-sorted CR3 files, frame_000 through frame_049. Contiguous optical focus frames; no repeated file or upscale. Partial dataset acquisition, not complete 999-frame source."
+    },
+    "full_raw_decode": {
+      "engine": "rawpy",
+      "rawpy_version": "0.26.1",
+      "libraw_version": [
+        0,
+        22,
+        0
+      ],
+      "python_version": "3.12.12",
+      "full_raw_decodes": 50,
+      "postprocess_parameters": {
+        "output_bps": 16,
+        "use_camera_wb": true,
+        "no_auto_bright": true
+      },
+      "other_parameters": "rawpy defaults; no preview/thumbnail extraction",
+      "output_shape": [
+        3412,
+        5118,
+        3
+      ],
+      "output_dtype": "uint16",
+      "sensor_white_level": 16383,
+      "original_precision": "14-bit sensor samples stored in uint16; nonzero low eight bits verified in all 50 raw visible planes. Does not claim 16-bit sensor ADC.",
+      "scope": "Corpus qualification with reference LibRaw only. Not Rust decoder qualification, Pancake conformance, or performance baseline.",
+      "T50_exclusion": "Native visible 5118x3412 is below required 6000x4000. No resizing or 8-bit promotion fills T50."
+    },
+    "path": "/tmp/pancake-worktrees.t3paqgWM/r50-287828a-quiet/pancake-conformance/src/pancake_conformance/adapters/pancake/performance-raw-corpus.json",
+    "sha256": "dd7a7e8a396d16e952d3d24d258afc1e05b77bb1664b179d3a43a7f66e413fab"
+  },
+  "verified_ordered_inputs": 50
+}

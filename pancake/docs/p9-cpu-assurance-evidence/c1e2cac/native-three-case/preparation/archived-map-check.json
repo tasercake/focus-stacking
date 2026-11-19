@@ -1,0 +1,6 @@
+{
+  "matched": true,
+  "archive_identity": "707094da8a7a08758ab6bb8162ea8566b3295431:pancake/docs/p9-cpu-assurance-evidence/c1e2cac/stable/coverage-cpu.json.gz",
+  "comparison": "coordinates, multiplicity, positive signatures, all per-file counts",
+  "named_symbol_scope": "same-build comparison only"
+}

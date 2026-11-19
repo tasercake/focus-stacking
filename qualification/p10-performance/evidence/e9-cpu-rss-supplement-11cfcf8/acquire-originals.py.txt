@@ -1,0 +1,29 @@
+"""Reacquire only the exact frozen E9 archive and its selected original files."""
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+root = Path(__file__).resolve().parent
+data = json.loads(Path("pancake-conformance/src/pancake_conformance/adapters/pancake/performance-corpus.json").read_text())
+workload = next(item for item in data["workloads"] if item["id"] == "E9-native-balloons")
+source = next(item for item in data["sources"] if item["id"] == workload["dataset_id"])
+archive = source["selected_downloads"]["files"][0]
+raw = root / "input" / archive["path"]
+raw.parent.mkdir(exist_ok=False)
+subprocess.run(["curl", "--fail", "--location", "--retry", "2", "--max-time", "180", "--silent", "--show-error", "--output", str(raw), archive["url"]], check=True)
+with raw.open("rb") as file:
+    digest = hashlib.file_digest(file, "sha256").hexdigest()
+assert raw.stat().st_size == archive["size"] and digest == archive["sha256"]
+entries = workload["frames"]
+assert len(entries) == 9
+for item in entries:
+    path = root / "input" / item["path"]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    member = item["path"].split(f"/{raw.stem}-{digest[:12]}/", 1)[1]
+    payload = subprocess.run(["7z", "x", "-so", "-spd", str(raw), member], capture_output=True, check=True).stdout
+    assert len(payload) == item["bytes"] and hashlib.sha256(payload).hexdigest() == item["sha256"]
+    with path.open("xb") as target:
+        target.write(payload)
+(root / "receipt.json").write_text(json.dumps({"archive": archive, "frames": entries, "root": str(root / "input"), "verification": "each ordered frame and archive matched exact frozen bytes and SHA-256"}, indent=2) + "\n")
+print(root / "input")

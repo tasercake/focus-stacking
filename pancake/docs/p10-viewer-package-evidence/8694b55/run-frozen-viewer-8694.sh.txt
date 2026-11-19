@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+main=/home/krishna/Documents/focus-stacking
+work=/tmp/pancake-worktrees.t3paqgWM/viewer-queue-loaded-8694
+scope="$main/artifacts/p10-viewer-queue-trace-preflight/exact-packaged-8694"
+runner="$work/qualification/p10-performance"
+python="$main/pancake-conformance/src/pancake_conformance/adapters/chimpstackr_reference/.venv/bin/python"
+
+[[ ${1:-} == 'exclusive-frozen-8694-viewer-lease-confirmed' ]]
+input_root=$(realpath -e "${2:?provide the authorized full T50 input root}")
+manifest=$(realpath -e "${3:?provide the matching materialization receipt}")
+digest="${4:?provide the materializer-reported SHA-256}"
+test "$(git -C "$work" rev-parse HEAD)" = '8694b555666a1ddf4051e2839bbced4bcc625859'
+test -z "$(git -C "$work" status --porcelain)"
+test -z "${LD_PRELOAD:-}"
+(cd "$scope" && sha256sum --check SHA256SUMS)
+(cd "$runner" && sha256sum --check "$scope/harness.sha256")
+printf '%s  %s\n' 62e77cb6305514c2a1bbd1bcf3fc4e1518cbae572d48483e4e5e2f938daacf06 "$work/pancake/target/release/pancake-gui" | sha256sum --check
+printf '%s  %s\n' "$digest" "$manifest" | sha256sum --check
+umask 077
+owned=$(mktemp -d /tmp/pv8694.XXXXXXXX)
+out="$owned/artifacts"
+mkdir "$out"
+printf 'Exact uninstrumented viewer output %s\n' "$out"
+cp -a "$scope/calibration" "$out/calibration"
+cp "$scope/build.json" "$out/build.json"
+cp "$manifest" "$out/t50-materialization.json"
+"$python" - "$scope/preflight.json" "$out" "$input_root" "$work/qualification/t50-generated/evidence/native-t50-receipt.json" "$digest" <<'PY'
+import hashlib
+import json
+import sys
+from pathlib import Path
+
+preflight, output, input_root, reference = map(Path, sys.argv[1:5])
+digest = sys.argv[5]
+materialization = output / "t50-materialization.json"
+assert hashlib.sha256(materialization.read_bytes()).hexdigest() == digest
+stage = json.loads(materialization.read_text())
+frozen = json.loads(reference.read_text())
+owner = json.loads((input_root / "ownership.json").read_text())
+assert stage["mode"] == "materialized" and stage["frame_count"] == 50
+assert stage["ownership_token"] == owner["token"]
+assert stage["cleanup"]["owned_output_directory"] == str(input_root)
+assert stage["reference_receipt_sha256"] == hashlib.sha256(reference.read_bytes()).hexdigest()
+assert stage["files"] == frozen["files"]
+identity = json.loads(preflight.read_text())
+identity["t50_materialization_sha256"] = digest
+(output / "preflight.json").write_text(json.dumps(identity, indent=2) + "\n")
+PY
+
+source "$main/artifacts/p10-compare/native-tools/gui-env.sh"
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONPATH="$work/pancake-conformance/src:$runner"
+unset SLINT_BACKEND
+date -Iseconds > "$out/start"
+nvidia-smi > "$out/gpu-before.txt"
+collector=0
+timeout --signal=INT --kill-after=20s 900s "$python" "$runner/linux_latency.py" \
+  --build-receipt "$out/build.json" --scenario "$out/calibration/scenario-package.json" \
+  --workload T50 --input-root "$input_root" --output "$out/capture" \
+  > "$out/collector.log" 2>&1 || collector=$?
+printf '%s\n' "$collector" > "$out/collector.exit"
+nvidia-smi > "$out/gpu-after.txt"
+date -Iseconds > "$out/end"
+if [[ -f "$out/capture/native-latency.json" ]]; then
+    reduction=0
+    "$python" "$runner/p10.py" latency "$out/capture/native-latency.json" \
+        > "$out/frozen-reduction.json" 2> "$out/frozen-reduction.stderr" || reduction=$?
+    printf '%s\n' "$reduction" > "$out/reducer.exit"
+fi
+printf '%s  %s\n' "$digest" "$manifest" | sha256sum --check
+if [[ "$collector" == 0 ]]; then
+    "$python" "$main/artifacts/p10-viewer-package-287828a/verify-capture.py" \
+        "$out" "$work/pancake/docs/performance-targets.json" > "$out/summary.json"
+fi
+exit "$collector"

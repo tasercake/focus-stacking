@@ -1,0 +1,6 @@
+Target: pancake-rust | 3 cases | /tmp/pcg.1sq6fCbl/artifacts/n/conformance
+[1/3] PASSED interface.about (1.82s)
+[2/3] PASSED interface.sprint.frame-context (7.03s)
+[3/3] PASSED interface.recovery.close-unsaved (4.37s)
+Desktop phase finished; keyboard and pointer are free.
+Passed: 3; failed: 0; unsupported: 0

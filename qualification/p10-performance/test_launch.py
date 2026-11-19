@@ -3,8 +3,13 @@
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stderr
+from io import StringIO
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
+import p10
 from p10 import (
     ADAPTERS,
     R50_REFERENCE,
@@ -20,6 +25,60 @@ REFERENCE = ADAPTERS / "chimpstackr_reference/chimpstackr.toml"
 
 
 class LaunchContracts(unittest.TestCase):
+    def test_cpu_interval_cli_preserves_default_and_accepts_tighter_request(self):
+        flag = "--rss-sample-interval-ms"
+        argv = [
+            "p10.py", "run", "--runtime", "cpu", "--profile", "T50.weighted_average.cpu",
+            "--input-root", "inputs", "--build-receipt", "receipt.json", "--output", "results",
+            "--threads", "1", "--timeout", "120",
+        ]
+        with patch("p10.run_profile", return_value=0) as run:
+            for option, expected in (([], 8), ([flag, "2"], 2), ([flag, "3"], 3)):
+                with self.subTest(interval=expected), patch("sys.argv", argv + option):
+                    self.assertEqual(p10.main(), 0)
+                    self.assertEqual(run.call_args.args[0].rss_sample_interval_ms, expected)
+            with (
+                patch("sys.argv", argv + [flag, "0"]),
+                redirect_stderr(StringIO()),
+                self.assertRaises(SystemExit) as failure,
+            ):
+                p10.main()
+            self.assertEqual(failure.exception.code, 2)
+
+    def test_primary_and_diagnostic_arms_record_the_requested_interval(self):
+        args = SimpleNamespace(
+            runtime="cpu", threads=1, gpu_uuid=None, cuda_library_path=None,
+            rss_sampler_cpu=15, timeout=120,
+        )
+        profile = SimpleNamespace(device="cpu", options={})
+        measurement = {"returncode": 0, "timed_out": False, "resource_errors": []}
+        identity = {"command": ["reference"], "executable": "candidate"}
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            patch("p10.measure", return_value=measurement) as measure,
+            patch("p10._environment", return_value={}),
+            patch("p10._cpu_thermal_state", return_value=None),
+            patch("p10.verify_output", return_value={}),
+            patch("p10._assert_completion", return_value={}),
+        ):
+            directory = Path(temporary)
+            spec = SimpleNamespace(
+                root=directory, command=lambda _name: ["cli"],
+                stack_arguments=lambda _frames, _path, _settings: [],
+            )
+            for kind in ("warm", "diagnostic"):
+                for name in ("reference", "candidate"):
+                    record, _ = p10._run_sample(
+                        profile, (kind, 1, name), name, spec, identity, args, [], [], directory,
+                        None, rss_sample_interval_ms=3,
+                    )
+                    launch_path = directory / f"{kind}-01" / name / "launch.json"
+                    launch = json.loads(launch_path.read_text())
+                    self.assertEqual(launch["sample_interval_ns"], 3_000_000)
+                    self.assertEqual(record["sample_interval_ns"], 3_000_000)
+                    self.assertTrue(record["valid"])
+                    self.assertEqual(measure.call_args.kwargs["rss_sample_interval_ms"], 3)
+
     def test_cuda_library_path_leaves_the_reference_loader_unchanged(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -110,12 +169,23 @@ class LaunchContracts(unittest.TestCase):
         r50 = _reference_launch(target, python, "R50.hybrid.cpu")
         self.assertEqual(r50["command"], [str(python), str(R50_REFERENCE)])
         self.assertEqual(r50["raw_ingest"]["sha256"], sha256(R50_REFERENCE))
-        for profile in ("T50.hybrid.cpu", "D150.hybrid.cpu", "E9.exposure_fusion.gpu"):
+        for profile in ("T50.hybrid.cpu", "D150.hybrid.cpu"):
             with self.subTest(profile=profile):
                 self.assertEqual(
                     _reference_launch(target, python, profile),
                     {"command": target.command("cli", python=python)},
                 )
+
+    def test_e9_selects_hash_bound_equal_final_combiner_for_both_devices(self):
+        target = TargetSpec.load(REFERENCE)
+        interpreter = Path("/reference/python")
+        launcher = ADAPTERS / "pancake/e9_reference.py"
+        for device in ("cpu", "gpu"):
+            with self.subTest(device=device):
+                result = _reference_launch(target, interpreter, f"E9.exposure_fusion.{device}")
+                self.assertEqual(result["command"], [str(interpreter), str(launcher)])
+                self.assertEqual(result["exposure_combiner"]["sha256"], sha256(launcher))
+                self.assertEqual(result["exposure_combiner"]["policy"], "equal-final-batch-mean-v1")
 
     def test_reference_profiler_is_absent_from_timed_environment(self):
         with tempfile.TemporaryDirectory() as temporary:

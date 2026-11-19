@@ -1,0 +1,145 @@
+"""Run an independently scheduled R50 comparison of packaged and owned-upload CLIs."""
+
+import argparse
+import json
+import math
+import os
+import sys
+import time
+from pathlib import Path
+
+import p10
+from diagnose import run_job
+from protocol import Campaign, corpus, pixel_metrics, sha256, verify_frames
+
+SEALED_COMMIT = "287828aac07ffad2252785b73a52a59fc07b3409"
+OWNED_COMMIT = "07816a24a62f96bc3d3252e95fcfd2b4b5950269"
+OWNED_HASH = "aad46d08e71f1973ba4ffa1efa7d7fe0ee7747e02cf2a3834903af448587f9ed"
+
+
+def identities(scratch, owned_receipt):
+    """Validate both immutable ELFs, receipt identities, and exact production delta."""
+    sealed_file = scratch / "build.json"
+    sealed = json.loads(sealed_file.read_bytes())
+    owned_file = owned_receipt.resolve(strict=True)
+    owned = json.loads(owned_file.read_bytes())
+    if (
+        sealed["commit"] != SEALED_COMMIT
+        or owned["tested_revision"] != OWNED_COMMIT
+        or owned["tested_tree"] != p10._git(p10.ROOT, "rev-parse", f"{OWNED_COMMIT}^{{tree}}")
+        or owned["qualification"]["p5_p6_device_replay_passed"] != 73
+        or owned["cargo_lock_sha256"] != sealed["lock_sha256"]
+    ):
+        raise ValueError("incomplete exact sealed or owned-upload candidate provenance")
+    changed = p10._git(p10.ROOT, "diff", "--name-only", SEALED_COMMIT, OWNED_COMMIT).splitlines()
+    if changed != ["pancake/assurance-platforms.json", "pancake/src/registration/kernels.rs"]:
+        raise ValueError("owned-upload source includes an unexpected production delta")
+    owned_executable = str((owned_file.parent / owned["binary"]).resolve(strict=True))
+    targets = {
+        "sealed": {**sealed, "build_receipt_sha256": sha256(sealed_file)},
+        "owned": {
+            **owned, "executable": owned_executable,
+            "build_receipt_sha256": sha256(owned_file),
+        },
+    }
+    if targets["owned"]["binary_sha256"] != OWNED_HASH:
+        raise ValueError("unexpected candidate hash in the published receipt")
+    for target in targets.values():
+        if sha256(Path(target["executable"])) != target["binary_sha256"]:
+            raise ValueError("an executable differed from its pinned receipt")
+    return targets
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("scratch", type=Path)
+    parser.add_argument("owned_receipt", type=Path)
+    parser.add_argument("--stage-probe", type=lambda path: Path(path).resolve(strict=True))
+    args = parser.parse_args()
+    args.scratch = args.scratch.resolve(strict=True)
+    args.threads = 15
+    args.check_transforms = True
+    if os.sched_getaffinity(0) != set(range(args.threads)):
+        raise ValueError("expected common CPU affinity 0–14")
+    if not (args.scratch / "owned-quiet-lease.txt").is_file():
+        raise ValueError("missing separately authorized CPU quiet lease")
+    traced = args.stage_probe is not None
+    suffix = "owned-upload-phase" if traced else "owned-upload-pair"
+    output = args.scratch / suffix
+    output.mkdir()
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(p for p in campaign.profiles("cpu") if p.key == "R50.hybrid.cpu")
+    spec = p10.TargetSpec.load(p10.CANDIDATE)
+    data = args.scratch / "inputs"
+    prior = json.loads((args.scratch / "matched-full-pair/report.json").read_bytes())
+    bounds = prior["capture_geometry"]["oriented_shape_hwc"]
+    results = dict(
+        scope=f"{suffix}. Separate CPU-only diagnostic; no frozen sampling or gate credit.",
+        performance_targets_sha256=sha256(p10.TARGETS_PATH),
+        settings=profile.options,
+        registration_capture_geometry=prior["capture_geometry"],
+        hardware=p10._hardware(None),
+        start_unix_ns=time.time_ns(),
+        cpu_temperature_start=p10._cpu_thermal_state(),
+        results={},
+    )
+    names = ("owned",) if traced else ("sealed", "owned")
+
+    try:
+        with p10._campaign_lock():
+            records, source = corpus(p10.ROOT, campaign, "R50")
+            frames = verify_frames(data, records, 50)
+            if frames != sorted(frames):
+                raise ValueError("frozen filenames differ from CLI input sorting")
+            targets = identities(args.scratch, args.owned_receipt)
+            results.update(identities=targets, source=source, input_count=len(frames))
+            files = {}
+            try:
+                for name in names:
+                    arm = output / name
+                    arm.mkdir()
+                    result, path = run_job(
+                        "candidate", profile, spec, targets[name], args,
+                        frames, bounds, arm,
+                    )
+                    results["results"][name] = result
+                    files[name] = path
+                if traced:
+                    expected = json.loads((args.scratch / "owned-upload-pair/report.json").read_bytes())
+                    expected_hash = expected["results"]["owned"]["output"]["pixel_sha256"]
+                    if results["results"]["owned"]["completion"]["alignment_transforms"] != expected["results"]["owned"]["completion"]["alignment_transforms"]:
+                        raise ValueError("tracing changed the owned-upload alignment maps")
+                    if results["results"]["owned"]["output"]["pixel_sha256"] != expected_hash:
+                        raise ValueError("traced owned-upload product differed from its untraced RGB16")
+                else:
+                    for name in names:
+                        expected_hash = prior["cases"]["candidate"]["output"]["pixel_sha256"]
+                        if results["results"][name]["output"]["pixel_sha256"] != expected_hash:
+                            raise ValueError(f"{name} product differed from exact R50 baseline")
+                    for field in ("alignment_transforms", "sequential_transforms"):
+                        sealed_matrices = results["results"]["sealed"]["completion"][field]
+                        owned_matrices = results["results"]["owned"]["completion"][field]
+                        matrices = sealed_matrices.values() if isinstance(sealed_matrices, dict) else sealed_matrices
+                        if (
+                            sealed_matrices != owned_matrices or len(sealed_matrices) != 50
+                            or not all(math.isfinite(value) for matrix in matrices for row in matrix for value in row)
+                        ):
+                            raise ValueError(f"mismatched or nonfinite {field}")
+                    results["identical_finite_transform_count"] = 50
+                    results["pixel_metrics"] = pixel_metrics(files["sealed"], files["owned"], bounds)
+            finally:
+                results["inputs_unchanged"] = verify_frames(data, records, 50) == frames
+                results["targets_unchanged"] = identities(args.scratch, args.owned_receipt) == targets
+        return 0
+    except (OSError, ValueError) as error:
+        results["diagnostic_failure"] = str(error)
+        print(str(error), file=sys.stderr)
+        return 1
+    finally:
+        results["finished_unix_ns"] = time.time_ns()
+        results["cpu_temperature_end"] = p10._cpu_thermal_state()
+        p10._write(output / "report.json", results)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

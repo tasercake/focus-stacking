@@ -1,0 +1,196 @@
+"""Audit a frozen CPU Nextest plus native interface coverage overlay."""
+import json
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+
+REPO = Path(__file__).resolve().parents[2]
+APP = REPO / 'pancake'
+sys.path.insert(0, str(APP / 'scripts'))
+from gui_coverage import compare_mapping, digest, export_arguments, llvm_tool, native_identity, read_json, verify_profile
+
+EVIDENCE = Path(sys.argv[2]).resolve(strict=True)
+BASELINE = read_json(EVIDENCE / 'baseline.json')
+COVERAGE = llvm_tool(APP, 'llvm-cov')
+PROFDATA = llvm_tool(APP, 'llvm-profdata')
+CPU_PROFILE, MAPPING = export_arguments(EVIDENCE / 'baseline-export.log', APP, COVERAGE)
+OBJECTS = [(APP / MAPPING[index]).resolve(strict=True) for index in range(1, len(MAPPING) - 2, 2)]
+BINS = {name: native_identity(CPU_PROFILE.parent / 'debug' / f'pancake-{name}') for name in ('cli', 'gui')}
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def metrics(report):
+    data, = report['data']
+    return {key: {name: total[name] for name in ('count', 'covered')} for key, total in data['totals'].items()
+            if key in ('lines', 'functions', 'regions', 'branches')}
+
+
+def emit(path, result):
+    with path.open('x') as output:
+        json.dump(result, output, indent=2)
+        output.write('\n')
+
+
+def strict(label, path):
+    command = [sys.executable, '-B', APP / 'scripts/compare_assurance_coverage.py', APP, path, path]
+    with (EVIDENCE / f'{label}-strict.log').open('x') as log:
+        finished = subprocess.run(command, cwd=APP, stdout=log, stderr=subprocess.STDOUT, check=False)
+    (EVIDENCE / f'{label}-strict.status').write_text(f'{finished.returncode}\n')
+    return finished.returncode
+
+
+def baseline():
+    hashes = {str(path): digest(path) for path in OBJECTS}
+    require(len(hashes) == len(OBJECTS), 'duplicate standard export objects')
+    shutil.copyfile(CPU_PROFILE, EVIDENCE / 'baseline.profdata')
+    source = read_json(EVIDENCE / 'metadata.json')
+    emit(EVIDENCE / 'baseline-audit.json', {
+        'source_workspace': source['workspace_root'], 'instrumentation_elf': BINS,
+        'objects': hashes, 'filter': MAPPING[-1], 'profile': str(CPU_PROFILE),
+        'baseline_profile_sha256': digest(CPU_PROFILE), 'baseline_export_sha256': digest(EVIDENCE / 'baseline.json'),
+        'metrics': metrics(BASELINE), 'strict_exit': strict('baseline', EVIDENCE / 'baseline.json'),
+    })
+    print(json.dumps(metrics(BASELINE), indent=2))
+
+
+def check_capture():
+    native = EVIDENCE / 'native'
+    record = read_json(native / 'capture.json')
+    expected = (EVIDENCE / 'eligible-cases.txt').read_text().splitlines()
+    report = read_json(native / 'conformance/report.json')
+    require([case['id'] for case in report['cases']] == expected, 'GUI coverage roster or order changed')
+    require(report['complete'] and report['counts'] == {'passed': 33, 'failed': 0, 'unsupported': 0}, 'incomplete CPU GUI outcome')
+    require(record['revision'] == '870f7f923d70b1a7b0e7fe73d5f9a4987770fdc4', 'wrong source pin')
+    require(record['binary'] == BINS, 'normal build binary identity differs from capture')
+    raw = native / 'raw'
+    authenticated = {}
+    for session in record['sessions']:
+        path = raw / session['profile']
+        require(digest(path) == session['sha256'], f'GUI raw profile changed: {path}')
+        authenticated[path] = 'gui'
+    profiles = [path for path in raw.iterdir() if path not in authenticated]
+    cli_commands = []
+    for command_path in sorted((native / 'conformance/cases').glob('*/call-*/command.json')):
+        command = read_json(command_path)['argv']
+        require(command[0] == BINS['cli']['path'], f'noncanonical CLI command: {command}')
+        events = command_path.with_name('events.jsonl')
+        require(events.is_file(), f'missing CLI backend evidence: {command_path}')
+        decoded = [json.loads(line) for line in events.read_text().splitlines() if line]
+        actual = [event for event in decoded if event.get('event') == 'stack_complete']
+        require('--cpu' in command and len(actual) == 1 and actual[0].get('actual_backend') == 'cpu'
+                and actual[0].get('runtime') == 'cpu' and actual[0].get('completed') is True,
+                f'CLI parity does not attest actual CPU completion: {command_path}')
+        cli_commands.append(str(command_path.relative_to(native)))
+    require(len(profiles) == len(cli_commands), 'CLI profile/call count mismatch')
+    for path in profiles:
+        build_id = BINS['cli']['build_id']
+        require(re.fullmatch(rf'pancake-[1-9][0-9]*-{build_id}\.profraw', path.name) is not None
+                and path.is_file() and not path.is_symlink(), f'unexpected native raw profile: {path}')
+        verify_profile(path, build_id, PROFDATA)
+        authenticated[path] = 'cli'
+    for path, kind in authenticated.items():
+        verify_profile(path, BINS[kind]['build_id'], PROFDATA)
+    for events in (native / 'conformance/cases').glob('*/call-*/events.jsonl'):
+        for line in events.read_text().splitlines():
+            event = json.loads(line)
+            require(event.get('actual_backend', 'cpu') == 'cpu', f'non-CPU backend: {events}')
+            if event.get('event') == 'stack_complete':
+                require(event.get('fallback_reason') is None and event.get('runtime') == 'cpu',
+                        f'completed job used a fallback or unverified runtime: {events}')
+    return record, authenticated, cli_commands
+
+
+def verify_stock_accumulation(authenticated, expected):
+    raw_indexes = CPU_PROFILE.parent / 'pancake-profraw-list'
+    shutil.copyfile(raw_indexes, EVIDENCE / 'baseline-profraw-list')
+    linked = []
+    try:
+        for profile in authenticated:
+            target = CPU_PROFILE.parent / profile.name
+            target.hardlink_to(profile)
+            linked.append(target)
+        stock_report = EVIDENCE / 'combined-stock.json'
+        stock_log = EVIDENCE / 'combined-stock-export.log'
+        command = ['cargo', 'llvm-cov', 'report', '--workspace', '--include-build-script', '--json', '-v', '--output-path', stock_report]
+        with stock_log.open('x') as output:
+            completed = subprocess.run(command, cwd=APP, stdout=output, stderr=subprocess.STDOUT, check=False)
+        (EVIDENCE / 'combined-stock-export.status').write_text(f'{completed.returncode}\n')
+        require(completed.returncode == 0, 'stock accumulated exporter failed; see log')
+        profile, mapping = export_arguments(stock_log, APP, COVERAGE)
+        require(profile == CPU_PROFILE, 'stock export indexed profile location changed')
+        require(mapping == MAPPING, 'stock export object mapping or filter changed after accumulation')
+        raw_list = raw_indexes.read_text().splitlines()
+        require({path.name for path in linked} <= {Path(line).name for line in raw_list},
+                'stock report did not discover every authenticated raw profile')
+        shutil.copyfile(raw_indexes, EVIDENCE / 'combined-stock-profraw-list')
+        shutil.copyfile(profile, EVIDENCE / 'combined-stock.profdata')
+        accumulated = read_json(stock_report)
+        compare_mapping(expected, accumulated)
+        compare_mapping(accumulated, expected)
+        return {
+            'same_export_arguments': True, 'all_raw_profiles_discovered': True,
+            'same_coverage_as_paired_merge': True, 'json_sha256': digest(stock_report),
+            'profdata_sha256': digest(EVIDENCE / 'combined-stock.profdata'),
+        }
+    finally:
+        for profile in linked:
+            profile.unlink()
+        shutil.copyfile(EVIDENCE / 'baseline.profdata', CPU_PROFILE)
+        shutil.copyfile(EVIDENCE / 'baseline-profraw-list', raw_indexes)
+
+
+def execute():
+    first = read_json(EVIDENCE / 'baseline-audit.json')
+    require(first['objects'] == {str(path): digest(path) for path in OBJECTS}, 'baseline ELF/object identity changed')
+    require(first['instrumentation_elf'] == BINS, 'normal native ELF changed')
+    require(first['baseline_profile_sha256'] == digest(EVIDENCE / 'baseline.profdata'), 'baseline indexed profile changed')
+    record, authenticated, cli_commands = check_capture()
+    baseline_args = list(MAPPING)
+    # Some stock exports report only objects with a discovered runtime profile.
+    # Carry both explicit normal ELFs in both fixed-list exports if needed.
+    for binary in BINS.values():
+        if Path(binary['path']) not in OBJECTS:
+            baseline_args += ['-object', binary['path']]
+    results = {}
+    for label, additions in (('control', []), ('combined', sorted(authenticated))):
+        indexed = EVIDENCE / f'{label}.profdata'
+        report = EVIDENCE / f'{label}.json'
+        subprocess.run([PROFDATA, 'merge', '-sparse', '-o', indexed, EVIDENCE / 'baseline.profdata', *additions], check=True)
+        with report.open('x') as output:
+            subprocess.run([COVERAGE, 'export', '-format=text', f'-instr-profile={indexed}', *baseline_args],
+                           cwd=APP, stdout=output, check=True)
+        results[label] = read_json(report)
+    missing_normal_object = baseline_args != MAPPING
+    compare_mapping(BASELINE, results['control'], adding_mapping=missing_normal_object)
+    compare_mapping(results['control'], results['combined'])
+    require(not missing_normal_object, 'both normal objects must already appear in the stock baseline export')
+    stock = verify_stock_accumulation(authenticated, results['combined'])
+    result = {
+        'source': record['revision'], 'elf': BINS, 'stock_filename_filter': MAPPING[-1],
+        'stock_map_vector': MAPPING, 'paired_map_vector': baseline_args,
+        'cpu_gui_cases': 33, 'gui_profiles': len(record['sessions']),
+        'gui_completed_jobs': sum(session['cpu_completions'] for session in record['sessions']),
+        'cli_profiles': len(cli_commands), 'cli_commands': cli_commands,
+        'raw_profile_manifest': {path.name: {'kind': kind, 'sha256': digest(path), 'bytes': path.stat().st_size}
+                                 for path, kind in sorted(authenticated.items())},
+        'note': 'GUI PIDs bind to shutdown receipts. CLI raw profiles are authenticated by internal ELF build ID and total exact CLI command count.',
+        'control': metrics(results['control']), 'combined': metrics(results['combined']),
+        'stock_accumulation': stock,
+        'strict_before_exit': first['strict_exit'],
+        'strict_combined_exit': strict('combined', EVIDENCE / 'combined.json'),
+    }
+    emit(EVIDENCE / 'coverage-overlay.json', result)
+    print(json.dumps({key: result[key] for key in ('cpu_gui_cases', 'gui_profiles', 'gui_completed_jobs', 'cli_profiles', 'control', 'combined', 'strict_before_exit', 'strict_combined_exit')}, indent=2))
+
+
+if sys.argv[1] == 'baseline':
+    baseline()
+elif sys.argv[1] == 'combine':
+    execute()
+else:
+    raise SystemExit(2)

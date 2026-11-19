@@ -1,0 +1,3 @@
+interface.about
+interface.recovery.close-unsaved
+interface.sprint.frame-context

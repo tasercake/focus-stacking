@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(git rev-parse --show-toplevel)
+proof="$repo/artifacts/tiff-row-workers/p2"
+cd "$repo"
+lane=$1
+[[ $lane == cpu || $lane == gpu ]]
+test -z "$(git status --porcelain)"
+test "$(git rev-parse HEAD)" = "$(cat "$proof/revision.txt")"
+target=pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml
+roadmap=pancake-conformance/src/pancake_conformance/adapters/pancake/case-roadmap.json
+roster="pancake/docs/p10-r50-raw-audit/f2f1bb3/p2/$lane-cases.txt"
+output="$proof/p2-$lane"
+test ! -e "$output"
+export UV_PROJECT_ENVIRONMENT="$proof/conformance-venv"
+export XDG_RUNTIME_DIR="$proof/xdg-$lane"
+mkdir -m 700 "$XDG_RUNTIME_DIR"
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/nvidia_icd.json
+{
+    git rev-parse HEAD
+    sha256sum pancake/target/release/pancake-cli pancake/Cargo.lock "$target" "$roadmap" "$roster" pancake-conformance/uv.lock
+    uname -srm
+    lscpu | rg 'Model name:'
+    if [[ $lane == gpu ]]; then
+        nvidia-smi --query-gpu=name,uuid,driver_version,pci.bus_id --format=csv,noheader
+        sha256sum "$VK_DRIVER_FILES"
+    fi
+    uv --version
+    date -u +%FT%TZ
+} > "$proof/p2-$lane-environment.txt"
+cases=()
+while IFS= read -r id; do cases+=(--case "$id"); done < "$roster"
+command=(env -u DISPLAY -u WAYLAND_DISPLAY -u DBUS_SESSION_BUS_ADDRESS -u XDG_SESSION_TYPE
+    -u PANCAKE_RUNTIME taskset -c 24-27 uv run --offline --project pancake-conformance --frozen
+    pancake-conformance run --target "$target" "${cases[@]}" --no-coverage --output "$output")
+{ printf '%q' "${command[0]}"; printf ' %q' "${command[@]:1}"; printf '\n'; } > "$proof/p2-$lane-command.txt"
+set +e
+"${command[@]}" >"$proof/p2-$lane.log" 2>&1
+status=$?
+set -e
+printf '%d\n' "$status" > "$proof/p2-$lane.status"
+exit "$status"

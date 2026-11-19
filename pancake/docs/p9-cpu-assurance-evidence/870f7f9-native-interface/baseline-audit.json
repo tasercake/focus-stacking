@@ -1,0 +1,63 @@
+{
+  "source_workspace": "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake",
+  "instrumentation_elf": {
+    "cli": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/pancake-cli",
+      "sha256": "86e0a59e177196a699e5e82ca37ca3e3a9ce971ad490e2b7db032c9e6ab40dbf",
+      "build_id": "03f55724cefac6d7a64df6ab59b0c853c6d095f5"
+    },
+    "gui": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/pancake-gui",
+      "sha256": "73d39e4bc1b28780ed324ad8c02953492fa7bf422d0a81be3326c720d5fe0e39",
+      "build_id": "8fadd905a180662f13ac19899cb4a2dd7aeefca2"
+    }
+  },
+  "objects": {
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake-cli/07ee0bf19ca90cbf/out/cpu_config-07ee0bf19ca90cbf": "83bf8f9b34eb6914ffb1f5ab39bc26b1c6867c1cc6623bdf38ad97ef4ebd6028",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake-cli/2f1d9f764578b080/out/cpu_cli-2f1d9f764578b080": "eb27329f4ecd1c5adf31e33953e0e985d8b4a9c3e90a30ddef9ac19efd74d4de",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake-cli/42ac38c67d4e872f/out/pancake_cli": "86e0a59e177196a699e5e82ca37ca3e3a9ce971ad490e2b7db032c9e6ab40dbf",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake-cli/671ca5067536cc5b/out/cpu_runtime_options-671ca5067536cc5b": "05a42bc77a6e0827143c8fc35114fb9b15a0ae0b6ce0ebc342d05238af06369e",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake-cli/fcd6975126d137f8/out/pancake_cli-fcd6975126d137f8": "25f35b30a32f2e036f189f741c8ac837c2bbcc4ff0115a7ae07747debfd7beb7",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake-gui/1d304bd405b45454/out/pancake_gui": "73d39e4bc1b28780ed324ad8c02953492fa7bf422d0a81be3326c720d5fe0e39",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake-gui/4899a5f9ba2573c8/out/pancake_gui-4899a5f9ba2573c8": "c963966909cccd6dfb7d6a7ab164bf89a9ae5b396be3d6b91ed78bd41c8b44f0",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/021d06eda41ce1d0/out/cpu_job-021d06eda41ce1d0": "d124bb42542ff947da0446bdab2f295da9da6bab52d1b53048c20cc2b303ec0f",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/0f834282a9ed2faa/out/cpu_registration_contract-0f834282a9ed2faa": "2dbe9ea1e3f65610e5ed49ee20ab62846353160509843f02b0946a0ec076672f",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/1d581a34f2ead19a/out/pancake-1d581a34f2ead19a": "305ccf575967860ce02d8b9443f2ad88e405b474440f5a87670e7496963e6d33",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/2df662d4c01a7023/out/cpu_gray_array_export-2df662d4c01a7023": "26d6ddc94dcaf10f43e6bab1e63f2ad2232c592733d8d05c1c0ec3a19d082685",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/3ba26637d1088025/out/cpu_npy-3ba26637d1088025": "8d013cfd81864b07bfc1cee0f8a739fd576024c62e058b2c34e9d894509915fb",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/3cd220bfba35c089/out/cpu_image_export-3cd220bfba35c089": "8a04488687a160a3cd19ed12ba64977ea9f9f8ea67dd101d2c8d33ff7bc70951",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/40ce7e17542871f2/out/cpu_numerical_contract-40ce7e17542871f2": "a0f706083c447a8ae9bf1f7d626593ae7e8c5c56946df5305cf4fdb5dfe0a241",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/50e4e6b60662478f/out/cpu_fusion_contract-50e4e6b60662478f": "ff119430c823d82ad348c006b7cd5613ff4dd61e3b6c7ea3479d6f3beae36e80",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/98696638978b1516/out/cpu_image_io-98696638978b1516": "4a2c220440e5e63d20b0285a14ed2dfe625dd4f8b32c7a90afc2f30c8bd21f54",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/9a4bdacb4ca33703/out/cpu_array_layout-9a4bdacb4ca33703": "59765c248fa0fe8506977e236bdcb13d9be8bd27967bb9132502d8f6284cb85e",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/e65692ccb934ca4e/out/cpu_kernel_contract-e65692ccb934ca4e": "f15ab9782e64f84606d395748a7678f28af88c05d172729078b2bf0901535672",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/e6cfa373a2154ad6/out/cpu_runtime_contract-e6cfa373a2154ad6": "f6511b5fe47888b85d156ed424600f28a2e70eb313df28ddc0569d02cd8d437e",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/e752c5ee59746343/out/cpu_advanced_fusion-e752c5ee59746343": "4cc1267576259152d2f39266676624d831195902ed3d30f14a69279328e45c70",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/build/pancake/fdf6284bb0a15055/out/cpu_stack_plan-fdf6284bb0a15055": "d6c7ae6415c4ef974d1f0dad4b55c5aa303b99fa53920ac5d845a1b01f04f148",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/pancake-cli": "86e0a59e177196a699e5e82ca37ca3e3a9ce971ad490e2b7db032c9e6ab40dbf",
+    "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/debug/pancake-gui": "73d39e4bc1b28780ed324ad8c02953492fa7bf422d0a81be3326c720d5fe0e39"
+  },
+  "filter": "/rustc/([0-9a-f]+|[0-9]+\\.[0-9]+\\.[0-9]+)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake(/.*)?/(tests|examples|benches)/|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake(/.*)?/(tests\\.rs|[0-9a-zA-Z_-]+[_-]tests\\.rs)$|^/tmp/pancake\\-worktrees\\.t3paqgWM/coverage\\-870f7f9\\-cpu\\-gui/pancake/target/llvm\\-cov\\-target($|/)|^/home/krishna/\\.cargo/(registry|git)/|^/home/krishna/\\.rustup/toolchains($|/)",
+  "profile": "/tmp/pancake-worktrees.t3paqgWM/coverage-870f7f9-cpu-gui/pancake/target/llvm-cov-target/pancake.profdata",
+  "baseline_profile_sha256": "9f687f3f94f3c41c43c2703b8e1a5ff369cddcd8aec8967946b98af856a4e1c3",
+  "baseline_export_sha256": "ea010bc9b50522df05fc35daf0c7cbaf70e204c67ef513d36184e42e965a8976",
+  "metrics": {
+    "branches": {
+      "count": 0,
+      "covered": 0
+    },
+    "functions": {
+      "count": 760,
+      "covered": 485
+    },
+    "lines": {
+      "count": 6516,
+      "covered": 4731
+    },
+    "regions": {
+      "count": 7328,
+      "covered": 4850
+    }
+  },
+  "strict_exit": 1
+}

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(git rev-parse --show-toplevel)
+proof="$repo/artifacts/native-about-proof-fb9c"
+source /home/krishna/Documents/focus-stacking/artifacts/p10-compare/native-tools/gui-env.sh
+export PATH="/tmp/pancake-tools/bin:$PATH"
+export UV_PROJECT_ENVIRONMENT="$proof/uv-env" UV_OFFLINE=1
+export CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0
+uv sync --project "$repo/pancake-conformance" --frozen --offline >"$proof/uv-preflight.log" 2>&1
+cd "$repo/pancake"
+export CARGO_TARGET_DIR="$PWD/target/llvm-cov-target"
+source <(cargo llvm-cov show-env --sh)
+printf 'LLVM_PROFILE_FILE=%s\n' "$LLVM_PROFILE_FILE" >"$proof/inherited-profile.txt"
+cargo test --locked --workspace --all-features --test cpu_gui_native -- --include-ignored

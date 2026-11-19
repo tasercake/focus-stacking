@@ -1,0 +1,195 @@
+"""Measure one matched R50 CPU pair or a separate external stage probe."""
+
+import argparse
+import json
+import os
+import re
+import signal
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
+
+import p10
+from protocol import Campaign, corpus, pixel_metrics, sha256, verify_frames, verify_output
+
+PROGRESS = re.compile(rb"progress ([0-9]+)/([0-9]+)\s*\Z")
+LIMIT_SECONDS = 900
+
+
+def measured_process(argv, cwd, env, case):
+    """Time spawn through exit and collect the real public CLI progress receipts."""
+    details = dict(argv=argv, cwd=str(cwd), env=env)
+    p10._write(case / "launch.json", details)
+    progress = []
+    expired = threading.Event()
+    with (
+        (case / "stdout.txt").open("xb") as stdout,
+        (case / "stderr.txt").open("xb") as stderr,
+    ):
+        begin = time.monotonic_ns()
+        process = subprocess.Popen(
+            argv, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=stderr,
+            start_new_session=True,
+        )
+
+        def observe():
+            for line in process.stdout:
+                received = time.monotonic_ns() - begin
+                stdout.write(line)
+                match = PROGRESS.fullmatch(line)
+                if match:
+                    progress.append({
+                        "completed": int(match[1]), "total": int(match[2]),
+                        "received_monotonic_elapsed_ns": received,
+                    })
+
+        def timeout():
+            expired.set()
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
+        reader = threading.Thread(target=observe)
+        timer = threading.Timer(LIMIT_SECONDS, timeout)
+        reader.start()
+        timer.start()
+        try:
+            _, status, usage = os.wait4(process.pid, 0)
+            elapsed_ns = time.monotonic_ns() - begin
+            process.returncode = os.waitstatus_to_exitcode(status)
+        finally:
+            timer.cancel()
+            timer.join()
+            reader.join()
+            process.stdout.close()
+    return {
+        "elapsed_ns": elapsed_ns,
+        "returncode": process.returncode,
+        "timed_out": expired.is_set(),
+        "child_peak_rss_bytes": usage.ru_maxrss * 1024,
+        "child_user_seconds": usage.ru_utime,
+        "child_system_seconds": usage.ru_stime,
+        "progress": progress,
+    }
+
+
+def run_job(name, profile, spec, identity, args, frames, bounds, directory):
+    case = directory / name
+    case.mkdir()
+    cache = directory / "cache" / name
+    output = case / "complete.tif"
+    traced = args.stage_probe is not None
+    observe_completion = traced or getattr(args, 'check_transforms', False)
+    env = p10._environment(spec, cache, case, args.threads, None, None, observe_completion)
+    command = identity["command"] if name == "reference" else [identity["executable"]]
+    argv = [*command, *spec.stack_arguments(frames, output, profile.options)]
+    if traced:
+        env["PANCAKE_PROBE_JSONL"] = str(case / "external-stages.jsonl")
+        argv = [
+            "taskset", "-c", "15", "gdb", "-nx", "-q", "-batch", "--return-child-result",
+            "-iex", "set debuginfod enabled off",
+            "-iex", "set auto-load off",
+            "-ex", "set disable-randomization off",
+            "-ex", "set print thread-events off",
+            "-ex", "set exec-wrapper /usr/bin/taskset -c 0-14",
+            "-x", str(args.stage_probe), "-ex", "run", "--args", *argv,
+        ]
+    result = measured_process(argv, spec.root, env, case)
+    if not result["returncode"] and not result["timed_out"]:
+        result["output"] = verify_output(output, bounds)
+        if name == "candidate":
+            progress = result["progress"]
+            if [event["completed"] for event in progress] != list(range(1, len(frames) + 1)):
+                raise ValueError("candidate did not report all ordered frame completions")
+            if set(event["total"] for event in progress) != {len(frames)}:
+                raise ValueError("candidate progress did not report the frozen frame total")
+            first, last = (progress[idx]["received_monotonic_elapsed_ns"] for idx in (0, -1))
+            result["public_progress_boundaries"] = {
+                "dispatch_through_first_complete_frame_ns": first,
+                "second_through_last_frame_ns": last - first,
+                "last_frame_through_process_exit_ns": result["elapsed_ns"] - last,
+            }
+    if observe_completion and "output" in result:
+        result["completion"] = p10._assert_completion(
+            case / "events.jsonl", "cpu", "cpu", None,
+        )
+    p10._write(case / "result.json", result)
+    if "output" not in result:
+        raise ValueError(f"{name} did not complete and publish the RGB16 TIFF")
+    return result, output
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("scratch", type=Path)
+    parser.add_argument("--stage-probe", type=lambda path: Path(path).resolve(strict=True))
+    args = parser.parse_args()
+    args.scratch = args.scratch.resolve(strict=True)
+    args.profile = "R50.hybrid.cpu"
+    args.build_receipt = args.scratch / "build.json"
+    args.threads = 15
+    if os.sched_getaffinity(0) != set(range(args.threads)):
+        raise ValueError("expected common CPU affinity 0–14")
+    label = "external-candidate-stage-probe" if args.stage_probe else "matched-full-pair"
+    output = args.scratch / label
+    output.mkdir()
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(p for p in campaign.profiles("cpu") if p.key == args.profile)
+    report = dict(
+        scope=f"{label}. Diagnostic only; no frozen sampling or gate credit.",
+        profile=args.profile,
+        performance_targets_sha256=sha256(p10.TARGETS_PATH),
+        settings=profile.options,
+        started_at_unix_ns=time.time_ns(),
+        hardware=p10._hardware(None),
+        cpu_temperature_start=p10._cpu_thermal_state(),
+        cases={},
+    )
+    names = ("candidate",) if args.stage_probe else ("reference", "candidate")
+    root = args.scratch / "inputs"
+    try:
+        with p10._campaign_lock():
+            spec, identity = p10._prepared_targets(args, campaign)
+            records, source = corpus(p10.ROOT, campaign, "R50")
+            report.update(identities=identity, source=source)
+            frames = verify_frames(root, records, 50)
+            if frames != sorted(frames):
+                raise ValueError("frozen filenames differ from CLI input sorting")
+            geo_cmd = [*identity["reference"]["command"], "--cr3-geometry", str(frames[0])]
+            geometry = json.loads(p10._output(geo_cmd, spec["reference"].root))
+            report["capture_geometry"] = geometry
+            bounds = geometry["oriented_shape_hwc"]
+            matches = {}
+            try:
+                for name in names:
+                    result, path = run_job(
+                        name, profile, spec[name], identity[name], args, frames,
+                        bounds, output,
+                    )
+                    report["cases"][name] = result
+                    matches[name] = path
+                if not args.stage_probe:
+                    report["first_pair_pixel_metrics"] = pixel_metrics(
+                        matches["reference"], matches["candidate"], bounds
+                    )
+            finally:
+                report["inputs_unchanged"] = verify_frames(root, records, 50) == frames
+                report["target_identities_unchanged"] = (
+                    p10._prepared_targets(args, campaign)[1] == identity
+                )
+        return 0
+    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+        report["diagnostic_failure"] = str(error)
+        print(str(error), file=sys.stderr)
+        return 1
+    finally:
+        report["cpu_temperature_end"] = p10._cpu_thermal_state()
+        report["finished_at_unix_ns"] = time.time_ns()
+        p10._write(output / "report.json", report)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

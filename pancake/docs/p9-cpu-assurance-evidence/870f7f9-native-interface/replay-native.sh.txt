@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(git rev-parse --show-toplevel)
+workspace=/home/krishna/Documents/focus-stacking
+bundle="$workspace/artifacts/p9-coverage-870f7f9"
+[[ $(git rev-parse HEAD) == 870f7f923d70b1a7b0e7fe73d5f9a4987770fdc4 ]]
+[[ $(cat "$bundle/nextest.status") == 0 && $(cat "$bundle/normal-binaries.status") == 0 && $(cat "$bundle/baseline-export.status") == 0 ]]
+[[ ! -e "$bundle/native" ]]
+(cd "$repo/pancake" && sha256sum -c "$bundle/native-elf.sha256")
+source "$workspace/artifacts/p10-compare/native-tools/gui-env.sh"
+unset UV_PROJECT_ENVIRONMENT DISPLAY WAYLAND_DISPLAY XAUTHORITY SESSION_MANAGER DBUS_SESSION_BUS_ADDRESS AT_SPI_BUS_ADDRESS
+export PATH="/tmp/pancake-tools/bin:$PATH" SLINT_BACKEND=winit-software UV_OFFLINE=1 UV_NO_SYNC=1
+for tool in Xvfb openbox xdotool xprop dbus-daemon; do command -v "$tool"; done > "$bundle/private-native-tool-paths.txt"
+sha256sum "$(command -v Xvfb)" "$(command -v openbox)" > "$bundle/private-native-tools.sha256"
+short=$(mktemp -d /tmp/pcg-870f.XXXXXX)
+mkdir "$short/artifacts"
+output="$short/artifacts/native"
+printf '%s\n' "$output" > "$bundle/private-native-output-path.txt"
+socket="$output/conformance/linux-desktop/runtime/at-spi/bus_0"
+((${#socket} < 108))
+case_args=()
+while IFS= read -r case_id; do case_args+=(--case "$case_id"); done < "$bundle/eligible-cases.txt"
+((${#case_args[@]} == 66))
+status=0
+printf '%s\n' "$(date -Is)" > "$bundle/native.start"
+/usr/bin/time -v -o "$bundle/native.time" python3 -B "$repo/pancake/scripts/gui_coverage.py" capture \
+  --output "$output" \
+  --cli "$repo/pancake/target/llvm-cov-target/debug/pancake-cli" \
+  --gui "$repo/pancake/target/llvm-cov-target/debug/pancake-gui" \
+  "${case_args[@]}" > "$bundle/native.log" 2>&1 || status=$?
+if [[ -d "$output" ]]; then mv -T -- "$output" "$bundle/native"; fi
+rmdir "$short/artifacts" "$short"
+printf '%s\n' "$status" > "$bundle/native.status"
+printf '%s\n' "$(date -Is)" > "$bundle/native.end"
+exit "$status"

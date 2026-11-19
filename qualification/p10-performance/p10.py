@@ -27,13 +27,20 @@ from protocol import (
     verify_frames,
     verify_output,
 )
-from resources import NvidiaMemory, measure
+from resources import (
+    DEFAULT_RSS_SAMPLE_INTERVAL_MS,
+    RSS_SAMPLE_INTERVALS_MS,
+    NvidiaMemory,
+    measure,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 TARGETS_PATH = ROOT / "pancake/docs/performance-targets.json"
 ADAPTERS = ROOT / "pancake-conformance/src/pancake_conformance/adapters"
 REFERENCE = ADAPTERS / "chimpstackr_reference/chimpstackr.toml"
 R50_REFERENCE = ADAPTERS / "pancake/cr3_reference.py"
+E9_REFERENCE = ADAPTERS / "pancake/e9_reference.py"
+E9_PROFILES = {"E9.exposure_fusion.cpu", "E9.exposure_fusion.gpu"}
 CANDIDATE = ADAPTERS / "pancake/pancake.toml"
 RUNTIMES = {"cpu": None, "wgpu-vulkan": "wgpu", "cuda": "cuda"}
 
@@ -131,7 +138,16 @@ def prepare_candidate(options):
 
 
 def _reference_launch(target, interpreter, profile_key):
-    """Use the camera-corrected launcher only for the R50 RAW workload."""
+    """Bind the scoped reference launcher for the frozen R50 or E9 profile."""
+    if profile_key in E9_PROFILES:
+        return {
+            "command": [str(interpreter), str(E9_REFERENCE)],
+            "exposure_combiner": {
+                "path": str(E9_REFERENCE.relative_to(ROOT)),
+                "sha256": sha256(E9_REFERENCE),
+                "policy": "equal-final-batch-mean-v1",
+            },
+        }
     if profile_key.partition(".")[0] != "R50":
         return {"command": target.command("cli", python=interpreter)}
     return {
@@ -151,6 +167,8 @@ def _prepared_targets(options, campaign):
     )
     if options.profile.partition(".")[0] == "R50":
         _require_clean(ROOT, str(R50_REFERENCE))
+    if options.profile in E9_PROFILES:
+        _require_clean(ROOT, str(E9_REFERENCE))
     _require_clean(reference.root)
     expected_reference = _snapshot(reference, ROOT / lock_pin["runtime_lock_path"])
     pinned_reference = {
@@ -460,7 +478,18 @@ def _opencl_preflight(args, target, identity, hardware, directory):
 
 
 def _run_sample(
-    profile, pair, name, spec, identity, args, frames, bounds, directory, gpu
+    profile,
+    pair,
+    name,
+    spec,
+    identity,
+    args,
+    frames,
+    bounds,
+    directory,
+    gpu,
+    *,
+    rss_sample_interval_ms=DEFAULT_RSS_SAMPLE_INTERVAL_MS,
 ):
     kind, ordinal, _ = pair
     scope = directory / f"{kind}-{ordinal:02d}"
@@ -502,6 +531,7 @@ def _run_sample(
         "cwd": str(spec.root),
         "environment": env,
         "rss_sampler_cpu": args.rss_sampler_cpu,
+        "sample_interval_ns": rss_sample_interval_ms * 1_000_000,
         "gpu_before": _gpu_state(args.gpu_uuid) if gpu else None,
         "cpu_temperature_before_millidegrees": _cpu_thermal_state(),
         "cache_before": _cache_inventory(cache),
@@ -518,6 +548,7 @@ def _run_sample(
                 timeout=args.timeout,
                 gpu=gpu,
                 rss_sampler_cpu=args.rss_sampler_cpu,
+                rss_sample_interval_ms=rss_sample_interval_ms,
             )
         )
         record["gpu_after"] = _gpu_state(args.gpu_uuid) if gpu else None
@@ -576,8 +607,11 @@ def _cleanup_outputs(directory, result, *, keep_review_images):
 
 
 def run_profile(args):
-    campaign = Campaign.load(TARGETS_PATH)
     device = "cpu" if args.runtime == "cpu" else "gpu"
+    interval_ms = args.rss_sample_interval_ms
+    if device != "cpu" and interval_ms != DEFAULT_RSS_SAMPLE_INTERVAL_MS:
+        raise ValueError("--rss-sample-interval-ms overrides are for CPU profiles only")
+    campaign = Campaign.load(TARGETS_PATH)
     if bool(args.gpu_uuid) != (device == "gpu") or (
         args.gpu_uuid and not args.gpu_uuid.startswith("GPU-")
     ):
@@ -619,6 +653,7 @@ def run_profile(args):
         "candidate_runtime": args.runtime,
         "reference_runtime": "opencl" if device == "gpu" else "cpu",
         "settings": profile.options,
+        "sample_interval_ns": interval_ms * 1_000_000,
         "performance_targets_sha256": sha256(TARGETS_PATH),
         "samples": [],
         "pixel_comparisons": [],
@@ -694,6 +729,7 @@ def run_profile(args):
                     bounds,
                     directory,
                     gpu,
+                    rss_sample_interval_ms=interval_ms,
                 )
                 result["samples"].append(record)
                 _write(directory / "report.json", result)
@@ -725,6 +761,7 @@ def run_profile(args):
                     bounds,
                     directory,
                     gpu,
+                    rss_sample_interval_ms=interval_ms,
                 )
                 result["diagnostics"].append(record)
                 if not record["valid"]:
@@ -811,6 +848,13 @@ def main():
         "--rss-sampler-cpu",
         type=int,
         help="Pin only the RSS sampler to a logical CPU outside the common job affinity",
+    )
+    run.add_argument(
+        "--rss-sample-interval-ms",
+        type=int,
+        choices=RSS_SAMPLE_INTERVALS_MS,
+        default=DEFAULT_RSS_SAMPLE_INTERVAL_MS,
+        help="Nominal RSS interval for CPU profiles in ms (default: %(default)s)",
     )
     run.add_argument("--gpu-uuid")
     run.add_argument("--reference-gpu-index", type=int, default=0)

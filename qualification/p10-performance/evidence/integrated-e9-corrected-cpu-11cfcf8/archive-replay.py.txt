@@ -1,0 +1,419 @@
+"""Seal original P10 data with independently authenticated exact-image and release scope."""
+
+import argparse
+import csv
+import gzip
+import json
+import re
+import shutil
+import tarfile
+from collections import Counter
+from pathlib import Path
+from urllib.parse import urlsplit
+
+from pancake_conformance.adapters.pancake.release_ledger import Lane, load_contract
+from protocol import Campaign, corpus, profile_result, sha256
+
+EVIDENCE = Path("qualification/p10-performance/evidence")
+UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+ALLOWED = {
+    "CF_UI_INITIAL_SETTINGS",
+    "CHIMPSTACKR_CACHE_DIR",
+    "CHIMPSTACKR_CONFORMANCE_EVENTS",
+    "CHIMPSTACKR_CONFORMANCE_TARGET_ROOT",
+    "CONFORMANCE_EVENTS_PATH",
+    "CUDA_CACHE_PATH",
+    "CUDA_VISIBLE_DEVICES",
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "LC_CTYPE",
+    "LD_LIBRARY_PATH",
+    "MESA_SHADER_CACHE_DIR",
+    "NUMBA_CACHE_DIR",
+    "NUMBA_NUM_THREADS",
+    "OCL_ICD_VENDORS",
+    "OMP_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "OPENCV_IO_ENABLE_OPENEXR",
+    "PANCAKE_COMPUTE_CACHE_DIR",
+    "PANCAKE_DEFAULT_DEVICE",
+    "PANCAKE_RUNTIME",
+    "PANCAKE_STATE_DIR",
+    "PATH",
+    "PYTHONNOUSERSITE",
+    "PYTHONPATH",
+    "PYTHONUNBUFFERED",
+    "RAYON_NUM_THREADS",
+    "TMPDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME",
+    "__GL_SHADER_DISK_CACHE_PATH",
+}
+
+
+def exact_linux_package(candidate, stage):
+    receipt = json.loads((stage / "strict-ledger-prereq.json").read_text())
+    ledger_file = Path(receipt["ledger"])
+    ledger_hash = "7cb641f9d4328ce7ae0a7b76ea98de9072f9513259b663c381577f1f4274d328"
+    assert receipt["status"] == "pass" and receipt["total_passed"] == 376
+    assert receipt["ledger_sha256"] == sha256(ledger_file) == ledger_hash
+    assert receipt["source"] == candidate["commit"]
+    assert receipt["debian_sha256"] == candidate["build_package"]["archive_sha256"]
+    assert receipt["cli_sha256"] == candidate["binary_sha256"]
+    ledger = json.loads(ledger_file.read_text())
+    assert (
+        ledger["passed"] == 376
+        and ledger["linux_package"]["artifact_sha256"] == receipt["debian_sha256"]
+    )
+    contract = load_contract()
+    expected = {
+        "target_commit": candidate["commit"],
+        "pancake_tree": candidate["product_tree"],
+        "cargo_lock_sha256": candidate["lock_sha256"],
+        "descriptor_sha256": candidate["descriptor_sha256"],
+        "contract_sha256": contract.snapshot_hash,
+        "suite_source_sha256": contract.suite_source_hash,
+        "uv_lock_sha256": contract.uv_lock_hash,
+    }
+    counts = {}
+    for lane in Lane:
+        seen = ledger["lanes"][lane.value]
+        assert seen["identity"] == expected
+        assert seen["executables"]["cli"]["sha256"] == candidate["binary_sha256"]
+        assert seen["cases"] == [case.id for case in contract.select(lane)]
+        counts[lane.value] = len(seen["cases"])
+    assert counts == receipt["lanes"] and sum(counts.values()) == 376
+    return {
+        "status": "pass",
+        "exact_package_cases": 376,
+        "lanes": counts,
+        "ledger_sha256": ledger_hash,
+        "debian_sha256": receipt["debian_sha256"],
+        "cli_sha256": receipt["cli_sha256"],
+    }
+
+
+def original_archive(stage, scope, mode):
+    preflight = (
+        "no-device-preflight.json" if mode == "cpu" else "candidate-preflight.json"
+    )
+    base = [
+        stage / n
+        for n in (
+            "census-before.txt",
+            "window-start.txt",
+            "window-end.txt",
+            "run.stdout",
+            "run.stderr",
+            "build-receipt.json",
+            preflight,
+        )
+    ]
+    if mode == "cpu":
+        base.extend((stage / "strict-ledger-prereq.json", stage / "quiet-grant.json"))
+    names = {
+        "events.jsonl",
+        "launch.json",
+        "report.json",
+        "opencl-preflight.json",
+        "resources.jsonl.gz",
+        "gpu-resources.jsonl.gz",
+        "sample.json",
+        "stderr.txt",
+        "stdout.txt",
+    }
+    paths = base + sorted(
+        p for p in (stage / "paired").rglob("*") if p.is_file() and p.name in names
+    )
+    warnings = Counter()
+    for path in paths:
+        assert path.is_file() and not path.is_symlink() and path.is_relative_to(stage)
+        if path.suffix == ".gz":
+            with gzip.open(path, "rt") as stream:
+                text = stream.read()
+        else:
+            text = path.read_text()
+        if path.name in ("launch.json", "sample.json", "opencl-preflight.json"):
+            assert set(json.loads(text).get("environment", {})) <= ALLOWED
+        for link in re.findall(r"(?:https?|file)://[^\s\"\\]+", text):
+            parsed = urlsplit(link)
+            assert not (parsed.username or parsed.password or parsed.query), path
+        assert not re.search(
+            r"(?:github_pat_[a-zA-Z0-9_]{20,}|gh[oprsu]_[a-zA-Z0-9]{20,}|BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY)",
+            text,
+        ), path
+        if path.name in ("stdout.txt", "stderr.txt"):
+            for token in (
+                "falling back to the cpu",
+                "no usable gpu",
+                "not enough gpu memory",
+                "gpu alignment help unavailable",
+                "compilerwarning",
+            ):
+                if token in text.casefold():
+                    warnings[(path.parent.name, token)] += 1
+    assert not any(token != "compilerwarning" for _, token in warnings), warnings
+    archive = scope / "raw-paired-runs.tar.gz"
+    with (
+        archive.open("xb") as file,
+        gzip.GzipFile(filename="", fileobj=file, mode="wb", mtime=0) as stream,
+        tarfile.open(fileobj=stream, mode="w", format=tarfile.PAX_FORMAT) as out,
+    ):
+        for path in sorted(paths):
+            member = out.gettarinfo(str(path), arcname=str(path.relative_to(stage)))
+            member.uid = member.gid = 0
+            member.uname = member.gname = ""
+            member.mtime = 0
+            with path.open("rb") as original:
+                out.addfile(member, original)
+    with tarfile.open(archive, "r:gz") as out:
+        assert len(out.getmembers()) == len(paths)
+        for path in paths:
+            with out.extractfile(str(path.relative_to(stage))) as archived:
+                assert archived.read() == path.read_bytes()
+    digest = sha256(archive)
+    (scope / "raw-paired-runs.sha256").write_text(f"{digest}  {archive.name}\n")
+    return {
+        "sha256": digest,
+        "members": len(paths),
+        "bytes": archive.stat().st_size,
+        "raw_report_sha256": sha256(stage / "paired/report.json"),
+        "no_photo_or_tiff_payload": True,
+        "allowlisted_environment_keys": sorted(ALLOWED),
+        "recorded_warnings": {
+            f"{app}:{token}": n for (app, token), n in warnings.items()
+        },
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("mode", choices=("cpu", "gpu"))
+    parser.add_argument("stage", type=Path)
+    parser.add_argument("scope", type=Path)
+    args = parser.parse_args()
+    mode = args.mode
+    stage = args.stage
+    scope = args.scope
+    if not __debug__:
+        parser.error("evidence sealing requires active assertions")
+    report = json.loads((stage / "paired/report.json").read_text())
+    atoms = report["samples"]
+    witnesses = report["diagnostics"]
+    all_jobs = atoms + witnesses
+    assert (
+        report["profile"] == f"E9.exposure_fusion.{mode}"
+        and report["status"] == "pending"
+        and not report.get("invalid_reason")
+    )
+    assert (
+        report["inputs_unchanged"]
+        and report["cleanup"]["retained_review_pair"]
+        and report["hardware"]["cpu_affinity"] == list(range(32))
+    )
+    assert (
+        len(atoms) == 34
+        and len(witnesses) == 2
+        and all(
+            job["valid"]
+            and job["returncode"] == 0
+            and not job["timed_out"]
+            and not job["resource_errors"]
+            for job in all_jobs
+        )
+    )
+    assert all(
+        job["sample_interval_ns"] == 8_000_000
+        and job["maximum_rss_sample_gap_ns"] <= 20_000_000
+        and job["peak_rss_bytes"] is not None
+        for job in all_jobs
+    )
+    assert all(
+        job["completion"]["actual_backend"] == mode
+        and job["matching_warm_pixel_hashes"] == 10
+        for job in witnesses
+    )
+    for job in all_jobs:
+        assert set(job["environment"]) <= ALLOWED
+    candidate = report["targets"]["candidate"]
+    ref = report["targets"]["reference"]
+    assert (
+        candidate == json.loads((stage / "build-receipt.json").read_text())
+        and ref["exposure_combiner"]["policy"] == "equal-final-batch-mean-v1"
+    )
+    targets = Path("pancake/docs/performance-targets.json")
+    assert sha256(targets) == report["performance_targets_sha256"]
+    campaign = Campaign.load(targets)
+    frames, _ = corpus(Path.cwd(), campaign, "E9")
+    assert frames == report["frames"]
+    reduced = profile_result(campaign, mode, atoms)
+    assert all(reduced[k] == report[k] for k in ("status", "gates", "elapsed_ns"))
+    assert all(
+        reduced["gates"][k]["status"] == "pass"
+        for k in ("warm_median", "cold_median", "peak_rss")
+    )
+    assert reduced["gates"]["quality"]["status"] == "pending"
+    if mode == "cpu":
+        assert all(
+            job["gpu_sample_count"] == 0
+            and job["gpu_before"] is None
+            and job["gpu_after"] is None
+            for job in all_jobs
+        )
+        assert not report["hardware"].get("gpu")
+        prior = (
+            EVIDENCE
+            / "integrated-e9-corrected-cpu-c1e2cac/independent-quality-metrics.json"
+        )
+        narrative = prior.with_name("independent-quality-review.md")
+        conformance = exact_linux_package(candidate, stage)
+    else:
+        assert reduced["gates"]["peak_gpu"]["status"] == "pending"
+        assert all(
+            (j["maximum_gpu_sample_gap_ns"] <= 20_000_000)
+            == (j["peak_gpu_bytes"] is not None)
+            for j in all_jobs
+        )
+        assert (
+            report["hardware"]["gpu"]["uuid"]
+            == report["hardware"]["reference_opencl"]["uuid"]
+            == UUID
+        )
+        cuda = next(j["completion"] for j in witnesses if j["target"] == "candidate")
+        assert (
+            cuda["runtime"] == "cuda"
+            and cuda["physical_gpu"] is True
+            and cuda["fallback_reason"] is None
+        )
+        prior = (
+            EVIDENCE
+            / "integrated-e9-corrected-cuda-c1e2cac/independent-gpu-quality-metrics.json"
+        )
+        narrative = prior.with_name("independent-gpu-quality-review.md")
+        conformance = {
+            "status": "pending",
+            "scope": "experimental standalone 481d CUDA candidate; no whole release conformance asserted",
+        }
+    quality = json.loads(prior.read_text())
+    roi = json.loads((stage / "fixed-roi-review.json").read_text())
+    old = (
+        quality["exports"]
+        if mode == "cpu"
+        else {name: w["output"] for name, w in quality["roles"].items()}
+    )
+    outputs = {
+        j["target"]: j["output"]
+        for j in atoms
+        if (j["kind"], j["number"]) == ("warm", 1)
+    }
+    assert (
+        outputs == roi["outputs"] == old
+        and [f["sha256"] for f in frames] == quality["input_hashes"]
+    )
+    scope.mkdir()
+    archive = original_archive(stage, scope, mode)
+    fields = [
+        "kind",
+        "target",
+        "number",
+        "elapsed_ns",
+        "maximum_rss_sample_gap_ns",
+        "maximum_gpu_sample_gap_ns",
+        "peak_rss_bytes",
+        "peak_gpu_bytes",
+        "observed_peak_gpu_bytes",
+        "rss_sample_count",
+        "gpu_sample_count",
+        "output_file_sha256",
+        "output_pixel_sha256",
+        "valid",
+        "returncode",
+    ]
+    with (scope / "samples.csv").open("x", newline="") as out:
+        writer = csv.DictWriter(out, fieldnames=fields, lineterminator="\n")
+        writer.writeheader()
+        for j in all_jobs:
+            row = {k: j[k] for k in fields if k in j}
+            row.update(
+                output_file_sha256=j["output"]["sha256"],
+                output_pixel_sha256=j["output"]["pixel_sha256"],
+            )
+            writer.writerow(row)
+    summary = {
+        k: report[k]
+        for k in (
+            "profile",
+            "status",
+            "settings",
+            "inputs_unchanged",
+            "hardware",
+            "started_at_unix_ns",
+            "finished_at_unix_ns",
+            "elapsed_ns",
+            "gates",
+            "performance_targets_sha256",
+        )
+    }
+    summary.update(
+        primary_jobs=34,
+        backend_witnesses=2,
+        candidate=candidate,
+        reference={
+            k: ref[k]
+            for k in (
+                "commit",
+                "lock_sha256",
+                "descriptor_sha256",
+                "python_sha256",
+                "exposure_combiner",
+            )
+        },
+        exact_primary_output_hashes=outputs,
+        ordered_input_sha256=[f["sha256"] for f in frames],
+        prior_independent_same_images_quality={
+            "status": "adequate_equal_sampled_quality",
+            "exact_inputs_encoded_tiffs_and_decoded_hashes_match": True,
+            "metrics_sha256": sha256(prior),
+            "narrative_sha256": sha256(narrative),
+        },
+        strict_conformance=conformance,
+        offline_original_reduction_matches=True,
+        profile_at_tested_scope="pass" if mode == "cpu" else "pending",
+        archive=archive,
+        per_app={},
+    )
+    for app in ("candidate", "reference"):
+        rows = [j for j in atoms if j["target"] == app]
+        w = next(j for j in witnesses if j["target"] == app)
+        assert len({j["output"]["pixel_sha256"] for j in rows}) == 1
+        summary["per_app"][app] = {
+            "maximum_rss_gap_ns": max(j["maximum_rss_sample_gap_ns"] for j in rows),
+            "witness_actual_completion": w["completion"],
+            "witness_matching_warm_pixel_hashes": w["matching_warm_pixel_hashes"],
+        }
+        if mode == "gpu":
+            summary["per_app"][app].update(
+                maximum_gpu_gap_ns=max(j["maximum_gpu_sample_gap_ns"] for j in rows),
+                gpu_observation_gaps_over_cap=sum(
+                    j["peak_gpu_bytes"] is None for j in rows
+                ),
+                observed_attributable_gpu_lower_bound_bytes=max(
+                    j["observed_peak_gpu_bytes"] for j in rows
+                ),
+            )
+    (scope / "summary.json").write_text(
+        json.dumps(summary, indent=2, allow_nan=False) + "\n"
+    )
+    for source, destination in (
+        ("fixed-roi-review.json", "fixed-roi-review.json"),
+        ("preflight.py", "preflight.py.txt"),
+        ("run-authorized.sh", "run-authorized.sh.txt"),
+    ):
+        shutil.copyfile(stage / source, scope / destination)
+    shutil.copyfile(__file__, scope / "archive-replay.py.txt")
+    print(archive)
+
+
+if __name__ == "__main__":
+    main()

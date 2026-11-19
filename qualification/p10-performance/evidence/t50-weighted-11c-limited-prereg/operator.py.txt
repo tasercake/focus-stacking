@@ -1,0 +1,228 @@
+"""Run only the separately authorized, bounded 11c package T50 Weighted CPU replay."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import runpy
+import shutil
+import time
+
+import p10
+import resources
+from pancake_conformance.target import TargetSpec
+from protocol import pinned_json, pixel_metrics, sha256, verify_output
+
+HERE = Path(__file__).resolve().parent
+EVIDENCE = HERE.parent
+PACKAGE_SOURCE = "11cfcf8aac5921dfa843bfc5777eb4b2643a6ca6"
+PACKAGE_TREE = "0ea17aeb65a346e3cb6b5593d8c8b4a02e827832"
+PKG = "74a764f99ba72be40f02e6b3b9faf3981f19e35f0b46e0231f665b1ccbe8c729"
+ELF = "d54c4aaa135c9d2bef0fcbfcdefab82915038afa09af3f48fd067714f1188fdd"
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
+PROOF = "fa11f5d07e89aba03c59eaabcde71b5b66b825f0fc1bf6f5522087006ac83f64"
+TOOL_PINS = {
+    Path(p10.__file__): "60546a00f4ebdea7f6dd28db156c8cc2c796288f9bc862cb5ec5e7bbcd4cf0ff",
+    Path(resources.__file__): "cddeb4364750fad211f0271d59531850859acff85fab290712f0d1b43d7eb78a",
+    p10.ROOT / "qualification/p10-performance/protocol.py":
+        "e4868f65418eaf6604d3b0d2c0f5a259566939ff2a5f2bfcb2a8bce23dcfdbac",
+    EVIDENCE / "t50-weighted-triplet-plan/weighted-cpu-triplet.py.txt":
+        "aeaf337e18931c25531b4def6b9d21e7d804f25937c793be9d62751f241eec08",
+    EVIDENCE / "t50-profile-priority-e810/weighted-cpu-pair.py.txt":
+        "5b7902c4bdd78e2a517720cbe4c60c8b940325321ef2d0412a14d830c14ab130",
+    EVIDENCE / "registration-recheck/scale-recheck.py.txt":
+        "bf13428284787c0fd7fde837dcdc97a03942419aa40cc71291e55d3169797ee4",
+    EVIDENCE / "t50-memory-calibration-plan/calibration-envelope.py.txt":
+        "fce89f4daa8e5e25d24c2c241d9454fd735f6df7f1c34e6178e1411d6b44d9cc",
+}
+EXPECTED_OUTPUTS = {
+    "reference": ("550e72982e03844c4a5d40575ab3c8b89ea067e5f38d07d0f0736445484922c2",
+                  "dc4e21deab6381c662de86a89c4f58385ccbe2b54d51a22addcd50db1f4f6d34"),
+    "candidate": ("60a45fe42e665b16d365406ab222c6f99538cd0284b2256799affa98daebf75a",
+                  "f8a00c590aa9b7b9d24071348a46897c43d2fa07a98ec9a6204ada9e1838b6a7"),
+}
+
+
+def require_metadata():
+    for path, digest in TOOL_PINS.items():
+        if sha256(path) != digest:
+            raise ValueError(f"known collector or receiver changed: {path}")
+    return runpy.run_path(str(EVIDENCE / "t50-weighted-triplet-plan/weighted-cpu-triplet.py.txt"))
+
+
+def candidate_target(root, package_dir):
+    # Activate only the retained extracted Debian executable, never the standalone ELF.
+    root, package_dir = root.resolve(strict=True), package_dir.resolve(strict=True)
+    descriptor = p10.CANDIDATE.relative_to(p10.ROOT)
+    spec = TargetSpec.load(root / descriptor)
+    p10._require_clean(root, "pancake", str(descriptor))
+    snapshot = p10._snapshot(spec, spec.root / "Cargo.lock")
+    if snapshot != {"commit": PACKAGE_SOURCE, "lock_sha256": LOCK, "descriptor_sha256": DESCRIPTOR}:
+        raise ValueError("exact clean Debian producer checkout is required")
+    if p10._git(root, "rev-parse", "HEAD^{tree}") != PACKAGE_TREE:
+        raise ValueError("Debian source tree changed")
+    verified = pinned_json(package_dir / "package-verification.json", PROOF)
+    package = package_dir / "pancake_0.1.0_amd64.deb"
+    candidate = package_dir / "verified-elf/pancake-cli"
+    archive = {"file": package.name, "sha256": PKG, "bytes": 69_507_550}
+    binary = {"sha256": ELF, "bytes": 122_323_792}
+    if (verified["source_commit"] != PACKAGE_SOURCE or verified["cargo_lock_sha256"] != LOCK
+            or verified["archive"] != archive or verified["binaries"]["pancake-cli"] != binary
+            or package.stat().st_size != archive["bytes"] or sha256(package) != PKG
+            or candidate.stat().st_size != binary["bytes"] or sha256(candidate) != ELF
+            or not os.access(candidate, os.X_OK)):
+        raise ValueError("verified Debian package or exact extracted CLI changed")
+    return spec, snapshot | {
+        "command": [str(candidate), *spec.command("cli")[1:]], "package": str(package),
+        "package_sha256": PKG, "package_proof_sha256": PROOF,
+        "binary_sha256": ELF, "tree": PACKAGE_TREE,
+    }
+
+
+def run_job(entry, root, deadline, target, profile, frames, receiver, rss_check):
+    kind, number, role = entry
+    spec, identity = target
+    directory = root / f"{kind}-{number:02}" / role
+    directory.mkdir(parents=True)
+    cache = root / "cache" / role / ("warm" if kind in ("warm", "warmup") else "cold-01")
+    output = directory / "complete.tif"
+    runtime = p10.RUNTIMES["cpu"] if role == "candidate" else None
+    env = p10._environment(spec, cache, directory, 15, None, runtime, True)
+    env["LC_ALL"] = "C"
+    argv = [*identity["command"], *spec.stack_arguments(frames, output, profile.options)]
+    launch = {"kind": kind, "number": number, "target": role, "argv": argv,
+              "cwd": str(spec.root), "environment": env, "sample_interval_ns": 3_000_000,
+              "rss_sampler_cpu": 15, "cache_before": p10._cache_inventory(cache),
+              "cpu_temperature_before_millidegrees": p10._cpu_thermal_state()}
+    if kind in ("warmup", "cold") and launch["cache_before"]["files"]:
+        raise ValueError("first warmup and cold job must use empty private caches")
+    p10._write(directory / "launch.json", receiver["sanitized"](launch))
+    timeout = min(120, deadline - time.monotonic())
+    if timeout <= 0:
+        raise ValueError("bounded campaign deadline exhausted")
+    sample = launch | {"valid": False}
+    try:
+        sample.update(resources.measure(argv, cwd=spec.root, env=env, directory=directory,
+                                        timeout=timeout, gpu=None, rss_sampler_cpu=15,
+                                        rss_sample_interval_ms=3))
+        if sample["returncode"] or sample["timed_out"] or sample["resource_errors"]:
+            raise ValueError("job failed, timed out, or leaked resources")
+        sample["cpu_temperature_after_millidegrees"] = p10._cpu_thermal_state()
+        sample["cache_after"] = p10._cache_inventory(cache)
+        image = verify_output(output, (4000, 6000, 3))
+        completion = p10._assert_completion(directory / "events.jsonl", "cpu",
+                                            "cpu" if role == "candidate" else None, None)
+        events = [json.loads(line) for line in (directory / "events.jsonl").read_text().splitlines()]
+        if receiver["check_completion"](role, events, frames, image) != completion:
+            raise ValueError("independent complete-job map or crop witness disagreed")
+        if (image["sha256"], image["pixel_sha256"]) != EXPECTED_OUTPUTS[role]:
+            raise ValueError("real new RGB16 bytes or pixels require separate quality review")
+        sample.update(valid=True, output=image, completion=completion)
+        with (directory / "resources.jsonl").open() as raw:
+            sample["rss_check"] = rss_check(role, {
+                "sample": sample, "launch": launch, "observations": [json.loads(line) for line in raw],
+            })
+    except (KeyError, OSError, RuntimeError, ValueError) as error:
+        sample.update(valid=False, invalid_reason=str(error))
+        raise
+    finally:
+        p10._write(directory / "sample.json", receiver["sanitized"](sample))
+        p10._compress_trace(directory)
+    return receiver["sanitized"](sample), output
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--execute-limited", action="store_true")
+    parser.add_argument("--lease", type=Path)
+    parser.add_argument("--package-dir", type=Path)
+    parser.add_argument("--producer-source", type=Path)
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    receiver = require_metadata()
+    policy = runpy.run_path(str(HERE / "limited-gates.py.txt"))
+    envelope = runpy.run_path(str(EVIDENCE / "t50-memory-calibration-plan/calibration-envelope.py.txt"))
+    campaign, profile, stage, frames, provenance = receiver["settings"]()
+    schedule = policy["SCHEDULE"]
+    description = {
+        "frozen_full_credit": False, "profile": profile.key, "settings": profile.options,
+        "schedule": [list(row) for row in schedule], "limits": policy["LIMITS"], "sample_interval_ns": 3_000_000,
+        "materialization_sha256": stage["materialization_sha256"], "frames": len(frames),
+        "cli_sha256": ELF, "package_sha256": PKG, "collector_tools": {str(path): sha for path, sha in TOOL_PINS.items()},
+    }
+    if not args.execute_limited:
+        print(json.dumps(description | {"scope": "static preregistration only"}, indent=2))
+        return 0
+    if not all((args.lease, args.output, args.producer_source, args.package_dir)):
+        parser.error("execution requires an explicit new quiet/custody lease, producers and fresh output")
+    lease = json.loads(args.lease.read_bytes())
+    if any(lease.get(key) is not True for key in ("exclusive_host_granted", "stage6_read_granted",
+                                                  "other_workloads_terminal")) or any(
+        lease.get(key) != description[key] for key in ("profile", "sample_interval_ns", "materialization_sha256", "schedule")
+    ):
+        raise ValueError("lease does not authorize this exact bounded schedule")
+    if os.sched_getaffinity(0) != set(range(15)):
+        raise ValueError("expected only worker CPUs 0–14")
+    root = args.output.resolve()
+    protected = (Path(stage["input_root"]).parent, args.producer_source, args.package_dir,
+                 receiver["reference_spec"]()[0].root)
+    if any(root.is_relative_to(path.resolve()) for path in protected):
+        raise ValueError("output must stay outside source, package, reference and shared Stage6")
+    if shutil.disk_usage(root.parent).free < 15 * 1024**3:
+        raise ValueError("need at least 15 GiB free for proof retention")
+    root.mkdir(mode=0o700)
+    report = description | {"scope": "bounded limited measurement only", "jobs": [],
+                             "started_unix_ns": time.time_ns(), "lease_sha256": sha256(args.lease),
+                             "operator_sha256": sha256(Path(__file__)),
+                             "limited_reducer_sha256": sha256(HERE / "limited-gates.py.txt")}
+    receipt = root / "report.json"
+    try:
+        with p10._campaign_lock():
+            reference = receiver["bind_reference"](campaign)
+            candidate = candidate_target(args.producer_source, args.package_dir)
+            targets = {"reference": reference, "candidate": candidate}
+            if reference[1]["command"][1:] != ["-m", "src.cli"]:
+                raise ValueError("require pinned normal ChimpStackr executable entrypoint")
+            report.update(targets={role: row[1] for role, row in targets.items()}, hardware=p10._hardware(None))
+            original = receiver["authenticate_stage"](stage, provenance, frames)
+            exemplar = {}
+            deadline = time.monotonic() + 600
+            try:
+                for entry in schedule:
+                    _, _, role = entry
+                    sample, output = run_job(entry, root, deadline, targets[role], profile, frames,
+                                             receiver, envelope["arm_rss"])
+                    report["jobs"].append(sample)
+                    exemplar.setdefault(role, output)
+                    p10._write(receipt, report)
+                report["limited_numeric"] = policy["reduce_gates"](report["jobs"])
+                oracle = runpy.run_path(str(EVIDENCE / "registration-recheck/scale-recheck.py.txt"))
+                truth = {role: oracle["generated_oracle"](path, Path(stage["input_root"]), campaign)
+                         for role, path in exemplar.items()}
+                if any([row["depth"] for row in value["regions"]] != list(range(50)) for value in truth.values()):
+                    raise ValueError("generated sharp-truth coverage incomplete")
+                report["quality"] = {
+                    "truth": truth, "all_exports_reproduce_prior_reviewed_bytes_and_pixels": True,
+                    "paired_pixels": pixel_metrics(exemplar["reference"], exemplar["candidate"], (4000, 6000, 3)),
+                }
+            finally:
+                report["all_52_unchanged"] = receiver["authenticate_stage"](stage, provenance, frames) == original
+                report["producers_unchanged"] = (
+                    receiver["bind_reference"](campaign)[1] == reference[1]
+                    and candidate_target(args.producer_source, args.package_dir)[1] == candidate[1]
+                )
+            if not report["all_52_unchanged"] or not report["producers_unchanged"]:
+                raise ValueError("source or producer changed")
+        report["status"] = report["limited_numeric"]["status"]
+    except (KeyError, OSError, RuntimeError, ValueError) as error:
+        report.update(status="invalid", error=str(error))
+        raise
+    finally:
+        report["finished_unix_ns"] = time.time_ns()
+        p10._write(receipt, report)
+    return report["status"] != "pass"
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

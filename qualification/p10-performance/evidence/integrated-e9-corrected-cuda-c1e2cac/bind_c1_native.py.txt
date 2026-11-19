@@ -1,0 +1,408 @@
+"""Bind the exact c1 native CUDA ELF to the frozen fb9 E9 benchmark."""
+
+import argparse
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+import unittest
+from pathlib import Path
+from types import FunctionType, SimpleNamespace
+from unittest.mock import patch
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames
+
+PRODUCT = "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb"
+RUNNER = "fb9c399a96658331cb76b843a1e565b503e94fdd"
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+DESCRIPTOR = "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac"
+CLI = "8bc02636ff0439d23a74b40ddc56c3b7b84a21f7147a7b2ae7b30dd9c77efd57"
+ELF_ID = "8a42936d01d83265f687755f5f9877a938285d10"
+NATIVE_RECEIPT = "cb558a3827ef6f5e93cc37063ba3049438a9586a828360047ca1f07a055f4d68"
+NATIVE_ARCHIVE = "b4502d92cf2e441d8b72a6d7dbe2dd82ab22ed10dc3e5bf42f496aad30486ffd"
+PROFILE = "E9.exposure_fusion.gpu"
+UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+PCI = "0000:01:00.0"
+CUDA_LIB = Path("/usr/local/cuda-12.5/lib64")
+NVIDIA_ICD = Path("/etc/OpenCL/vendors/nvidia.icd")
+LOCKED_CORE = {
+    "qualification/p10-performance/p10.py": "a63d678cc437bd94d297ab9164c71d549de55dc74a4c4fc1ddd497c64b462e10",
+    "qualification/p10-performance/protocol.py": "e4868f65418eaf6604d3b0d2c0f5a259566939ff2a5f2bfcb2a8bce23dcfdbac",
+    "qualification/p10-performance/resources.py": "20fa18abed5d48a6b8fd6a9c2bd3b5b7f26c716b3e4bd1e80f63409a8239e231",
+    "qualification/p10-performance/physical.py": "b55db52361af0b6effdb48293a36e7d04dc2930aedac8c76e950b837074adb32",
+    "pancake/docs/performance-targets.json": "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+    "pancake-conformance/src/pancake_conformance/adapters/pancake/e9_reference.py": "47f2c63bfc635e53e886e9bbd6b66944a95f97c719fad26ed88f6c222594cb94",
+}
+RUNTIME_FILES = {
+    CUDA_LIB
+    / "libnvrtc.so.12.5.40": "fb37b3f5b0ed35bf6b24f31f1277d30f2fadb08f8562e90d1e6ce208817fc8ed",
+    CUDA_LIB
+    / "libnvrtc-builtins.so.12.5.40": "1237ef425d116b1faee57d924e099b877fd6548ce3b367e50a7e1ef912eeb08c",
+    Path(
+        "/usr/lib/x86_64-linux-gnu/libcuda.so.580.178.04"
+    ): "dcdf334aeb177c95b3385b797c9b871d03a287895713c6d107f79096b0985aa9",
+    Path(
+        "/usr/local/cuda-12.5/nvvm/libdevice/libdevice.10.bc"
+    ): "8c593e48547f85458b6bfbed93a2e6b05484644ccc6b429bb0d8424e06a68b6c",
+    NVIDIA_ICD: "4ad07f8afc189894374aecb91023e6ff16bbceedf82496c04c0fdb0e2fe81e73",
+}
+
+
+def require_digest(path, expected):
+    if path.is_symlink() or not path.is_file() or sha256(path) != expected:
+        raise ValueError(f"frozen byte identity mismatch: {path}")
+
+
+def production_entries(tree):
+    """Retain mode, object type, object SHA, and path for all non-doc product files."""
+    return [
+        entry
+        for entry in tree.split(b"\0")
+        if entry and not entry.partition(b"\t")[2].startswith(b"docs/")
+    ]
+
+
+def compare_product_entries(producer, runner):
+    if not producer or producer != runner:
+        raise ValueError(
+            "benchmark product files differ from the immutable native producer"
+        )
+    return hashlib.sha256(b"\0".join(producer) + b"\0").hexdigest()
+
+
+def source_proof():
+    p10._require_clean(
+        p10.ROOT, "pancake", "qualification/p10-performance", "pancake-conformance/src"
+    )
+    if p10._git(p10.ROOT, "rev-parse", "HEAD") != RUNNER:
+        raise ValueError(
+            "corrected E9 runner must be the exact audited fb9c399 checkout"
+        )
+    trees = {
+        commit: p10._git(p10.ROOT, "rev-parse", f"{commit}:pancake")
+        for commit in (PRODUCT, RUNNER)
+    }
+    blobs = {
+        commit: production_entries(
+            subprocess.check_output(
+                ["git", "ls-tree", "-rz", trees[commit]], cwd=p10.ROOT
+            )
+        )
+        for commit in trees
+    }
+    product_hash = compare_product_entries(blobs[PRODUCT], blobs[RUNNER])
+    producer_root = p10._git(p10.ROOT, "rev-parse", f"{PRODUCT}^{{tree}}")
+    descriptor = p10.CANDIDATE.relative_to(p10.ROOT)
+    if p10._git(p10.ROOT, "rev-parse", f"{PRODUCT}:{descriptor}") != p10._git(
+        p10.ROOT, "rev-parse", f"{RUNNER}:{descriptor}"
+    ):
+        raise ValueError("candidate descriptor changed from the exact native producer")
+    require_digest(p10.CANDIDATE, DESCRIPTOR)
+    require_digest(p10.ROOT / "pancake/Cargo.lock", LOCK)
+    for name, digest in LOCKED_CORE.items():
+        require_digest(p10.ROOT / name, digest)
+    return {
+        "producer_commit": PRODUCT,
+        "producer_repository_tree": producer_root,
+        "benchmark_commit": RUNNER,
+        "complete_pancake_trees_including_docs": trees,
+        "identical_non_docs_product_git_entries": len(blobs[PRODUCT]),
+        "non_docs_product_tree_entries_sha256": product_hash,
+        "benchmark_core_files_sha256": LOCKED_CORE,
+    }
+
+
+def native_proof(binary, source):
+    native = p10.ROOT / "pancake/docs/p9-linux-native-evidence/c1e2cac"
+    require_digest(native / "receipt.json", NATIVE_RECEIPT)
+    require_digest(native / "raw-text-records.tar.gz", NATIVE_ARCHIVE)
+    receipt = json.loads((native / "receipt.json").read_text())
+    cuda = receipt["builds"]["cuda"]
+    if (
+        (
+            receipt["tested_revision"],
+            receipt["source_tree"],
+            receipt["cargo_lock_sha256"],
+        )
+        != (PRODUCT, source["producer_repository_tree"], LOCK)
+        or cuda["binary_sha256"] != receipt["run_binary_sha256"]
+        or cuda["binary_sha256"] != CLI
+        or cuda["elf_build_id"] != ELF_ID
+        or cuda["compile_and_link"] != "passed"
+        or cuda["runtime_exercised"] is not True
+        or UUID not in receipt["physical_gpu"]
+        or PCI not in receipt["physical_gpu"]
+    ):
+        raise ValueError("native c1 proof does not identify the exact build and RTX")
+    for lane in ("cpu", "cuda"):
+        run = receipt["runs"][lane]
+        if (
+            run["counts"] != {"passed": 2, "failed": 0, "unsupported": 0}
+            or run["provenance"]["target_commit"] != PRODUCT
+            or run["provenance"]["target_descriptor_sha256"] != DESCRIPTOR
+        ):
+            raise ValueError(
+                f"native {lane} case proof differs from the immutable release"
+            )
+    if any(
+        completed["runtime"] != "cuda"
+        or completed["physical_gpu"] is not True
+        or completed["device_pci_address"] != PCI
+        for completed in receipt["runs"]["cuda"]["completed"].values()
+    ):
+        raise ValueError(
+            "native smoke did not identify real CUDA on the pinned PCI device"
+        )
+    reference = (
+        p10.ROOT
+        / "qualification/p10-performance/evidence/e9-reference-prototype/physical-opencl.json"
+    )
+    reference_hash = "006c387d6910f621532ee11b8207a4917d3352d2edeaa8420f2e1a52c443716d"
+    require_digest(reference, reference_hash)
+    observed = json.loads(reference.read_text())
+    if (
+        observed["physical_device"]["uuid"] != UUID
+        or p10._pci_id(observed["physical_device"]["pci"]) != p10._pci_id(PCI)
+        or observed["physical_device"]["opencl"]["index"] != 0
+        or observed["launcher_sha256"]
+        != LOCKED_CORE[str(p10.E9_REFERENCE.relative_to(p10.ROOT))]
+        or not observed["clean_file_and_decoded_sha256_match"]
+    ):
+        raise ValueError(
+            "corrected pinned reference lacks the matching RTX identity proof"
+        )
+    target = TargetSpec.load(p10.CANDIDATE)
+    executable = target.root / target.command("cli")[0]
+    for path in (binary, executable):
+        require_digest(path, CLI)
+        if path.stat().st_size != cuda["bytes"]:
+            raise ValueError("native CUDA output size differs from the build receipt")
+    if (
+        executable.resolve() != executable
+        or executable.stat().st_mode & 0o222
+        or executable.samefile(binary)
+    ):
+        raise ValueError("benchmark requires its own read-only native binary copy")
+    notes = subprocess.check_output(["readelf", "-n", str(executable)], text=True)
+    if re.findall(r"Build ID: ([0-9a-f]+)", notes) != [ELF_ID]:
+        raise ValueError("private native candidate ELF Build ID differs")
+    for path, digest in RUNTIME_FILES.items():
+        require_digest(path, digest)
+    return {
+        "commit": PRODUCT,
+        "lock_sha256": LOCK,
+        "descriptor_sha256": DESCRIPTOR,
+        "executable": str(executable),
+        "binary_sha256": CLI,
+        "retained_native_build": {
+            "artifact_kind": "standalone native CUDA release ELF",
+            "producer_executable": str(binary),
+            "bytes": cuda["bytes"],
+            "elf_build_id": ELF_ID,
+            "native_build_receipt_sha256": NATIVE_RECEIPT,
+            "native_evidence_archive_sha256": NATIVE_ARCHIVE,
+            "build_command": cuda["command"],
+            "native_suite_commit": receipt["runs"]["cuda"]["provenance"][
+                "suite_commit"
+            ],
+            "frozen_contract_sha256": receipt["frozen_contract_sha256"],
+            "archived_corrected_opencl_proof_sha256": reference_hash,
+            "expected_physical_pci": PCI,
+            "expected_physical_uuid": UUID,
+            "runtime_files_sha256": {
+                str(path): digest for path, digest in RUNTIME_FILES.items()
+            },
+        },
+    }
+
+
+def private_binding(function, **bindings):
+    return FunctionType(
+        function.__code__,
+        function.__globals__ | bindings,
+        function.__name__,
+        function.__defaults__,
+        function.__closure__,
+    )
+
+
+def candidate_snapshot(original, target, lock):
+    observed = original(target, lock)
+    if target.descriptor != p10.CANDIDATE:
+        return observed
+    if target.root != p10.ROOT / "pancake" or observed != {
+        "commit": RUNNER,
+        "lock_sha256": LOCK,
+        "descriptor_sha256": DESCRIPTOR,
+    }:
+        raise ValueError(
+            "candidate target changed after binding exact native provenance"
+        )
+    source_proof()
+    return observed | {"commit": PRODUCT}
+
+
+def prepare(options):
+    source = source_proof()
+    receipt = native_proof(options.producer_binary, source)
+    receipt.update(
+        independent_benchmark_source=source,
+        private_binding_sha256=sha256(Path(__file__)),
+    )
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    records, _ = corpus(p10.ROOT, campaign, "E9")
+    frames = verify_frames(options.input_root, records, 9)
+    if frames != sorted(frames) or len(campaign.schedule()) != 34:
+        raise ValueError("frozen original order or timed schedule does not match")
+    if options.receipt.exists():
+        if json.loads(options.receipt.read_text()) != receipt:
+            raise ValueError(
+                "existing receipt differs from independent frozen provenance"
+            )
+    else:
+        p10._write(options.receipt, receipt)
+    return receipt, campaign
+
+
+class Control(unittest.TestCase):
+    def test_product_identity_excludes_only_docs(self):
+        same = b"100644 blob 1\tCargo.lock\0"
+        code = b"100644 blob 2\tsrc/compute.rs\0"
+        a = production_entries(same + code + b"100644 blob 3\tdocs/a.md\0")
+        b = production_entries(same + code + b"100644 blob 4\tdocs/b.md\0")
+        self.assertEqual(
+            compare_product_entries(a, b), hashlib.sha256(same + code).hexdigest()
+        )
+        for replacement in (
+            b"100644 blob 3\tsrc/compute.rs\0",
+            b"100755 blob 2\tsrc/compute.rs\0",
+            b"100644 blob 2\tsrc/output.rs\0",
+        ):
+            with self.assertRaisesRegex(ValueError, "product files differ"):
+                compare_product_entries(a, production_entries(same + replacement))
+
+    def test_only_candidate_gets_the_separate_producer_stamp(self):
+        original = p10._snapshot
+        observed = {
+            "commit": RUNNER,
+            "lock_sha256": LOCK,
+            "descriptor_sha256": DESCRIPTOR,
+        }
+        candidate = SimpleNamespace(root=p10.ROOT / "pancake", descriptor=p10.CANDIDATE)
+        reference = SimpleNamespace(descriptor=p10.REFERENCE)
+        with patch(f"{__name__}.source_proof") as proof:
+            self.assertEqual(
+                candidate_snapshot(lambda *_: observed, candidate, None)["commit"],
+                PRODUCT,
+            )
+            self.assertEqual(
+                candidate_snapshot(lambda *_: observed, reference, None), observed
+            )
+            proof.assert_called_once()
+            candidate.root = Path("/changed")
+            with self.assertRaisesRegex(ValueError, "candidate target changed"):
+                candidate_snapshot(lambda *_: observed, candidate, None)
+        isolated = private_binding(p10._prepared_targets, _snapshot=lambda *_: None)
+        self.assertIs(p10._snapshot, original)
+        self.assertIs(isolated.__code__, p10._prepared_targets.__code__)
+        self.assertIsNot(isolated.__globals__, p10._prepared_targets.__globals__)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    for name in ("self-test", "preflight", "run"):
+        mode.add_argument(f"--{name}", action="store_true")
+    for name in ("producer-binary", "input-root", "receipt", "output"):
+        parser.add_argument(f"--{name}", type=Path)
+    options = parser.parse_args()
+    if options.self_test:
+        tests = unittest.defaultTestLoader.loadTestsFromTestCase(Control)
+        return (
+            0 if unittest.TextTestRunner(verbosity=2).run(tests).wasSuccessful() else 1
+        )
+    names = ("producer_binary", "input_root", "receipt")
+    if any(getattr(options, name) is None for name in names):
+        parser.error("producer binary, input root and receipt paths are required")
+    for name in names:
+        setattr(options, name, getattr(options, name).absolute())
+    receipt, campaign = prepare(options)
+    original_snapshot = p10._snapshot
+    prepare_targets = private_binding(
+        p10._prepared_targets,
+        _snapshot=lambda target, lock: candidate_snapshot(
+            original_snapshot, target, lock
+        ),
+    )
+    if options.preflight:
+        _, identities = prepare_targets(
+            SimpleNamespace(profile=PROFILE, build_receipt=options.receipt), campaign
+        )
+        print(
+            json.dumps(
+                {
+                    "targets": identities,
+                    "schedule": campaign.schedule(),
+                    "gpu_queried": False,
+                    "jobs_launched": 0,
+                },
+                indent=2,
+            )
+        )
+        return 0
+    if (
+        options.output is None
+        or os.sched_getaffinity(0) != set(range(32))
+        or os.environ.get("LD_LIBRARY_PATH")
+    ):
+        parser.error(
+            "official CUDA run needs --output, the original 0-31 mask, and no ambient library override"
+        )
+    run_profile = private_binding(p10.run_profile, _prepared_targets=prepare_targets)
+    run_cli = private_binding(p10.main, run_profile=run_profile)
+    argv = [
+        p10.__file__,
+        "run",
+        "--profile",
+        PROFILE,
+        "--runtime",
+        "cuda",
+        "--threads",
+        "32",
+        "--timeout",
+        "120",
+        "--gpu-uuid",
+        UUID,
+        "--reference-gpu-index",
+        "0",
+        "--candidate-gpu-index",
+        "0",
+        "--cuda-library-path",
+        str(CUDA_LIB),
+        "--input-root",
+        str(options.input_root),
+        "--build-receipt",
+        str(options.receipt),
+        "--keep-review-images",
+        "--output",
+        str(options.output),
+    ]
+    with (
+        patch.object(sys, "argv", argv),
+        patch.dict(os.environ, OCL_ICD_VENDORS=str(NVIDIA_ICD)),
+    ):
+        result = run_cli()
+    reverified, _ = prepare(options)
+    if receipt != reverified:
+        raise ValueError(
+            "native source or runtime provenance changed during the campaign"
+        )
+    return result
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

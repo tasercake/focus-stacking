@@ -1,0 +1,160 @@
+"""Run one explicitly leased R50 CPU diagnostic per unchanged product arm."""
+
+import argparse
+import hashlib
+import math
+import os
+import struct
+import subprocess
+import time
+from pathlib import Path
+
+import p10
+from diagnose import measured_process
+from protocol import Campaign, corpus, pixel_metrics, sha256, verify_frames, verify_output
+
+BASE = "b820da05d3982a7912cb7c7c9d8aa926ece14a9c"
+LOCK = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+PIXELS = "9316387ed669f3e5cde04a009d2e7b12114ab3411e54448fee1447c07a689492"
+MATRICES = "510dcebedcee928da7a9bf16f8e23b046a2b1d4b8582ed4643c6b3e12554711b"
+BOUNDS = (3392, 5088, 3)
+THREADS = 15
+PRODUCTION = ("pancake/src", "pancake/crates", "pancake/Cargo.toml", "pancake/Cargo.lock")
+ARMS = {
+    "baseline": ("07816a24a62f96bc3d3252e95fcfd2b4b5950269",
+                 "aad46d08e71f1973ba4ffa1efa7d7fe0ee7747e02cf2a3834903af448587f9ed", ()),
+    "hybrid": ("903836ca831ba1e92b7d4f006836320dd8cbe402",
+               "c4cf0e5f9ed65e4fd3b91835b27b28d1ff12e518d9dee57fb70f3cb3ed0fc6f6",
+               ("pancake/src/fusion/advanced/levels.rs",)),
+    "luma": ("f034185843cb20bfb61c31655f999e2f26e1c939",
+             "5cd03069846177a3f94fcd304f3d01d3d03ab007a99246dd6b10c1ccc5f205b5",
+             ("pancake/src/registration/estimate.rs", "pancake/src/registration/kernels.rs",
+              "pancake/src/registration/kernels/tests.rs")),
+}
+
+
+def identities(args):
+    """Match every executable, locked graph and scoped production delta."""
+    records = {}
+    for name, (revision, expected, delta) in ARMS.items():
+        path = getattr(args, name).resolve(strict=True)
+        lock_bytes = subprocess.check_output(
+            ["git", "show", f"{revision}:pancake/Cargo.lock"], cwd=p10.ROOT)
+        changed = p10._git(p10.ROOT, "diff", "--name-only", BASE, revision, "--", *PRODUCTION)
+        if (not path.is_file() or sha256(path) != expected
+                or hashlib.sha256(lock_bytes).hexdigest() != LOCK
+                or tuple(changed.splitlines()) != delta):
+            raise ValueError(f"unverified executable, dependency lock or source delta for {name}")
+        records[name] = {"path": str(path), "revision": revision, "sha256": expected,
+                         "lock_sha256": LOCK, "changed_production_paths": list(delta)}
+    return records
+
+
+def matrices(value, frames):
+    """Hash 50 complete, finite source-order 2×3 transforms as little-endian f32."""
+    if isinstance(value, dict):
+        ordered = [str(frame) for frame in frames]
+        if set(value) != set(ordered):
+            raise ValueError("completion transforms have different input keys")
+        value = [value[name] for name in ordered]
+    if not isinstance(value, list) or len(value) != 50:
+        raise ValueError("expected 50 transforms")
+    digest = hashlib.sha256()
+    for matrix in value:
+        if len(matrix) != 2 or any(len(row) != 3 for row in matrix):
+            raise ValueError("expected 2×3 transform")
+        entries = [entry for row in matrix for entry in row]
+        if not all(math.isfinite(entry) for entry in entries):
+            raise ValueError("invalid transform value")
+        digest.update(struct.pack("<6f", *entries))
+    return digest.hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ("inputs", "output", "lease", *ARMS):
+        parser.add_argument(f"--{name}", type=Path, required=True)
+    args = parser.parse_args()
+    if os.sched_getaffinity(0) != set(range(THREADS)):
+        raise ValueError("this diagnostic expects the historical CPU affinity 0–14")
+    if not args.lease.is_file():
+        raise ValueError("missing explicit CPU quiet lease receipt")
+
+    output = args.output.resolve()
+    output.mkdir()
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    profile = next(p for p in campaign.profiles("cpu") if p.key == "R50.hybrid.cpu")
+    adapter = p10.TargetSpec.load(p10.CANDIDATE)
+    report = dict(
+        scope="One exact CPU observation per arm, outside the frozen timing gates",
+        profile=profile.key, settings=profile.options, order=list(ARMS),
+        lease_sha256=sha256(args.lease), performance_targets_sha256=sha256(p10.TARGETS_PATH),
+        hardware=p10._hardware(None), cpu_temperature_start=p10._cpu_thermal_state(),
+        memory_metric="Linux wait4 direct-child high-water RSS",
+        cache_policy="Fresh per-arm application caches, common OS cache after input verification",
+        started_unix_ns=time.time_ns(), arms={},
+    )
+    try:
+        with p10._campaign_lock():
+            targets = identities(args)
+            records, source = corpus(p10.ROOT, campaign, "R50")
+            frames = verify_frames(args.inputs, records, 50)
+            if frames != sorted(frames):
+                raise ValueError("frozen manifest order differs from CLI input sorting")
+            report.update(targets=targets, source=source, ordered_inputs=[str(frame) for frame in frames])
+            paths = {}
+            try:
+                for name, target in targets.items():
+                    case = output / name
+                    case.mkdir()
+                    paths[name] = case / "complete.tif"
+                    env = p10._environment(adapter, case / "cache", case, THREADS, None, None, True)
+                    argv = [target["path"], *adapter.stack_arguments(frames, paths[name], profile.options)]
+                    run = measured_process(argv, adapter.root, env, case)
+                    report["arms"][name] = run
+                    p10._write(case / "process.json", run)
+                    if run["returncode"] or run["timed_out"]:
+                        raise ValueError(f"{name} process failed or timed out")
+                for name, path in paths.items():
+                    run = report["arms"][name]
+                    progress = run["progress"]
+                    if ([event["completed"] for event in progress] != list(range(1, 51))
+                            or {event["total"] for event in progress} != {50}):
+                        raise ValueError(f"{name} did not report 50 ordered completions")
+                    first = progress[0]["received_monotonic_elapsed_ns"]
+                    last = progress[-1]["received_monotonic_elapsed_ns"]
+                    run["boundaries_ns"] = [first, last - first, run["elapsed_ns"] - last]
+                    final = p10._assert_completion(path.parent / "events.jsonl", "cpu", "cpu", None)
+                    if final["physical_gpu"] is not False or final["fallback_reason"] is not None:
+                        raise ValueError(f"{name} did not complete the explicit CPU lane")
+                    run["completion"] = final
+                    run["output"] = verify_output(path, BOUNDS)
+                    run["transform_f32_sha256"] = {
+                        key: matrices(final[key], frames)
+                        for key in ("alignment_transforms", "sequential_transforms")
+                    }
+                for name in ("hybrid", "luma"):
+                    report["arms"][name]["pixel_metrics"] = pixel_metrics(
+                        paths["baseline"], paths[name], BOUNDS)
+                report["all_match_frozen_output"] = all(
+                    arm["output"]["shape"] == [3390, 5086, 3]
+                    and arm["output"]["pixel_sha256"] == PIXELS
+                    and set(arm["transform_f32_sha256"].values()) == {MATRICES}
+                    for arm in report["arms"].values()
+                )
+                if not report["all_match_frozen_output"]:
+                    raise ValueError("decoded pixels or original-canvas transforms differed")
+            finally:
+                report["inputs_unchanged"] = verify_frames(args.inputs, records, 50) == frames
+                report["executable_identities_unchanged"] = identities(args) == targets
+    except (OSError, ValueError, subprocess.CalledProcessError) as error:
+        report["failure"] = str(error)
+        raise SystemExit(str(error)) from error
+    finally:
+        report["finished_unix_ns"] = time.time_ns()
+        report["cpu_temperature_end"] = p10._cpu_thermal_state()
+        p10._write(output / "report.json", report)
+
+
+if __name__ == "__main__":
+    main()

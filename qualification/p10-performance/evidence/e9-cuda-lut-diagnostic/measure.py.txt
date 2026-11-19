@@ -1,0 +1,491 @@
+"""Run the predeclared two-binary E9 CUDA diagnostic on the frozen real input."""
+
+import argparse
+import hashlib
+import json
+import os
+import re
+import statistics
+import subprocess
+import time
+from pathlib import Path
+
+import p10
+from pancake_conformance.target import TargetSpec
+from protocol import Campaign, corpus, sha256, verify_frames, verify_output
+
+STOCK = "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb"
+LUT = "a919045e8004e138df9fcc05650d9e87e50e0e36"
+PROFILE = "E9.exposure_fusion.gpu"
+UUID = "GPU-c7900bb5-e779-c07b-a37d-4adff841c8ac"
+PCI = "0000:01:00.0"
+DRIVER = "580.178.04"
+GPU = "NVIDIA GeForce RTX 3090"
+CUDA_LIB = Path("/usr/local/cuda-12.5/lib64")
+IDENTITY = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]
+BASE = p10.ROOT / "qualification/p10-performance/evidence"
+ARMS = {
+    "stock": {
+        "source": STOCK,
+        "sha256": "8bc02636ff0439d23a74b40ddc56c3b7b84a21f7147a7b2ae7b30dd9c77efd57",
+        "elf_build_id": "8a42936d01d83265f687755f5f9877a938285d10",
+    },
+    "lut": {
+        "source": LUT,
+        "sha256": "95923ea36d753a348352b7eba91a1d14e08322617d16c5239f7b357eb6682671",
+        "elf_build_id": "025bae3414e7580a420d7f610a85b0ea3b5a22ee",
+    },
+}
+
+
+def require(condition, detail):
+    if not condition:
+        raise ValueError(detail)
+
+
+def schedule():
+    return [
+        (phase, pair, variant)
+        for phase, count in (("warmup", 2), ("measured", 4))
+        for pair in range(1, count + 1)
+        for variant in (("stock", "lut") if pair % 2 else ("lut", "stock"))
+    ]
+
+
+def git_bytes(*args):
+    return subprocess.check_output(["git", *args], cwd=p10.ROOT)
+
+
+def source_identity():
+    production = ("pancake", ":(exclude)pancake/docs")
+    paths = git_bytes("diff", "--name-only", "-z", STOCK, LUT, "--", *production).split(
+        b"\0"
+    )
+    require(
+        set(paths) - {b""}
+        == {
+            b"pancake/assurance-platforms.json",
+            b"pancake/src/registration/spectral.rs",
+        },
+        "candidate changes exceed the spectral LUT and assurance hash",
+    )
+    spectral = "pancake/src/registration/spectral.rs"
+    policy = "pancake/assurance-platforms.json"
+    old = hashlib.sha256(git_bytes("show", f"{STOCK}:{spectral}")).hexdigest()
+    new = hashlib.sha256(git_bytes("show", f"{LUT}:{spectral}")).hexdigest()
+    before, after = (git_bytes("show", f"{source}:{policy}") for source in (STOCK, LUT))
+    require(
+        before.count(old.encode()) == 1
+        and before.replace(old.encode(), new.encode()) == after,
+        "assurance metadata changes exceed the new spectral hash",
+    )
+    lock = "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc"
+    for source in (STOCK, LUT):
+        require(
+            hashlib.sha256(
+                git_bytes("show", f"{source}:pancake/Cargo.lock")
+            ).hexdigest()
+            == lock,
+            "locked CUDA dependency graph changed",
+        )
+    return {
+        "stock": STOCK,
+        "lut": LUT,
+        "cargo_lock_sha256": lock,
+        "source_trees": {
+            name: p10._git(p10.ROOT, "rev-parse", f"{arm['source']}:pancake")
+            for name, arm in ARMS.items()
+        },
+        "spectral_rs_sha256": {"stock": old, "lut": new},
+        "production_paths_changed": sorted(path.decode() for path in paths if path),
+    }
+
+
+def checked_json(path, digest):
+    require(sha256(path) == digest, f"frozen evidence differs: {path}")
+    return json.loads(path.read_text())
+
+
+def input_proof(input_root):
+    target_hash = sha256(p10.TARGETS_PATH)
+    require(
+        target_hash
+        == "58bb68533311c48696a3a844d80eef2f37a3c1f39649305948c838b7002663dc",
+        "frozen profile/settings hash changed",
+    )
+    campaign = Campaign.load(p10.TARGETS_PATH)
+    records, provenance = corpus(p10.ROOT, campaign, "E9")
+    frames = verify_frames(input_root, records, 9)
+    require(frames == sorted(frames), "frozen inputs must match public CLI ordering")
+    cpu = checked_json(
+        BASE / "integrated-e9-corrected-cpu-c1e2cac/summary.json",
+        "5f288e8f0e2b78ff55e16e44c2d6d63dd83527e0a95cff18144c52f7369740e6",
+    )
+    gpu = checked_json(
+        BASE / "integrated-e9-corrected-cuda-c1e2cac/summary.json",
+        "3643f0ac5ba7e5e6a7b81282618ed59e2e721e0f71aa9a0ae89dbd56e10bfc65",
+    )
+    profile = next(item for item in campaign.profiles("gpu") if item.key == PROFILE)
+    require(
+        gpu["settings"] == profile.options
+        and (cpu["settings"] | {"device": "gpu"}) == profile.options,
+        "historical CPU/GPU flags do not match the selected E9 workload",
+    )
+    require(
+        cpu["ordered_input_sha256"] == [f["sha256"] for f in records]
+        and gpu["inputs_unchanged"],
+        "historical E9 source authentication differs",
+    )
+    previous = {
+        "cpu": cpu["first_warm_exports"]["candidate"],
+        "cuda": gpu["first_warm_pair"]["exports"]["candidate"],
+    }
+    require(
+        all(
+            image["shape"] == [337, 510, 3] and image["dtype"] == "uint16"
+            for image in previous.values()
+        ),
+        "historical CPU and physical GPU geometry differ",
+    )
+    require(
+        gpu["candidate"]["binary_sha256"] == ARMS["stock"]["sha256"],
+        "historic CUDA geometry is from a different candidate",
+    )
+    return (
+        frames,
+        profile,
+        {
+            "frames": records,
+            "source": provenance,
+            "previous_real_exports": previous,
+            "targets_sha256": target_hash,
+        },
+    )
+
+
+def verify_executable(path, metadata):
+    require(
+        path.is_file() and not path.is_symlink() and not path.stat().st_mode & 0o222,
+        f"expected owned read-only executable: {path}",
+    )
+    require(sha256(path) == metadata["sha256"], f"unexpected executable digest: {path}")
+    notes = subprocess.check_output(["readelf", "-n", str(path)], text=True)
+    require(
+        re.findall(r"Build ID: ([0-9a-f]+)", notes) == [metadata["elf_build_id"]],
+        f"ELF Build ID differs: {path}",
+    )
+
+
+def candidate_build_evidence(path, digest, source):
+    receipt = checked_json(path, digest)
+    require(
+        receipt["artifact"] == ARMS["lut"]
+        and receipt["lock_sha256"] == source["cargo_lock_sha256"]
+        and receipt["exit"] == 0,
+        "candidate build receipt did not identify exact source, lock and successful ELF",
+    )
+    command = receipt["build_command"]
+    require(
+        all(
+            token in command
+            for token in (
+                "CUDARC_CUDA_VERSION=12050",
+                "--locked",
+                "--offline",
+                "--release",
+                "--features cubecl/cuda",
+            )
+        ),
+        "candidate did not use the audited native CUDA build",
+    )
+    require(
+        sha256(Path(receipt["build_log"])) == receipt["build_log_sha256"],
+        "candidate's immutable build log changed",
+    )
+    return receipt
+
+
+def prepare(args):
+    source = source_identity()
+    frames, profile, inputs = input_proof(args.input_root)
+    stock = checked_json(
+        p10.ROOT / "pancake/docs/p9-linux-native-evidence/c1e2cac/receipt.json",
+        "cb558a3827ef6f5e93cc37063ba3049438a9586a828360047ca1f07a055f4d68",
+    )
+    require(
+        stock["run_binary_sha256"] == ARMS["stock"]["sha256"]
+        and stock["tested_revision"] == STOCK,
+        "stock release receipt changed",
+    )
+    runtime_paths = {
+        CUDA_LIB
+        / "libnvrtc.so.12.5.40": "fb37b3f5b0ed35bf6b24f31f1277d30f2fadb08f8562e90d1e6ce208817fc8ed",
+        CUDA_LIB
+        / "libnvrtc-builtins.so.12.5.40": "1237ef425d116b1faee57d924e099b877fd6548ce3b367e50a7e1ef912eeb08c",
+        Path(
+            "/usr/lib/x86_64-linux-gnu/libcuda.so.580.178.04"
+        ): "dcdf334aeb177c95b3385b797c9b871d03a287895713c6d107f79096b0985aa9",
+    }
+    for path, digest in runtime_paths.items():
+        require(sha256(path) == digest, f"native CUDA library changed: {path}")
+    identity = {
+        "sources": source,
+        "inputs": inputs,
+        "plan": schedule(),
+        "settings": profile.options,
+        "tool_sha256": sha256(Path(__file__)),
+        "required_cuda_runtime_files": {str(p): d for p, d in runtime_paths.items()},
+    }
+    if args.mode != "stage":
+        require(
+            all(
+                (
+                    args.stock,
+                    args.lut,
+                    args.candidate_evidence,
+                    args.candidate_evidence_sha256,
+                )
+            ),
+            "private executables and exact candidate receipt are required",
+        )
+        candidate = candidate_build_evidence(
+            args.candidate_evidence, args.candidate_evidence_sha256, source
+        )
+        for variant, metadata in ARMS.items():
+            verify_executable(getattr(args, variant), metadata)
+        identity["binaries"] = {
+            name: ARMS[name] | {"path": str(getattr(args, name))} for name in ARMS
+        }
+        identity["native_lut_build"] = candidate
+        identity["native_lut_build_sha256"] = args.candidate_evidence_sha256
+    return frames, profile, identity
+
+
+def completed_job(argv, env, cwd, stdout, stderr):
+    start = time.monotonic_ns()
+    with subprocess.Popen(
+        argv, env=env, cwd=cwd, stdout=stdout, stderr=stderr
+    ) as child:
+        _, status, usage = os.wait4(child.pid, 0)
+        elapsed = time.monotonic_ns() - start
+        child.returncode = os.waitstatus_to_exitcode(status)
+    return {
+        "exit": child.returncode,
+        "elapsed_ns": elapsed,
+        "kernel_maxrss_kib": usage.ru_maxrss,
+        "kernel_user_s": usage.ru_utime,
+        "kernel_system_s": usage.ru_stime,
+    }
+
+
+def verify_event(event, frames):
+    expected = {
+        "event": "stack_complete",
+        "completed": True,
+        "actual_backend": "gpu",
+        "runtime": "cuda",
+        "physical_gpu": True,
+        "device": GPU,
+        "device_pci_address": PCI,
+        "device_fingerprint": "ptx_sm86",
+        "fallback_reason": None,
+    }
+    require(
+        all(event.get(key) == value for key, value in expected.items()),
+        "complete no-fallback CUDA witness did not match RTX",
+    )
+    require(
+        event.get("alignment_transforms") == {str(path): IDENTITY for path in frames},
+        "nine first-reference registration maps differ",
+    )
+    require(
+        event.get("sequential_transforms") == [IDENTITY] * len(frames),
+        "nine sequential registration maps differ",
+    )
+
+
+def gpu_state():
+    row = subprocess.check_output(
+        [
+            "nvidia-smi",
+            "--id",
+            UUID,
+            "--query-gpu=name,uuid,pci.bus_id,driver_version,pstate,temperature.gpu,utilization.gpu,memory.used",
+            "--format=csv,noheader,nounits",
+        ],
+        text=True,
+        timeout=5,
+    )
+    name, uuid, pci, driver, *_ = [value.strip() for value in row.strip().split(",")]
+    require(
+        (name, uuid, p10._pci_id(pci), driver) == (GPU, UUID, p10._pci_id(PCI), DRIVER),
+        "actual RTX identity differs from historic E9",
+    )
+    return row.strip()
+
+
+def launch(root, job_spec, metadata, frames, profile, expected_output, target):
+    kind, pair, variant = job_spec
+    directory = root / f"{kind}-{pair:02d}-{variant}"
+    directory.mkdir()
+    destination = directory / "complete.tif"
+    cache = root / "cache" / variant
+    argv = [
+        metadata["path"],
+        *target.stack_arguments(frames, destination, profile.options | {"gpu_id": 0}),
+    ]
+    env = p10._environment(
+        target, cache, directory, 32, UUID, "cuda", True, cuda_library_path=CUDA_LIB
+    )
+    env.pop("OCL_ICD_VENDORS", None)
+    result = {
+        "kind": kind,
+        "pair": pair,
+        "variant": variant,
+        "argv": argv,
+        "environment": env,
+        "binary_sha256": metadata["sha256"],
+        "cache_before": p10._cache_inventory(cache),
+        "valid": False,
+    }
+    p10._write(directory / "launch.json", result)
+    try:
+        with (
+            (directory / "stdout.txt").open("xb") as stdout,
+            (directory / "stderr.txt").open("xb") as stderr,
+        ):
+            result.update(completed_job(argv, env, target.root, stdout, stderr))
+        result["cache_after"] = p10._cache_inventory(cache)
+        if destination.is_file():
+            result["export"] = verify_output(destination, (339, 512))
+        events = directory / "events.jsonl"
+        if events.is_file():
+            logs = [
+                json.loads(line)
+                for line in events.read_text().splitlines()
+                if line.strip()
+            ]
+            result["events_sha256"] = sha256(events)
+            require(
+                len(logs) == 1, "expected one actual complete CUDA diagnostic event"
+            )
+            result["completion"] = logs[0]
+            verify_event(logs[0], frames)
+        require(
+            result["exit"] == 0 and "completion" in result,
+            "native CUDA process failed to complete",
+        )
+        require(
+            result.get("export") == expected_output,
+            "native E9 image bytes, RGB16 pixels or geometry differ from the exact historical stock output",
+        )
+        destination.unlink()
+        result["valid"] = True
+    except (OSError, ValueError, subprocess.SubprocessError) as error:
+        result["failure"] = str(error)
+    p10._write(directory / "sample.json", result)
+    return result
+
+
+def run(args, frames, profile, identity):
+    require(
+        os.sched_getaffinity(0) == set(range(32)),
+        "use the historical same-host CPU IDs 0–31",
+    )
+    require(
+        not os.environ.get("LD_LIBRARY_PATH") and not os.environ.get("LD_PRELOAD"),
+        "unset ambient library overrides",
+    )
+    root = args.output.resolve()
+    root.mkdir()
+    expected = identity["inputs"]["previous_real_exports"]["cuda"]
+    target = TargetSpec.load(p10.CANDIDATE)
+    with p10._campaign_lock():
+        summary = {
+            "identity": identity,
+            "physical_before": gpu_state(),
+            "samples": [],
+            "status": "incomplete",
+        }
+        for job in schedule():
+            result = launch(
+                root,
+                job,
+                identity["binaries"][job[2]],
+                frames,
+                profile,
+                expected,
+                target,
+            )
+            summary["samples"].append(result)
+            p10._write(root / "summary.json", summary)
+            if not result["valid"]:
+                summary["status"] = "invalid_output_or_runtime"
+                break
+        else:
+            sample = {
+                (entry["pair"], entry["variant"]): entry["elapsed_ns"]
+                for entry in summary["samples"]
+                if entry["kind"] == "measured"
+            }
+            medians = {
+                variant: statistics.median(
+                    sample[(pair, variant)] for pair in range(1, 5)
+                )
+                for variant in ARMS
+            }
+            summary.update(
+                status="completed_diagnostic",
+                warm_median_ns=medians,
+                paired_lut_minus_stock_ns=[
+                    sample[(i, "lut")] - sample[(i, "stock")] for i in range(1, 5)
+                ],
+                warm_median_lut_to_stock_ratio=medians["lut"] / medians["stock"],
+            )
+        summary["physical_after"] = gpu_state()
+        _, _, after = prepare(args)
+        require(after == identity, "input or executable identity changed during run")
+        summary["inputs_and_executables_unchanged"] = True
+        p10._write(root / "summary.json", summary)
+    print(
+        json.dumps(
+            {
+                key: value
+                for key, value in summary.items()
+                if key not in ("identity", "samples")
+            },
+            indent=2,
+            allow_nan=False,
+        )
+    )
+    return 0 if summary["status"] == "completed_diagnostic" else 1
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("mode", choices=("stage", "preflight", "run"))
+    parser.add_argument("--input-root", type=Path, required=True)
+    for name in ("stock", "lut", "candidate-evidence", "output"):
+        parser.add_argument(f"--{name}", type=Path)
+    parser.add_argument("--candidate-evidence-sha256")
+    args = parser.parse_args()
+    for attr in ("stock", "lut", "candidate_evidence", "input_root", "output"):
+        if (value := getattr(args, attr)) is not None:
+            setattr(args, attr, value.absolute())
+    frames, profile, identity = prepare(args)
+    if args.mode != "run":
+        print(
+            json.dumps(
+                identity | {"jobs_launched": 0, "gpu_queries": 0},
+                indent=2,
+                allow_nan=False,
+            )
+        )
+        return 0
+    if args.output is None:
+        parser.error("run requires a new --output directory")
+    return run(args, frames, profile, identity)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

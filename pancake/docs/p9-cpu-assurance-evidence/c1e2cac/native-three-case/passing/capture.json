@@ -1,0 +1,90 @@
+{
+  "revision": "c1e2cac93ad41c02b328d87bdd5d01e1ce2b46eb",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)\nbinary: rustc\ncommit-hash: 0ef1bc386059596dada8fb65b50425aab2ea637a\ncommit-date: 2026-11-09\nhost: x86_64-unknown-linux-gnu\nrelease: 1.100.0\nLLVM version: 23.1.5",
+  "lock_sha256": "f523404bf033b0532dc46ce71aa515dc398f56c32e6aee1c3529cf90a27018dc",
+  "suite_source_sha256": "485eaae7724d8706e991c6067af7739e370ed57e9e0e15cf5d9d6f5c57804a2a",
+  "descriptor_sha256": "84e2bd96f121395051cc8d626a06ebece7367171d59018158439d9ca2aaa10ac",
+  "command": [
+    "uv",
+    "run",
+    "--project",
+    "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake-conformance",
+    "--frozen",
+    "pancake-conformance",
+    "run",
+    "--target",
+    "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake-conformance/src/pancake_conformance/adapters/pancake/pancake.toml",
+    "--output",
+    "/tmp/pcg.1sq6fCbl/artifacts/n/conformance",
+    "--no-coverage",
+    "--cli-command",
+    "[\"/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/native-profile-target/debug/pancake-cli\"]",
+    "--gui-command",
+    "[\"/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/native-profile-target/debug/pancake-gui\"]",
+    "--case",
+    "interface.about",
+    "--case",
+    "interface.recovery.close-unsaved",
+    "--case",
+    "interface.sprint.frame-context"
+  ],
+  "binary": {
+    "gui": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/native-profile-target/debug/pancake-gui",
+      "sha256": "272465dcbbe0672b46ddbd9953a5980895a8f9ceeced81f59352cd672f853a6f",
+      "build_id": "c20ddb7561d99b7df6d9352aef12d56c2ff980d5"
+    },
+    "cli": {
+      "path": "/tmp/pancake-worktrees.t3paqgWM/native-overlay-c1e2cac/pancake/target/native-profile-target/debug/pancake-cli",
+      "sha256": "3e700d075fb7ba51e6050f772afe94698061d7890894e873a118aada05c7117b",
+      "build_id": "614c4a3e49a98b1d5837c5c4c00e9d35f3d6e570"
+    }
+  },
+  "sessions": [
+    {
+      "case": "interface.about",
+      "call": "cases/interface.about/call-01",
+      "shutdown": {
+        "pid": 901953,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-901953-c20ddb7561d99b7df6d9352aef12d56c2ff980d5.profraw",
+      "bytes": 80080,
+      "sha256": "a2627cd6c4bc6b914b92c6be2b63fbbfe27380200ce490d181af62b4b3592aff"
+    },
+    {
+      "case": "interface.recovery.close-unsaved",
+      "call": "cases/interface.recovery.close-unsaved/call-01",
+      "shutdown": {
+        "pid": 902774,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 1,
+      "events_sha256": "1999950b0655141452d39c31b020c35472ce734f9f0d3c8084abcdfd9c2501cc",
+      "profile": "pancake-902774-c20ddb7561d99b7df6d9352aef12d56c2ff980d5.profraw",
+      "bytes": 80080,
+      "sha256": "29ee5b20c9d8467f025dbc8621e31cb9b4b1fc7b17b2d8bbaadc4b4c4c626857"
+    },
+    {
+      "case": "interface.sprint.frame-context",
+      "call": "cases/interface.sprint.frame-context/call-01",
+      "shutdown": {
+        "pid": 902084,
+        "returncode": 0,
+        "forced": false,
+        "status": "clean"
+      },
+      "cpu_completions": 0,
+      "events_sha256": null,
+      "profile": "pancake-902084-c20ddb7561d99b7df6d9352aef12d56c2ff980d5.profraw",
+      "bytes": 80080,
+      "sha256": "fa01d2378a3e7503bb4e21350c9210d2ba71715b98ec1870b690a2b0121216b8"
+    }
+  ]
+}
