@@ -128,10 +128,27 @@ Average production change. The canonical Apple Miri gate remains open.
 [Weighted release fast and CPU replay](p9-cpu-assurance-evidence/11cfcf8/README.md).
 [Latest supplemental Linux Miri](p9-cpu-assurance-evidence/11cfcf8-linux-miri/README.md).
 
+The exact `11cfcf8` stable and nightly CPU coverage runs each passed
+all 164 tests. Both strict comparators exited 1. Each recorded
+4,799/6,596 lines, 494/771 functions and 4,923/7,416 regions. Nightly
+recorded 589/778 branch outcomes. Stable emitted no branch map.
+[Exact stable coverage](p9-cpu-assurance-evidence/11cfcf8-stable-coverage/README.md).
+[Exact nightly branch coverage](p9-cpu-assurance-evidence/11cfcf8-nightly-branches/README.md).
+
+The exact Linux CPU AddressSanitizer and ThreadSanitizer gates each
+passed all 164 tests across 20 executables with zero diagnostics.
+[Exact AddressSanitizer replay](p9-cpu-assurance-evidence/11cfcf8/address/README.md).
+[Exact ThreadSanitizer replay](p9-tsan-audit/integrated-11cfcf8/README.md).
+
 The exact `11cfcf8` Linux release build and notice-bearing package
 verification passed. All 341 host cases passed from the extracted
 package. The remaining 34 isolated GUI cases and one physical Vulkan
 case still need matched receipts before a strict 376-case verdict.
+
+The separate exact `11cfcf8` Linux CUDA CLI compiled and linked under
+the locked native feature graph. Physical CUDA execution at this source
+requires its own receipt.
+[Exact Linux native CUDA build](p9-linux-native-evidence/11cfcf8/cuda/README.md).
 
 At exact `0a9ae85`, both Linux CPU randomized layout seeds passed all 148
 tests, with 38 fingerprinted executable paths across the two builds.
