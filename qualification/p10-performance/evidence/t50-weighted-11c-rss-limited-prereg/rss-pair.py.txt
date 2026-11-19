@@ -1,0 +1,147 @@
+"""Run one separately authorized T50 cold-cache process-tree RSS pair."""
+
+import argparse
+import gzip
+import json
+import os
+from pathlib import Path
+import runpy
+import shutil
+import time
+from types import SimpleNamespace
+
+import p10
+from protocol import pixel_metrics, sha256
+
+HERE = Path(__file__).resolve().parent
+EVIDENCE = HERE.parent
+ORDER = ("reference", "candidate")
+PERIOD_MS = 2
+
+
+def one_job(role, target, profile, frames, root, receiver, pair_policy):
+    spec, identity = target
+    # Diagnostic scope gives exact completion events and unique per-arm empty caches.
+    case = root / "diagnostic-01" / role
+    args = SimpleNamespace(
+        runtime="cpu", timeout=120, threads=15, rss_sampler_cpu=15,
+        cuda_library_path=None, gpu_uuid=None,
+    )
+    try:
+        sample, export = p10._run_sample(
+            profile, ("diagnostic", 1, role), role, spec, identity, args, frames,
+            (4000, 6000, 3), root, None, rss_sample_interval_ms=PERIOD_MS,
+        )
+    finally:
+        for name in ("launch.json", "sample.json"):
+            receipt = case / name
+            if receipt.is_file():
+                p10._write(receipt, receiver["sanitized"](json.loads(receipt.read_bytes())))
+    sample = receiver["sanitized"](sample)
+    if not sample["valid"] or sample["cache_before"]["files"]:
+        raise ValueError(f"{role} failed or did not start with isolated empty app caches")
+    events = [json.loads(line) for line in (case / "events.jsonl").read_text().splitlines()]
+    image = sample["output"]
+    if receiver["check_completion"](role, events, frames, image) != sample["completion"]:
+        raise ValueError(f"{role} exact CPU map/crop proof differs")
+    with gzip.open(case / "resources.jsonl.gz", "rt") as trace:
+        rss = pair_policy["audit"](sample, [json.loads(line) for line in trace])
+    return sample | {"independent_rss": rss}, export
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--execute-rss-pair", action="store_true")
+    for label in ("lease", "package-dir", "producer-source", "output"):
+        parser.add_argument(f"--{label}", type=Path)
+    args = parser.parse_args()
+    operator_file = EVIDENCE / "t50-weighted-11c-limited-prereg/operator.py.txt"
+    operator = runpy.run_path(str(operator_file))
+    receiver = operator["require_metadata"]()
+    policy = runpy.run_path(str(HERE / "rss-pair-gate.py.txt"))
+    campaign, profile, stage, frames, provenance = receiver["settings"]()
+    description = {
+        "profile": profile.key, "settings": profile.options, "order": list(ORDER),
+        "sample_interval_ns": policy["PERIOD_NS"], "max_sample_gap_ns": policy["MAX_GAP_NS"],
+        "limit": policy["LIMIT"], "cache_state": "fresh isolated app caches for both arms; normal OS caches",
+        "worker_cpus": list(range(15)), "rss_sampler_cpu": 15, "frames": len(frames),
+        "materialization_sha256": stage["materialization_sha256"], "frozen_full_credit": False,
+        "base_operator_sha256": sha256(operator_file),
+        "candidate_package_sha256": operator["PKG"], "candidate_binary_sha256": operator["ELF"],
+    }
+    if not args.execute_rss_pair:
+        print(json.dumps(description | {"status": "static_preregistration_only"}, indent=2))
+        return 0
+    if not all((args.lease, args.output, args.producer_source, args.package_dir)):
+        parser.error("a separate explicit quiet/custody lease, provenance and fresh output are required")
+    grant = json.loads(args.lease.read_bytes())
+    if any(grant.get(key) is not True for key in ("exclusive_host_granted", "stage6_read_granted",
+                                                  "other_workloads_terminal")) or any(
+        grant.get(key) != description[key]
+        for key in ("profile", "order", "sample_interval_ns", "materialization_sha256", "cache_state")
+    ):
+        raise ValueError("lease fails to authorize the exact new RSS pair")
+    if os.sched_getaffinity(0) != set(range(15)):
+        raise ValueError("expected exact worker CPUs 0–14")
+    root = args.output.resolve()
+    protected = (Path(stage["input_root"]).parent, args.producer_source, args.package_dir,
+                 receiver["reference_spec"]()[0].root)
+    if any(root.is_relative_to(path.resolve()) for path in protected):
+        raise ValueError("output must stay outside the shared stage and both producers")
+    if shutil.disk_usage(root.parent).free < 15 * 1024**3:
+        raise ValueError("need at least 15 GiB of free disk capacity")
+    root.mkdir(mode=0o700)
+    receipt = root / "report.json"
+    report = description | {
+        "jobs": {}, "started_unix_ns": time.time_ns(), "lease_sha256": sha256(args.lease),
+        "operator_sha256": sha256(Path(__file__)), "reducer_sha256": sha256(HERE / "rss-pair-gate.py.txt"),
+    }
+    try:
+        with p10._campaign_lock():
+            reference = receiver["bind_reference"](campaign)
+            spec, candidate = operator["candidate_target"](args.producer_source, args.package_dir)
+            candidate |= {"executable": candidate["command"][0]}
+            targets = {"reference": reference, "candidate": (spec, candidate)}
+            report.update(targets={role: row[1] for role, row in targets.items()}, hardware=p10._hardware(None))
+            before = receiver["authenticate_stage"](stage, provenance, frames)
+            exports = {}
+            try:
+                for role in ORDER:
+                    sample, export = one_job(role, targets[role], profile, frames, root, receiver, policy)
+                    report["jobs"][role] = sample
+                    image = sample["output"]
+                    if (image["sha256"], image["pixel_sha256"]) != operator["EXPECTED_OUTPUTS"][role]:
+                        raise ValueError(f"{role} original full RGB16 encoded/decoded hashes differ")
+                    exports[role] = export
+                    p10._write(receipt, report)
+                report["rss_only"] = policy["gate"](*(report["jobs"][role]["independent_rss"] for role in ORDER))
+                oracle = runpy.run_path(str(EVIDENCE / "registration-recheck/scale-recheck.py.txt"))
+                truth = {role: oracle["generated_oracle"](path, Path(stage["input_root"]), campaign)
+                         for role, path in exports.items()}
+                if any([row["depth"] for row in value["regions"]] != list(range(50)) for value in truth.values()):
+                    raise ValueError("sharp-truth coverage incomplete")
+                report["quality"] = {
+                    "truth": truth, "full_original_output_parity": True,
+                    "paired_pixels": pixel_metrics(exports["reference"], exports["candidate"], (4000, 6000, 3)),
+                }
+            finally:
+                report["all_52_unchanged"] = receiver["authenticate_stage"](stage, provenance, frames) == before
+                report["producers_unchanged"] = (
+                    receiver["bind_reference"](campaign)[1] == reference[1]
+                    and operator["candidate_target"](args.producer_source, args.package_dir)[1]
+                    == {key: value for key, value in candidate.items() if key != "executable"}
+                )
+            if not report["all_52_unchanged"] or not report["producers_unchanged"]:
+                raise ValueError("source or producers changed")
+        report["status"] = report["rss_only"]["status"]
+    except (KeyError, OSError, RuntimeError, ValueError) as error:
+        report.update(status="invalid", error=str(error))
+        raise
+    finally:
+        report["finished_unix_ns"] = time.time_ns()
+        p10._write(receipt, report)
+    return report["status"] != "pass"
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
