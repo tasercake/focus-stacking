@@ -108,6 +108,16 @@ and requires hosted results on the merged commit.
 [Required headless workflow](../../.github/workflows/pancake.yml).
 [Hosted release assurance](../../.github/workflows/pancake-assurance.yml).
 
+The hosted macOS run at `8069266` passed Miri and native layout seed 1,
+then hit a compile-time size assertion in `jxl-coding` 1.0.1 under seed 42.
+The layout test profile keeps that exact dependency's normal layout for
+both seeds because its private prefix entry requires four bytes. All
+first-party code and all other dependencies still compile with layout
+randomization, using seeds 1 and 42 and the same test rosters. The package
+build and Miri profiles are unchanged. The updated hosted layout gate
+must still run on the delivery revision.
+[Original macOS job](https://github.com/tasercake/focus-stacking/actions/runs/44485149821/job/135426767331).
+
 Strict zero-gap CPU coverage and zero-survivor mutation remain opt-in
 diagnostics under the release assurance decision delegated by the
 owner. The assurance workflow's `coverage` input runs the strict
