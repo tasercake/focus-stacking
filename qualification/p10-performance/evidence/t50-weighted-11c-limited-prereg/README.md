@@ -117,3 +117,14 @@ launching an app or opening TIFF bodies. Synthetic policy tests check the
 exact schedule, warm/RSS/cold limits, missing or malformed measurements,
 and numerical misses. [Default preflight](static-prereg.json) ·
 [Reducer tests](reducer-green.txt)
+
+## First attempt and launcher correction
+
+The first authorized attempt stopped after a valid reference warmup
+when the Debian CLI rejected a CPU value in the GPU-runtime environment
+override. The corrected wrapper uses the stock CPU runtime mapping and
+both descriptors retain the explicit `--cpu` argument. Source, metrics,
+limits, sampler and order stay unchanged. A fresh grant is needed for
+a separate ten-job attempt, with new private caches and scope.
+[Original invalid launch](../t50-weighted-11c-limited-invalid-launch/README.md)
+· [CPU launcher regression](cpu-launch-green.txt)

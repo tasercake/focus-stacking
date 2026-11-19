@@ -87,7 +87,8 @@ def run_job(entry, root, deadline, target, profile, frames, receiver, rss_check)
     directory.mkdir(parents=True)
     cache = root / "cache" / role / ("warm" if kind in ("warm", "warmup") else "cold-01")
     output = directory / "complete.tif"
-    env = p10._environment(spec, cache, directory, 15, None, "cpu" if role == "candidate" else None, True)
+    runtime = p10.RUNTIMES["cpu"] if role == "candidate" else None
+    env = p10._environment(spec, cache, directory, 15, None, runtime, True)
     env["LC_ALL"] = "C"
     argv = [*identity["command"], *spec.stack_arguments(frames, output, profile.options)]
     launch = {"kind": kind, "number": number, "target": role, "argv": argv,
