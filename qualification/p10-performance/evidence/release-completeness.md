@@ -1,8 +1,21 @@
 # Frozen P10 evidence inventory
 
-The dated release objective uses two bounded CPU performance checks. This
-inventory tracks the original frozen campaign and its remaining profiles.
+Both bounded CPU profiles in the dated release objective passed on
+the exact notice-bearing `11cfcf8` package. E9 Exposure Fusion measured
+warm 0.413300, cold 0.056313 and fresh matched RSS 0.315175. T50 Weighted
+Average measured warm 0.468091, cold 0.394121 and fresh matched RSS
+0.527495. The timing receipts preserve their over-limit RSS samples.
+The separately admitted RSS schedules provide the revised release
+memory results. Independent output and quality evidence is retained.
 [Revised release objective](../../../pancake/docs/implementation-plan.md#revised-release-objective).
+[E9 timing](integrated-e9-corrected-cpu-11cfcf8/README.md).
+[E9 RSS](e9-cpu-rss-supplement-11cfcf8/README.md).
+[T50 timing](t50-weighted-11c-limited-measured/README.md).
+[T50 RSS](t50-weighted-11c-rss-limited-measured/README.md).
+
+The original frozen campaign below remains at one of 26 logical
+profiles qualified. Its schedules and telemetry retain their original
+verdicts.
 
 The [frozen target manifest](../../../pancake/docs/performance-targets.json)
 defines 13 workload/method combinations, each measured with explicit CPU or

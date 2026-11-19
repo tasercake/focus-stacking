@@ -51,12 +51,35 @@ resource traces and output hashes.
 | Peak process-tree RSS | At most 0.55 of reference |
 | Actual RSS observation gap | At most 20 ms across each measured job, including launch and exit |
 
-| CPU profile | Required observations and current status |
-|---|---|
-| E9 Exposure Fusion | Use the same nine real exposure originals. The exact `11cfcf8` run completed ten warm and five cold jobs per application, with ratios 0.413300 and 0.056313. One 8 ms trace had a 28.073 ms interior gap. The interrupted 3 ms retry supplies no qualifying result. Complete three fresh matched pairs for RSS on this same scope. Require every trace to meet the gap limit, then compare each application's maximum process-tree peak across all three jobs. |
-| T50 Weighted Average | Generate or authenticate the same 50 RGB16 TIFF inputs. Run three fresh matched warm pairs and one cold pair on the exact current release package, with one warmup per application when supported. Retain the actual schedule and scope as the bounded release check. The original 34-job plus two-witness schedule remains separate. |
+Both CPU profiles pass the revised local limits on the exact packaged
+`11cfcf8` CLI. The ratio is Pancake divided by the pinned reference.
 
-[Exact packaged E9 timing and interrupted retry](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-11cfcf8/README.md).
+| CPU profile | Warm elapsed | Cold elapsed | Peak process-tree RSS |
+|---|---:|---:|---:|
+| E9 Exposure Fusion, nine real exposure originals | 0.413300 (10 pairs) | 0.056313 (5 pairs) | 0.315175 (3 fresh pairs) |
+| T50 Weighted Average, 50 generated RGB16 TIFFs | 0.468091 (3 pairs) | 0.394121 (1 pair) | 0.527495 (1 fresh cold pair) |
+
+E9's original full timing run had one 28.073 ms RSS gap. A separate
+3 ms attempt stopped under contention and contributes no result. The
+three fresh RSS pairs all met the unchanged 20 ms actual limit, with a
+5.982 ms maximum gap. Independent review verified the RGB16 exports.
+[E9 timing and interrupted attempt](../../qualification/p10-performance/evidence/integrated-e9-corrected-cpu-11cfcf8/README.md).
+[E9 matched RSS evidence](../../qualification/p10-performance/evidence/e9-cpu-rss-supplement-11cfcf8/README.md).
+
+The first T50 launch failed in the candidate wrapper. The corrected
+ten-job schedule completed one warmup, three warm jobs and one cold job
+per application. The warm median was 25.890339 s versus 55.310501 s and
+the cold times were 25.667489 s versus 65.125906 s. One reference RSS
+trace had a 22.399 ms gap. A separately preregistered fresh cold pair
+sampled at 2 ms nominal and passed at 1,831,284,736 B versus
+3,471,663,104 B, with 14.349 ms and 18.418 ms actual maximum gaps.
+The outputs repeated their exact per-application RGB16 hashes. The
+review covered the 50 ordered inputs, all 50 maps and independent
+sharp-truth regions. These are the bounded release checks. The
+original 34-job plus two-witness schedules retain their own verdicts.
+[T50 invalid launch](../../qualification/p10-performance/evidence/t50-weighted-11c-limited-invalid-launch/README.md).
+[T50 timing and quality](../../qualification/p10-performance/evidence/t50-weighted-11c-limited-measured/README.md).
+[T50 matched RSS evidence](../../qualification/p10-performance/evidence/t50-weighted-11c-rss-limited-measured/README.md).
 
 The full 26-profile campaign, attributable GPU peak memory and loaded
 viewer P95 are follow-up objectives. Retain the actual R50 and D150
@@ -66,19 +89,31 @@ physical lifecycle proof against the 250 ms limit.
 [Retained R50 and D150 performance and quality evidence](../../qualification/p10-performance/evidence/release-completeness.md).
 [Physical lifecycle proof](../../qualification/p10-performance/evidence/native-lifecycle-e81079d/README.md).
 
+The incoming `a85892a` headless workflow remains byte-for-byte the
+routine `Pancake required` Linux lint and test check. The matching
+`Pancake assurance` workflow uses `gate=release` for Linux and macOS
+workspace checks, Windows MSVC build and link, ARM64 native Metal
+build, dependency and source guardrails, randomized layouts, canonical
+macOS Miri, and separate Linux ASan and TSan. The exact install and
+case evidence comes from `11cfcf8`. Across that pin and the delivery
+tree, the Rust source, tests, application crates and assets, vendored
+sources, Cargo manifests and lock, toolchain pin, compiler and
+dependency policy, notices, packaging scripts, conformance suite and
+reference gitlink are byte-identical. Hosted orchestration and evidence
+changed. Local script tests, ShellCheck and actionlint cover the
+reconciled routing. Final delivery requires the approved main-only
+push and the hosted results on the delivered commit.
+[Required headless workflow](../../.github/workflows/pancake.yml).
+[Hosted release assurance](../../.github/workflows/pancake-assurance.yml).
+
 Strict zero-gap CPU coverage and zero-survivor mutation remain opt-in
-diagnostics under the release assurance decision delegated by the owner.
-The manually dispatched workflow runs the same strict commands and
-retains available artifacts and the actual verdict. `Pancake required`
-keeps the platform, Windows build, Linux assurance, macOS Miri and
-layout, and Linux sanitizer jobs.
-The exact strict coverage failures and the failed native mutation shard
-remain recorded, including their denominators, survivor and timeout
-counts. The functional conformance roster and remaining required checks
-retain their existing requirements. Final delivery still requires the
-approved main-only push and completion of the required hosted checks.
-[Required workflow](../../.github/workflows/pancake.yml).
-[Manual strict assurance workflow](../../.github/workflows/pancake-strict-assurance.yml).
+diagnostics under the release assurance decision delegated by the
+owner. The assurance workflow's `coverage` input runs the strict
+stable and nightly coverage commands and retains available artifacts.
+The local or dedicated-runner `bash scripts/check.sh mutants-cpu`
+entry point preserves the existing strict gate. The failed exact
+coverage checks and native mutation shard remain recorded with their
+actual counts. All 376 functional cases remain required.
 [Stable coverage](p9-cpu-assurance-evidence/11cfcf8-stable-coverage/README.md).
 [Nightly branches](p9-cpu-assurance-evidence/11cfcf8-nightly-branches/README.md).
 [Native mutation shard](p9-mutation-audit/0a9ae85-native-9of16/README.md).
@@ -126,8 +161,9 @@ locks match. Retained runtime receipts identify their original tested
 revisions and binaries. The latest sealed Debian package is `11cfcf8`.
 It includes the checked Exposure Fusion and Weighted Average upload
 reuse and the private U16 completion for normalized RAW. The matching
-Linux package passed all 376 cases. The revised release checks above
-identify the remaining platform and performance evidence.
+Linux package passed all 376 cases and both revised local performance
+profiles. The required hosted delivery checks and the unrun physical
+Apple Metal path retain the separate status described above.
 
 The exact combined `c1e2cac` source passed the unchanged Linux CPU ASan and
 TSan gates. Each ran 146 passing tests across 19 groups with no diagnostics.
