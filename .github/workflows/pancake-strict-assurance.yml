@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       profile:
-        description: Strict assurance profile to run
+        description: Strict assurance profile. The full Linux mutation run may reach the six-hour runner limit.
         required: true
         type: choice
         default: linux-coverage
@@ -26,6 +26,7 @@ jobs:
   strict-assurance:
     name: Strict assurance (${{ inputs.profile }})
     runs-on: ${{ inputs.profile == 'macos-branches' && 'macos-15' || 'ubuntu-24.04' }}
+    # The local sharding recipe is in pancake/docs/p9-mutation-audit/e81079d-canonical-shard-plan/README.md.
     timeout-minutes: ${{ inputs.profile == 'linux-mutation' && 360 || 60 }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -55,7 +56,7 @@ jobs:
           exec bash scripts/check.sh "$gate"
       - name: Retain available strict diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: pancake-strict-${{ inputs.profile }}
           if-no-files-found: ignore
