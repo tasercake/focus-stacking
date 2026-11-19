@@ -1,0 +1,247 @@
+"""Authenticate or run one authorized 3 ms T50 CPU memory diagnostic."""
+
+import argparse
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import runpy
+import subprocess
+import time
+
+from pancake_conformance.target import TargetSpec
+import p10
+import resources
+from protocol import sha256
+
+HERE = Path(__file__).resolve().parent
+COLLECTOR = Path(p10.__file__).resolve().parents[2]
+OPERATOR = HERE.parents[3]
+EVIDENCE = HERE.parent
+RECEIVER_FILES = {
+    "weighted_receiver_sha256": EVIDENCE / "t50-weighted-triplet-plan/weighted-cpu-triplet.py.txt",
+    "owned_stage_loader_sha256": EVIDENCE / "t50-profile-priority-e810/weighted-cpu-pair.py.txt",
+    "generated_truth_oracle_sha256": EVIDENCE / "registration-recheck/scale-recheck.py.txt",
+}
+CPU_ARGS = dict(runtime="cpu", threads=15, rss_sampler_cpu=15, gpu_uuid=None, cuda_library_path=None)
+NOMINAL_MS = 3
+
+
+def authenticate_tools():
+    """Tie the receiver and actual collector imports to their immutable source."""
+    pins = json.loads((HERE / "producer-pins.json").read_text())
+    collector = pins["collector"]
+    if (
+        p10._git(COLLECTOR, "rev-parse", "HEAD") != collector["commit"]
+        or p10._git(COLLECTOR, "rev-parse", "HEAD^{tree}") != collector["tree"]
+        or sha256(Path(p10.__file__)) != collector["p10_sha256"]
+        or sha256(Path(resources.__file__)) != collector["resources_sha256"]
+    ):
+        raise ValueError("collector does not match the pinned CPU-specific 3 ms tool")
+    p10._require_clean(COLLECTOR, "pancake-conformance/src", "qualification/p10-performance")
+    for pin, path in RECEIVER_FILES.items():
+        if sha256(path) != pins["receiver"][pin]:
+            raise ValueError(f"previously tested receiver or oracle differs: {path}")
+    if sha256(HERE / "5f-default-build-metadata.tar.gz") != pins["candidate"]["retained_build_receipt_sha256"]:
+        raise ValueError("scratch-alias exact producer receipt differs")
+    for role, archive in (
+        ("stock", "t50-weighted-resident/raw-host-records.tar.gz"),
+        ("candidate", "t50-weighted-energy-plane/raw-host-and-build-records.tar.gz"),
+    ):
+        producer = pins[role]
+        blob_path = f"{producer['producer_archive_revision']}:qualification/p10-performance/evidence/{archive}"
+        blob = subprocess.check_output(["git", "show", blob_path], cwd=OPERATOR)
+        if hashlib.sha256(blob).hexdigest() != producer["producer_archive_sha256"]:
+            raise ValueError(f"{role} immutable producer archive differs")
+    return pins, runpy.run_path(str(RECEIVER_FILES["weighted_receiver_sha256"]))
+
+
+def native_arm(role, root, pins):
+    pin = pins[role]
+    descriptor = p10.CANDIDATE.relative_to(COLLECTOR)
+    spec = TargetSpec.load(root / descriptor)
+    p10._require_clean(root, "pancake", str(descriptor))
+    snapshot = p10._snapshot(spec, spec.root / "Cargo.lock")
+    exe = Path(pin["retained_executable"])
+    if (
+        snapshot != {
+            "commit": pin["commit"],
+            "lock_sha256": pins["pancake_cargo_lock_sha256"],
+            "descriptor_sha256": pins["pancake_descriptor_sha256"],
+        }
+        or p10._git(root, "rev-parse", "HEAD^{tree}") != pin["tree"]
+        or not exe.is_file() or not os.access(exe, os.X_OK)
+        or exe.stat().st_size != pin["bytes"] or sha256(exe) != pin["binary_sha256"]
+        or f"Build ID: {pin['elf_build_id']}" not in p10._output(["readelf", "-n", str(exe)])
+    ):
+        raise ValueError(f"{role} is missing the exact standalone source or ELF")
+    return spec, {**snapshot, **pin, "executable": str(exe)}
+
+
+def prepare(args):
+    pins, receiver = authenticate_tools()
+    campaign, profile, stage, frames, provenance = receiver["settings"]()
+    reference = receiver["bind_reference"](campaign)
+    targets = {
+        "reference": reference,
+        "stock": native_arm("stock", args.stock_source, pins),
+        "candidate": native_arm("candidate", args.candidate_source, pins),
+    }
+    if reference[1]["command"][1:] != ["-m", "src.cli"]:
+        raise ValueError("reference must use its unchanged normal CLI")
+    for spec, _ in targets.values():
+        argv = spec.stack_arguments(frames, Path("/unused/complete.tif"), profile.options)
+        if "--cpu" not in argv or "--gpu" in argv:
+            raise ValueError("the same frozen explicit CPU mode is required on all arms")
+    if sha256(Path(stage["materialization"])) != stage["materialization_sha256"]:
+        raise ValueError("shared Stage6 metadata differs")
+    return receiver, campaign, profile, stage, frames, provenance, targets
+
+
+def run_one(args, profile, role, target, frames, directory, receiver):
+    spec, identity = target
+    runner_role = "reference" if role == "reference" else "candidate"
+    root = directory / role
+    case = root / "diagnostic-01" / runner_role
+    try:
+        sample, output = p10._run_sample(
+            profile, ("diagnostic", 1, runner_role), runner_role,
+            spec, identity, args, frames, tuple(receiver["BOUNDS"]), root, None,
+            rss_sample_interval_ms=NOMINAL_MS,
+        )
+    finally:
+        for name in ("launch.json", "sample.json"):
+            path = case / name
+            if path.is_file():
+                p10._write(path, receiver["sanitized"](json.loads(path.read_text())))
+    return case, output, receiver["sanitized"](sample)
+
+
+def collect_arms(args, profile, targets, frames, root, receiver, report, calibration):
+    outputs = {}
+    try:
+        for role, target in targets.items():
+            case, output, sample = run_one(args, profile, role, target, frames, root, receiver)
+            report["jobs"][role] = sample
+            p10._write(root / "calibration.json", report)
+            if not sample["valid"]:
+                raise ValueError(f"{role} invalid: {sample['invalid_reason']}")
+            events = [json.loads(line) for line in (case / "events.jsonl").read_text().splitlines() if line]
+            completion = receiver["check_completion"](role, events, frames, sample["output"])
+            if completion != sample["completion"]:
+                raise ValueError(f"{role} event witness changed")
+            with gzip.open(case / "resources.jsonl.gz", "rt") as trace:
+                calibration["jobs"][role] = {
+                    "sample": sample, "launch": json.loads((case / "launch.json").read_text()),
+                    "observations": [json.loads(line) for line in trace],
+                }
+            outputs[role] = output
+    finally:
+        p10._write(root / "children-terminal.json", {
+            "attempted_or_successful_arm_roots": [role for role in targets if (root / role).exists()],
+            "finished_unix_ns": time.time_ns(),
+        })
+    return outputs
+
+
+def execute(args, prepared):
+    receiver, campaign, profile, stage, frames, provenance, targets = prepared
+    gate = runpy.run_path(str(HERE / "calibration-envelope.py.txt"))
+    lease = json.loads(args.quiet_receipt.read_text())
+    expected_lease = {
+        "exclusive_host_granted": True, "stage6_read_granted": True,
+        "other_workloads_terminal": True, "profile": profile.key,
+        "materialization_sha256": stage["materialization_sha256"],
+        "order": list(gate["ROLES"]), "sample_interval_ns": gate["PERIOD_NS"],
+    }
+    if any(type(lease.get(key)) is not type(value) or lease[key] != value
+           for key, value in expected_lease.items()):
+        raise ValueError("actual signed-off lease does not authorize this triplet")
+    if os.sched_getaffinity(0) != set(range(15)) or not 0 < args.timeout <= 300:
+        raise ValueError("require actual worker mask CPUs 0–14 and positive 300-second maximum per arm")
+    root = args.output.resolve()
+    if any(root.is_relative_to(path.resolve()) for path in (
+        Path(stage["input_root"]).parent, args.stock_source, args.candidate_source, targets["reference"][0].root,
+    )):
+        raise ValueError("recordings must stay outside shared inputs and producer trees")
+    p10._require_clean(OPERATOR, str(HERE))
+    root.mkdir(mode=0o700)
+    vars(args).update(CPU_ARGS)
+    calibration = {
+        "profile": profile.key, "collector_commit": gate["COLLECTOR"],
+        "sample_interval_ns": gate["PERIOD_NS"], "jobs": {},
+    }
+    report = {
+        **calibration, "jobs": {}, "status": "diagnostic_only_starting",
+        "operator_head": p10._git(OPERATOR, "rev-parse", "HEAD"),
+        "operator_sha256": sha256(Path(__file__)), "quiet_receipt_sha256": sha256(args.quiet_receipt),
+        "stage_sha256": stage["materialization_sha256"], "source": provenance, "settings": profile.options,
+        "pins_sha256": sha256(HERE / "producer-pins.json"),
+        "target_identities": {role: identity for role, (_, identity) in targets.items()},
+        "started_unix_ns": time.time_ns(), "hardware": p10._hardware(None),
+    }
+    report_path = root / "calibration.json"
+    try:
+        with p10._campaign_lock():
+            before = receiver["authenticate_stage"](stage, provenance, frames)
+            try:
+                results = collect_arms(args, profile, targets, frames, root, receiver, report, calibration)
+                report["diagnostic_rss"] = gate["calibration"](calibration)
+                jobs = {**report["jobs"], "resident": report["jobs"]["candidate"]}
+                outputs = {
+                    "reference": results["reference"], "stock": results["stock"],
+                    "resident": results["candidate"],
+                }
+                report["quality_and_elapsed"] = receiver["compare_images"](campaign, stage, jobs, outputs)
+            finally:
+                try:
+                    report["stage_unchanged"] = (
+                        receiver["authenticate_stage"](stage, provenance, frames) == before
+                    )
+                    final_targets = prepare(args)[-1]
+                    report["producer_identities_unchanged"] = (
+                        {role: identity for role, (_, identity) in final_targets.items()} == report["target_identities"]
+                    )
+                except (KeyError, OSError, ValueError, subprocess.CalledProcessError) as error:
+                    report["postflight_error"] = str(error)
+            if not report.get("stage_unchanged") or not report.get("producer_identities_unchanged"):
+                raise ValueError("input or producer postflight changed")
+            report["status"] = "diagnostic_complete"
+            if not report["quality_and_elapsed"]["exact_pancake_output_parity"]:
+                report["status"] = "pancake_output_parity_mismatch"
+    except BaseException as error:
+        report.update(status="diagnostic_failed", failure=str(error))
+        raise
+    finally:
+        report["finished_unix_ns"] = time.time_ns()
+        p10._write(report_path, report)
+    return report["status"] != "diagnostic_complete"
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--stock-source", type=Path, required=True)
+    parser.add_argument("--candidate-source", type=Path, required=True)
+    parser.add_argument("--execute-diagnostic", action="store_true")
+    parser.add_argument("--quiet-receipt", type=Path)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--timeout", default=300, type=float)
+    args = parser.parse_args()
+    if args.execute_diagnostic and (args.quiet_receipt is None or args.output is None):
+        parser.error("execution requires the new approved quiet receipt and a fresh private output")
+    prepared = prepare(args)
+    if not args.execute_diagnostic:
+        _, _, profile, stage, frames, _, targets = prepared
+        print(json.dumps({
+            "status": "static_no_app_no_tiff_read",
+            "profile": profile.key, "period_ns": NOMINAL_MS * 1_000_000,
+            "frame_count": len(frames), "materialization_sha256": stage["materialization_sha256"],
+            "target_identities": {role: identity for role, (_, identity) in targets.items()},
+        }, indent=2))
+        return 0
+    return execute(args, prepared)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
