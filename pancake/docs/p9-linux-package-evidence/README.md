@@ -1,5 +1,36 @@
 # Linux package evidence
 
+## Integrated Linux package candidate `11cfcf8`
+
+The locked default workspace release built both executables at
+`11cfcf8aac5921dfa843bfc5777eb4b2643a6ca6`. The fast and dependency checks and
+nine packaging tests passed. The exact local archive is
+`artifacts/pancake-packages/linux-11cfcf8/pancake_0.1.0_amd64.deb` (69,507,550 bytes), with SHA-256
+`74a764f99ba72be40f02e6b3b9faf3981f19e35f0b46e0231f665b1ccbe8c729`. The tested revision descends from the sanitized
+lineage. A complete Git object-membership check confirmed the excluded
+opaque object is unreachable from the tested revision.
+[Build, hardware and source receipts](11cfcf8/summary.json).
+[Ancestry verification](11cfcf8/clean-ancestry.json).
+[Rootless package verification](11cfcf8/package-verification.json).
+
+Rootless extraction verified both executable hashes, linked native libraries,
+the desktop entry, CLI help and archived source notices. The extracted
+binaries passed all 376 frozen case IDs with matching source, contract,
+descriptor and lock receipts. The strict ledger accepted 341 host cases,
+34 isolated GUI cases and the separate physical RTX 3090 GUI case on wgpu
+Vulkan. The raw reports remain under `artifacts/p9-11cfcf8/{h,g,p}`.
+The frozen case contract, descriptor and suite digest match `0a9ae85`.
+The locked build and replay bind the selected Weighted Average changes to
+this exact package and executable hashes. Rootless extraction verified the
+shared first-party GPL notice and all five native LLVM files. The LLVM receipt
+binds 112 static archive inputs and verified native object membership to the
+same release binaries.
+[Exact native LLVM build receipt](11cfcf8/llvm-build-provenance.json.gz).
+[Source and roster preflight](11cfcf8/source-contract-preflight.json).
+[Product equivalence and unique case accounting](11cfcf8/product-equivalence.json).
+Earlier package and performance evidence retains its recorded revision.
+[Strict aggregate ledger](11cfcf8/linux-ledger.json.gz).
+
 ## Integrated Linux package candidate `0a9ae85`
 
 The locked default workspace release built both executables at
