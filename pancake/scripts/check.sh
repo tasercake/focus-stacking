@@ -222,8 +222,9 @@ case $gate in
         require_tool cargo-deny
         require_tool cargo-machete
         python3 -m unittest scripts/test_dependency_policy.py scripts/test_unused_dependencies.py
-        python3 -m unittest discover -s vendor/tests -v
         dependency_policy
+        # The macro fixtures use an isolated offline index and the populated registry.
+        python3 -m unittest discover -s vendor/tests -v
         # Omitting [licenses] alone would retain cargo-deny's default license gate.
         # User chose an informational inventory instead of license enforcement.
         cargo deny --locked --workspace --all-features \

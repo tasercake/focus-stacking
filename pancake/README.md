@@ -27,7 +27,8 @@ versions in [tool-versions.sh](scripts/tool-versions.sh).
 **Pancake required** runs `lint` and `test` on pull requests and pushes to
 `main`. It uses one headless Linux runner, with no native desktop package
 provisioning. Pushes to PR branches use the pull request run. Git hooks
-check staged whitespace and formatting and run no tests.
+check staged whitespace and formatting and run no tests. Install the hooks
+from the repository root with `git config --local core.hooksPath pancake/.githooks`.
 
 Use the **Pancake assurance** manual workflow for checks appropriate to a
 change or release.
