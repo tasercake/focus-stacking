@@ -108,6 +108,14 @@ exports. The reference RSS acquisition exceeded 20 ms. This single
 diagnostic leaves the full schedule and aggregate memory open.
 [Exact Weighted Average CPU triplet](t50-weighted-triplet-0a9ae85-a49ce69/README.md).
 
+At 3 ms nominal RSS sampling, a separate T50 triplet made all three
+traces cadence-eligible. The scratch alias arm used 0.529305 of reference
+process-tree RSS and 0.998586 of the standalone `a49ce69` arm's RSS. It
+took 1.008061 of that arm's time and reproduced the exact output and
+maps. The scratch product change remains isolated. This calibration
+leaves the full matched schedule and frozen RSS verdict open.
+[T50 scratch and RSS calibration](t50-memory-calibration-a49ce69-5f2623a/README.md).
+
 ## Native latency and matching release
 
 The exact `8694b55` packaged viewer measured 200 idle and 200 loaded

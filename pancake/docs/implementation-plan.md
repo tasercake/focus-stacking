@@ -998,8 +998,20 @@ wall time in this single diagnostic. The reference RSS gap exceeded
 20 ms. Full warm, cold, memory and quality qualification remains open.
 [Authenticated T50 Weighted Average CPU triplet](../../qualification/p10-performance/evidence/t50-weighted-triplet-0a9ae85-a49ce69/README.md).
 
-A separate Weighted energy-plane reuse candidate awaits a matched
-diagnostic. The preceding triplet measures registration RGB reuse.
+A second T50 CPU triplet compared standalone `a49ce69` with the scratch
+energy-plane reuse candidate `5f2623a`. All three process-tree RSS traces
+met the 20 ms gap limit when sampled at a 3 ms nominal interval. The
+scratch candidate used 0.529305 of reference RSS, above 0.50, and used
+0.998586 of `a49ce69` RSS while taking 1.008061 of its wall time. Both
+Pancake outputs and maps matched exactly. The scratch change remains
+isolated. This one triplet leaves the frozen campaign open.
+[Measured Weighted scratch calibration](../../qualification/p10-performance/evidence/t50-memory-calibration-a49ce69-5f2623a/README.md).
+
+The qualification runner accepts a 2–8 ms nominal RSS interval for CPU
+profiles, with 8 ms as the default. It records the chosen cadence for
+both applications and witnesses. GPU profiles keep the original interval,
+and the process-tree metric and 20 ms observation limit stay fixed.
+[RSS interval and receipt rules](../../qualification/p10-performance/README.md#read-the-receipts).
 
 One generated T50 Hybrid run on the unmerged `64fbdb6` trace build completed
 in 73.214 s on physical RTX 3090 Vulkan and matched the earlier sealed TIFF
