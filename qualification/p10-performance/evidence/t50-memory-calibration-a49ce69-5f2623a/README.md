@@ -30,7 +30,9 @@ postflight and the common lock were terminal at 10:54:11.609.
 
 The archive independently reproduces each peak and gap from actual
 timestamps, including the edges at spawn and exit. All three observations
-met cadence without inference. The scratch alias used 2,592,768 B
+met cadence without inference. [Independent typed audit](independent-calibration-audit.json)
+
+The scratch alias used 2,592,768 B
 (2.47 MiB) less peak tree RSS than a49, a ratio of 0.998586. The alias
 took 0.209492 s longer, a wall ratio of 1.008061. Against the valid
 reference observation, the alias achieved a wall ratio of 0.404889 and
