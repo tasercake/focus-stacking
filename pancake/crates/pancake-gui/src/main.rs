@@ -13,7 +13,7 @@ pub mod delivery;
 pub mod desktop_menu;
 pub mod history;
 #[cfg(any(target_os = "macos", test))]
-mod lightroom;
+pub mod lightroom;
 pub mod panel;
 pub mod preferences;
 pub mod preview;
@@ -80,6 +80,8 @@ fn configure_preferences(window: &ComponentInstance, store: Store) -> Result<(),
 }
 
 /// Bind the Lightroom installer to the current macOS app bundle.
+/// # Errors
+/// Returns executable resolution or UI binding errors.
 #[cfg(target_os = "macos")]
 fn configure_lightroom(window: &ComponentInstance) -> Result<(), Box<dyn Error>> {
     let Some(home) = dirs::home_dir() else {

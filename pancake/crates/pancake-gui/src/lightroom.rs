@@ -35,6 +35,7 @@ pub(super) struct Installation {
 
 impl Installation {
     /// Resolve the real bundle path, even when launched through a symlink.
+    /// # Errors
     /// Returns an error when the executable is outside a macOS bundle.
     pub(super) fn new(executable: &Path, modules: &Path) -> io::Result<Self> {
         let executable = executable.canonicalize()?;
@@ -64,6 +65,8 @@ impl Installation {
     }
 
     /// Write regular copies, replacing each destination only after its write succeeds.
+    /// # Errors
+    /// Returns a filesystem error when the plug-in cannot be written.
     pub(super) fn write(&self) -> io::Result<()> {
         fs::create_dir_all(&self.plugin)?;
         if self.plugin.symlink_metadata()?.is_symlink() {

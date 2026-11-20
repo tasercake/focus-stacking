@@ -2,6 +2,7 @@
 
 use std::error::Error;
 use std::fs;
+use std::path::Path;
 use std::rc::{Rc, Weak};
 use std::sync::Mutex;
 use std::thread;
@@ -458,6 +459,8 @@ fn exercise_preference_recovery() -> Result<(), Box<dyn Error>> {
 }
 
 /// The installed plug-in owns its scripts and points to the app bundle.
+/// # Errors
+/// Returns filesystem errors or a mismatch in the installed payload.
 #[test]
 fn lightroom_install_can_repair_an_installed_copy() -> Result<(), Box<dyn Error>> {
     let sandbox = tempfile::tempdir()?;
@@ -469,29 +472,29 @@ fn lightroom_install_can_repair_an_installed_copy() -> Result<(), Box<dyn Error>
     let modules = sandbox.path().join("Adobe/Lightroom/Modules");
     let plugin = modules.join("Pancake.lrplugin");
     let install = super::lightroom::Installation::new(&executable, &modules)?;
-    assert!(!install.is_current(), "The plug-in is initially absent");
+    if install.is_current() {
+        return Err("The plug-in should be absent before installation".into());
+    }
     install.write()?;
-    assert!(install.is_current(), "The staged plug-in is current");
-    assert_eq!(
-        fs::read_to_string(plugin.join("Connection.txt"))?,
-        app.canonicalize()?
-            .to_str()
-            .ok_or("Expected a UTF-8 app path")?,
-        "Lightroom must launch the app bundle from its installed path"
-    );
-    assert!(
-        !plugin.join("Info.lua").symlink_metadata()?.is_symlink(),
-        "Lightroom needs a real copy of the script"
-    );
+    if !install.is_current() || plugin.join("Info.lua").symlink_metadata()?.is_symlink() {
+        return Err("Lightroom needs a real copy of the complete plug-in".into());
+    }
+    let connection = fs::read_to_string(plugin.join("Connection.txt"))?;
+    if Path::new(&connection) != app.canonicalize()? {
+        return Err("The plug-in must point to the installed app bundle".into());
+    }
     fs::remove_file(plugin.join("OpenEdited.lua"))?;
-    assert!(!install.is_current(), "A missing script requires repair");
+    if install.is_current() {
+        return Err("A missing script requires repair".into());
+    }
     install.write()?;
-    assert!(install.is_current(), "Reinstall restores the script");
+    if !install.is_current() {
+        return Err("Reinstall must restore the missing script".into());
+    }
     let loose = sandbox.path().join("pancake-gui");
     fs::write(&loose, b"executable")?;
-    assert!(
-        super::lightroom::Installation::new(&loose, &modules).is_err(),
-        "A loose build executable cannot install a Lightroom connection"
-    );
+    if super::lightroom::Installation::new(&loose, &modules).is_ok() {
+        return Err("A loose build executable cannot install a Lightroom connection".into());
+    }
     Ok(())
 }
