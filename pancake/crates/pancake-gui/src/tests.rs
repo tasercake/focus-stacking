@@ -456,3 +456,42 @@ fn exercise_preference_recovery() -> Result<(), Box<dyn Error>> {
     }
     Ok(())
 }
+
+/// The installed plug-in owns its scripts and points to the app bundle.
+#[test]
+fn lightroom_install_can_repair_an_installed_copy() -> Result<(), Box<dyn Error>> {
+    let sandbox = tempfile::tempdir()?;
+    let app = sandbox.path().join("Applications/Pancake's Copy.app");
+    let executable = app.join("Contents/MacOS/pancake-gui");
+    fs::create_dir_all(executable.parent().ok_or("Missing executable parent")?)?;
+    fs::write(app.join("Contents/Info.plist"), b"bundle")?;
+    fs::write(&executable, b"executable")?;
+    let modules = sandbox.path().join("Adobe/Lightroom/Modules");
+    let plugin = modules.join("Pancake.lrplugin");
+    let install = super::lightroom::Installation::new(&executable, &modules)?;
+    assert!(!install.is_current(), "The plug-in is initially absent");
+    install.write()?;
+    assert!(install.is_current(), "The staged plug-in is current");
+    assert_eq!(
+        fs::read_to_string(plugin.join("Connection.txt"))?,
+        app.canonicalize()?
+            .to_str()
+            .ok_or("Expected a UTF-8 app path")?,
+        "Lightroom must launch the app bundle from its installed path"
+    );
+    assert!(
+        !plugin.join("Info.lua").symlink_metadata()?.is_symlink(),
+        "Lightroom needs a real copy of the script"
+    );
+    fs::remove_file(plugin.join("OpenEdited.lua"))?;
+    assert!(!install.is_current(), "A missing script requires repair");
+    install.write()?;
+    assert!(install.is_current(), "Reinstall restores the script");
+    let loose = sandbox.path().join("pancake-gui");
+    fs::write(&loose, b"executable")?;
+    assert!(
+        super::lightroom::Installation::new(&loose, &modules).is_err(),
+        "A loose build executable cannot install a Lightroom connection"
+    );
+    Ok(())
+}
