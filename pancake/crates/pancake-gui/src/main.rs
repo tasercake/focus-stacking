@@ -102,7 +102,7 @@ fn configure_lightroom(window: &ComponentInstance) -> Result<(), Box<dyn Error>>
     let update_status =
         |window: &ComponentInstance, installed: bool| -> Result<(), Box<dyn Error>> {
             let status = if installed {
-                "Plug-in installed. In Lightroom Classic, use File > Export with Preset."
+                "Plug-in installed. In Lightroom Classic, use File > Plug-in Extras."
             } else {
                 "Install the plug-in to open selected Lightroom photos in Pancake."
             };
