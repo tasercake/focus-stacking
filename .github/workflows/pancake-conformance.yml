@@ -38,7 +38,7 @@ jobs:
           uv run --locked --project src/pancake_conformance/adapters/chimpstackr_reference pytest tests/test_interface_cases.py --basetemp artifacts/ci-smoke --gui-desktop --target src/pancake_conformance/adapters/chimpstackr_reference/chimpstackr.toml
       - name: Retain failure diagnostics
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: conformance-${{ runner.os }}-diagnostics
           path: pancake-conformance/artifacts/ci-smoke
