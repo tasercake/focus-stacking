@@ -96,15 +96,27 @@ workspace checks, Windows MSVC build and link, ARM64 native Metal
 build, dependency and source guardrails, randomized layouts, canonical
 macOS Miri, and separate Linux ASan and TSan. The exact install and
 case evidence comes from `11cfcf8`. Across that pin and the delivery
-tree, the Rust source, tests, application crates and assets, vendored
-sources, Cargo manifests and lock, toolchain pin, compiler and
-dependency policy, notices, packaging scripts, conformance suite and
-reference gitlink are byte-identical. Hosted orchestration and evidence
-changed. Local script tests, ShellCheck and actionlint cover the
-reconciled routing. Final delivery requires the approved main-only
-push and the hosted results on the delivered commit.
+tree, production Rust source, application assets, vendored sources,
+Cargo manifests and lock, toolchain pin, compiler and dependency policy,
+notices, packaging scripts, conformance suite and reference gitlink are
+byte-identical. Hosted orchestration and evidence changed. A Linux replay
+reproduced the hosted macOS failure with a temporary-directory path
+alias. One CPU stack fixture now compares its expected source paths in
+canonical form. Local script tests, ShellCheck and actionlint cover the
+reconciled routing. Final delivery uses the approved pull request merge
+and requires hosted results on the merged commit.
 [Required headless workflow](../../.github/workflows/pancake.yml).
 [Hosted release assurance](../../.github/workflows/pancake-assurance.yml).
+
+The hosted macOS run at `8069266` passed Miri and native layout seed 1,
+then hit a compile-time size assertion in `jxl-coding` 1.0.1 under seed 42.
+The layout test profile keeps that exact dependency's normal layout for
+both seeds because its private prefix entry requires four bytes. All
+first-party code and all other dependencies still compile with layout
+randomization, using seeds 1 and 42 and the same test rosters. The package
+build and Miri profiles are unchanged. The updated hosted layout gate
+must still run on the delivery revision.
+[Original macOS job](https://github.com/tasercake/focus-stacking/actions/runs/44485149821/job/135426767331).
 
 Strict zero-gap CPU coverage and zero-survivor mutation remain opt-in
 diagnostics under the release assurance decision delegated by the
